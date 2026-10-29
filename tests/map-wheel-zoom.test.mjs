@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { attachMapWheelZoom } from '../lib/map-wheel-zoom.ts'
+import { showMapNodes } from '../lib/map-mode.ts'
 
 class Point {
   constructor(x, y) { this.x = x; this.y = y }
@@ -16,14 +17,17 @@ function fixture(reducedMotion = false) {
   let prevented = 0
   const frames = new Map()
   const listeners = new Map()
-  const events = new Map()
-  const calls = []
+  const moves = []
+  let starts = 0
+  let ends = 0
   globalThis.window = { matchMedia: () => ({ matches: reducedMotion }) }
   Object.defineProperty(globalThis, 'performance', { configurable: true, value: { now: () => now } })
   globalThis.requestAnimationFrame = (callback) => { frames.set(++id, callback); return id }
   globalThis.cancelAnimationFrame = (frame) => frames.delete(frame)
   const map = {
     zoom: 6,
+    center: { lat: 35, lng: 105 },
+    size: new Point(1000, 600),
     getContainer: () => ({
       addEventListener: (name, callback) => listeners.set(name, callback),
       removeEventListener: (name) => listeners.delete(name),
@@ -31,87 +35,163 @@ function fixture(reducedMotion = false) {
     getZoom() { return this.zoom },
     getMinZoom: () => 4,
     getMaxZoom: () => 12,
-    getZoomScale(target) { return 2 ** (target - this.zoom) },
-    getSize: () => new Point(1000, 600),
-    mouseEventToContainerPoint: () => new Point(800, 200),
-    containerPointToLatLng: (point) => point,
-    flyTo(center, target, options) { calls.push({ center, target, options, from: this.zoom }) },
-    on: (name, callback) => events.set(name, callback),
-    off: (name) => events.delete(name),
+    getSize() { return this.size },
+    mouseEventToContainerPoint: (event) => event.point,
+    project({ lat, lng }, zoom) {
+      const scale = 256 * 2 ** zoom
+      const sin = Math.sin(lat * Math.PI / 180)
+      return new Point(scale * (lng + 180) / 360, scale * (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)))
+    },
+    unproject(point, zoom) {
+      const scale = 256 * 2 ** zoom
+      return { lng: point.x / scale * 360 - 180,
+        lat: Math.atan(Math.sinh(Math.PI * (1 - 2 * point.y / scale))) * 180 / Math.PI }
+    },
+    containerPointToLatLng(point) {
+      return this.unproject(this.project(this.center, this.zoom).add(point.subtract(this.size.divideBy(2))), this.zoom)
+    },
+    latLngToContainerPoint(latlng) {
+      return this.project(latlng, this.zoom).subtract(this.project(this.center, this.zoom)).add(this.size.divideBy(2))
+    },
+    beginMove() { starts++ },
+    move(center, zoom, data) {
+      this.center = center; this.zoom = zoom
+      moves.push({ center, zoom, data })
+    },
+    endMove() { ends++ },
   }
   const controller = attachMapWheelZoom(map)
   return {
-    map, calls, frames, listeners, events, controller,
-    setTime(value) { now = value },
+    map, moves, frames, listeners, controller,
     wheel(deltaY, extra = {}) {
       listeners.get('wheel')({ deltaY, deltaX: 0, deltaMode: 0, ctrlKey: false,
-        preventDefault: () => prevented++, ...extra })
+        point: new Point(800, 200), preventDefault: () => prevented++, ...extra })
     },
-    flush() {
+    flush(ms = 16) {
+      now += ms
       const pending = [...frames.values()]
       frames.clear()
-      pending.forEach((callback) => callback())
+      pending.forEach((callback) => callback(now))
+    },
+    settle() {
+      for (let i = 0; frames.size && i < 100; i++) this.flush()
+      assert.equal(frames.size, 0, '动画应及时结束')
     },
     get prevented() { return prevented },
+    get starts() { return starts },
+    get ends() { return ends },
   }
 }
 
-test('接续动画中的输入，不再丢弃 320ms 内的滚轮事件', () => {
+function assertAnchor(f, latlng, point) {
+  const actual = f.map.latLngToContainerPoint(latlng)
+  assert.ok(Math.hypot(actual.x - point.x, actual.y - point.y) < 1e-7,
+    `地理锚点漂移: ${actual.x - point.x}, ${actual.y - point.y}`)
+}
+
+test('模式在缩放途中切换，不等 zoomend；临界区小幅换向不会闪烁', () => {
+  const f = fixture()
+  let nodes = false
+  f.wheel(-100)
+  for (let i = 0; !nodes && i < 30; i++) {
+    f.flush()
+    nodes = showMapNodes(f.map.zoom, nodes)
+  }
+  assert.equal(nodes, true)
+  assert.equal(f.ends, 0)
+  for (const zoom of [6.84, 6.75, 6.8, 6.6]) assert.equal(showMapNodes(zoom, true), true)
+  assert.equal(showMapNodes(6.55, true), false)
+  assert.equal(showMapNodes(6.84, false), false)
+  f.controller.dispose()
+})
+
+test('四个偏心位置的锚点在放大、缩小的每一帧都固定，而不只检查终点', () => {
+  for (const point of [new Point(100, 80), new Point(900, 80), new Point(100, 520), new Point(900, 520)]) {
+    for (const delta of [-100, 100]) {
+      const f = fixture()
+      const latlng = f.map.containerPointToLatLng(point)
+      f.wheel(delta, { point })
+      for (let i = 0; f.frames.size && i < 100; i++) {
+        f.flush()
+        assertAnchor(f, latlng, point)
+      }
+      assert.equal(f.map.zoom, delta < 0 ? 7 : 5)
+      assert.equal(f.starts, 1)
+      assert.equal(f.ends, 1)
+    }
+  }
+})
+
+test('16ms 后的新输入立即接续，且始终只有一个动画循环', () => {
   const f = fixture()
   f.wheel(-100); f.flush()
-  assert.equal(f.calls[0].target, 7)
-  f.map.zoom = 6.25
-  f.setTime(16)
+  const first = f.map.zoom
   f.wheel(-100); f.flush()
-  assert.equal(f.calls.length, 2)
-  assert.equal(f.calls[1].from, 6.25)
-  assert.equal(f.calls[1].target, 8)
-  assert.ok(f.calls.every(({ target }) => Number.isInteger(target)))
+  assert.ok(f.map.zoom > first)
+  assert.equal(f.frames.size, 1)
+  f.settle()
+  assert.equal(f.map.zoom, 8)
+  assert.equal(f.starts, 1)
+  assert.equal(f.ends, 1)
 })
 
 test('帧内合并输入、保留小增量，并限制高速滚动的目标距离', () => {
   const f = fixture()
   f.wheel(-40); f.wheel(-30)
   assert.equal(f.frames.size, 1)
-  f.flush(); assert.equal(f.calls.length, 0)
-  f.wheel(-30); f.flush(); assert.equal(f.calls[0].target, 7)
-  f.map.zoom = 6.2
+  f.flush(); assert.equal(f.moves.length, 0)
+  f.wheel(-30); f.flush()
   f.wheel(-2400); f.flush()
-  assert.equal(f.calls.at(-1).target, 8)
+  f.settle()
+  assert.equal(f.map.zoom, 8)
 })
 
-test('换向立即使用当前画面，不先完成旧目标', () => {
+test('换向立即从当前画面回退，不先完成旧目标', () => {
   const f = fixture()
   f.wheel(-200); f.flush()
-  f.map.zoom = 6.4
-  f.setTime(32)
+  const turningZoom = f.map.zoom
   f.wheel(100); f.flush()
-  assert.equal(f.calls.at(-1).target, 6)
+  assert.ok(f.map.zoom < turningZoom)
+  f.settle()
+  assert.equal(f.map.zoom, 6)
 })
 
-test('保留鼠标锚点、上下限、Ctrl 和横向手势', () => {
+test('动画中换鼠标位置，以新位置下的地点为锚点，适配侧栏改变后的容器尺寸', () => {
   const f = fixture()
+  f.map.size = new Point(620, 740)
   f.wheel(-100); f.flush()
-  assert.deepEqual(f.calls[0].center, new Point(650, 250))
-  f.controller.cancel(); f.map.zoom = 4
-  f.wheel(100); f.flush(); assert.equal(f.calls.length, 1)
-  f.controller.cancel(); f.map.zoom = 12
-  f.wheel(-100); f.flush(); assert.equal(f.calls.length, 1)
+  const point = new Point(140, 530)
+  const latlng = f.map.containerPointToLatLng(point)
+  f.wheel(-100, { point })
+  while (f.frames.size) { f.flush(); assertAnchor(f, latlng, point) }
+  assert.equal(f.map.zoom, 8)
+})
+
+test('保留上下限、Ctrl 和横向手势', () => {
+  const f = fixture()
+  f.map.zoom = 4
+  f.wheel(100); f.flush(); assert.equal(f.moves.length, 0)
+  f.map.zoom = 12
+  f.wheel(-100); f.flush(); assert.equal(f.moves.length, 0)
   const prevented = f.prevented
   f.wheel(100, { ctrlKey: true }); f.wheel(1, { deltaX: 100 }); f.flush()
   assert.equal(f.prevented, prevented)
-  assert.equal(f.calls.length, 1)
+  assert.equal(f.moves.length, 0)
 })
 
-test('减少动态效果与取消、清理', () => {
-  const f = fixture(true)
+test('减少动态效果时一次到位，中断回到整数级并正确清理', () => {
+  const reduced = fixture(true)
+  reduced.wheel(-100); reduced.flush()
+  assert.equal(reduced.map.zoom, 7)
+  assert.equal(reduced.frames.size, 0)
+  const f = fixture()
   f.wheel(-100); f.flush()
-  assert.equal(f.calls[0].options.animate, false)
+  f.controller.cancel()
+  assert.ok(Number.isInteger(f.map.zoom))
+  assert.equal(f.frames.size, 0)
+  assert.equal(f.ends, 1)
   f.wheel(-100); f.controller.cancel(); f.flush()
-  assert.equal(f.calls.length, 1)
-  f.wheel(-100); f.events.get('zoomend')(); f.flush()
-  assert.equal(f.calls.length, 1)
+  assert.equal(f.frames.size, 0)
   f.controller.dispose()
   assert.equal(f.listeners.size, 0)
-  assert.equal(f.events.size, 0)
 })

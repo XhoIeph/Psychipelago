@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { DoctorLeadItem } from '@/components/DoctorLeadItem'
+import { DoctorLeadGroup } from '@/components/DoctorLeadGroup'
 import { aggregateDoctorLeads } from '@/lib/doctor-leads'
 import { doctors, hospitalById, hospitals, publicReports } from '@/lib/data'
 
@@ -19,7 +20,7 @@ export default function DoctorsPage() {
       <header className="tc-page-heading">
         <div>
           <h1>医生线索</h1>
-          <p className="tc-muted">按病症查找原帖中提到的医生；展开条目可看对应线索。</p>
+          <p className="tc-muted">按来源分类查找医生；展开条目可看对应原文。</p>
         </div>
       </header>
 
@@ -91,16 +92,13 @@ function DoctorLeadExplorer() {
       ) : (
         <div className="tc-stack">
           {groups.map((group) => (
-            <section key={group.id} className="tc-doctor-group">
-              <h2>
-                {group.label} <small>{group.leadCount}</small>
-              </h2>
+            <DoctorLeadGroup key={group.id} group={group} searching={query.trim() !== ''}>
               <div className="tc-grid tc-grid--cards">
                 {group.entries.map((entry) => (
                   <DoctorLeadItem key={`${group.id}:${entry.hospitalId ?? entry.hospitalName}:${entry.name}`} entry={entry} reports={publicReports} />
                 ))}
               </div>
-            </section>
+            </DoctorLeadGroup>
           ))}
         </div>
       )}

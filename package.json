@@ -5,14 +5,16 @@
   "type": "module",
   "description": "TraumaCompass — CPTSD/BPD 就诊资源与就诊线索地图（静态站点）",
   "engines": {
-    "node": ">=22.6"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "serve": "npx --yes serve out",
+    "serve": "node scripts/preview.ts",
     "typecheck": "tsc --noEmit",
     "test:map-wheel": "node --test tests/map-wheel-zoom.test.mjs",
+    "test:map-layout": "node --test tests/map-layout.test.mjs",
+    "test:geo": "node --test tests/amap-geocode.test.mjs",
     "prebuild": "node scripts/validate-data.ts && node scripts/build-aggregates.ts",
     "geo:fetch": "node scripts/fetch-geo.ts",
     "geo:geocode": "node scripts/geocode-hospitals.ts --missing --write",
@@ -20,24 +22,15 @@
     "data:validate": "node scripts/validate-data.ts",
     "data:build": "node scripts/build-aggregates.ts",
     "data:stats": "node scripts/data-stats.ts",
-    "audit:sources": "node scripts/audit-sources.ts",
-    "collect:quota": "node scripts/collect/quota.ts",
-    "collect:run": "node scripts/collect/run-opencli.ts",
-    "collect:sweep": "node scripts/collect/sweep.ts",
-    "collect:fetch": "node scripts/collect/fetch-notes.ts",
-    "collect:triage": "node scripts/collect/triage-notes.ts",
-    "collect:triage-comments": "node scripts/collect/triage-comments.ts",
-    "collect:backfill": "node scripts/collect/backfill-context.ts",
-    "collect:fix-context": "node scripts/collect/fix-context-errors.ts",
-    "collect:leads": "node scripts/collect/import-leads.ts",
-    "evidence:manifest": "node scripts/collect/build-evidence-manifest.ts",
-    "collect:record": "node scripts/collect/record.ts",
-    "collect:import": "node scripts/collect/import-opencli.ts"
+    "data:import": "node scripts/import-kdocs.ts",
+    "test:data": "node --test tests/data-source.test.mjs",
+    "test:amap": "node --test tests/map-coordinates.test.mjs tests/preview.test.mjs"
   },
   "dependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1",
     "@gsap/react": "^2.1.2",
+    "@next/env": "16.3.4",
     "gsap": "^3.15.0",
-    "leaflet": "^1.9.4",
     "lucide-react": "^1.48.0",
     "next": "16.3.4",
     "react": "19.3.0",
@@ -45,7 +38,7 @@
     "zod": "4.6.2"
   },
   "devDependencies": {
-    "@types/leaflet": "^1.9.22",
+    "@amap/amap-jsapi-types": "^0.0.15",
     "@types/node": "^24.9.2",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",

@@ -3,7 +3,7 @@ import { RibbonMark } from '@/components/Brand'
 export const metadata = {
   title: '关于项目｜TraumaCompass',
   description:
-    'TraumaCompass 的项目目的、数据来源与方法、隐私原则、非医疗建议声明、更新方式与地图合规说明。',
+    'TraumaCompass 项目信息。',
 }
 
 export default function AboutPage() {

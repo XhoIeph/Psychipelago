@@ -1,5 +1,7 @@
 import { MapApp } from '@/components/map/MapApp'
 import { formatPublishedAt, formatReportSource } from '@/lib/format'
+import { mapHospitalInputs } from '@/lib/map-coordinates'
+import locationEvidence from '@/data/evidence/locations/amap-2026-10-27.json'
 import {
   disorders,
   hospitals,
@@ -10,34 +12,7 @@ import {
 } from '@/lib/data'
 
 export default function MapPage() {
-  // 地图节点：只放有坐标的机构；节点旁的数据来自关联线索
-  const mapHospitals = hospitals
-    .filter((hospital) => hospital.coordinates)
-    .map((hospital) => {
-      const linked = publicReports.filter((report) => report.hospital_id === hospital.id)
-      return {
-        id: hospital.id,
-        name: hospital.name,
-        adcode: hospital.adcode,
-        province: hospital.province,
-        city: hospital.city,
-        category: hospital.category,
-        level: hospital.level,
-        lat: hospital.coordinates?.lat ?? 0,
-        lng: hospital.coordinates?.lng ?? 0,
-        coordinateSource: hospital.coordinates_source,
-        leads: linked.length,
-        evidenceCount: hospital.trauma_service.evidence.length,
-        doctors: [
-          ...new Set(
-            linked
-              .flatMap((report) => (report.doctor_name_raw ?? '').split(/[、,，/]/))
-              .map((name) => name.trim())
-              .filter((name) => name.length >= 2),
-          ),
-        ],
-      }
-    })
+  const mapHospitals = mapHospitalInputs(hospitals, publicReports, locationEvidence.results)
 
   const mapLeads = Object.fromEntries(
     mapHospitals.map((hospital) => [
@@ -51,9 +26,7 @@ export default function MapPage() {
           contextNote: report.evidence_context?.parent_excerpt
             ? `该评论回复的原话：「${report.evidence_context.parent_excerpt}」`
             : undefined,
-          doctor: report.doctor_name_raw,
           stage: report.stage,
-          platform: report.platform,
           publishedAt: formatPublishedAt(report.published_at, report.published_at_precision),
           url: report.source_url,
         })),
@@ -80,26 +53,16 @@ export default function MapPage() {
     ]),
   )
 
-  const hospitalNames = Object.fromEntries(hospitals.map((hospital) => [hospital.id, hospital.name]))
-
-  const { totals } = provinceStats
-
   return (
     <MapApp
       provinces={provinces}
       mapHospitals={mapHospitals}
       leadsByHospital={mapLeads}
       provinceStats={statMap}
-      totals={{
-        reports: totals.reports,
-        hospitals: totals.hospitals,
-        provincesWithReports: totals.provinces_with_reports,
-      }}
       hospitals={hospitals}
       reports={publicReports}
       disorders={disorders}
       reportProvince={reportProvinceMap()}
-      hospitalNames={hospitalNames}
       reportCounts={reportCounts}
     />
   )

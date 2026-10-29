@@ -10,6 +10,13 @@ import {
   reportsFileSchema,
 } from '../lib/schema.ts'
 import { CURATED_FILES, readJson } from './lib/paths.ts'
+import { isDeepStrictEqual } from 'node:util'
+import { reportsWithLocations, SOURCE_CAPTURE, SOURCE_URL } from './import-kdocs.ts'
+import type { SourceDocument } from './import-kdocs.ts'
+import { existsSync } from 'node:fs'
+import { LOCATION_EVIDENCE } from './lib/amap.ts'
+import type { LocationRun } from './lib/amap.ts'
+import { hospitalsFromRun } from './geocode-hospitals.ts'
 
 const errors: string[] = []
 const warnings: string[] = []
@@ -37,6 +44,19 @@ const doctorsRaw = readJson<unknown>(CURATED_FILES.doctors)
 const reportsRaw = readJson<unknown>(CURATED_FILES.reports)
 const provincesRaw = readJson<unknown>(CURATED_FILES.provinces)
 
+function rejectPrivateFields(value: unknown, path: string): void {
+  if (!value || typeof value !== 'object') return
+  for (const [key, child] of Object.entries(value)) {
+    if (/^(?:author_(?:uid|nickname|alias)|parent_author|reply_to_author|ip_location|xsec_token)$/u.test(key)) {
+      errors.push(`${path}.${key}: 公开数据不得包含私人标识`)
+    }
+    rejectPrivateFields(child, `${path}.${key}`)
+  }
+}
+for (const [name, value] of Object.entries({ hospitals: hospitalsRaw, doctors: doctorsRaw, reports: reportsRaw })) {
+  rejectPrivateFields(value, name)
+}
+
 const disorders = parseOrReport('disorders.json', disordersFileSchema, disordersRaw) as
   | { items: Array<Record<string, unknown>> }
   | null
@@ -52,6 +72,21 @@ const reports = parseOrReport('reports.json', reportsFileSchema, reportsRaw) as
 const provinces = parseOrReport('provinces.json', provincesFileSchema, provincesRaw) as
   | { items: Array<Record<string, unknown>> }
   | null
+
+const sourceDocument = readJson<SourceDocument>(SOURCE_CAPTURE)
+if (sourceDocument.url !== SOURCE_URL || sourceDocument.title !== '就诊地图10.25') {
+  errors.push('来源转写必须对应唯一主线《就诊地图10.25》')
+}
+if (!Number.isInteger(sourceDocument.page_count) || sourceDocument.page_count < 1 ||
+  sourceDocument.pages.length !== sourceDocument.page_count ||
+  sourceDocument.pages.some((page, index) => page.page !== index + 1 || page.lines.length === 0)) {
+  errors.push('来源转写页数必须为正整数，按序包含全部非空分页')
+}
+if (reports && !isDeepStrictEqual(reports.items, reportsWithLocations(sourceDocument))) {
+  errors.push('reports.json 与主线分页转写不一致；请运行 node scripts/import-kdocs.ts，不能恢复旧源或手改引文')
+}
+const expectedHospitals = existsSync(LOCATION_EVIDENCE) ? hospitalsFromRun(readJson<LocationRun>(LOCATION_EVIDENCE)) : []
+if (hospitals && !isDeepStrictEqual(hospitals.items, expectedHospitals)) errors.push('hospitals.json 与本轮高德定位依据不一致，不能恢复退役机构或手改坐标')
 
 if (disorders && hospitals && doctors && reports && provinces) {
   const disorderIds = new Set(disorders.items.map((item) => String(item.id)))

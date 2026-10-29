@@ -38,18 +38,15 @@ export function formatPublishedAt(publishedAt?: string, precision?: string): str
   return `${publishedAt}${suffix}`
 }
 
-const SOURCE_POST_TITLES: Record<string, string> = {
-  '69f19ded0000000036003cb5': 'cptsd/人格障碍/osdd/did全国就诊线索1.0',
-  '69ede05b00000000350314ef': '建设cptsd/人格障碍/osdd/did全国就诊地图',
-}
-
 export function formatReportSource(report: Report): string {
-  const postId = report.source_post_id?.split('#')[0] ?? report.source_url.match(/\/explore\/([a-f\d]+)/)?.[1]
-  const title = (postId && SOURCE_POST_TITLES[postId]) || report.evidence_context?.note_title
+  const title = report.evidence_context?.note_title
+  const location = report.evidence_context?.index_in_capture
   const section = report.evidence_context?.capture_scope?.includes('.webp')
     ? '图片摘录'
     : EVIDENCE_SOURCE_LABELS[report.evidence_source] ?? '原文'
-  return title ? `《${title}》${section === '评论区' ? '的评论区' : ` · ${section}`}` : `${PLATFORM_LABELS[report.platform]}${section}`
+  if (!title) return `${PLATFORM_LABELS[report.platform]}${section}`
+  if (location) return `《${title}》 · ${location}`
+  return `《${title}》${section === '评论区' ? '的评论区' : ` · ${section}`}`
 }
 
 /** 地区展示：只用「医院所在地」或「作者自述所在地」；平台 IP 属地不采集也不展示 */

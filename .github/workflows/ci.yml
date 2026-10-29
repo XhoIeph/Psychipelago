@@ -21,10 +21,19 @@ jobs:
       - name: Validate data
         run: npm run data:validate
 
-      - name: Typecheck
-        run: npm run typecheck
+      - name: Source regression tests
+        run: npm run test:data
+
+      - name: Geocoding regression tests
+        run: npm run test:geo
+
+      - name: Map regression tests
+        run: npm run test:map-layout && npm run test:map-wheel && npm run test:amap
 
       - name: Build (with GitHub Pages basePath)
         run: npm run build
         env:
           GITHUB_PAGES: 'true'
+
+      - name: Typecheck generated routes
+        run: npm run typecheck

@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 export const metadata = {
   title: '医院与机构｜TraumaCompass',
-  description: '收录可提供创伤相关评估与诊断的医院与科室记录，逐条标注官方来源与创伤服务证据。',
+  description: '主线文档中的机构档案与地图定位信息。',
 }
 
 export default function HospitalsPage() {

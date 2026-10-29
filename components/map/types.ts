@@ -14,12 +14,11 @@ export type MapHospital = {
   city: string
   category: string
   level: string
+  // Only map inputs use the saved Amap GCJ-02 coordinates; curated coordinates remain WGS84.
   lat: number
   lng: number
   coordinateSource?: string
   leads: number
-  evidenceCount: number
-  doctors: string[]
 }
 
 export type MapLead = {
@@ -27,9 +26,7 @@ export type MapLead = {
   quote: string
   sourceLabel: string
   contextNote?: string
-  doctor?: string
   stage: string
-  platform: string
   publishedAt?: string
   url: string
 }

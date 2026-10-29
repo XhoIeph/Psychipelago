@@ -1,229 +1,20 @@
 {
   "schema_version": "1.0.0",
-  "updated_at": "2026-09-12",
+  "updated_at": "2026-10-27",
   "items": [
     {
-      "id": "pkuh6",
-      "name": "北京大学第六医院",
+      "id": "kdocs-amap-b000a0989a",
+      "name": "首都医科大学附属北京回龙观医院",
       "aliases": [
-        "北医六院",
-        "北京大学精神卫生研究所",
-        "北大六院"
+        "北京回龙观医院"
       ],
       "adcode": "110000",
       "province": "北京市",
       "city": "北京市",
-      "level": "三级甲等",
-      "category": "精神专科",
-      "departments": [
-        "精神科",
-        "心理治疗",
-        "儿童心理卫生"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "官网医院新闻（2026-08-18）：《北京大学第六医院创伤心理治疗EMDR治疗技能培训（Ⅰ阶）在京举办》—— 该院自 2002 年引入 EMDR、2008 年起开展系统培训、2009 年推动成立中国心理卫生协会心理治疗与心理咨询专业委员会 EMDR 创伤心理治疗学组并任首任组长单位；已连续四年开展创伤心理治疗稳定化技能培训、EMDR 治疗师基础培训、哀伤辅导；Ⅱ阶培训内容为「复杂性创伤」的处理策略。",
-          "该院为精神心理疾病国家临床医学研究中心、国家精神疾病医学中心（官网首页标注）。",
-          "官网「专业门诊」清单列有：儿童、老年、心理治疗、精神疾病康复咨询、行为分析治疗、记忆障碍、睡眠障碍、成瘾行为、进食障碍 —— 其中并无创伤/应激相关障碍专科门诊。",
-          "名单截图（置顶评论，2026-04-26）：北大六院西英俊、马弘医生（CPTSD）。",
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。"
-        ]
-      },
-      "address": "海淀院区：北京市海淀区花园北路51号；昌平院区：北京市昌平区科学园路2号",
-      "website": "https://www.pkuh6.cn/",
-      "phone_public": "010-62723860 / 82801936",
-      "coordinates": {
-        "lat": 39.980971,
-        "lng": 116.351327
-      },
-      "official_sources": [
-        "https://www.pkuh6.cn/Html/News/Articles/7021.html",
-        "https://www.pkuh6.cn/Html/News/Columns/210/Index.html"
-      ],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded"
-    },
-    {
-      "id": "bjad",
-      "name": "北京安定医院",
-      "aliases": [
-        "首都医科大学附属北京安定医院",
-        "安定医院"
-      ],
-      "adcode": "110000",
-      "province": "北京市",
-      "city": "北京市",
-      "level": "三级甲等",
-      "category": "精神专科",
-      "departments": [
-        "精神科",
-        "临床心理中心"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。"
-        ]
-      },
-      "website": "https://www.bjad.com.cn/",
-      "coordinates": {
-        "lat": 39.951382,
-        "lng": 116.370565
-      },
-      "official_sources": [
-        "https://www.bjad.com.cn/"
-      ],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "安康胡同5号"
-    },
-    {
-      "id": "hz7",
-      "name": "杭州市第七人民医院",
-      "aliases": [
-        "杭州七院",
-        "浙江大学医学院附属精神卫生中心"
-      ],
-      "adcode": "330000",
-      "province": "浙江省",
-      "city": "杭州市",
-      "level": "三级甲等",
-      "category": "精神专科",
-      "departments": [
-        "精神科",
-        "心身科",
-        "儿童心理科",
-        "精神康复科",
-        "特检科（含心理测评）"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "官网「医院概况」自述为治疗精神、心理疾病的三甲专科医院，同时是浙江大学医学院附属精神卫生中心；诊疗中心列表含睡眠障碍、儿童青少年心理健康、精神科疑难危重等，但未列出创伤/应激相关障碍专科门诊。",
-          "名单截图（置顶评论，2026-04-26）：杭州七院杨荣梅医生（CPTSD）。"
-        ]
-      },
-      "address": "杭州市天目山路305号",
-      "website": "https://www.hz7hospital.com/",
-      "phone_public": "0571-85127129",
-      "coordinates": {
-        "lat": 30.272219,
-        "lng": 120.108706
-      },
-      "official_sources": [
-        "https://www.hz7hospital.cn/index/about.html",
-        "https://www.hz7hospital.com/index/outpat.html?outpat_id=5"
-      ],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded"
-    },
-    {
-      "id": "gzbrain",
-      "name": "广州医科大学附属脑科医院",
-      "aliases": [
-        "广州市脑科医院",
-        "广州市惠爱医院",
-        "广州市精神卫生中心",
-        "广州医科大学附属精神病医院"
-      ],
-      "adcode": "440000",
-      "province": "广东省",
-      "city": "广州市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "官网临床心理科「科室介绍」：特色技术包含「心理创伤综合干预技术」；参编《中国创伤后应激障碍防治指南》（2024 版）；科研项目含《同步 EEG-fMRI 探讨 EMDR 治疗 PTSD 的疗效及脑网络机制》《EMDR 治疗伴儿童期创伤抑郁症疗效及脑网络机制探讨》《IPT 和 TF-CBT 干预伴童年创伤青少年抑郁症的疗效及神经机制探索》等。",
-          "该科设有「心理治疗（咨询）预约评估门诊」，面向未诊断人群开展心理健康评估与筛查（官网科室介绍）。",
-          "心理门诊分布于荔湾心理门诊、芳村总院及江村院区；急诊 24 小时热线 020-81263852、020-81263853。",
-          "评论自述（2026-05-25，广东）：广脑彭红军医生停诊，李爱凤医生处可获 BPD 确诊与 CPTSD 口头确诊，该院不出纸质诊断。",
-          "名单截图（置顶评论，2026-04-26）：广脑彭红军、罗新妮、李婷、李爱凤、李苏义、阳琼（CPTSD），另有温全球医生（另一段名单）。",
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。"
-        ]
-      },
-      "website": "https://www.gzbrain.cn/",
-      "coordinates": {
-        "lat": 23.101236,
-        "lng": 113.235044
-      },
-      "official_sources": [
-        "https://www.gzbrain.cn/",
-        "https://www.gzbrain.cn/ksjs3575/index.aspx?subjectid=2"
-      ],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "明心路36号"
-    },
-    {
-      "id": "sz-kn",
-      "name": "深圳市康宁医院",
-      "aliases": [
-        "深圳康宁医院",
-        "深圳市精神卫生中心"
-      ],
-      "adcode": "440000",
-      "province": "广东省",
-      "city": "深圳市",
-      "level": "三级甲等",
-      "category": "精神专科",
-      "departments": [
-        "精神科",
-        "临床心理科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "官网「心理咨询与心理治疗科科室简介」（2023-06-16）：诊疗范围明确包含 EMDR 创伤治疗；团体治疗包含情绪稳定化团体心理治疗、EMDR 创伤团体心理治疗；原文称「我科在 EMDR 创伤治疗领域在国内具有积极影响力」。",
-          "该科室成立于 2019-11-20，配置精神科主任医师 1 人、心理治疗师 6 人；科室地址：深圳市康宁医院致和楼一楼，电话 0755-25603442。",
-          "名单截图（置顶评论，2026-04-26）：深圳市康宁医院坪山院区彭江发医生（CPTSD）。",
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。",
-          "患者实录（2025-06，深圳市康宁医院）：公众号预约、儿少精神科王中磊医生、三项测试、全程约 2 小时、自费约 700 元。"
-        ]
-      },
-      "address": "坪山总院：深圳市坪山区振碧路77号；罗湖分院：深圳市罗湖区翠竹路1080号",
-      "website": "https://www.szknyy.com/",
-      "phone_public": "0755-82923481（坪山总院）/ 0755-25504297（罗湖分院）",
-      "coordinates": {
-        "lat": 22.664595,
-        "lng": 114.29952
-      },
-      "official_sources": [
-        "https://www.szknyy.com/",
-        "https://www.szknyy.com/gz/ylfw/ksdh/lhfy/ywks/xlzxyxlzlk/ksjj/content/post_976076.html"
-      ],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded"
-    },
-    {
-      "id": "wcsh-mental-health",
-      "name": "四川大学华西医院心理卫生中心",
-      "aliases": [
-        "华西心理卫生中心",
-        "华西医院心理科"
-      ],
-      "adcode": "510000",
-      "province": "四川省",
-      "city": "成都市",
-      "level": "三级甲等",
-      "category": "综合医院心理科",
-      "departments": [
-        "心理卫生中心",
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
         "cptsd_assessment": "unknown",
@@ -231,429 +22,46 @@
         "icd11_practice": "unknown",
         "evidence": []
       },
-      "website": "https://www.cd120.com/department_xlwszx.html",
+      "address": "南店路7号",
       "coordinates": {
-        "lat": 30.639294,
-        "lng": 104.059266
+        "lat": 40.065448,
+        "lng": 116.323755
       },
-      "official_sources": [
-        "https://www.cd120.com/department_xlwszx.html"
-      ],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "电信南街38号附6号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "zdyfy",
-      "name": "郑州大学第一附属医院",
+      "id": "kdocs-amap-b000a2ef2c",
+      "name": "北京大学第六医院海淀院区",
       "aliases": [
-        "郑大一附院",
-        "郑大一附院精神科"
-      ],
-      "adcode": "410000",
-      "province": "河南省",
-      "city": "郑州市",
-      "level": "未知",
-      "category": "综合医院精神科",
-      "departments": [
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "网友自述（2026-08-26，小红书）：在该院精神科复诊，称「24年末就拿到cptsd诊断了」，并提到该院诊断仍采用手写病历。",
-          "网友自述（2026-08-20，小红书）：在该院精神科就诊，医生认为其情绪问题可能与过去的创伤经历有关，随后建议到院外机构做进一步评估（13 个量表 + 动态电脑检测，缴费 1160 元）。",
-          "两条相互独立的自述都反映就诊环境问题：并非「一室一患」，且在诊室外公开询问病情。",
-          "网友汇总帖（2026-04-26，小红书）列有郑大一附院东区郭慧荣医生（CPTSD），该帖另列其为分离转换障碍（书面）医生。"
-        ]
-      },
-      "website": "https://www.zdyfy.com/",
-      "coordinates": {
-        "lat": 34.798832,
-        "lng": 113.756665
-      },
-      "official_sources": [
-        "https://www.zdyfy.com/"
-      ],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "龙湖中环路1号(郑大一附院东区地铁站D口步行60米)"
-    },
-    {
-      "id": "bj-huilongguan",
-      "name": "北京回龙观医院",
-      "aliases": [
-        "回龙观医院"
+        "北京大学第六医院"
       ],
       "adcode": "110000",
       "province": "北京市",
       "city": "北京市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科",
-        "创伤后应激障碍专病门诊"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "网友汇总帖（2026-04-26，小红书）列出该院设有「创伤后应激障碍专病门诊」。",
-          "评论转述匿名投稿（2026-08-18）：回龙观医院王晓莹医生对 CPTSD 态度温柔耐心，但诊断偏保守严格。",
-          "名单截图（置顶评论，2026-04-26）：回龙观医院创伤后应激障碍专病门诊及潘伟刚、梁红、李玉龙、王晓莹、徐鑫鹏等医生；有人反馈只认同战争/家暴类创伤。",
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。",
-          "医院官方门诊介绍（截图，经小红书笔记转引）：创伤后应激障碍专病门诊服务对象明确包含「PTSD 及 C-PTSD 患者」，流程为挂号→筛查评估→诊疗/干预→随访，多学科团队（精神科医师+心理治疗师）协作。"
-        ]
+        "evidence": []
       },
+      "address": "花园北路51号",
       "coordinates": {
-        "lat": 40.065448,
-        "lng": 116.323755
+        "lat": 39.980971,
+        "lng": 116.351327
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "南店路7号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "sh-smhc",
-      "name": "上海市精神卫生中心",
-      "aliases": [
-        "上海精卫",
-        "上海市心理咨询与治疗中心"
-      ],
-      "adcode": "310000",
-      "province": "上海市",
-      "city": "上海市",
-      "level": "未知",
-      "category": "精神专科",
-      "departments": [
-        "精神科",
-        "心理咨询"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "网友汇总帖（2026-04-26，小红书）列有该院金金医生（CPTSD）与仇剑崟医生（分离转换障碍）。",
-          "名单截图（置顶评论，2026-04-26）：上海市精神卫生中心仇剑崟、金金医生（CPTSD），并为 NPD/ASPD 专家会诊机构。",
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。",
-          "患者实录（2025-11，上海市精神卫生中心闵行院区）：普通心理咨询号 25 元、专家特需 300-600、量表约百元、候诊设隔断；流程强调首诊与复诊。",
-          "患者自述（2025-09，上海市精神卫生中心）：约 3 分钟问诊 + 一张短问卷即下「躁狂症」诊断、费用约 500 元且医保不报销，并称被以「记录影响找工作」相告。"
-        ]
-      },
-      "coordinates": {
-        "lat": 31.189837,
-        "lng": 121.444458
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "宛平南路600号"
-    },
-    {
-      "id": "sh-tongji",
-      "name": "上海市同济医院",
-      "aliases": [
-        "同济大学附属同济医院",
-        "同济医院"
-      ],
-      "adcode": "310000",
-      "province": "上海市",
-      "city": "上海市",
-      "level": "未知",
-      "category": "综合医院精神科",
-      "departments": [
-        "精神医学科",
-        "心理科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "网友汇总帖（2026-04-26，小红书）列有该院刘飞医生（CPTSD）。",
-          "名单截图（置顶评论，2026-04-26）：同济医院刘飞、张琼医生（CPTSD）。"
-        ]
-      },
-      "coordinates": {
-        "lat": 31.239651,
-        "lng": 121.507883
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "即墨路150号"
-    },
-    {
-      "id": "sh-xinhua",
-      "name": "上海交通大学医学院附属新华医院",
-      "aliases": [
-        "上海新华医院",
-        "新华医院"
-      ],
-      "adcode": "310000",
-      "province": "上海市",
-      "city": "上海市",
-      "level": "未知",
-      "category": "综合医院心理科",
-      "departments": [
-        "临床心理科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "网友汇总帖（2026-04-26，小红书）列有该院张劲松医生（CPTSD）。"
-        ]
-      },
-      "coordinates": {
-        "lat": 31.275169,
-        "lng": 121.513294
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "控江路1665号"
-    },
-    {
-      "id": "zj-tongde",
-      "name": "浙江省立同德医院",
-      "aliases": [
-        "同德医院",
-        "浙江省精神卫生中心"
-      ],
-      "adcode": "330000",
-      "province": "浙江省",
-      "city": "杭州市",
-      "level": "未知",
-      "category": "综合医院精神科",
-      "departments": [
-        "精神科",
-        "临床心理科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "评论反馈（2026-07-25，浙江）：浙江省立同德医院张滢医生；汇总帖标注为口头支持。"
-        ]
-      },
-      "coordinates": {
-        "lat": 30.231261,
-        "lng": 120.010434
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "闲林东路1号"
-    },
-    {
-      "id": "gd-gdph",
-      "name": "广东省人民医院",
-      "aliases": [
-        "省医"
-      ],
-      "adcode": "440000",
-      "province": "广东省",
-      "city": "广州市",
-      "level": "未知",
-      "category": "综合医院精神科",
-      "departments": [
-        "精神科",
-        "心理科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "评论汇总（2026-08-18）：广东省人民医院侯彩兰教授（CPTSD）。",
-          "名单截图（置顶评论，2026-04-26）：广东省人民医院李刚医生（CPTSD）。",
-          "评论附图长文（2026-04-27）：广东省人民医院侯彩兰主任有 PTSD/C-PTSD 诊断经验与研究，口头诊断、可协商费用、号源紧张；并提示「目前医疗系统无法确诊 c-ptsd」。"
-        ]
-      },
-      "coordinates": {
-        "lat": 23.133892,
-        "lng": 113.251208
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "盘福路1号"
-    },
-    {
-      "id": "gx-nn1",
-      "name": "南宁市第一人民医院",
-      "aliases": [
-        "广西南宁第一人民医院"
-      ],
-      "adcode": "450000",
-      "province": "广西壮族自治区",
-      "city": "南宁市",
-      "level": "未知",
-      "category": "综合医院精神科",
-      "departments": [
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "评论汇总（2026-08-29）：南宁市第一人民医院韦盛中医生（人格障碍）。"
-        ]
-      },
-      "coordinates": {
-        "lat": 22.813468,
-        "lng": 108.321004
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "七星路89号"
-    },
-    {
-      "id": "cq-jwzx",
-      "name": "重庆市精神卫生中心",
-      "aliases": [
-        "重庆精卫"
-      ],
-      "adcode": "500000",
-      "province": "重庆市",
-      "city": "重庆市",
-      "level": "未知",
-      "category": "精神专科",
-      "departments": [
-        "精神科",
-        "创伤门诊"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "评论汇总（2026-08-26）：重庆市精神卫生中心设创伤门诊，网友反馈冉曼利医生确诊过。",
-          "名单截图（置顶评论，2026-04-26）：重庆市精神卫生中心设创伤门诊，冉曼利医生（CPTSD）。"
-        ]
-      },
-      "coordinates": {
-        "lat": 29.596463,
-        "lng": 106.526804
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "金紫山102号"
-    },
-    {
-      "id": "hn-brain",
-      "name": "湖南省脑科医院",
-      "aliases": [
-        "湖南脑科",
-        "湖南省第二人民医院"
-      ],
-      "adcode": "430000",
-      "province": "湖南省",
-      "city": "长沙市",
-      "level": "未知",
-      "category": "精神专科",
-      "departments": [
-        "精神科",
-        "临床心理科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "网友汇总帖（2026-04-26，小红书）列有该院马静、刘光亚医生（BPD），并称全科可接诊。",
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。"
-        ]
-      },
-      "coordinates": {
-        "lat": 28.159054,
-        "lng": 112.979245
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "芙蓉中路三段427号(涂家冲地铁站4号口步行270米)"
-    },
-    {
-      "id": "hn-xiangya",
-      "name": "中南大学湘雅医院",
-      "aliases": [
-        "湘雅医院",
-        "湘雅"
-      ],
-      "adcode": "430000",
-      "province": "湖南省",
-      "city": "长沙市",
-      "level": "未知",
-      "category": "综合医院精神科",
-      "departments": [
-        "精神科",
-        "心理卫生中心"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "网友汇总帖（2026-04-26，小红书）列有湘雅医院肖茜医生（BPD）。"
-        ]
-      },
-      "coordinates": {
-        "lat": 28.215655,
-        "lng": 112.97854
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "湘雅路87号"
-    },
-    {
-      "id": "ln-shengjing",
-      "name": "中国医科大学附属盛京医院",
-      "aliases": [
-        "沈阳盛京医院",
-        "盛京医院"
-      ],
-      "adcode": "210000",
-      "province": "辽宁省",
-      "city": "沈阳市",
-      "level": "未知",
-      "category": "综合医院精神科",
-      "departments": [
-        "精神科",
-        "心理科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "评论自述（2026-04-29，辽宁）：盛京医院王澜医生可写「疑似分离性转换障碍」。",
-          "名单截图（置顶评论，2026-04-26）：盛京医院韩继阳、王澜医生（分离转换障碍/多重人格障碍）。"
-        ]
-      },
-      "coordinates": {
-        "lat": 41.770663,
-        "lng": 123.420123
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "三好街36号"
-    },
-    {
-      "id": "bj-pku-international",
+      "id": "kdocs-amap-b000a9q0a3",
       "name": "北京大学国际医院",
       "aliases": [
         "北大国际医院"
@@ -662,471 +70,524 @@
       "province": "北京市",
       "city": "北京市",
       "level": "未知",
-      "category": "综合医院精神科",
+      "category": "其他",
       "departments": [
-        "心理行为医学科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "评论自述（2026-08-20，北京）：北京大学国际医院张艳萍医生（特需号）表示综合医院开不出精神科细分诊断，建议转安定/回龙观。"
-        ]
+        "evidence": []
       },
+      "address": "中关村生命科学园生命园路1号",
       "coordinates": {
         "lat": 40.099941,
         "lng": 116.25746
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "中关村生命科学园生命园路1号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "sh-hemujia",
-      "name": "上海和睦家医院",
+      "id": "kdocs-amap-b0fff90qnj",
+      "name": "郑州大学第一附属医院(东院区)",
       "aliases": [
-        "和睦家"
+        "河南省郑州大学第一附属医院东区",
+        "郑大一附院东区"
+      ],
+      "adcode": "410000",
+      "province": "河南省",
+      "city": "郑州市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "龙湖中环路1号(郑大一附院东区地铁站A口步行150米)",
+      "coordinates": {
+        "lat": 34.798832,
+        "lng": 113.756665
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b03950291n",
+      "name": "宝鸡市康复医院",
+      "aliases": [
+        "陕西省宝鸡市康复医院"
+      ],
+      "adcode": "610000",
+      "province": "陕西省",
+      "city": "宝鸡市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "群众路241号",
+      "coordinates": {
+        "lat": 34.388838,
+        "lng": 107.151268
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0k0yye61d",
+      "name": "青岛市精神卫生中心高新院区",
+      "aliases": [
+        "山东省青岛精神卫生中心"
+      ],
+      "adcode": "370000",
+      "province": "山东省",
+      "city": "青岛市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "河套街道振和路10号",
+      "coordinates": {
+        "lat": 36.22769,
+        "lng": 120.196565
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b03a3032b3",
+      "name": "兰州大学第二医院",
+      "aliases": [
+        "甘肃兰州大学第二医院"
+      ],
+      "adcode": "620000",
+      "province": "甘肃省",
+      "city": "兰州市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "萃英门82-176号(西关地铁站B口步行230米)",
+      "coordinates": {
+        "lat": 36.061389,
+        "lng": 103.810513
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b03b700ee3",
+      "name": "银川市第一人民医院",
+      "aliases": [
+        "银川市第一人民医院"
+      ],
+      "adcode": "640000",
+      "province": "宁夏回族自治区",
+      "city": "银川市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "利群西街40号",
+      "coordinates": {
+        "lat": 38.461101,
+        "lng": 106.26863
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b03e6002z0",
+      "name": "喀什地区第一人民医院(总院区)",
+      "aliases": [
+        "喀什地区第一人民医院"
+      ],
+      "adcode": "650000",
+      "province": "新疆维吾尔自治区",
+      "city": "喀什地区",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "机场路66号",
+      "coordinates": {
+        "lat": 39.483131,
+        "lng": 75.99136
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b03df060qx",
+      "name": "新疆医科大学第一附属医院",
+      "aliases": [
+        "新疆医科大学第一附属医院"
+      ],
+      "adcode": "650000",
+      "province": "新疆维吾尔自治区",
+      "city": "乌鲁木齐市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "鲤鱼山路137号",
+      "coordinates": {
+        "lat": 43.836466,
+        "lng": 87.578972
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b03df04gda",
+      "name": "新疆维吾尔自治区人民医院",
+      "aliases": [
+        "新疆维吾尔自治区人民医院"
+      ],
+      "adcode": "650000",
+      "province": "新疆维吾尔自治区",
+      "city": "乌鲁木齐市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "天池路91号",
+      "coordinates": {
+        "lat": 43.782671,
+        "lng": 87.611118
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b00155kaoc",
+      "name": "同济大学附属同济医院",
+      "aliases": [
+        "上海市同济大学附属同济医院"
       ],
       "adcode": "310000",
       "province": "上海市",
       "city": "上海市",
       "level": "未知",
-      "category": "民营",
+      "category": "其他",
       "departments": [
-        "精神科",
-        "心理科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：上海和睦家医院 Herda 医生（CPTSD / BPD）。"
-        ]
+        "evidence": []
       },
+      "address": "新村路389号",
+      "coordinates": {
+        "lat": 31.268636,
+        "lng": 121.426677
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b00155keix",
+      "name": "上海交通大学医学院附属新华医院",
+      "aliases": [
+        "上海新华医院"
+      ],
+      "adcode": "310000",
+      "province": "上海市",
+      "city": "上海市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "控江路1665号(江浦路地铁站2号口步行120米)",
+      "coordinates": {
+        "lat": 31.275169,
+        "lng": 121.513294
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0ffgzngk5",
+      "name": "上海市精神卫生中心",
+      "aliases": [
+        "上海市精神卫生中心"
+      ],
+      "adcode": "310000",
+      "province": "上海市",
+      "city": "上海市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "沪闵公路与瓶北路交叉口西北120米",
+      "coordinates": {
+        "lat": 31.057468,
+        "lng": 121.401229
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0fflch87i",
+      "name": "上海和睦家医院(长宁院区)",
+      "aliases": [
+        "上海和睦家医院（私立，普通门诊就诊费用500-1600，心理咨询2400-2520每45分钟）"
+      ],
+      "adcode": "310000",
+      "province": "上海市",
+      "city": "上海市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "平塘路699号",
       "coordinates": {
         "lat": 31.20847,
         "lng": 121.360312
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "上海市市辖区长宁区平塘路699号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "gd-zhongshan8",
-      "name": "中山大学附属第八医院",
+      "id": "kdocs-amap-b00140hu1b",
+      "name": "广州医科大学附属脑科医院(芳村总院)",
       "aliases": [
-        "中山八院"
-      ],
-      "adcode": "440000",
-      "province": "广东省",
-      "city": "深圳市",
-      "level": "未知",
-      "category": "综合医院精神科",
-      "departments": [
-        "精神科",
-        "临床心理科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：中山大学附属第八医院徐勇医生（CPTSD）。"
-        ]
-      },
-      "coordinates": {
-        "lat": 22.541445,
-        "lng": 114.074427
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "深南中路3025号"
-    },
-    {
-      "id": "gd-jinan1",
-      "name": "暨南大学附属第一医院（东圃院区）",
-      "aliases": [
-        "广州华侨医院",
-        "暨大一附院"
+        "广州医科大学附属脑科医院",
+        "广州医科大学附属脑科医院（芳村）",
+        "广州市惠爱医院"
       ],
       "adcode": "440000",
       "province": "广东省",
       "city": "广州市",
       "level": "未知",
-      "category": "综合医院精神科",
+      "category": "其他",
       "departments": [
-        "精神医学科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：暨南大学附属第一医院东圃院区（广州华侨医院）贾艳滨医生（CPTSD）。"
-        ]
+        "evidence": []
       },
+      "address": "明心路36号",
       "coordinates": {
-        "lat": 23.12748,
-        "lng": 113.395016
+        "lat": 23.101236,
+        "lng": 113.235044
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "车陂北街22-1号附近"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "gd-zhuhai3",
-      "name": "珠海市第三人民医院",
+      "id": "kdocs-amap-b00140uerj",
+      "name": "广东省人民医院",
       "aliases": [
-        "珠海三院国际部"
+        "广东省人民医院"
       ],
       "adcode": "440000",
       "province": "广东省",
-      "city": "珠海市",
-      "level": "未知",
-      "category": "精神专科",
-      "departments": [
-        "国际部",
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：珠海三院国际部（BPD）。"
-        ]
-      },
-      "coordinates": {
-        "lat": 22.201096,
-        "lng": 113.464869
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "南屏镇和正路166号"
-    },
-    {
-      "id": "sc-wcsh",
-      "name": "四川大学华西医院",
-      "aliases": [
-        "华西医院"
-      ],
-      "adcode": "510000",
-      "province": "四川省",
-      "city": "成都市",
-      "level": "未知",
-      "category": "综合医院心理科",
-      "departments": [
-        "心理卫生中心",
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：华西医院王强、张俊医生（CPTSD）及朱鸿儒医生课题组（分离转换障碍/多重人格障碍）。"
-        ]
-      },
-      "coordinates": {
-        "lat": 30.643925,
-        "lng": 104.058026
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "国学巷37号"
-    },
-    {
-      "id": "sc-cd4",
-      "name": "成都市第四人民医院",
-      "aliases": [
-        "成都四医院"
-      ],
-      "adcode": "510000",
-      "province": "四川省",
-      "city": "成都市",
-      "level": "未知",
-      "category": "精神专科",
-      "departments": [
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：成都四院李云歌、余志书（CPTSD）、胡玉凤（BPD）；后者被反馈可能已离职。"
-        ]
-      },
-      "coordinates": {
-        "lat": 30.69347,
-        "lng": 104.037468
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "互利西一巷8号成都市第四人民医院营门口院区"
-    },
-    {
-      "id": "sc-spmc",
-      "name": "四川省精神医学中心",
-      "aliases": [
-        "四川省精神卫生中心"
-      ],
-      "adcode": "510000",
-      "province": "四川省",
-      "city": "成都市",
-      "level": "未知",
-      "category": "精神专科",
-      "departments": [
-        "心身医学门诊",
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：四川省精神医学中心蒋富贵（心身医学门诊）、黄雨兰医生（CPTSD）。"
-        ]
-      },
-      "coordinates": {
-        "lat": 30.643925,
-        "lng": 104.058026
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "国学巷37号"
-    },
-    {
-      "id": "zj-zju1",
-      "name": "浙江大学医学院附属第一医院",
-      "aliases": [
-        "浙大一附院",
-        "浙大一院"
-      ],
-      "adcode": "330000",
-      "province": "浙江省",
-      "city": "杭州市",
-      "level": "未知",
-      "category": "综合医院精神科",
-      "departments": [
-        "精神卫生科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：浙大一附院陆邵佳医生（书面诊断：人格解体-现实解体综合征）。"
-        ]
-      },
-      "coordinates": {
-        "lat": 30.274438,
-        "lng": 119.983119
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "文一西路1367号"
-    },
-    {
-      "id": "zj-rongjun",
-      "name": "浙江省荣军康复医院",
-      "aliases": [
-        "浙江荣军医院"
-      ],
-      "adcode": "330000",
-      "province": "浙江省",
-      "city": "嘉兴市",
+      "city": "广州市",
       "level": "未知",
       "category": "其他",
       "departments": [
-        "精神康复"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：浙江省荣军康复医院桑双医生（CPTSD）。"
-        ]
+        "evidence": []
       },
+      "address": "中山二路106号",
       "coordinates": {
-        "lat": 30.754899,
-        "lng": 120.723427
+        "lat": 23.127749,
+        "lng": 113.281925
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "中环西路589号荣军医院浙江省嘉兴市南湖区双园路309号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "js-szgj",
-      "name": "苏州市广济医院",
+      "id": "kdocs-amap-b0ffkc2ik8",
+      "name": "深圳市康宁医院(坪山院区)",
       "aliases": [
-        "苏州广济医院"
+        "深圳精神卫生中心/康宁医院（坪山院区）"
       ],
-      "adcode": "320000",
-      "province": "江苏省",
-      "city": "苏州市",
+      "adcode": "440000",
+      "province": "广东省",
+      "city": "深圳市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：苏州广济医院杨小男医生（在吴中人民医院出诊，CPTSD）。"
-        ]
+        "evidence": []
       },
+      "address": "碧岭街道汤坑社区振碧路77号",
       "coordinates": {
-        "lat": 31.395049,
-        "lng": 120.663546
+        "lat": 22.664595,
+        "lng": 114.29952
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "广前路11号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "js-njbk",
-      "name": "南京脑科医院",
-      "aliases": [
-        "南京医科大学附属脑科医院"
-      ],
-      "adcode": "320000",
-      "province": "江苏省",
-      "city": "南京市",
-      "level": "未知",
-      "category": "精神专科",
-      "departments": [
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：南京脑科医院史家波、王纯（BPD）、刘海燕（CPTSD）。",
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。"
-        ]
-      },
-      "coordinates": {
-        "lat": 32.052291,
-        "lng": 118.763194
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "广州路264号"
-    },
-    {
-      "id": "gz-gyzy",
-      "name": "贵阳正宇铁路医院",
-      "aliases": [
-        "贵阳正宇铁路医院（民营）"
-      ],
-      "adcode": "520000",
-      "province": "贵州省",
-      "city": "贵阳市",
-      "level": "未知",
-      "category": "民营",
-      "departments": [
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：贵阳正宇铁路医院（民营）刘鹰医生（CPTSD）。"
-        ]
-      },
-      "coordinates": {
-        "lat": 26.559243,
-        "lng": 106.701607
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "四通街8号(贵阳火车站地铁站B口步行280米)"
-    },
-    {
-      "id": "gz-gzsrm",
-      "name": "贵州省人民医院",
-      "aliases": [
-        "贵州省医"
-      ],
-      "adcode": "520000",
-      "province": "贵州省",
-      "city": "贵阳市",
-      "level": "未知",
-      "category": "综合医院心理科",
-      "departments": [
-        "心理科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：贵州省人民医院心理科覃青医生（书面：分离转换障碍）。"
-        ]
-      },
-      "coordinates": {
-        "lat": 26.58031,
-        "lng": 106.719081
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "中山东路83号"
-    },
-    {
-      "id": "fj-xianyue",
+      "id": "kdocs-amap-b025003yih",
       "name": "厦门市仙岳医院",
       "aliases": [
-        "仙岳医院"
+        "厦门仙岳医院",
+        "厦门市仙岳医院"
       ],
       "adcode": "350000",
       "province": "福建省",
       "city": "厦门市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：厦门市仙岳医院吴为阁医生（CPTSD）。"
-        ]
+        "evidence": []
       },
+      "address": "仙岳路399号",
       "coordinates": {
-        "lat": 24.503331,
-        "lng": 118.135968
+        "lat": 24.49806,
+        "lng": 118.106111
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "仙岳路1739号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "gx-nn5",
+      "id": "kdocs-amap-b024f05ejn",
+      "name": "福州市第二总医院神经精神病防治院福州院区",
+      "aliases": [
+        "福州第四医院"
+      ],
+      "adcode": "350000",
+      "province": "福建省",
+      "city": "福州市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "南二环451号",
+      "coordinates": {
+        "lat": 26.028807,
+        "lng": 119.284956
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0303054bl",
       "name": "南宁市第五人民医院",
       "aliases": [
         "广西南宁第五医院"
@@ -1135,91 +596,1076 @@
       "province": "广西壮族自治区",
       "city": "南宁市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：南宁市第五人民医院鄢利福医生（CPTSD）。"
-        ]
+        "evidence": []
       },
+      "address": "邕武路7号",
       "coordinates": {
         "lat": 22.86116,
         "lng": 108.333318
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "邕武路7号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "hi-anning",
+      "id": "kdocs-amap-b0fff49imu",
+      "name": "武汉市精神卫生中心二七院区",
+      "aliases": [
+        "武汉市精神卫生中心（二七院区）"
+      ],
+      "adcode": "420000",
+      "province": "湖北省",
+      "city": "武汉市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "工农兵路89号",
+      "coordinates": {
+        "lat": 30.627262,
+        "lng": 114.303519
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b023b0by5o",
+      "name": "浙江省立同德医院翠苑院区",
+      "aliases": [
+        "浙江省立同德医院"
+      ],
+      "adcode": "330000",
+      "province": "浙江省",
+      "city": "杭州市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "古翠路234号",
+      "coordinates": {
+        "lat": 30.286422,
+        "lng": 120.115708
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0353007b8",
+      "name": "贵阳正宇铁路医院",
+      "aliases": [
+        "贵州省贵阳正宇铁路医院（私立）"
+      ],
+      "adcode": "520000",
+      "province": "贵州省",
+      "city": "贵阳市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "四通街8号(贵阳火车站地铁站B口步行280米)",
+      "coordinates": {
+        "lat": 26.559243,
+        "lng": 106.701607
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b00190b8c9",
+      "name": "南京脑科医院",
+      "aliases": [
+        "南京脑科医院"
+      ],
+      "adcode": "320000",
+      "province": "江苏省",
+      "city": "南京市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "广州路264号",
+      "coordinates": {
+        "lat": 32.052291,
+        "lng": 118.763194
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0ffi2en48",
+      "name": "南京泰康仙林鼓楼医院",
+      "aliases": [
+        "南京泰康仙林鼓楼医院"
+      ],
+      "adcode": "320000",
+      "province": "江苏省",
+      "city": "南京市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "仙林街道灵山北路188号",
+      "coordinates": {
+        "lat": 32.097087,
+        "lng": 118.93109
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b001c05yg2",
+      "name": "四川大学华西医院院本部",
+      "aliases": [
+        "四川大学华西医院"
+      ],
+      "adcode": "510000",
+      "province": "四川省",
+      "city": "成都市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "国学巷37号",
+      "coordinates": {
+        "lat": 30.643925,
+        "lng": 104.058026
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0ffjaykfh",
+      "name": "四川省精神医学中心(四川省人民医院温江院区)",
+      "aliases": [
+        "四川省精神医学中心"
+      ],
+      "adcode": "510000",
+      "province": "四川省",
+      "city": "成都市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "芙蓉大道二段33号",
+      "coordinates": {
+        "lat": 30.71615,
+        "lng": 103.896293
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b00170becf",
+      "name": "重庆市精神卫生中心",
+      "aliases": [
+        "重庆精神卫生中心",
+        "重庆市精神卫生中心"
+      ],
+      "adcode": "500000",
+      "province": "重庆市",
+      "city": "重庆市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "金紫山102号",
+      "coordinates": {
+        "lat": 29.596463,
+        "lng": 106.526804
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0ffg7aa3a",
+      "name": "贵州医科大学附属医院",
+      "aliases": [
+        "贵州医科大学附属医院"
+      ],
+      "adcode": "520000",
+      "province": "贵州省",
+      "city": "贵阳市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "北京路16号(贵医地铁站A口步行110米)",
+      "coordinates": {
+        "lat": 26.597829,
+        "lng": 106.709741
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b036702a3e",
+      "name": "昆明医科大学第一附属医院(西昌路院区)",
+      "aliases": [
+        "昆明医科大学第一附属医院"
+      ],
+      "adcode": "530000",
+      "province": "云南省",
+      "city": "昆明市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "西昌路295号",
+      "coordinates": {
+        "lat": 25.045453,
+        "lng": 102.691652
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b037b00887",
+      "name": "拉萨市人民医院主院区",
+      "aliases": [
+        "拉萨市人民医院"
+      ],
+      "adcode": "540000",
+      "province": "西藏自治区",
+      "city": "拉萨市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "北京中路1号",
+      "coordinates": {
+        "lat": 29.655464,
+        "lng": 91.140593
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b000a80zrg",
+      "name": "首都医科大学附属北京安定医院",
+      "aliases": [
+        "北京安定医院",
+        "首都医科大学附属北京安定医院"
+      ],
+      "adcode": "110000",
+      "province": "北京市",
+      "city": "北京市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "安康胡同5号",
+      "coordinates": {
+        "lat": 39.951382,
+        "lng": 116.370565
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b015f0038d",
+      "name": "山西医科大学第一医院(解放路院区)",
+      "aliases": [
+        "山西医科大学第一附属医院"
+      ],
+      "adcode": "140000",
+      "province": "山西省",
+      "city": "太原市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "解放南路85号",
+      "coordinates": {
+        "lat": 37.852802,
+        "lng": 112.5491
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b001d0208c",
+      "name": "西京医院",
+      "aliases": [
+        "陕西省西安市西京医院"
+      ],
+      "adcode": "610000",
+      "province": "陕西省",
+      "city": "西安市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "长乐西路129号",
+      "coordinates": {
+        "lat": 34.27208,
+        "lng": 108.983472
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b001802fb0",
+      "name": "辽宁省肿瘤医院",
+      "aliases": [
+        "辽宁省肿瘤医院"
+      ],
+      "adcode": "210000",
+      "province": "辽宁省",
+      "city": "沈阳市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "万泉街道小河沿路44号",
+      "coordinates": {
+        "lat": 41.791715,
+        "lng": 123.466812
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b00180ahox",
+      "name": "中国医科大学附属盛京医院南湖院区",
+      "aliases": [
+        "辽宁省中国医科大学附属盛京医院"
+      ],
+      "adcode": "210000",
+      "province": "辽宁省",
+      "city": "沈阳市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "三好街36号",
+      "coordinates": {
+        "lat": 41.770663,
+        "lng": 123.420123
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b03a30apul",
+      "name": "甘肃省第二人民医院",
+      "aliases": [
+        "甘肃省第二人民医院（西北民族大学附属医院）"
+      ],
+      "adcode": "620000",
+      "province": "甘肃省",
+      "city": "兰州市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "和政西街1号",
+      "coordinates": {
+        "lat": 36.040947,
+        "lng": 103.835223
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b01cb00xzt",
+      "name": "大庆市第三医院",
+      "aliases": [
+        "黑龙江省大庆市第三医院精神科"
+      ],
+      "adcode": "230000",
+      "province": "黑龙江省",
+      "city": "大庆市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "让杜路192号",
+      "coordinates": {
+        "lat": 46.672791,
+        "lng": 124.850164
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b02140828v",
+      "name": "青岛市精神卫生中心",
+      "aliases": [
+        "青岛市精神卫生中心（第七人民医院）",
+        "山东省精卫（青岛）"
+      ],
+      "adcode": "370000",
+      "province": "山东省",
+      "city": "青岛市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "南京路299号",
+      "coordinates": {
+        "lat": 36.102289,
+        "lng": 120.380403
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0ffhgd85n",
+      "name": "中山大学附属第八医院",
+      "aliases": [
+        "中山大学第八附属医院"
+      ],
+      "adcode": "440000",
+      "province": "广东省",
+      "city": "深圳市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "深南中路3025号",
+      "coordinates": {
+        "lat": 22.541445,
+        "lng": 114.074427
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0ffgsrr97",
+      "name": "暨南大学附属第一医院(东圃院区)",
+      "aliases": [
+        "暨南大学附属第一医院东圃院区（广州华侨医院）"
+      ],
+      "adcode": "440000",
+      "province": "广东省",
+      "city": "广州市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "车陂北街22-1号附近",
+      "coordinates": {
+        "lat": 23.12748,
+        "lng": 113.395016
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b001c7v2mo",
+      "name": "成都市第四人民医院营门口院区",
+      "aliases": [
+        "四川省成都第四人民医院",
+        "成都市第四人民医院"
+      ],
+      "adcode": "510000",
+      "province": "四川省",
+      "city": "成都市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "互利西一巷8号",
+      "coordinates": {
+        "lat": 30.694016,
+        "lng": 104.036604
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0fffv30j7",
+      "name": "成都军大医院",
+      "aliases": [
+        "成都军大医院"
+      ],
+      "adcode": "510000",
+      "province": "四川省",
+      "city": "成都市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "玉沙路142号(太升南路地铁站C口步行310米)",
+      "coordinates": {
+        "lat": 30.669425,
+        "lng": 104.076738
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b033f01ikc",
+      "name": "宜宾市第四人民医院",
+      "aliases": [
+        "四川省宜宾第四人民医院"
+      ],
+      "adcode": "510000",
+      "province": "四川省",
+      "city": "宜宾市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "南岸外江路2号",
+      "coordinates": {
+        "lat": 28.75549,
+        "lng": 104.62388
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b038202b8m",
       "name": "海南省安宁医院",
       "aliases": [
-        "海南安宁医院"
+        "海南安宁医院",
+        "海南省安宁医院"
       ],
       "adcode": "460000",
       "province": "海南省",
       "city": "海口市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：海南省安宁医院刘向来医生（CPTSD）。"
-        ]
+        "evidence": []
       },
+      "address": "南海大道东10号",
       "coordinates": {
         "lat": 19.996622,
         "lng": 110.33288
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "南海大道东10号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "hb-whjw",
-      "name": "武汉市精神卫生中心",
+      "id": "kdocs-amap-b023b0929x",
+      "name": "浙江大学医学院附属第一医院(庆春院区)",
       "aliases": [
-        "武汉精卫"
+        "浙大一附院"
       ],
-      "adcode": "420000",
-      "province": "湖北省",
-      "city": "武汉市",
-      "level": "三级甲等",
-      "category": "精神专科",
+      "adcode": "330000",
+      "province": "浙江省",
+      "city": "杭州市",
+      "level": "未知",
+      "category": "其他",
       "departments": [
-        "创伤专病门诊"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：武汉市精神卫生中心（二七院区）设创伤专病门诊。"
-        ]
+        "evidence": []
       },
+      "address": "庆春路79号",
       "coordinates": {
-        "lat": 30.577035,
-        "lng": 114.268902
+        "lat": 30.258284,
+        "lng": 120.173185
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "游艺路93号(汉正街地铁站C口步行470米)"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "hb-rongjun",
+      "id": "kdocs-amap-b023b02359",
+      "name": "杭州市第七人民医院",
+      "aliases": [
+        "杭州七院"
+      ],
+      "adcode": "330000",
+      "province": "浙江省",
+      "city": "杭州市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "天目山路305号(古荡新村地铁站D口步行180米)",
+      "coordinates": {
+        "lat": 30.272219,
+        "lng": 120.108706
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b020004f0d",
+      "name": "苏州市吴中人民医院",
+      "aliases": [
+        "苏州广济医院（在吴中人民医院出诊）"
+      ],
+      "adcode": "320000",
+      "province": "江苏省",
+      "city": "苏州市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "东吴北路61号(宝带路地铁站11西北口步行130米)",
+      "coordinates": {
+        "lat": 31.271015,
+        "lng": 120.622691
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b020400b9x",
+      "name": "徐州市东方人民医院",
+      "aliases": [
+        "江苏徐州东方医院"
+      ],
+      "adcode": "320000",
+      "province": "江苏省",
+      "city": "徐州市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "东甸子城东快速路379号",
+      "coordinates": {
+        "lat": 34.264079,
+        "lng": 117.242195
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0ffkh3c5y",
+      "name": "宁波大学附属民康医院",
+      "aliases": [
+        "浙江省荣军康复医院"
+      ],
+      "adcode": "330000",
+      "province": "浙江省",
+      "city": "宁波市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "庄桥街道童家村日兴房11号",
+      "coordinates": {
+        "lat": 29.949751,
+        "lng": 121.567215
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b035300je6",
+      "name": "贵州中医药大学第一附属医院(阳明主院区)",
+      "aliases": [
+        "贵州中医院大学第一附属医院"
+      ],
+      "adcode": "520000",
+      "province": "贵州省",
+      "city": "贵阳市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "宝山北路71号",
+      "coordinates": {
+        "lat": 26.583886,
+        "lng": 106.718818
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b035300vc0",
+      "name": "贵州省人民医院",
+      "aliases": [
+        "贵州省人民医院"
+      ],
+      "adcode": "520000",
+      "province": "贵州省",
+      "city": "贵阳市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "中山东路83号",
+      "coordinates": {
+        "lat": 26.58031,
+        "lng": 106.719081
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0ffm9idri",
+      "name": "江西省精神卫生中心",
+      "aliases": [
+        "江西省精神卫生中心（南昌）"
+      ],
+      "adcode": "360000",
+      "province": "江西省",
+      "city": "南昌市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "上坊路43号(江西省心理康复中心西1门旁)",
+      "coordinates": {
+        "lat": 28.68105,
+        "lng": 115.926805
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b000a9dpj4",
+      "name": "中国人民解放军总医院",
+      "aliases": [
+        "中国人民解放军总医院301"
+      ],
+      "adcode": "110000",
+      "province": "北京市",
+      "city": "北京市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "复兴路28号",
+      "coordinates": {
+        "lat": 39.903348,
+        "lng": 116.270544
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b000a82z2n",
+      "name": "北京协和医院(东单院区)",
+      "aliases": [
+        "北京协和医院"
+      ],
+      "adcode": "110000",
+      "province": "北京市",
+      "city": "北京市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "帅府园1号",
+      "coordinates": {
+        "lat": 39.911412,
+        "lng": 116.408887
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0172004tq",
+      "name": "商丘市第一人民医院",
+      "aliases": [
+        "河南商丘市第一人民医院"
+      ],
+      "adcode": "410000",
+      "province": "河南省",
+      "city": "商丘市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "凯旋南路292号(近北海路)",
+      "coordinates": {
+        "lat": 34.397148,
+        "lng": 115.616462
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0ffi99oq6",
       "name": "河北省荣军医院",
       "aliases": [
         "河北省荣军医院（保定）"
@@ -1230,1184 +1676,1907 @@
       "level": "未知",
       "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：河北省荣军医院（保定）回秀清医生（BPD）。"
-        ]
+        "evidence": []
       },
+      "address": "莲池南大街2296号",
       "coordinates": {
         "lat": 38.798673,
         "lng": 115.476205
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "莲池南大街2296号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "ln-cykn",
-      "name": "朝阳市康宁医院",
+      "id": "kdocs-amap-b01d701pti",
+      "name": "内蒙古自治区人民医院",
       "aliases": [
-        "辽宁朝阳康宁医院"
+        "内蒙古自治区人民医院"
       ],
-      "adcode": "210000",
-      "province": "辽宁省",
-      "city": "朝阳市",
+      "adcode": "150000",
+      "province": "内蒙古自治区",
+      "city": "呼和浩特市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：辽宁朝阳康宁医院（BPD，未列医生）。"
-        ]
+        "evidence": []
       },
+      "address": "昭乌达路26号",
       "coordinates": {
-        "lat": 41.608949,
-        "lng": 120.428474
+        "lat": 40.815517,
+        "lng": 111.687422
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "开发区龙泉街道龙泉大街1段1号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "ln-lnsz",
-      "name": "辽宁省肿瘤医院",
+      "id": "kdocs-amap-b01d7023h7",
+      "name": "内蒙古医科大学附属医院",
       "aliases": [
-        "辽宁肿瘤医院"
+        "内蒙古医科大学附属医院"
       ],
-      "adcode": "210000",
-      "province": "辽宁省",
-      "city": "沈阳市",
+      "adcode": "150000",
+      "province": "内蒙古自治区",
+      "city": "呼和浩特市",
       "level": "未知",
-      "category": "综合医院心理科",
+      "category": "其他",
       "departments": [
-        "心理门诊"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：辽宁省肿瘤医院姜爽医生（分离转换障碍/多重人格障碍）。"
-        ]
+        "evidence": []
       },
+      "address": "通道北街1号(附属医院地铁站A1口旁)",
       "coordinates": {
-        "lat": 41.791715,
-        "lng": 123.466812
+        "lat": 40.819258,
+        "lng": 111.650815
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "万泉街道小河沿路44号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "sn-xijing",
-      "name": "空军军医大学西京医院",
+      "id": "kdocs-amap-b01d70106b",
+      "name": "内蒙古第三医院",
       "aliases": [
-        "西京医院",
-        "陕西西京医院"
+        "内蒙古自治区第三医院"
       ],
-      "adcode": "610000",
-      "province": "陕西省",
-      "city": "西安市",
+      "adcode": "150000",
+      "province": "内蒙古自治区",
+      "city": "呼和浩特市",
       "level": "未知",
-      "category": "综合医院精神科",
+      "category": "其他",
       "departments": [
-        "心身科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：西京医院周平医生（分离转换障碍/多重人格障碍）；另有网友反馈在该院被诊断双相、后于澳洲诊断为 BPD。"
-        ]
+        "evidence": []
       },
+      "address": "乌兰察布西街23号",
       "coordinates": {
-        "lat": 34.27208,
-        "lng": 108.983472
+        "lat": 40.819619,
+        "lng": 111.690259
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "长乐西路129号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "sx-sxmu1",
-      "name": "山西医科大学第一医院",
+      "id": "kdocs-amap-b03b703cb6",
+      "name": "宁夏宁安医院",
       "aliases": [
-        "山医大一院"
+        "宁夏回族自治区宁安医院"
       ],
-      "adcode": "140000",
-      "province": "山西省",
-      "city": "太原市",
+      "adcode": "640000",
+      "province": "宁夏回族自治区",
+      "city": "银川市",
       "level": "未知",
-      "category": "综合医院精神科",
+      "category": "其他",
       "departments": [
-        "精神卫生科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：山西医科大学第一附属医院曹晓华医生（分离转换障碍/多重人格障碍）。"
-        ]
+        "evidence": []
       },
+      "address": "中兴路",
       "coordinates": {
-        "lat": 37.852802,
-        "lng": 112.5491
+        "lat": 38.107465,
+        "lng": 106.335299
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "解放南路85号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "gs-2rm",
-      "name": "甘肃省第二人民医院",
+      "id": "kdocs-amap-b03b7012b8",
+      "name": "宁夏医科大学总医院",
       "aliases": [
-        "西北民族大学附属医院"
+        "宁夏医科大学总医院"
       ],
-      "adcode": "620000",
-      "province": "甘肃省",
-      "city": "兰州市",
+      "adcode": "640000",
+      "province": "宁夏回族自治区",
+      "city": "银川市",
       "level": "未知",
-      "category": "综合医院精神科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：甘肃省第二人民医院（西北民族大学附属医院）陈琼琼医生（分离转换障碍/多重人格障碍）。"
-        ]
+        "evidence": []
       },
+      "address": "胜利街804号",
       "coordinates": {
-        "lat": 36.040947,
-        "lng": 103.835223
+        "lat": 38.433098,
+        "lng": 106.272398
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "和政西街1号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "hlj-dq3",
-      "name": "大庆市第三医院",
+      "id": "kdocs-amap-b03e400drv",
+      "name": "尉犁县人民医院",
       "aliases": [
-        "大庆三院"
+        "尉犁县人民医院"
       ],
-      "adcode": "230000",
-      "province": "黑龙江省",
-      "city": "大庆市",
+      "adcode": "650000",
+      "province": "新疆维吾尔自治区",
+      "city": "巴音郭楞蒙古自治州",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：大庆市第三医院精神科马俊国医生（分离转换障碍/多重人格障碍）。"
-        ]
+        "evidence": []
       },
+      "address": "解放路7号",
       "coordinates": {
-        "lat": 46.672791,
-        "lng": 124.850164
+        "lat": 41.340376,
+        "lng": 86.263856
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "让杜路192号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "sd-qdjw",
-      "name": "青岛市精神卫生中心",
+      "id": "kdocs-amap-b03df05bdu",
+      "name": "乌鲁木齐南湖医院",
       "aliases": [
-        "青岛精神卫生中心"
+        "乌鲁木齐市南湖医院"
       ],
-      "adcode": "370000",
-      "province": "山东省",
-      "city": "青岛市",
+      "adcode": "650000",
+      "province": "新疆维吾尔自治区",
+      "city": "乌鲁木齐市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：青岛市精神卫生中心宋欣欣医生（CPTSD，标注进修中）、张永东医生（分离转换障碍/多重人格障碍）。"
-        ]
+        "evidence": []
       },
+      "address": "南湖西路42号",
       "coordinates": {
-        "lat": 36.102289,
-        "lng": 120.380403
+        "lat": 43.823482,
+        "lng": 87.60183
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "南京路299号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "sc-yb4",
-      "name": "宜宾市第四人民医院",
+      "id": "kdocs-amap-b0ffidakp6",
+      "name": "乌鲁木齐药业集团附属医院",
       "aliases": [
-        "四川省宜宾第四人民医院"
+        "乌鲁木齐药业集团附属医院"
       ],
-      "adcode": "510000",
-      "province": "四川省",
-      "city": "宜宾市",
+      "adcode": "650000",
+      "province": "新疆维吾尔自治区",
+      "city": "乌鲁木齐市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：宜宾市第四人民医院王敏医生（CPTSD）。"
-        ]
+        "evidence": []
       },
+      "address": "昆明路363号第六层",
       "coordinates": {
-        "lat": 28.75549,
-        "lng": 104.62388
+        "lat": 43.857974,
+        "lng": 87.5701
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "南岸外江路2号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "js-xzdf",
-      "name": "徐州市东方人民医院",
+      "id": "kdocs-amap-b001536893",
+      "name": "上海交通大学医学院附属精神卫生中心(徐汇院区)",
       "aliases": [
-        "江苏徐州东方医院"
+        "上海市精卫"
       ],
-      "adcode": "320000",
-      "province": "江苏省",
-      "city": "徐州市",
+      "adcode": "310000",
+      "province": "上海市",
+      "city": "上海市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：徐州市东方人民医院庄二阳医生（CPTSD）。"
-        ]
+        "evidence": []
       },
+      "address": "宛平南路600号",
       "coordinates": {
-        "lat": 34.264079,
-        "lng": 117.242195
+        "lat": 31.189166,
+        "lng": 121.443433
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "东甸子城东快速路379号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "gz-tcmy1",
-      "name": "贵州中医药大学第一附属医院",
+      "id": "kdocs-amap-b00155kt4w",
+      "name": "复旦大学附属华山医院",
       "aliases": [
-        "贵州中医院大学第一附属医院"
+        "复旦大学附属华山医院"
       ],
-      "adcode": "520000",
-      "province": "贵州省",
-      "city": "贵阳市",
+      "adcode": "310000",
+      "province": "上海市",
+      "city": "上海市",
       "level": "未知",
-      "category": "综合医院心理科",
+      "category": "其他",
       "departments": [
-        "心身疾病科心理睡眠门诊"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：贵州中医药大学第一附属医院心身疾病科心理睡眠门诊李燕医生（CPTSD）。"
-        ]
+        "evidence": []
       },
+      "address": "华山路493号",
       "coordinates": {
-        "lat": 26.583886,
-        "lng": 106.718818
+        "lat": 31.217981,
+        "lng": 121.438316
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "宝山北路71号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "sc-my3",
-      "name": "绵阳市第三人民医院",
+      "id": "kdocs-amap-b00155ei82",
+      "name": "上海交通大学医学院附属仁济医院(东院区)",
       "aliases": [
-        "绵阳三医院",
-        "四川省精神卫生中心"
+        "上海交通大学医学院附属仁济医院"
       ],
-      "adcode": "510000",
-      "province": "四川省",
-      "city": "绵阳市",
+      "adcode": "310000",
+      "province": "上海市",
+      "city": "上海市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：绵阳市第三人民医院（四川省精神卫生中心）杨昆医生（BPD）。",
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。"
-        ]
+        "evidence": []
       },
+      "address": "浦建路160号",
       "coordinates": {
-        "lat": 31.472311,
-        "lng": 104.75767
+        "lat": 31.209031,
+        "lng": 121.517873
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "剑南路东段190号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "fj-hxxm",
-      "name": "四川大学华西厦门医院",
+      "id": "kdocs-amap-b00155ax6r",
+      "name": "同济大学附属精神卫生中心",
       "aliases": [
-        "华西厦门医院"
+        "同济大学附属精神卫生中心"
+      ],
+      "adcode": "310000",
+      "province": "上海市",
+      "city": "上海市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "三林路165号",
+      "coordinates": {
+        "lat": 31.139679,
+        "lng": 121.490281
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b00140uljc",
+      "name": "白云心理医院",
+      "aliases": [
+        "广州白云区心理医院"
+      ],
+      "adcode": "440000",
+      "province": "广东省",
+      "city": "广州市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "白云大道北1722号广州白云心理医院正门",
+      "coordinates": {
+        "lat": 23.257568,
+        "lng": 113.316301
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b00140w7rp",
+      "name": "广东省人民医院惠福分院",
+      "aliases": [
+        "广东省精神卫生中心"
+      ],
+      "adcode": "440000",
+      "province": "广东省",
+      "city": "广州市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "惠福西路123号",
+      "coordinates": {
+        "lat": 23.123345,
+        "lng": 113.252532
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0lg3s7d9p",
+      "name": "中山大学法医鉴定中心",
+      "aliases": [
+        "中山大学法医鉴定中心"
+      ],
+      "adcode": "440000",
+      "province": "广东省",
+      "city": "广州市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "东风东路658号",
+      "coordinates": {
+        "lat": 23.133275,
+        "lng": 113.287178
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b025002cf9",
+      "name": "厦门大学附属第一医院",
+      "aliases": [
+        "厦门大学附属第一医院"
       ],
       "adcode": "350000",
       "province": "福建省",
       "city": "厦门市",
       "level": "未知",
-      "category": "综合医院精神科",
+      "category": "其他",
       "departments": [
-        "精神科",
-        "心理科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：华西厦门医院（BPD，未列医生）。",
-          "评论反馈（2025-08-31）：网友称华西厦门医院表示「没有这方面的治疗」，与名单收录相矛盾。"
-        ]
+        "evidence": []
       },
+      "address": "镇海路55号(镇海路地铁站2号口步行330米)",
       "coordinates": {
-        "lat": 24.605792,
-        "lng": 118.029932
+        "lat": 24.453586,
+        "lng": 118.083205
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "后浦西路188号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "hn-xy2",
-      "name": "中南大学湘雅二医院",
+      "id": "kdocs-amap-b0ffhnq5jx",
+      "name": "厦门大学附属中山医院本部消毒供应中心",
       "aliases": [
-        "湘雅二院"
+        "厦门大学附属中山医院"
       ],
-      "adcode": "430000",
-      "province": "湖南省",
-      "city": "长沙市",
-      "level": "未知",
-      "category": "综合医院精神科",
-      "departments": [
-        "精神卫生研究所",
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "名单截图（置顶评论，2026-04-26）：湘雅二医院（BPD，未列医生）。",
-          "患者实录（2026-08，湘雅二医院精神科）：郝伟教授普通号 78 元，国际医疗心理门诊 1580 元，小程序抢号困难。"
-        ]
-      },
-      "coordinates": {
-        "lat": 28.191318,
-        "lng": 112.988377
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "人民中路139号"
-    },
-    {
-      "id": "js-dbzq",
-      "name": "中国人民解放军东部战区总医院",
-      "aliases": [
-        "东部战区总医院",
-        "南京军总"
-      ],
-      "adcode": "320000",
-      "province": "江苏省",
-      "city": "南京市",
-      "level": "未知",
-      "category": "综合医院精神科",
-      "departments": [
-        "精神心理科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "评论附图（2026-08-20）：东部战区总医院精神心理科刘斌副主任医师（截图来自公开医生信息页）。"
-        ]
-      },
-      "coordinates": {
-        "lat": 32.043808,
-        "lng": 118.803941
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "黄埔路3号(西安门·浦发银行地铁站1号口步行250米)"
-    },
-    {
-      "id": "js-tkxlg",
-      "name": "泰康仙林鼓楼医院",
-      "aliases": [
-        "南京大学医学院附属泰康仙林鼓楼医院"
-      ],
-      "adcode": "320000",
-      "province": "江苏省",
-      "city": "南京市",
-      "level": "未知",
-      "category": "综合医院心理科",
-      "departments": [
-        "医学心理科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "评论附图（2026-08-20）：泰康仙林鼓楼医院医学心理科刘斌副主任医师（原东部战区总医院精神心理科）。"
-        ]
-      },
-      "coordinates": {
-        "lat": 32.097087,
-        "lng": 118.93109
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "仙林街道灵山北路188号"
-    },
-    {
-      "id": "sh-hk-jw",
-      "name": "上海市虹口区精神卫生中心",
-      "aliases": [],
-      "adcode": "310000",
-      "province": "上海市",
-      "city": "上海市",
-      "level": "未知",
-      "category": "精神专科",
-      "departments": [
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，经小红书笔记截图转写，截图存 data/evidence）：BPD 辨证行为治疗基地。"
-        ]
-      },
-      "coordinates": {
-        "lat": 31.308741,
-        "lng": 121.476222
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "上海市虹口区新市北路1536号"
-    },
-    {
-      "id": "tj-jwzx",
-      "name": "天津市精神卫生中心",
-      "aliases": [
-        "天津市安定医院"
-      ],
-      "adcode": "120000",
-      "province": "天津市",
-      "city": "天津市",
-      "level": "未知",
-      "category": "精神专科",
-      "departments": [
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。"
-        ]
-      },
-      "coordinates": {
-        "lat": 39.072469,
-        "lng": 117.210149
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "郁江道71号"
-    },
-    {
-      "id": "cq-ydcs",
-      "name": "重庆医科大学附属大学城医院",
-      "aliases": [],
-      "adcode": "500000",
-      "province": "重庆市",
-      "city": "重庆市",
-      "level": "未知",
-      "category": "综合医院精神科",
-      "departments": [
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。"
-        ]
-      },
-      "coordinates": {
-        "lat": 30.805946,
-        "lng": 108.378978
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "新城路165号重庆大学附属三峡医院内"
-    },
-    {
-      "id": "jl-cc6",
-      "name": "长春市第六医院",
-      "aliases": [
-        "吉林省精神心理诊疗中心"
-      ],
-      "adcode": "220000",
-      "province": "吉林省",
-      "city": "长春市",
-      "level": "未知",
-      "category": "精神专科",
-      "departments": [
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。"
-        ]
-      },
-      "coordinates": {
-        "lat": 43.93448,
-        "lng": 125.333179
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "亚泰北大街3188号"
-    },
-    {
-      "id": "sx-sxjw",
-      "name": "山西省精神卫生中心",
-      "aliases": [],
-      "adcode": "140000",
-      "province": "山西省",
-      "city": "太原市",
-      "level": "未知",
-      "category": "精神专科",
-      "departments": [
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。"
-        ]
-      },
-      "coordinates": {
-        "lat": 37.832667,
-        "lng": 112.599682
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "郝庄镇南十方街55号(南十方街地铁站D口步行390米)"
-    },
-    {
-      "id": "sn-sxsrm",
-      "name": "陕西省人民医院",
-      "aliases": [],
-      "adcode": "610000",
-      "province": "陕西省",
-      "city": "西安市",
-      "level": "未知",
-      "category": "综合医院精神科",
-      "departments": [
-        "心理科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。"
-        ]
-      },
-      "coordinates": {
-        "lat": 34.241294,
-        "lng": 108.925535
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "黄雁村友谊西路256号"
-    },
-    {
-      "id": "gs-lz3",
-      "name": "兰州市第三人民医院",
-      "aliases": [],
-      "adcode": "620000",
-      "province": "甘肃省",
-      "city": "兰州市",
-      "level": "未知",
-      "category": "精神专科",
-      "departments": [
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。"
-        ]
-      },
-      "coordinates": {
-        "lat": 36.046215,
-        "lng": 103.736556
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "建兰新村130号"
-    },
-    {
-      "id": "js-wj-kf",
-      "name": "苏州市吴江区精神康复医院",
-      "aliases": [],
-      "adcode": "320000",
-      "province": "江苏省",
-      "city": "苏州市",
-      "level": "未知",
-      "category": "精神专科",
-      "departments": [
-        "精神康复"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗基地名单（全国DBT联盟，截至2024年9月，截图转写）：BPD 辨证行为治疗基地。"
-        ]
-      },
-      "coordinates": {
-        "lat": 31.10791,
-        "lng": 120.607603
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "云龙西路"
-    },
-    {
-      "id": "bj-xfd",
-      "name": "北京市海淀区幸福岛心理健康促进中心",
-      "aliases": [],
-      "adcode": "110000",
-      "province": "北京市",
-      "city": "北京市",
+      "adcode": "350000",
+      "province": "福建省",
+      "city": "厦门市",
       "level": "未知",
       "category": "其他",
       "departments": [
-        "心理健康服务"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗建设基地名单（全国DBT联盟，截至2024年9月，截图转写）：DBT 建设基地。"
-        ]
+        "evidence": []
       },
+      "address": "开元街道湖滨南路201-209号厦门大学附属中山医院6号楼3楼",
       "coordinates": {
-        "lat": 40.08602,
-        "lng": 116.34495
+        "lat": 24.474199,
+        "lng": 118.091428
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "province-centroid"
-    },
-    {
-      "id": "hb-yd1",
-      "name": "河北医科大学第一医院",
-      "aliases": [],
-      "adcode": "130000",
-      "province": "河北省",
-      "city": "石家庄市",
-      "level": "未知",
-      "category": "综合医院精神科",
-      "departments": [
-        "精神卫生科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗建设基地名单（全国DBT联盟，截至2024年9月，截图转写）：DBT 建设基地。"
-        ]
-      },
-      "coordinates": {
-        "lat": 38.016376,
-        "lng": 114.546269
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "东岗路89号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "gs-lzsh",
-      "name": "兰州石化总医院",
+      "id": "kdocs-amap-b025003ame",
+      "name": "厦门市中医院(总院)",
       "aliases": [
-        "甘肃中医药大学第四附属医院"
+        "厦门市中医院"
       ],
-      "adcode": "620000",
-      "province": "甘肃省",
-      "city": "兰州市",
+      "adcode": "350000",
+      "province": "福建省",
+      "city": "厦门市",
       "level": "未知",
-      "category": "综合医院精神科",
+      "category": "其他",
       "departments": [
-        "精神心理科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗建设基地名单（全国DBT联盟，截至2024年9月，截图转写）：DBT 建设基地。"
-        ]
+        "evidence": []
       },
+      "address": "仙岳路1739号",
       "coordinates": {
-        "lat": 36.095891,
-        "lng": 103.610968
+        "lat": 24.503331,
+        "lng": 118.135968
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "福利西路733号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "sd-sdjw",
-      "name": "山东省精神卫生中心",
-      "aliases": [],
-      "adcode": "370000",
-      "province": "山东省",
-      "city": "济南市",
-      "level": "未知",
-      "category": "精神专科",
-      "departments": [
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗建设基地名单（全国DBT联盟，截至2024年9月，截图转写）：DBT 建设基地。",
-          "患者自述（2024-06，山东省精神卫生中心）：带 CPTSD 自述材料就诊，医生称其「胡思乱想、过去被打只是经历不是创伤」，拒绝开创伤量表，诊断为焦虑障碍。"
-        ]
-      },
-      "coordinates": {
-        "lat": 36.65632,
-        "lng": 117.056967
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "燕子山小区南路与燕子山小区东路交叉口南160米"
-    },
-    {
-      "id": "js-njmu-child",
-      "name": "南京医科大学附属儿童医院",
-      "aliases": [],
-      "adcode": "320000",
-      "province": "江苏省",
-      "city": "南京市",
-      "level": "未知",
-      "category": "综合医院心理科",
-      "departments": [
-        "心理科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗建设基地名单（全国DBT联盟，截至2024年9月，截图转写）：DBT 建设基地。"
-        ]
-      },
-      "coordinates": {
-        "lat": 32.052932,
-        "lng": 118.774199
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "广州路72号"
-    },
-    {
-      "id": "js-cz1",
-      "name": "常州市第一人民医院",
-      "aliases": [],
-      "adcode": "320000",
-      "province": "江苏省",
-      "city": "常州市",
-      "level": "未知",
-      "category": "综合医院精神科",
-      "departments": [
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗建设基地名单（全国DBT联盟，截至2024年9月，截图转写）：DBT 建设基地。"
-        ]
-      },
-      "coordinates": {
-        "lat": 31.79416,
-        "lng": 119.964257
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "永宁北路2号"
-    },
-    {
-      "id": "js-904",
-      "name": "联勤保障部队第九〇四医院常州医疗区",
+      "id": "kdocs-amap-b0ffgrgjro",
+      "name": "温州医科大学附属第一医院南白象院区",
       "aliases": [
-        "常州904医院"
+        "温州医科大学附属第一医院"
       ],
-      "adcode": "320000",
-      "province": "江苏省",
-      "city": "常州市",
+      "adcode": "330000",
+      "province": "浙江省",
+      "city": "温州市",
       "level": "未知",
-      "category": "综合医院精神科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗建设基地名单（全国DBT联盟，截至2024年9月，截图转写）：DBT 建设基地。该院亦在另一条线索中被提及为医生培训单位。"
-        ]
+        "evidence": []
       },
+      "address": "南白象街道上蔡村",
       "coordinates": {
-        "lat": 31.781728,
-        "lng": 119.962904
+        "lat": 27.941462,
+        "lng": 120.691433
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "和平北路55号(博爱路地铁站3号口步行290米)"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "jx-jwzx",
-      "name": "江西省精神卫生中心",
-      "aliases": [],
-      "adcode": "360000",
-      "province": "江西省",
-      "city": "南昌市",
-      "level": "未知",
-      "category": "精神专科",
-      "departments": [
-        "精神科"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
-        "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗建设基地名单（全国DBT联盟，截至2024年9月，截图转写）：DBT 建设基地。"
-        ]
-      },
-      "coordinates": {
-        "lat": 28.68105,
-        "lng": 115.926805
-      },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
-      "coordinates_source": "geocoded",
-      "address": "上坊路43号(江西省心理康复中心西1门旁)"
-    },
-    {
-      "id": "gx-nn10",
-      "name": "南宁市第十人民医院",
+      "id": "kdocs-amap-b0lamrcibh",
+      "name": "武汉市精神卫生中心",
       "aliases": [
-        "广西—东盟经济技术开发区人民医院"
+        "武汉精神卫生中心"
+      ],
+      "adcode": "420000",
+      "province": "湖北省",
+      "city": "武汉市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "游艺路93号(汉正街地铁站C口步行470米)",
+      "coordinates": {
+        "lat": 30.577035,
+        "lng": 114.268902
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0303005fe",
+      "name": "南宁市第一人民医院",
+      "aliases": [
+        "广西南宁第一人民医院"
       ],
       "adcode": "450000",
       "province": "广西壮族自治区",
       "city": "南宁市",
       "level": "未知",
-      "category": "综合医院精神科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗建设基地名单（全国DBT联盟，截至2024年9月，截图转写）：DBT 建设基地。"
-        ]
+        "evidence": []
       },
+      "address": "七星路89号",
       "coordinates": {
-        "lat": 23.200005,
-        "lng": 108.162042
+        "lat": 22.813468,
+        "lng": 108.321004
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "东盟经济技术开发区武华大道173号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "gd-dg7",
-      "name": "东莞市第七人民医院",
+      "id": "kdocs-amap-b030b006v6",
+      "name": "北海市人民医院和平院区",
       "aliases": [
-        "东莞市精神卫生中心"
+        "广西北海市人民医院"
       ],
-      "adcode": "440000",
-      "province": "广东省",
-      "city": "东莞市",
+      "adcode": "450000",
+      "province": "广西壮族自治区",
+      "city": "北海市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗建设基地名单（全国DBT联盟，截至2024年9月，截图转写）：DBT 建设基地。"
-        ]
+        "evidence": []
       },
+      "address": "和平路83号",
       "coordinates": {
-        "lat": 23.116333,
-        "lng": 113.65015
+        "lat": 21.482354,
+        "lng": 109.111897
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "中堂镇江南社区麦洲岛"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "fj-fz2",
-      "name": "福州市第二总医院神经精神病防治院",
+      "id": "kdocs-amap-b0ffiufvdh",
+      "name": "北海市人民医院银滩院区",
       "aliases": [
-        "福建省精神卫生中心"
+        "广西北海市人民医院（银滩院区）"
+      ],
+      "adcode": "450000",
+      "province": "广西壮族自治区",
+      "city": "北海市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "金海岸大道69号",
+      "coordinates": {
+        "lat": 21.433575,
+        "lng": 109.105349
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b035301ev4",
+      "name": "贵州省第二人民医院",
+      "aliases": [
+        "贵州省第二人民医院"
+      ],
+      "adcode": "520000",
+      "province": "贵州省",
+      "city": "贵阳市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "新添大道南段206号(汪家湾旁)",
+      "coordinates": {
+        "lat": 26.611478,
+        "lng": 106.725191
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0ffgg4mze",
+      "name": "大理州第二人民医院",
+      "aliases": [
+        "大理州第二人民医院"
+      ],
+      "adcode": "530000",
+      "province": "云南省",
+      "city": "大理白族自治州",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "红山路",
+      "coordinates": {
+        "lat": 25.622298,
+        "lng": 100.280124
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0ffk54jcv",
+      "name": "文山州第二人民医院",
+      "aliases": [
+        "文山州第二人民医院"
+      ],
+      "adcode": "530000",
+      "province": "云南省",
+      "city": "文山壮族苗族自治州",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "新平路东100米",
+      "coordinates": {
+        "lat": 23.347408,
+        "lng": 104.27407
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0ffftfcbu",
+      "name": "玉溪市第二人民医院",
+      "aliases": [
+        "玉溪市第二人民医院"
+      ],
+      "adcode": "530000",
+      "province": "云南省",
+      "city": "玉溪市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "高新技术开发区星云路4号",
+      "coordinates": {
+        "lat": 24.338755,
+        "lng": 102.528127
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b036b00twx",
+      "name": "保山市第三人民医院",
+      "aliases": [
+        "保山市第三人民医院"
+      ],
+      "adcode": "530000",
+      "province": "云南省",
+      "city": "保山市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "小梨园",
+      "coordinates": {
+        "lat": 25.108748,
+        "lng": 99.147998
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0ffliuheg",
+      "name": "四川大学华西厦门医院",
+      "aliases": [
+        "四川大学华西厦门医院"
       ],
       "adcode": "350000",
       "province": "福建省",
-      "city": "福州市",
+      "city": "厦门市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗建设基地名单（全国DBT联盟，截至2024年9月，截图转写）：DBT 建设基地。"
-        ]
+        "evidence": []
       },
+      "address": "后浦西路188号",
       "coordinates": {
-        "lat": 26.028807,
-        "lng": 119.284956
+        "lat": 24.605792,
+        "lng": 118.029932
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "南二环451号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "sc-ty2",
-      "name": "四川省第二退役军人医院",
-      "aliases": [],
+      "id": "kdocs-amap-b033001020",
+      "name": "绵阳市第三人民医院",
+      "aliases": [
+        "四川省精神卫生中心（绵阳三医院）"
+      ],
+      "adcode": "510000",
+      "province": "四川省",
+      "city": "绵阳市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "剑南路东段190号",
+      "coordinates": {
+        "lat": 31.472311,
+        "lng": 104.75767
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b001c7uu27",
+      "name": "成都市第一人民医院南区",
+      "aliases": [
+        "成都市第一人民医院"
+      ],
       "adcode": "510000",
       "province": "四川省",
       "city": "成都市",
       "level": "未知",
       "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗建设基地名单（全国DBT联盟，截至2024年9月，截图转写）：DBT 建设基地。"
-        ]
+        "evidence": []
       },
+      "address": "高新区万象北路18号",
       "coordinates": {
-        "lat": 30.613644,
-        "lng": 103.65578
+        "lat": 30.592602,
+        "lng": 104.049879
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "十字南路1133号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "gd-fs3",
-      "name": "佛山市第三人民医院",
+      "id": "kdocs-amap-b0ib2l08gg",
+      "name": "四川省人民医院",
       "aliases": [
-        "佛山市精神卫生中心"
+        "四川省人民医院"
       ],
-      "adcode": "440000",
-      "province": "广东省",
-      "city": "佛山市",
+      "adcode": "510000",
+      "province": "四川省",
+      "city": "成都市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗建设基地名单（全国DBT联盟，截至2024年9月，截图转写）：DBT 建设基地。"
-        ]
+        "evidence": []
       },
+      "address": "一环路西2段32号(青羊宫地铁站A口步行80米)",
       "coordinates": {
-        "lat": 22.985152,
-        "lng": 113.105011
+        "lat": 30.665655,
+        "lng": 104.03685
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "石湾镇街道金澜南路102号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "zj-nbkn",
-      "name": "宁波大学附属康宁医院",
+      "id": "kdocs-amap-b00170l57q",
+      "name": "重庆医科大学附属第一医院院本部",
       "aliases": [
-        "宁波市康宁医院"
+        "重庆医科大学附属第一医院"
       ],
-      "adcode": "330000",
-      "province": "浙江省",
-      "city": "宁波市",
+      "adcode": "500000",
+      "province": "重庆市",
+      "city": "重庆市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "全国辩证行为治疗建设基地名单（全国DBT联盟，截至2024年9月，截图转写）：DBT 建设基地。"
-        ]
+        "evidence": []
       },
+      "address": "袁家岗友谊路1号",
       "coordinates": {
-        "lat": 29.937788,
-        "lng": 121.61756
+        "lat": 29.533564,
+        "lng": 106.508799
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "庄俞南路1号(宁波大学附属康宁医院)"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     },
     {
-      "id": "ln-dd3",
-      "name": "丹东市第三人民医院",
+      "id": "kdocs-amap-b001791t1i",
+      "name": "重庆医科大学附属第二医院渝中院区",
       "aliases": [
-        "丹东三院"
+        "重庆医科大学附属第二医院"
       ],
-      "adcode": "210000",
-      "province": "辽宁省",
-      "city": "丹东市",
+      "adcode": "500000",
+      "province": "重庆市",
+      "city": "重庆市",
       "level": "未知",
-      "category": "精神专科",
+      "category": "其他",
       "departments": [
-        "精神科"
+        "未录入"
       ],
       "trauma_service": {
-        "cptsd_assessment": "claimed",
-        "cptsd_bpd_diagnosis": "claimed",
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
         "icd11_practice": "unknown",
-        "evidence": [
-          "评论反馈（2025-08-29，辽宁）：丹东市第三人民医院郑艳医生已退休；另有网友称其仍可在京东健康线上问诊、并被私立医院返聘。"
-        ]
+        "evidence": []
       },
+      "address": "临江路74-76号(近中华路)",
       "coordinates": {
-        "lat": 40.145178,
-        "lng": 124.380183
+        "lat": 29.563059,
+        "lng": 106.570969
       },
-      "official_sources": [],
-      "last_verified_at": "2026-09-11",
       "coordinates_source": "geocoded",
-      "address": "宝山路43号"
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b00170914b",
+      "name": "陆军军医大学西南医院",
+      "aliases": [
+        "陆军军医大学西南医院"
+      ],
+      "adcode": "500000",
+      "province": "重庆市",
+      "city": "重庆市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "高滩岩正街30号",
+      "coordinates": {
+        "lat": 29.539384,
+        "lng": 106.448243
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b031d00l7w",
+      "name": "赣州市第三人民医院章江院区",
+      "aliases": [
+        "赣州市第三人民医院"
+      ],
+      "adcode": "360000",
+      "province": "江西省",
+      "city": "赣州市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "章江北大道10号",
+      "coordinates": {
+        "lat": 25.835568,
+        "lng": 114.947692
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b031d00jpw",
+      "name": "赣南医科大学第一附属医院(章贡院区)",
+      "aliases": [
+        "赣南医学院第一附属医院"
+      ],
+      "adcode": "360000",
+      "province": "江西省",
+      "city": "赣州市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "青年路23号",
+      "coordinates": {
+        "lat": 25.85846,
+        "lng": 114.927763
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b02db00b1e",
+      "name": "中南大学湘雅医院",
+      "aliases": [
+        "湖南长沙湘雅医院"
+      ],
+      "adcode": "430000",
+      "province": "湖南省",
+      "city": "长沙市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "湘雅路87号",
+      "coordinates": {
+        "lat": 28.215655,
+        "lng": 112.97854
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b02db03s87",
+      "name": "湖南省脑科医院",
+      "aliases": [
+        "湖南省立第二人民医院/脑科医院"
+      ],
+      "adcode": "430000",
+      "province": "湖南省",
+      "city": "长沙市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "芙蓉中路三段427号(涂家冲地铁站4号口步行270米)",
+      "coordinates": {
+        "lat": 28.159054,
+        "lng": 112.979245
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b02db03kph",
+      "name": "湖南省儿童医院",
+      "aliases": [
+        "湖南儿童医院"
+      ],
+      "adcode": "430000",
+      "province": "湖南省",
+      "city": "长沙市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "梓园路86号",
+      "coordinates": {
+        "lat": 28.177244,
+        "lng": 112.983795
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b03830ncek",
+      "name": "中国人民解放军总医院海南医院",
+      "aliases": [
+        "中国人民解放军总医院（海南）"
+      ],
+      "adcode": "460000",
+      "province": "海南省",
+      "city": "三亚市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "江林路80号",
+      "coordinates": {
+        "lat": 18.292055,
+        "lng": 109.709488
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b03820oyol",
+      "name": "海南医科大学第一附属医院",
+      "aliases": [
+        "海南医学院第一附属医院"
+      ],
+      "adcode": "460000",
+      "province": "海南省",
+      "city": "海口市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "龙华路31号",
+      "coordinates": {
+        "lat": 20.031106,
+        "lng": 110.328735
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0fffglyoy",
+      "name": "海南省肿瘤医院",
+      "aliases": [
+        "海南省肿瘤医院"
+      ],
+      "adcode": "460000",
+      "province": "海南省",
+      "city": "海口市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "长滨西四街6号",
+      "coordinates": {
+        "lat": 20.044325,
+        "lng": 110.180639
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b001c7wo02",
+      "name": "华西医院(西藏成办分院)",
+      "aliases": [
+        "华西医院西藏成办分院"
+      ],
+      "adcode": "510000",
+      "province": "四川省",
+      "city": "成都市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "浆洗街街道洗面桥横街20号",
+      "coordinates": {
+        "lat": 30.644451,
+        "lng": 104.049375
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0fffx8hqy",
+      "name": "西藏自治区人民医院",
+      "aliases": [
+        "西藏自治区人民医院"
+      ],
+      "adcode": "540000",
+      "province": "西藏自治区",
+      "city": "拉萨市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "林廓北路18号",
+      "coordinates": {
+        "lat": 29.659054,
+        "lng": 91.125531
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b073c02y5k",
+      "name": "青山医院",
+      "aliases": [
+        "青山医院"
+      ],
+      "adcode": "810000",
+      "province": "香港特别行政区",
+      "city": "香港特别行政区",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "青松观路15青山医院杏晖楼E座附近",
+      "coordinates": {
+        "lat": 22.409609,
+        "lng": 113.9734
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b073c036vw",
+      "name": "葵涌医院",
+      "aliases": [
+        "葵涌医院"
+      ],
+      "adcode": "810000",
+      "province": "香港特别行政区",
+      "city": "香港特别行政区",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "香港新界葵涌葵涌医院路3-15号",
+      "coordinates": {
+        "lat": 22.342916,
+        "lng": 114.133468
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b073c04lok",
+      "name": "东区尤德夫人那打素医院",
+      "aliases": [
+        "东区尤德夫人那打素医院"
+      ],
+      "adcode": "810000",
+      "province": "香港特别行政区",
+      "city": "香港特别行政区",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "乐民道3号",
+      "coordinates": {
+        "lat": 22.269836,
+        "lng": 114.236487
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b073c04aka",
+      "name": "玛丽医院",
+      "aliases": [
+        "玛丽医院"
+      ],
+      "adcode": "810000",
+      "province": "香港特别行政区",
+      "city": "香港特别行政区",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "香港岛薄扶林薄扶林道102号",
+      "coordinates": {
+        "lat": 22.270012,
+        "lng": 114.13151
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b073c0qrtu",
+      "name": "伊利沙伯医院",
+      "aliases": [
+        "伊利沙伯医院"
+      ],
+      "adcode": "810000",
+      "province": "香港特别行政区",
+      "city": "香港特别行政区",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "佐敦加士居道30号",
+      "coordinates": {
+        "lat": 22.309,
+        "lng": 114.174687
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b073c03epg",
+      "name": "威尔斯亲王医院",
+      "aliases": [
+        "威尔斯亲王医院"
+      ],
+      "adcode": "810000",
+      "province": "香港特别行政区",
+      "city": "香港特别行政区",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "银城街30-32号",
+      "coordinates": {
+        "lat": 22.379403,
+        "lng": 114.202092
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b073c02z42",
+      "name": "屯门医院",
+      "aliases": [
+        "屯门医院"
+      ],
+      "adcode": "810000",
+      "province": "香港特别行政区",
+      "city": "香港特别行政区",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "新界屯门青松观路23号",
+      "coordinates": {
+        "lat": 22.40799,
+        "lng": 113.975989
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b073c04pm7",
+      "name": "养和医院",
+      "aliases": [
+        "养和医院"
+      ],
+      "adcode": "810000",
+      "province": "香港特别行政区",
+      "city": "香港特别行政区",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "山村道2号",
+      "coordinates": {
+        "lat": 22.26937,
+        "lng": 114.182912
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b073c04s0x",
+      "name": "香港港安医院",
+      "aliases": [
+        "港安医院"
+      ],
+      "adcode": "810000",
+      "province": "香港特别行政区",
+      "city": "香港特别行政区",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "跑马地司徒拔道40号",
+      "coordinates": {
+        "lat": 22.263637,
+        "lng": 114.184151
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b073d00dg3",
+      "name": "仁伯爵综合医院",
+      "aliases": [
+        "仁伯爵综合医院"
+      ],
+      "adcode": "820000",
+      "province": "澳门特别行政区",
+      "city": "澳门特别行政区",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "若宪马路",
+      "coordinates": {
+        "lat": 22.193727,
+        "lng": 113.546385
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0g0a7x9db",
+      "name": "澳门大学心理学系诊所",
+      "aliases": [
+        "澳门大学心理学系诊所"
+      ],
+      "adcode": "820000",
+      "province": "澳门特别行政区",
+      "city": "澳门特别行政区",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "氹仔大学大马路1号澳门大学横琴校区",
+      "coordinates": {
+        "lat": 22.128736,
+        "lng": 113.543325
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b073d00kf2",
+      "name": "科大医院",
+      "aliases": [
+        "澳门科技大学医院"
+      ],
+      "adcode": "820000",
+      "province": "澳门特别行政区",
+      "city": "澳门特别行政区",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "澳门科技大学H座",
+      "coordinates": {
+        "lat": 22.154446,
+        "lng": 113.568338
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0k2nu6cel",
+      "name": "台北市立联合医院松德院区",
+      "aliases": [
+        "台北市立联合医院松德院区"
+      ],
+      "adcode": "710000",
+      "province": "台湾省",
+      "city": "台北市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "110台湾台北市信义区三犁里松德路309号",
+      "coordinates": {
+        "lat": 25.030433,
+        "lng": 121.574696
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0lkxslam3",
+      "name": "国立台湾大学医学院附设医院癌医中心分院",
+      "aliases": [
+        "台湾大学医学院附设医院"
+      ],
+      "adcode": "710000",
+      "province": "台湾省",
+      "city": "台北市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "106台湾台北市大安区学府里基隆路三段155巷57号1楼",
+      "coordinates": {
+        "lat": 25.014644,
+        "lng": 121.544199
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0l0zzdx92",
+      "name": "台北荣民总医院",
+      "aliases": [
+        "台北荣民总医院"
+      ],
+      "adcode": "710000",
+      "province": "台湾省",
+      "city": "台北市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "112台湾台北市北投区永欣里石牌路二段201号",
+      "coordinates": {
+        "lat": 25.119826,
+        "lng": 121.520176
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0ma3rzcf4",
+      "name": "马偕纪念医院台北院区",
+      "aliases": [
+        "马偕纪念医院"
+      ],
+      "adcode": "710000",
+      "province": "台湾省",
+      "city": "台北市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "104台湾台北市中山区集英里中山北路二段92号",
+      "coordinates": {
+        "lat": 25.058842,
+        "lng": 121.522393
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0l0fnub1k",
+      "name": "高雄医学大学中和纪念医院",
+      "aliases": [
+        "高雄医学大学附设医院"
+      ],
+      "adcode": "710000",
+      "province": "台湾省",
+      "city": "高雄市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "807台湾高雄市三民区安生里自由一路100号",
+      "coordinates": {
+        "lat": 22.645915,
+        "lng": 120.309538
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0l0fyxuhl",
+      "name": "中国医药大学附设医院",
+      "aliases": [
+        "中国医药大学附设医院"
+      ],
+      "adcode": "710000",
+      "province": "台湾省",
+      "city": "台中市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "404台湾台中市北区五常里五权路499号",
+      "coordinates": {
+        "lat": 24.15412,
+        "lng": 120.684042
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0k2nu6bpi",
+      "name": "成功大学医学院附设医院",
+      "aliases": [
+        "成功大学医学院附设医院"
+      ],
+      "adcode": "710000",
+      "province": "台湾省",
+      "city": "台南市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "704台湾台南市北区中楼里小东路35号",
+      "coordinates": {
+        "lat": 23.001596,
+        "lng": 120.217765
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
+    },
+    {
+      "id": "kdocs-amap-b0l0smikhv",
+      "name": "长庚医疗财团法人林口长庚纪念医院",
+      "aliases": [
+        "长庚医院"
+      ],
+      "adcode": "710000",
+      "province": "台湾省",
+      "city": "桃园市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "333台湾桃园市龟山区公西里复兴街5号",
+      "coordinates": {
+        "lat": 25.061047,
+        "lng": 121.36753
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-10-27"
     }
   ]
 }

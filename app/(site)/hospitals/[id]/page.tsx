@@ -6,7 +6,11 @@ import { doctorsForHospital, disorders, hospitalById, hospitals, reportsForHospi
 
 export const dynamicParams = false
 
+const EMPTY_STATE_ID = 'none'
+
 export function generateStaticParams() {
+  // Static export requires a route even while the institution inventory is empty.
+  if (hospitals.length === 0) return [{ id: EMPTY_STATE_ID }]
   return hospitals.map((hospital) => ({ id: hospital.id }))
 }
 
@@ -19,11 +23,24 @@ const SERVICE_LABELS: Record<string, string> = {
 
 export default async function HospitalDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  if (id === EMPTY_STATE_ID) {
+    return (
+      <div className="tc-empty">
+        <h1>医院与机构</h1>
+        <p>机构尚未定位。</p>
+        <Link href="/reports/">查看来源线索 →</Link>
+      </div>
+    )
+  }
   const hospital = hospitalById(id)
   if (!hospital) notFound()
 
   const reports = reportsForHospital(hospital.id)
   const doctors = doctorsForHospital(hospital.id)
+  const departments = hospital.departments.filter(item => item !== '未录入')
+  const hasServices = hospital.trauma_service.cptsd_assessment !== 'unknown' ||
+    hospital.trauma_service.cptsd_bpd_diagnosis !== 'unknown' || departments.length > 0 ||
+    hospital.trauma_service.evidence.length > 0
 
   return (
     <div className="tc-prose">
@@ -33,35 +50,33 @@ export default async function HospitalDetailPage({ params }: { params: Promise<{
 
       <h1>{hospital.name}</h1>
       <div className="tc-row tc-small" style={{ marginBottom: 'var(--tc-space-3)' }}>
-        <span className="tc-badge tc-badge--neutral">{hospital.level}</span>
-        <span className="tc-badge tc-badge--neutral">{hospital.category}</span>
+        {hospital.level !== '未知' && <span className="tc-badge tc-badge--neutral">{hospital.level}</span>}
+        {hospital.category !== '其他' && <span className="tc-badge tc-badge--neutral">{hospital.category}</span>}
         <span className="tc-badge tc-badge--neutral">
           {hospital.province}
           {hospital.city === hospital.province ? '' : ` · ${hospital.city}`}
         </span>
-        {hospital.official_sources.length > 0 ? (
+        {hospital.official_sources.length > 0 && (
           <span className="tc-badge tc-badge--official">有官方来源</span>
-        ) : (
-          <span className="tc-badge tc-badge--unverified">暂无官方来源</span>
         )}
       </div>
 
-      <div className="tc-card">
+      {hasServices && <div className="tc-card">
         <h2>创伤相关服务</h2>
         <table className="tc-table">
           <tbody>
-            <tr>
+            {hospital.trauma_service.cptsd_assessment !== 'unknown' && <tr>
               <th>CPTSD 评估</th>
               <td>{SERVICE_LABELS[hospital.trauma_service.cptsd_assessment]}</td>
-            </tr>
-            <tr>
+            </tr>}
+            {hospital.trauma_service.cptsd_bpd_diagnosis !== 'unknown' && <tr>
               <th>CPTSD / BPD 诊断</th>
               <td>{SERVICE_LABELS[hospital.trauma_service.cptsd_bpd_diagnosis]}</td>
-            </tr>
-            <tr>
+            </tr>}
+            {departments.length > 0 && <tr>
               <th>科室</th>
-              <td>{hospital.departments.join('、')}</td>
-            </tr>
+              <td>{departments.join('、')}</td>
+            </tr>}
           </tbody>
         </table>
 
@@ -75,7 +90,7 @@ export default async function HospitalDetailPage({ params }: { params: Promise<{
             </ul>
           </div>
         )}
-      </div>
+      </div>}
 
       <div className="tc-card">
         <h2>机构信息</h2>
@@ -99,12 +114,9 @@ export default async function HospitalDetailPage({ params }: { params: Promise<{
                 <td>{hospital.phone_public}</td>
               </tr>
             )}
-            <tr>
+            {hospital.official_sources.length > 0 && <tr>
               <th>官方来源</th>
               <td>
-                {hospital.official_sources.length === 0 ? (
-                  '暂无'
-                ) : (
                   <ul style={{ margin: 0, paddingLeft: '1.1em' }}>
                     {hospital.official_sources.map((source) => (
                       <li key={source}>
@@ -112,11 +124,10 @@ export default async function HospitalDetailPage({ params }: { params: Promise<{
                       </li>
                     ))}
                   </ul>
-                )}
               </td>
-            </tr>
+            </tr>}
             <tr>
-              <th>官方来源核对</th>
+              <th>位置核对</th>
               <td>{hospital.last_verified_at}</td>
             </tr>
           </tbody>
@@ -138,8 +149,8 @@ export default async function HospitalDetailPage({ params }: { params: Promise<{
         </div>
       )}
 
-      <div className="tc-card">
-        <h2>关联就诊线索（{reports.length}）</h2>
+      <section className="tc-detail-section">
+        <h2>关联就诊线索<span className="tc-detail-count">{reports.length} 条</span></h2>
         {reports.length === 0 ? (
           <p className="tc-small tc-muted" style={{ margin: 0 }}>
             暂无关联线索。
@@ -147,7 +158,7 @@ export default async function HospitalDetailPage({ params }: { params: Promise<{
         ) : (
           reports.map((report) => <ReportCard key={report.id} report={report} disorders={disorders} />)
         )}
-      </div>
+      </section>
     </div>
   )
 }

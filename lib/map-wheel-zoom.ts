@@ -1,51 +1,77 @@
-import type { Map as LeafletMap, Point } from 'leaflet'
+import type { GeoPoint, MapCamera, MapPoint } from './map-camera.ts'
 
-/** 接续滚轮输入；只在动画途中使用小数级别，结束仍落在整数瓦片级。 */
-export function attachMapWheelZoom(map: LeafletMap) {
+// Fractional frames keep the cursor anchor fixed; each gesture settles at an integer zoom.
+export function attachMapWheelZoom(map: MapCamera) {
   const container = map.getContainer()
   let frame: number | undefined
   let delta = 0
   let lastInputAt = -Infinity
   let targetZoom: number | undefined
   let lastDirection = 0
-  let anchor: Point
+  let anchor: MapPoint
+  let anchorLatLng: GeoPoint
+  let active = false
+  let lastFrameAt = 0
 
-  const cancel = () => {
+  const reset = () => {
     if (frame !== undefined) cancelAnimationFrame(frame)
     frame = undefined
     delta = 0
     targetZoom = undefined
     lastDirection = 0
+    active = false
   }
 
-  const apply = () => {
+  const draw = (zoom: number) => {
+    const offset = anchor.subtract(map.getSize().divideBy(2))
+    const center = map.unproject(map.project(anchorLatLng, zoom).subtract(offset), zoom)
+    map.move(center, zoom)
+  }
+
+  const cancel = () => {
+    const wasActive = active
+    if (wasActive) draw(Math.max(map.getMinZoom(), Math.min(map.getMaxZoom(), Math.round(map.getZoom()))))
+    reset()
+    if (wasActive) map.endMove()
+  }
+
+  const apply = (now: number) => {
     frame = undefined
     const steps = Math.trunc(delta / 100)
-    if (!steps) return
     delta %= 100
     const current = map.getZoom()
-    const direction = -Math.sign(steps)
-    // 换向从当前画面计算，不先走完旧方向的目标。
-    if (targetZoom === undefined || direction !== lastDirection) {
-      targetZoom = direction > 0 ? Math.floor(current) : Math.ceil(current)
+    if (steps) {
+      const direction = -Math.sign(steps)
+      // Reverse from the visible camera instead of completing the previous target.
+      if (targetZoom === undefined || direction !== lastDirection) {
+        targetZoom = direction > 0 ? Math.floor(current) : Math.ceil(current)
+      }
+      lastDirection = direction
+      // Bound the lead so a fast wheel does not leave a long animation queue.
+      targetZoom = Math.max(map.getMinZoom(), Math.min(map.getMaxZoom(),
+        Math.max(Math.floor(current) - 1, Math.min(Math.ceil(current) + 1, targetZoom - steps)),
+      ))
     }
-    lastDirection = direction
-    // 限制领先距离，防止高速滚轮堆出松手后仍长时间追赶的缩放队列。
-    targetZoom = Math.max(map.getMinZoom(), Math.min(map.getMaxZoom(),
-      Math.max(Math.floor(current) - 1, Math.min(Math.ceil(current) + 1, targetZoom - steps)),
-    ))
-    if (targetZoom === current) return
+    if (targetZoom === undefined || (!active && targetZoom === current)) return
 
-    const scale = map.getZoomScale(targetZoom)
-    const half = map.getSize().divideBy(2)
-    const center = map.containerPointToLatLng(
-      half.add(anchor.subtract(half).multiplyBy(1 - 1 / scale)),
-    )
-    // flyTo 可从正在移动的小数级别接续；这里不能先 stop()，否则会吸附回整数级。
-    map.flyTo(center, targetZoom, {
-      animate: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-      duration: 0.24,
-    })
+    if (!active) {
+      map.beginMove()
+      active = true
+      lastFrameAt = now - 16
+    }
+    const elapsed = Math.min(64, Math.max(0, now - lastFrameAt))
+    lastFrameAt = now
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const next = reducedMotion ? targetZoom : current + (targetZoom - current) * (1 - Math.exp(-elapsed / 55))
+    const done = Math.abs(targetZoom - next) < 0.001
+    // Derive every frame from the same geographic anchor, not the viewport center.
+    draw(done ? targetZoom : next)
+    if (done) {
+      reset()
+      map.endMove()
+    } else {
+      frame = requestAnimationFrame(apply)
+    }
   }
 
   const onWheel = (event: WheelEvent) => {
@@ -54,27 +80,30 @@ export function attachMapWheelZoom(map: LeafletMap) {
     const now = performance.now()
     if (now - lastInputAt > 180) {
       delta = 0
-      targetZoom = undefined
-      lastDirection = 0
+      if (!active) {
+        targetZoom = undefined
+        lastDirection = 0
+      }
     }
     lastInputAt = now
     const pixels = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 600 : 1)
     if (delta && Math.sign(delta) !== Math.sign(pixels)) delta = 0
     delta += pixels
     anchor = map.mouseEventToContainerPoint(event)
+    anchorLatLng = map.containerPointToLatLng(anchor)
     if (frame === undefined) frame = requestAnimationFrame(apply)
   }
 
   container.addEventListener('wheel', onWheel, { passive: false })
   container.addEventListener('pointerdown', cancel)
-  map.on('zoomend', cancel)
+  container.addEventListener('keydown', cancel)
   return {
     cancel,
     dispose: () => {
       cancel()
       container.removeEventListener('wheel', onWheel)
       container.removeEventListener('pointerdown', cancel)
-      map.off('zoomend', cancel)
+      container.removeEventListener('keydown', cancel)
     },
   }
 }

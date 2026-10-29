@@ -13,7 +13,6 @@ type Props = {
   disorders: Disorder[]
   provinces: Province[]
   reportProvince: Record<string, string>
-  hospitalNames: Record<string, string>
   /** compact：适配侧边栏窄面板（默认 page 不变） */
   variant?: 'page' | 'compact'
   /** 提供时，关联了机构的线索卡出现「在地图上查看」按钮 */
@@ -29,7 +28,6 @@ export function ReportExplorer({
   disorders,
   provinces,
   reportProvince,
-  hospitalNames,
   variant = 'page',
   onSelectHospital,
   initialQuery,
@@ -122,7 +120,7 @@ export function ReportExplorer({
         </label>
 
         <label className="tc-field">
-          病症／原帖分类
+          病症／来源分类
           <select value={disorder} onChange={(event) => setDisorder(event.target.value)}>
             <option value="">全部</option>
             {disorders.map((item) => (
@@ -131,7 +129,7 @@ export function ReportExplorer({
               </option>
             ))}
             {sourceTopics.map((topic) => (
-              <option key={topic} value={`topic:${topic}`}>{topic}（原帖称呼）</option>
+              <option key={topic} value={`topic:${topic}`}>{topic}（来源分类）</option>
             ))}
           </select>
         </label>
@@ -162,14 +160,12 @@ export function ReportExplorer({
       ) : (
         <div>
           {filtered.map((report) => (
-            <div key={report.id}>
               <ReportCard
+                key={report.id}
                 report={report}
                 onSelectHospital={onSelectHospital}
                 disorders={disorders}
-                showHospital={Boolean(hospitalNames[report.hospital_id ?? ''] ?? true)}
               />
-            </div>
           ))}
         </div>
       )}

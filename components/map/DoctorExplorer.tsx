@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { aggregateDoctorLeads } from '@/lib/doctor-leads'
 import { DoctorLeadItem } from '@/components/DoctorLeadItem'
+import { DoctorLeadGroup } from '@/components/DoctorLeadGroup'
 import type { Hospital, Report } from '@/lib/schema'
 
 /**
@@ -24,9 +25,8 @@ export function DoctorExplorer({ hospitals, reports, onSelectHospital }: {
       <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="病症 / 医生 / 医院，可用空格组合" />
     </label>
     {groups.length === 0 && <p className="tc-empty">没有匹配的医生线索</p>}
-    {groups.map(group => <section key={group.id} className="tc-doctor-group">
-      <h2>{group.label} <small>{group.leadCount}</small></h2>
+    {groups.map(group => <DoctorLeadGroup key={group.id} group={group} searching={query.trim() !== ''}>
       {group.entries.map(entry => <DoctorLeadItem key={`${entry.hospitalId ?? entry.hospitalName}:${entry.name}`} entry={entry} reports={reports} onSelectHospital={onSelectHospital} />)}
-    </section>)}
+    </DoctorLeadGroup>)}
   </div>
 }

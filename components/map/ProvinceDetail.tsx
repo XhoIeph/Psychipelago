@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import { ArrowLeft, MapPin } from 'lucide-react'
 import type { MapHospital, MapProvinceStat } from './types'
 
-/** 侧栏中的省份概要卡：由全国视图点击省份触发 */
 export function ProvinceDetail({
   provinceName,
   stat,
@@ -22,43 +22,29 @@ export function ProvinceDetail({
   const hasData = (stat?.reports ?? 0) > 0 || hospitals.length > 0
 
   return (
-    <div className="tc-stack">
-      <div className="tc-row tc-row--between">
-        <h2 style={{ marginBottom: 0, fontSize: '1.05rem' }}>{provinceName}</h2>
-        <button type="button" className="tc-button" onClick={onClose} aria-label="关闭详情">
-          关闭
-        </button>
-      </div>
+    <div className="tc-detail">
+      <button type="button" className="tc-detail-back" onClick={onClose}><ArrowLeft size={16} aria-hidden="true" />返回浏览</button>
+      <h2 className="tc-detail-title">{provinceName}</h2>
 
       {hasData ? (
         <>
-          <div className="tc-row tc-small">
-            <span className="tc-badge tc-badge--accent">线索 {stat?.reports ?? 0} 条</span>
-            <span className="tc-badge tc-badge--neutral">
-              机构 {stat?.hospitals ?? hospitals.length} 家
-            </span>
-            {(stat?.withEvidence ?? 0) > 0 && (
-              <span className="tc-badge tc-badge--official">
-                创伤服务证据 {stat?.withEvidence} 家
-              </span>
-            )}
-          </div>
+          {(stat?.withEvidence ?? 0) > 0 && <p className="tc-small tc-muted">创伤服务证据 {stat?.withEvidence} 家</p>}
+          {hospitals.length === 0 && (stat?.reports ?? 0) > 0 && <p className="tc-small tc-muted">{stat?.reports} 条就诊线索</p>}
           {(stat?.cptsd ?? 0) > 0 || (stat?.bpd ?? 0) > 0 ? (
-            <p className="tc-small tc-muted" style={{ margin: 0 }}>
+            <p className="tc-small tc-muted">
               线索涉及：CPTSD {stat?.cptsd} 条 · BPD {stat?.bpd} 条
               <span className="tc-faint">（同一条线索可能同时涉及两者）</span>
             </p>
           ) : null}
 
-          <button type="button" className="tc-button" onClick={onZoomToProvince}>
-            放大到该省查看医院节点
-          </button>
+          <div className="tc-hospital-actions"><button type="button" className="tc-button tc-button--active" onClick={onZoomToProvince}>
+            <MapPin size={16} aria-hidden="true" />在地图上定位
+          </button></div>
 
           {hospitals.length > 0 && (
-            <>
-              <hr className="tc-divider" />
-              <h3 style={{ marginBottom: 0 }}>该省机构（{hospitals.length}）</h3>
-              <ul className="tc-plainlist">
+            <section className="tc-detail-section">
+              <h3>机构<span className="tc-detail-count">{hospitals.length} 家</span></h3>
+              <ul className="tc-province-list">
                 {hospitals.map((hospital) => (
                   <li key={hospital.id}>
                     <button
@@ -68,16 +54,16 @@ export function ProvinceDetail({
                     >
                       {hospital.name}
                     </button>
-                    <span className="tc-meta"> · 线索 {hospital.leads} 条</span>
+                    <span className="tc-small tc-muted">{hospital.leads} 条</span>
                   </li>
                 ))}
               </ul>
-            </>
+            </section>
           )}
         </>
       ) : (
-        <div className="tc-empty" style={{ padding: 'var(--tc-space-4)' }}>
-          <p style={{ margin: 0 }}>该省暂无已收录的线索与机构记录。</p>
+        <div className="tc-empty">
+          <p>该省暂无已收录的线索与机构记录。</p>
           <p className="tc-small tc-faint">
             有公开来源？<Link href="/submit/">提交线索</Link>
           </p>

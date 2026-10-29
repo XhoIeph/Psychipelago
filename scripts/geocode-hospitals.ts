@@ -1,31 +1,18 @@
 /**
- * 用高德 Web 服务 POI 检索为医院匹配真实位置。
- *
- * 用法：
- *   npm run geo:geocode                           # 只处理仍为省级示意的机构并写回（日常增量用这个）
- *   node scripts/geocode-hospitals.ts             # dry-run：全部机构，只出报告
- *   node scripts/geocode-hospitals.ts --write     # 全部机构并写回
- *   node scripts/geocode-hospitals.ts --apply <报告路径> --write   # 按已有报告写回，不调 API
- *
- * 主院区判定规则（依次尝试，命中即停）：
- *   0. record-address：候选地址与记录 address 首个院区段（「；」前）的最长公共子串 ≥5 字；
- *   1. base-name：候选名称无「院区/分院」标记（即主体名称），取最高分；
- *   2. main-marker：候选名称含「总院/主院区/院本部」；
- *   3. best-score：最高分候选（非楼栋优先，分数下限 25）。
- * 不再有 ambiguous 状态：只要城市匹配且候选存在，就落点到最合理的主院区；
- * 候选清单完整保留在报告中（data/runs/*-amap-geocode.json），改错可人工修正坐标或 address 后重跑。
- *
- * 其他约定：
- * - key 从 .env.local 的 AMAP_WEB_SERVICE_KEY 读取（Web 服务类型，不进前端、不进仓库）。
- * - 高德返回 GCJ-02；站点底图为天地图（CGCS2000≈WGS84），入库前转换为 WGS84，内置偏移断言防呆。
+ * Resolve only the active document's institutions through the configured Amap service.
+ * Candidates stay in ignored raw storage; --write applies reviewed source mappings.
+ * --probe diagnoses one request without writing; --apply <report> --write uses a saved run.
  */
-import { readFileSync, writeFileSync, copyFileSync, existsSync } from 'node:fs'
-
-const APPLY_REPORT = process.argv.includes('--apply') ? process.argv[process.argv.indexOf('--apply') + 1] : null
-const WRITE = process.argv.includes('--write')
-const MISSING_ONLY = process.argv.includes('--missing')
-const HOSPITALS_PATH = 'data/curated/hospitals.json'
-const RUNS_DIR = 'data/runs'
+import { readFileSync, existsSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { resolve } from 'node:path'
+import { hospitalsFileSchema, reportsFileSchema } from '../lib/schema.ts'
+import type { Hospital, Report } from '../lib/schema.ts'
+import { reportsFromDocument, SOURCE_CAPTURE, SOURCE_URL } from './import-kdocs.ts'
+import type { SourceDocument } from './import-kdocs.ts'
+import { LOCATION_EVIDENCE, locationTargets, searchName, searchCity, selectPoi, searchAmap, linkLocationReports } from './lib/amap.ts'
+import type { LocationRun } from './lib/amap.ts'
+import { CURATED_FILES, readJson, writeJson } from './lib/paths.ts'
 
 function loadEnvKey(): string {
   if (!existsSync('.env.local')) throw new Error('.env.local 不存在')
@@ -36,37 +23,6 @@ function loadEnvKey(): string {
   throw new Error('.env.local 缺少 AMAP_WEB_SERVICE_KEY')
 }
 
-const KEY = loadEnvKey()
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
-type Poi = {
-  id: string
-  name: string
-  type: string
-  address?: string
-  location: string // "lng,lat" GCJ-02
-  pname?: string
-  cityname?: string
-}
-
-async function searchPoi(keywords: string, city: string, types?: string): Promise<Poi[]> {
-  const params = new URLSearchParams({ key: KEY, keywords, city, offset: '20', page: '1' })
-  if (types) params.set('types', types)
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    const response = await fetch(`https://restapi.amap.com/v3/place/text?${params}`)
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    const body = (await response.json()) as { status: string; info: string; pois?: Poi[] }
-    if (body.status === '1') return body.pois ?? []
-    if (/QPS|LIMIT/i.test(body.info)) {
-      await sleep(1200 * attempt)
-      continue
-    }
-    return []
-  }
-  return []
-}
-
-/** GCJ-02 → WGS84（标准近似逆变换；断言偏移 >0.02° 即抛错防呆） */
 const GCJ_A = 6378245
 const GCJ_EE = 0.00669342162296594323
 
@@ -98,7 +54,7 @@ function gcjDelta(lng: number, lat: number): [number, number] {
   return [dLng, dLat]
 }
 
-function gcj02ToWgs84(lng: number, lat: number): [number, number] {
+export function gcj02ToWgs84(lng: number, lat: number): [number, number] {
   if (lng < 72.004 || lng > 137.8347 || lat < 0.8293 || lat > 55.8271) return [lng, lat]
   let wgsLng = lng
   let wgsLat = lat
@@ -114,244 +70,115 @@ function gcj02ToWgs84(lng: number, lat: number): [number, number] {
   return [Number(wgsLng.toFixed(6)), Number(wgsLat.toFixed(6))]
 }
 
-const clean = (text: string) => text.replace(/[\s（）()·\-–—]/g, '').toLowerCase()
-
-function nameScore(poiName: string, hospitalName: string, aliases: string[]): number {
-  const a = clean(poiName)
-  const target = clean(hospitalName)
-  if (a === target) return 100
-  for (const alias of aliases) if (a === clean(alias)) return 96
-  if (a.includes(target) || target.includes(a)) return 78
-  for (const alias of aliases) if (a.includes(clean(alias)) || clean(alias).includes(a)) return 66
-  let common = 0
-  while (common < Math.min(a.length, target.length) && a[common] === target[common]) common++
-  return Math.min(50, common * 6)
-}
-
-function cityHitOk(poi: Poi, hospital: Hospital): boolean {
-  return [poi.cityname, poi.pname].some(
-    (part) =>
-      part &&
-      (hospital.city.includes(part) || part.includes(hospital.city.replace(/市$/, '')) || hospital.province.includes(part)),
-  )
-}
-
-function scorePoi(poi: Poi, hospital: Hospital): number {
-  let score = nameScore(poi.name, hospital.name, hospital.aliases)
-  score += cityHitOk(poi, hospital) ? 12 : -30
-  if (/^090[123]/.test(String(poi.type ?? ''))) score += 8
-  else if (!String(poi.type ?? '').startsWith('09')) score -= 15
-  return score
-}
-
-function campusMarker(name: string): string | null {
-  const match = name.match(/([\u4e00-\u9fa5A-Za-z0-9]{1,4})(院区|分院)/)
-  return match ? match[1] : null
-}
-
-/** 最长公共子串长度（已 clean 的短字符串，O(nm) 足够） */
-function lcs(a: string, b: string): number {
-  const x = clean(a)
-  const y = clean(b)
-  let best = 0
-  let prev = new Array(y.length + 1).fill(0)
-  for (let i = 1; i <= x.length; i++) {
-    const cur = new Array(y.length + 1).fill(0)
-    for (let j = 1; j <= y.length; j++) {
-      cur[j] = x[i - 1] === y[j - 1] ? prev[j - 1] + 1 : 0
-      if (cur[j] > best) best = cur[j]
+export function hospitalsFromRun(run: LocationRun): Hospital[] {
+  const provinces = readJson<{ items: Array<{ name: string; adcode: string }> }>(CURATED_FILES.provinces).items
+  const hospitals = new Map<string, Hospital>()
+  for (const result of run.results) {
+    if (result.status !== 'geocoded' || !result.chosen) continue
+    const poi = result.chosen
+    const id = `kdocs-amap-${poi.id.toLowerCase()}`
+    if (hospitals.has(id)) {
+      hospitals.get(id)!.aliases.push(result.name)
+      continue
     }
-    prev = cur
+    const values = poi.location.split(',').map(Number)
+    if (values.length !== 2 || !values.every(Number.isFinite)) throw new Error(`高德坐标无效：${result.name}`)
+    const [lng, lat] = gcj02ToWgs84(values[0], values[1])
+    // The Hengqin campus is administered by Macao even when the POI labels the land as Zhuhai.
+    const macauManaged = result.region === '澳门' && /由澳门特别行政区.*管辖/u.test(`${poi.name}${poi.address}`)
+    const province = provinces.find(province => province.name === (macauManaged ? '澳门特别行政区' : poi.pname))
+    if (!province) throw new Error(`高德省级归属不在行政区字典：${poi.name} / ${poi.pname}`)
+    hospitals.set(id, {
+      id, name: /building$/u.test(result.selection_rule ?? '') || !/[\u4e00-\u9fff]/u.test(poi.name) ? result.name.replace(/（[^）]*）/gu, '') : poi.name, aliases: [result.name], adcode: province.adcode,
+      province: province.name, city: macauManaged ? province.name : poi.cityname || poi.pname, level: '未知', category: '其他', departments: ['未录入'],
+      trauma_service: { cptsd_assessment: 'unknown', cptsd_bpd_diagnosis: 'unknown', icd11_practice: 'unknown', evidence: [] },
+      address: poi.address, coordinates: { lat, lng }, coordinates_source: 'geocoded',
+      official_sources: [], last_verified_at: run.generated_at.slice(0, 10),
+    })
   }
-  return best
+  return [...hospitals.values()]
 }
 
-type Hospital = {
-  id: string
-  name: string
-  aliases: string[]
-  province: string
-  city: string
-  coordinates: { lat: number; lng: number } | null
-  coordinates_source?: string
-  address?: string
-}
-
-type ChosenPoi = {
-  poi: string
-  poiId: string
-  address: string
-  gcj02: [number, number]
-  wgs84: [number, number]
-  score: number
-  rule: 'record-address' | 'base-name' | 'main-campus-marker' | 'best-score'
-}
-
-type ReportEntry = {
-  id: string
-  name: string
-  city: string
-  status: 'geocoded' | 'not_found'
-  chosen?: ChosenPoi
-  candidates: Array<{ name: string; score: number; address: string; city: string; location: string }>
-}
-
-type ScoredPoi = { poi: Poi; score: number }
-
-/** 主院区判定：依次尝试四条规则（见文件头注释），全部失败返回 null */
-function resolveMainCampus(hospital: Hospital, scored: ScoredPoi[]): ChosenPoi | null {
-  const viable = scored.filter(({ poi }) => cityHitOk(poi, hospital))
-  if (!viable.length) return null
-
-  const make = (entry: ScoredPoi, rule: ChosenPoi['rule']): ChosenPoi => {
-    const [gcjLng, gcjLat] = entry.poi.location.split(',').map(Number)
-    const [wgsLng, wgsLat] = gcj02ToWgs84(gcjLng, gcjLat)
-    return {
-      poi: entry.poi.name,
-      poiId: entry.poi.id,
-      address: entry.poi.address ?? '',
-      gcj02: [gcjLng, gcjLat],
-      wgs84: [wgsLng, wgsLat],
-      score: entry.score,
-      rule,
-    }
-  }
-
-  // 0. 记录 address 的首个院区段与候选地址匹配
-  if (hospital.address) {
-    const firstCampus = hospital.address.split('；')[0]
-    let best: ScoredPoi | undefined
-    let bestLen = 0
-    for (const entry of viable) {
-      const len = lcs(entry.poi.address ?? '', firstCampus)
-      if (len > bestLen) {
-        bestLen = len
-        best = entry
-      }
-    }
-    if (best && bestLen >= 5) return make(best, 'record-address')
-  }
-
-  const isBuilding = (name: string) => /(门诊|急诊|住院|体检|检验|急救|发热|药房|输液|接种|犬伤|健康服务|[^院]部)$/.test(name) || /(门诊|急诊|住院|体检|检验|急救|发热|药房|输液|接种|犬伤)/.test(name)
-
-  // 1. 总院 / 主院区 / 院本部（优先于主体名称：防止「合作医院」等附属实体抢主院区）
-  const mainMarker = viable
-    .filter(({ poi }) => /(总院|主院区|院本部)/.test(poi.name))
-    .sort((a, b) => b.score - a.score)[0]
-  if (mainMarker) return make(mainMarker, 'main-campus-marker')
-
-  // 2. 无院区标记且非楼栋（门诊/检验/体检等）的主体名称 POI
-  const baseName = viable
-    .filter(({ poi }) => campusMarker(poi.name) === null && !isBuilding(poi.name))
-    .sort((a, b) => b.score - a.score)[0]
-  if (baseName && baseName.score >= 70) return make(baseName, 'base-name')
-
-  // 3. 最高分兜底：优先非楼栋候选，分数下限 25，避免钉到明显无关的候选
-  const nonBuilding = viable.filter(({ poi }) => !isBuilding(poi.name))
-  const building = viable.filter(({ poi }) => isBuilding(poi.name))
-  // 非楼栋池整体低于下限时，回退到楼栋池（楼栋也在院内，优于省级示意）
-  const fallback = nonBuilding.find(({ score }) => score >= 25) ?? building.find(({ score }) => score >= 25)
-  if (!fallback) return null
-  return make(fallback, 'best-score')
-}
-
-async function geocodeHospital(hospital: Hospital): Promise<ReportEntry> {
-  const base: ReportEntry = { id: hospital.id, name: hospital.name, city: hospital.city, status: 'not_found', candidates: [] }
-  const queries: Array<[string, string?]> = [
-    [hospital.name, '090000'],
-    [hospital.name],
-    ...hospital.aliases.slice(0, 2).map((alias) => [alias] as [string]),
-    [hospital.name.replace(/（[^）]*）/g, ''), '090000'],
-    [hospital.name.replace(/人民医院$/, '医院'), '090000'],
-  ]
-  let pois: Poi[] = []
-  for (const [keywords, types] of queries) {
-    pois = await searchPoi(keywords, hospital.city, types)
-    if (pois.length) break
-    await sleep(320)
-  }
-  if (!pois.length) return base
-
-  const scored = pois.map((poi) => ({ poi, score: scorePoi(poi, hospital) })).sort((a, b) => b.score - a.score)
-  base.candidates = scored.slice(0, 3).map(({ poi, score }) => ({
-    name: poi.name,
-    score,
-    address: poi.address ?? '',
-    city: [poi.pname, poi.cityname].filter(Boolean).join(' '),
-    location: poi.location,
-  }))
-
-  const chosen = resolveMainCampus(hospital, scored)
-  if (chosen) {
-    base.status = 'geocoded'
-    base.chosen = chosen
-  }
-  return base
+export function applyRun(reports: Report[], run: LocationRun) {
+  if (run.source_url !== SOURCE_URL || run.results.some(result => result.status === 'not_queried')) throw new Error('定位报告来源不符或尚未完成查询')
+  const linked = linkLocationReports(reports, run)
+  const hospitals = hospitalsFromRun(run)
+  const updated_at = run.generated_at.slice(0, 10)
+  const hospitalFile = hospitalsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: hospitals })
+  const reportFile = reportsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: linked })
+  // Keep public provenance minimal; the full candidate inventory stays in ignored raw storage.
+  writeJson(LOCATION_EVIDENCE, { ...run, provider: 'amap', endpoint: 'https://restapi.amap.com/v3/place/text', source_crs: 'GCJ-02', stored_crs: 'WGS84', conversion: 'three-iteration approximate inverse', results: run.results.map(result => ({ ...result, candidates: result.chosen ? [result.chosen] : [] })) })
+  writeJson(CURATED_FILES.hospitals, hospitalFile)
+  writeJson(CURATED_FILES.reports, reportFile)
+  console.log(`已入库 ${hospitals.length} 个位置，关联 ${linked.filter(report => report.hospital_id).length}/${linked.length} 条来源；其余保留未定位`)
 }
 
 async function main() {
-  let report: ReportEntry[]
-  if (APPLY_REPORT) {
-    report = (JSON.parse(readFileSync(APPLY_REPORT, 'utf8')) as { results: ReportEntry[] }).results
-    console.log(`从报告应用：${APPLY_REPORT}`)
-  } else {
-    const current = JSON.parse(readFileSync(HOSPITALS_PATH, 'utf8')) as { items: Hospital[] }
-    const targets = MISSING_ONLY ? current.items.filter((h) => h.coordinates_source !== 'geocoded') : current.items
-    const processed = new Map<string, ReportEntry>()
-    for (const hospital of targets) {
-      if (!hospital.coordinates) {
-        processed.set(hospital.id, { id: hospital.id, name: hospital.name, city: hospital.city, status: 'not_found', candidates: [] })
-        continue
-      }
-      const entry = await geocodeHospital(hospital)
-      processed.set(hospital.id, entry)
-      console.log(`${entry.status.padEnd(9)} ${hospital.id} ${hospital.name}${entry.chosen ? ` [${entry.chosen.rule}] -> ${entry.chosen.poi} @ ${entry.chosen.address}` : ''}`)
-      await sleep(340)
-    }
-    // 报告始终覆盖全部机构：--missing 时保留其余条目的旧结果
-    const previous = existsSync(`${RUNS_DIR}/2026-09-12-amap-geocode.json`)
-      ? (JSON.parse(readFileSync(`${RUNS_DIR}/2026-09-12-amap-geocode.json`, 'utf8')) as { results: ReportEntry[] }).results
-      : []
-    report = current.items.map((h) => processed.get(h.id) ?? previous.find((r) => r.id === h.id) ?? {
-      id: h.id, name: h.name, city: h.city, status: 'not_found' as const, candidates: [],
+  const document = readJson<SourceDocument>(SOURCE_CAPTURE)
+  const reports = reportsFromDocument(document)
+  const args = process.argv.slice(2)
+  if (args.includes('--apply')) {
+    const run = readJson<LocationRun>(args[args.indexOf('--apply') + 1])
+    if (!args.includes('--write')) throw new Error('应用定位报告须明确 --write')
+    const candidates = run.results.flatMap(result => result.candidates)
+    run.results = run.results.map(result => {
+      if (result.status === 'not_queried') return result
+      const selected = selectPoi(result, result.candidates)
+      if (selected.chosen) return selected
+      // Identical POIs already returned for another current-source name do not need another request.
+      const matching = candidates.filter(poi => poi.name.replace(/[市（）()\s]/gu, '') === searchName(result.name).replace(/[市（）()\s]/gu, ''))
+      return matching.length ? selectPoi(result, matching) : selected
     })
-  }
-
-  const stamp = new Date().toISOString().slice(0, 10)
-  const reportPath = `${RUNS_DIR}/${stamp}-amap-geocode.json`
-  writeFileSync(reportPath, JSON.stringify({ schema_version: '1.0.0', generated_at: new Date().toISOString(), source: 'amap place/text v3, gcj02->wgs84', results: report }, null, 2))
-  const summary = {
-    geocoded: report.filter((r) => r.status === 'geocoded').length,
-    not_found: report.filter((r) => r.status === 'not_found').length,
-  }
-  console.log(`\n${JSON.stringify(summary)} 报告: ${reportPath}`)
-
-  if (!WRITE && !APPLY_REPORT) {
-    console.log('dry-run：未修改 hospitals.json')
+    applyRun(reports, run)
     return
   }
-  const chosenList = report.filter((r) => r.chosen)
-  if (!chosenList.length) {
-    console.log('没有可写回的匹配，未修改 hospitals.json')
+  const key = loadEnvKey()
+  if (args.includes('--probe')) {
+    console.log(`${new Date().toISOString()} 高德单次诊断：${reports[0].hospital_name_raw}`)
+    const params = new URLSearchParams({ key, keywords: reports[0].hospital_name_raw!, offset: '1', page: '1' })
+    const response = await fetch(`https://restapi.amap.com/v3/place/text?${params}`, { signal: AbortSignal.timeout(20000) })
+    const body = await response.json() as { status: string; info: string; infocode: string }
+    console.log(`HTTP ${response.status}, status=${body.status}, infocode=${body.infocode}, info=${body.info.replaceAll(key, '[redacted]')}`)
+    if (!response.ok || body.status !== '1') process.exitCode = 1
     return
   }
-  if (!existsSync(`tmp/hospitals.pre-geocode-${stamp}.json`)) {
-    copyFileSync(HOSPITALS_PATH, `tmp/hospitals.pre-geocode-${stamp}.json`)
+  const targets = locationTargets(reports)
+  const run: LocationRun = { source_url: SOURCE_URL, generated_at: new Date().toISOString(), requests: 0, requests_total: 0,
+    results: targets.map(target => ({ ...target, status: 'not_queried', reason: '尚未查询', candidates: [] })) }
+  const rawPath = 'data/raw/amap-2026-10-27.json'
+  if (args.includes('--missing') && existsSync(LOCATION_EVIDENCE)) {
+    const previous = readJson<LocationRun>(LOCATION_EVIDENCE)
+    if (previous.source_url !== SOURCE_URL) throw new Error('已有定位不属于当前来源，须重新全量定位')
+    linkLocationReports(reports, previous)
+    run.requests_total = previous.requests_total ?? previous.requests
+    run.results = previous.results.map(result => result.status === 'geocoded' ? result : { ...result, status: 'not_queried', candidates: [] })
   }
-  const data = JSON.parse(readFileSync(HOSPITALS_PATH, 'utf8')) as { items: Hospital[]; updated_at: string }
-  const chosen = new Map(chosenList.map((r) => [r.id, r.chosen!]))
-  let applied = 0
-  for (const hospital of data.items) {
-    const match = chosen.get(hospital.id)
-    if (!match) continue
-    hospital.coordinates = { lat: match.wgs84[1], lng: match.wgs84[0] }
-    hospital.coordinates_source = 'geocoded'
-    if (!hospital.address && match.address) hospital.address = match.address
-    applied++
+  const countedFetch: typeof fetch = (...args) => { run.requests++; run.requests_total!++; return fetch(...args) }
+  try {
+    for (let index = 0; index < targets.length; index++) {
+      if (run.results[index].status === 'geocoded') continue
+      const target = targets[index]
+      const reply = await searchAmap(key, searchName(target.name), searchCity(target), countedFetch)
+      run.results[index] = selectPoi(target, reply.pois)
+      const result = run.results[index]
+      console.log(`${index + 1}/${targets.length} ${result.status} ${target.name} -> ${result.chosen?.name ?? result.reason} (${reply.pois.length} 候选)`)
+      writeJson(rawPath, run)
+      await new Promise(resolve => setTimeout(resolve, 1100))
+    }
+  } catch (error) {
+    writeJson(rawPath, run)
+    const done = run.results.filter(result => result.status !== 'not_queried').length
+    console.error(`高德查询中止：已完成 ${done}/${targets.length}，请求 ${run.requests} 次；本地进度 ${rawPath}`)
+    throw error
   }
-  data.updated_at = new Date().toISOString().slice(0, 10)
-  writeFileSync(HOSPITALS_PATH, JSON.stringify(data, null, 2) + '\n')
-  console.log(`已写回 ${applied} 家医院的坐标（备份: tmp/hospitals.pre-geocode-${stamp}.json）`)
+  console.log(`高德完成 ${targets.length} 个原文机构、${reports.length} 条来源，${run.requests} 次请求。候选报告：${rawPath}`)
+  if (args.includes('--write')) applyRun(reports, run)
 }
 
-main()
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((error: Error & { cause?: { code?: string } }) => {
+    // Request URLs contain credentials; expose only the controlled diagnostic message.
+    console.error(`定位停止：${error.message === 'fetch failed' ? `网络请求失败 ${error.cause?.code ?? ''}` : error.message}`)
+    process.exitCode = 1
+  })
+}

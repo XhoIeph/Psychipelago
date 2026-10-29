@@ -1,12 +1,15 @@
 'use client'
 
 import { Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import type { Marker, Map as LeafletMap, LayerGroup, GeoJSON as LeafletGeoJSON, GeoJSON as GeoJSONTypes } from 'leaflet'
-import 'leaflet/dist/leaflet.css'
 import Link from 'next/link'
 import { hospitalSearchText, matchesSearch } from '@/lib/search'
 import { aggregateDoctorLeads } from '@/lib/doctor-leads'
-import { attachMapWheelZoom } from '@/lib/map-wheel-zoom'
+import { loadAmap } from '@/lib/amap-loader'
+import { createAmapRuntime } from '@/lib/amap-runtime'
+import type { MapCamera } from '@/lib/map-camera'
+import { gsap } from 'gsap'
+import { useGSAP } from '@gsap/react'
+import { sidebarCameraFrame } from '@/lib/map-sidebar'
 import type { Disorder, Hospital, Province, Report } from '@/lib/schema'
 import { HospitalExplorer } from '@/components/HospitalExplorer'
 import { ReportExplorer } from '@/components/ReportExplorer'
@@ -17,48 +20,18 @@ import { ProvinceDetail } from './ProvinceDetail'
 import type { MapHospital, MapLead, MapProvinceStat } from './types'
 import { ArrowUpRight, ListFilter, LocateFixed, Menu, Search, X } from 'lucide-react'
 
-/**
- * 全页地图应用（Google Maps 式）：
- * - 底图：天地图瓦片（需 NEXT_PUBLIC_TIANDITU_KEY）；未配置 key 时回退为省界矢量示意底图
- * - 密度：全国层级按省级线索条数着色（choropleth），放大到省级后淡出、显示医院节点
- * - 节点：zoom ≥ 7 才出现；7–9 聚合近邻医院（十字 + 数量角标，点击放大）；≥ 10 展开为单个图钉
- * - 侧栏：<1000px 默认关闭（首屏先看到地图），≥1000px 默认展开；移动端按 modal drawer 处理焦点
- * - 诚实标注：密度是「公开线索的采集密度」，不是就诊/确诊人数；节点坐标为公开地图 POI 或省级示意
- */
-
-const NODE_ZOOM_THRESHOLD = 7
-/** 达到该层级展开为单个图钉，之前做近邻聚合 */
-const CLUSTER_MAX_ZOOM = 10
-/** 聚合网格边长（像素） */
-const CLUSTER_PIXEL = 56
-const MAX_ZOOM = 12
-/** 中国主体范围（不含南海诸岛之外的远海），用于初始 fitBounds */
-const CHINA_BOUNDS: [[number, number], [number, number]] = [
-  [17.5, 73.0],
-  [53.8, 135.5],
-]
-const NO_DATA_COLOR = '#ffffff'
-
-function densityColor(reports: number): string {
-  if (reports <= 0) return NO_DATA_COLOR
-  if (reports <= 2) return '#b9e6c8'
-  if (reports <= 4) return '#7dd3a4'
-  if (reports <= 7) return '#4dbb83'
-  if (reports <= 10) return '#2f9e68'
-  return '#147a52'
-}
+const HOSPITAL_ZOOM = 10
+gsap.registerPlugin(useGSAP)
 
 type Props = {
   provinces: Province[]
   mapHospitals: MapHospital[]
   leadsByHospital: Record<string, MapLead[]>
   provinceStats: Record<string, MapProvinceStat>
-  totals: { reports: number; hospitals: number; provincesWithReports: number }
   hospitals: Hospital[]
   reports: Report[]
   disorders: Disorder[]
   reportProvince: Record<string, string>
-  hospitalNames: Record<string, string>
   reportCounts: Record<string, number>
 }
 
@@ -72,23 +45,17 @@ type SearchResult = {
   run: () => void
 }
 
-/** 聚合后的节点：clustered=false 时必须只有一个成员 */
-type NodeEntry = {
-  key: string
-  lat: number
-  lng: number
-  members: MapHospital[]
-}
-
 export function MapApp(props: Props) {
+  const shellRef = useRef<HTMLDivElement | null>(null)
+  const dockRef = useRef({ progress: 0, inset: 0 })
+  const dockDesktopRef = useRef(false)
+  const dockTweenRef = useRef<gsap.core.Tween | null>(null)
+  const navigationInsetRef = useRef<number | undefined>(undefined)
+  const cancelDockCameraRef = useRef<(() => void) | undefined>(undefined)
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const mapRef = useRef<LeafletMap | null>(null)
+  const mapRef = useRef<MapCamera | null>(null)
+  const runtimeRef = useRef<ReturnType<typeof createAmapRuntime> | null>(null)
   const cancelWheelRef = useRef<(() => void) | undefined>(undefined)
-  const geoLayerRef = useRef<LeafletGeoJSON | null>(null)
-  const nodeLayerRef = useRef<LayerGroup | null>(null)
-  const clusterLayerRef = useRef<LayerGroup | null>(null)
-  const nodesOnRef = useRef(false)
-  const zoomRef = useRef(NODE_ZOOM_THRESHOLD)
   const propsRef = useRef(props)
   propsRef.current = props
   const sidebarRef = useRef<HTMLElement | null>(null)
@@ -97,7 +64,7 @@ export function MapApp(props: Props) {
   const aboutButtonRef = useRef<HTMLButtonElement | null>(null)
   const desktopRef = useRef(false)
 
-  // 首屏以「地图优先」为准：服务端与移动端都先关闭侧栏，挂载后再按断点决定
+  // The server and phones start map-first; desktop docking follows after hydration.
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isDesktop, setIsDesktop] = useState(false)
   const [selectedHospitalId, setSelectedHospitalId] = useState<string | null>(null)
@@ -106,13 +73,77 @@ export function MapApp(props: Props) {
   const [mapError, setMapError] = useState('')
   const [mapReady, setMapReady] = useState(false)
   const [aboutOpen, setAboutOpen] = useState(false)
+  const [limits, setLimits] = useState({ atMin: true, atMax: false })
+  const [cluster, setCluster] = useState<{ members: MapHospital[]; key: string; x: number; y: number } | null>(null)
+  const clusterRef = useRef<HTMLDivElement | null>(null)
+  const focusDetailRef = useRef(false)
   const [activeResult, setActiveResult] = useState(-1)
   const [sidebarTab, setSidebarTab] = useState<SidebarTabId>('hospitals')
-  /** 全局搜索命中病症时，把该病症注入线索列表筛选 */
+  // Global disorder searches seed the existing report filter.
   const [seedDisorder, setSeedDisorder] = useState<string | undefined>(undefined)
 
   const selectedRef = useRef<string | null>(null)
   selectedRef.current = selectedHospitalId
+
+  useEffect(() => {
+    runtimeRef.current?.syncSelection()
+    if (focusDetailRef.current) {
+      focusDetailRef.current = false
+      sidebarRef.current?.querySelector<HTMLButtonElement>('.tc-detail-back')?.focus({ preventScroll: true })
+    }
+  }, [selectedHospitalId, cluster])
+
+  useEffect(() => {
+    if (!cluster) return
+    clusterRef.current?.querySelector<HTMLButtonElement>('button')?.focus({ preventScroll: true })
+  }, [cluster])
+
+  useGSAP(() => {
+    const shell = shellRef.current
+    if (!shell || (!mapReady && !mapError)) return
+    dockTweenRef.current?.kill()
+    cancelDockCameraRef.current?.()
+    const dock = dockRef.current
+    if (dockDesktopRef.current !== isDesktop) dock.inset = 0
+    dockDesktopRef.current = isDesktop
+    const map = mapRef.current
+    const fromInset = dock.inset
+    const inset = isDesktop && sidebarOpen ? sidebarRef.current?.offsetWidth ?? 380 : 0
+    const width = map?.getSize().x ?? shell.clientWidth
+    const anchor = map?.unproject(map.project(map.getCenter(), map.getZoom()).add([fromInset / 2, 0]), map.getZoom())
+    const startZoom = map?.getZoom() ?? 0
+    const startMinZoom = map?.getMinZoom() ?? 0
+    let moving = !!map && fromInset !== inset && navigationInsetRef.current !== inset && !runtimeRef.current?.isNavigating()
+    navigationInsetRef.current = undefined
+    const finishCamera = () => {
+      if (moving && map) {
+        moving = false
+        map.endMove()
+      }
+    }
+    if (moving) {
+      cancelWheelRef.current?.()
+      runtimeRef.current?.interrupt()
+      map?.beginMove()
+    }
+    cancelDockCameraRef.current = finishCamera
+    dockTweenRef.current = gsap.to(dock, {
+      progress: sidebarOpen ? 1 : 0,
+      inset,
+      duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 0.68,
+      ease: 'power3.inOut',
+      onUpdate: () => {
+        shell.style.setProperty('--tc-sidebar-progress', String(dock.progress))
+        shell.style.setProperty('--tc-sidebar-offset', `${dock.inset}px`)
+        if (moving && map && anchor) {
+          const frame = sidebarCameraFrame(map, anchor, width, fromInset, dock.inset, startZoom, startMinZoom, inset)
+          runtimeRef.current?.setMinZoom(frame.minZoom)
+          map.move(frame.center, frame.zoom)
+        }
+      },
+      onComplete: finishCamera,
+    })
+  }, { scope: shellRef, dependencies: [sidebarOpen, isDesktop, mapReady, mapError] })
 
   useEffect(() => {
     if (!aboutOpen) return
@@ -132,18 +163,7 @@ export function MapApp(props: Props) {
     }
   }, [aboutOpen])
 
-  useEffect(() => {
-    if (!containerRef.current) return
-    const observer = new ResizeObserver(() => {
-      const map = mapRef.current
-      if (!map) return
-      map.invalidateSize({ pan: false })
-    })
-    observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [])
-
-  /** 断点：≥1000px 默认展开侧栏；<1000px 默认关闭（首屏必须看到地图） */
+  // Desktop docks by default; phones keep the first view on the map.
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1000px)')
     const apply = () => {
@@ -156,16 +176,16 @@ export function MapApp(props: Props) {
     return () => mq.removeEventListener('change', apply)
   }, [])
 
-  /** 移动端抽屉：焦点进入、Escape 关闭并回到触发按钮（真 modal 行为） */
+  // The mobile drawer owns focus while open and restores its trigger on Escape.
   useEffect(() => {
     if (!sidebarOpen || isDesktop) return
     const panel = sidebarRef.current
-    // 焦点优先落在当前标签（这样 ←/→ 可立即切换），没有标签（详情卡）时退回第一个可聚焦元素
+    // Prefer the active tab so arrow-key navigation remains available.
     const activeTab = panel?.querySelector<HTMLElement>('.tc-sidebar-tab[tabindex="0"]')
     const fallback = panel?.querySelector<HTMLElement>(
       'button, a[href], input, select, [tabindex]:not([tabindex="-1"])',
     )
-    // 等待抽屉从 hidden/inert 切换为可交互后再进入焦点，不等待动画结束。
+    // Focus follows the React commit that removes inert, not the animation end.
     const focusFrame = requestAnimationFrame(() => (activeTab ?? fallback)?.focus({ preventScroll: true }))
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Tab') {
@@ -190,407 +210,59 @@ export function MapApp(props: Props) {
     }
   }, [sidebarOpen, isDesktop])
 
-  const tileKey = process.env.NEXT_PUBLIC_TIANDITU_KEY
-  const geocodedCount = props.mapHospitals.filter((h) => h.coordinateSource === 'geocoded').length
-  const coordinateNote = geocodedCount === 0
-    ? '省级示意，非医院地址'
-    : geocodedCount === props.mapHospitals.length
-      ? '位置来自公开地图 POI 匹配'
-      : `${geocodedCount} 家为公开地图 POI 位置，其余为省级示意`
-
-  const moveTo = (lat: number, lng: number, targetZoom: number) => {
-    const map = mapRef.current
-    if (!map) return
-    cancelWheelRef.current?.()
-    // 天地图由底图与注记两层栅格瓦片组成。停在小数缩放级别时两层都会
-    // 长期处于浏览器插值缩放状态，文字边缘会像重影；程序化移动统一落到整数级。
-    const crispZoom = Math.round(targetZoom)
-    map.stop()
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      map.setView([lat, lng], crispZoom, { animate: false })
-      return
-    }
-    // 原生 flyTo 在动画中只移动现有图层，动画结束后才触发 zoomend，
-    // 避免每一帧清空并重建聚合图钉造成频闪和瞬移。
-    map.flyTo([lat, lng], crispZoom, { animate: true, duration: 0.85 })
-  }
-
-  /** 选中医院：飞过去 + 侧栏切详情卡 */
   const selectHospital = (id: string) => {
-    const hospital = propsRef.current.mapHospitals.find((item) => item.id === id)
+    const hospital = propsRef.current.mapHospitals.find(item => item.id === id)
     if (!hospital) return
+    setCluster(null)
     setSelectedHospitalId(id)
     setSelectedProvinceAdcode(null)
+    navigationInsetRef.current = desktopRef.current ? 380 : 0
     setSidebarOpen(true)
-    const map = mapRef.current
-    if (map) moveTo(hospital.lat, hospital.lng, Math.max(map.getZoom(), CLUSTER_MAX_ZOOM))
+    runtimeRef.current?.moveTo(hospital, Math.max(mapRef.current?.getZoom() ?? 0, HOSPITAL_ZOOM), desktopRef.current ? 380 : 0)
   }
 
-  /** 选中省份：飞到省界范围 + 侧栏切省份概要卡 */
   const selectProvince = (adcode: string) => {
+    setCluster(null)
     setSelectedProvinceAdcode(adcode)
     setSelectedHospitalId(null)
+    navigationInsetRef.current = desktopRef.current ? 380 : 0
     setSidebarOpen(true)
-    const map = mapRef.current
-    const geoLayer = geoLayerRef.current
-    if (!map || !geoLayer) return
-    const target = geoLayer
-      .getLayers()
-      .find(
-        (layer) =>
-          String(
-            (layer as unknown as { feature?: GeoJSON.Feature }).feature?.properties?.adcode ?? '',
-          ) === adcode,
-      )
-    if (!target) return
-    const layerBounds = (target as GeoJSONTypes).getBounds()
-    const fitZoom = map.getBoundsZoom(layerBounds)
-    const center = layerBounds.getCenter()
-    moveTo(center.lat, center.lng, Math.min(MAX_ZOOM, Math.max(fitZoom, NODE_ZOOM_THRESHOLD)))
+    runtimeRef.current?.province(adcode, desktopRef.current ? 380 : 0)
   }
 
-  // 初始化 Leaflet：底图（瓦片或矢量回退）+ 省界密度层 + 节点层
   useEffect(() => {
     let disposed = false
-    let map: LeafletMap | undefined
-    let wheelZoom: ReturnType<typeof attachMapWheelZoom> | undefined
-
+    let runtime: ReturnType<typeof createAmapRuntime> | undefined
     async function setup() {
       try {
-        const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
-        const L = await import('leaflet')
+        const sdk = await loadAmap()
         if (disposed || !containerRef.current) return
-
-        map = L.map(containerRef.current, {
-          center: [35.5, 105],
-          zoom: 4,
-          // 栅格底图必须在整数级结束缩放，否则底图与注记层会持续被缩放插值，
-          // 在高 DPI 屏幕上尤其容易出现文字与道路的重影。
-          zoomSnap: 1,
-          zoomDelta: 1,
-          scrollWheelZoom: false,
-          fadeAnimation: false,
-          // 竖屏手机上装下整个中国所需的缩放级别低于 4；minZoom 过高会把国土裁掉，
-          // 因此下限压到 3，让 fitBounds 决定初始视野；maxBounds 放宽，避免与 fit 互相打架
-          minZoom: 3,
-          maxBounds: [[-5, 55], [65, 155]],
-          maxBoundsViscosity: 1,
-          maxZoom: MAX_ZOOM,
-          zoomControl: false,
-          // 用 fitBounds 控制初始视野（按侧栏是否展开设置左右 padding）
-          attributionControl: true,
-        })
-        mapRef.current = map
-        L.control.zoom({ position: 'bottomright' }).addTo(map)
-        L.control.scale({ position: 'bottomright', imperial: false }).addTo(map)
-
-        wheelZoom = attachMapWheelZoom(map)
-        cancelWheelRef.current = wheelZoom.cancel
-
-        /** CSS 已给侧栏腾出位置；只能按真实地图容器留白，不能重复减去侧栏宽度。 */
-        const fitCountry = () => {
-          if (!map) return
-          map.setMinZoom(3)
-          const wide = window.innerWidth >= 1000
-          // 窄屏上下留白压到最小：竖屏装下整幅国土后本就会出现南北邻国，
-          // 不再额外加 padding，让中国尽量占满可用宽度
-          map.fitBounds(L.latLngBounds(CHINA_BOUNDS[0], CHINA_BOUNDS[1]), {
-            paddingTopLeft: [20, wide ? 78 : 80],
-            paddingBottomRight: [20, wide ? 70 : 136],
-            animate: false,
-          })
-          map.setMinZoom(map.getZoom())
-          zoomRef.current = map.getZoom()
-        }
-        fitCountry()
-
-        // 地图容器是 overflow:hidden，但浏览器仍可被 scrollIntoView 滚动它
-        const mapContainer = containerRef.current
-        const pinToOrigin = () => {
-          if (mapContainer.scrollTop !== 0) mapContainer.scrollTop = 0
-          if (mapContainer.scrollLeft !== 0) mapContainer.scrollLeft = 0
-        }
-        mapContainer.addEventListener('scroll', pinToOrigin, { passive: true })
-        mapContainer.addEventListener('focusin', pinToOrigin)
-
-        if (tileKey) {
-          const commons = {
-            subdomains: '01234567',
-            maxZoom: MAX_ZOOM,
-            tileSize: 256,
-            // flyTo 过程中沿用同一组瓦片，结束后一次性切换到目标级别，
-            // 避免底图与注记层各自刷新造成短暂的双层残影。
-            updateWhenZooming: false,
-          }
-          L.tileLayer(
-            `https://t{s}.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=${tileKey}`,
-            {
-              ...commons,
-              attribution:
-                '底图 © <a href="https://www.tianditu.gov.cn/" target="_blank" rel="noopener noreferrer">国家地理信息公共服务平台 天地图</a>',
-            },
-          ).addTo(map)
-          L.tileLayer(
-            `https://t{s}.tianditu.gov.cn/DataServer?T=cia_w&x={x}&y={y}&l={z}&tk=${tileKey}`,
-            { ...commons, opacity: 0.85 },
-          ).addTo(map)
-        }
-
-        const geoResponse = await fetch(`${basePath}/geo/china-provinces.json`)
-        if (!geoResponse.ok) throw new Error(`省界底图加载失败：HTTP ${geoResponse.status}`)
-        const geo = (await geoResponse.json()) as GeoJSON.FeatureCollection
-        if (disposed || !mapRef.current) return
-
-        nodeLayerRef.current = L.layerGroup()
-        clusterLayerRef.current = L.layerGroup()
-        ;(mapRef.current as unknown as { __fitCountry?: () => void }).__fitCountry = fitCountry
-
-        /** 生成单个医院图钉（可访问名称 = 医院名） */
-        const createPin = (hospital: MapHospital, latOffset = 0, lngOffset = 0): Marker => {
-          const selected = hospital.id === selectedRef.current
-          const body = document.createElement('span')
-          body.className = 'tc-pin-body'
-          body.setAttribute('role', 'img')
-          body.setAttribute('aria-label', hospital.name)
-          body.textContent = '✚'
-          const marker = L.marker([hospital.lat + latOffset, hospital.lng + lngOffset], {
-            icon: L.divIcon({
-              className: `tc-hospital-pin${selected ? ' tc-pin--selected' : ''}`,
-              html: body,
-              iconSize: [34, 38],
-              iconAnchor: [17, 36],
-              tooltipAnchor: [17, -20],
-            }),
-            title: hospital.name,
-            riseOnHover: true,
-            zIndexOffset: selected ? 1000 : 0,
-          })
-          const label = document.createElement('span')
-          label.textContent = hospital.name
-          marker.bindTooltip(label, { permanent: false, direction: 'right', className: 'tc-node-label' })
-          marker.on('click', () => selectHospital(hospital.id))
-          return marker
-        }
-
-        /** 生成聚合图标：仍是医院十字，带数量角标（不是普通数字圆圈） */
-        const createClusterPin = (entry: NodeEntry, onClick: () => void): Marker => {
-          const body = document.createElement('span')
-          body.className = 'tc-cluster-body'
-          body.setAttribute('role', 'img')
-          body.setAttribute('aria-label', `${entry.members.length} 家机构，点击放大`)
-          const plus = document.createElement('i')
-          plus.textContent = '✚'
-          const count = document.createElement('strong')
-          count.textContent = String(entry.members.length)
-          body.append(plus, count)
-          const marker = L.marker([entry.lat, entry.lng], {
-            icon: L.divIcon({
-              className: 'tc-cluster-pin',
-              html: body,
-              iconSize: [40, 44],
-              iconAnchor: [20, 40],
-              tooltipAnchor: [20, -22],
-            }),
-            title: `${entry.members.length} 家机构`,
-            riseOnHover: true,
-          })
-          const label = document.createElement('span')
-          label.textContent = entry.members.map((item) => item.name).join('、')
-          marker.bindTooltip(label, { permanent: false, direction: 'right', className: 'tc-node-label' })
-          marker.on('click', onClick)
-          return marker
-        }
-
-        /**
-         * 分级渲染节点：
-         * - z < 7：不显示
-         * - 7 ≤ z < 10：按屏幕像素网格聚合，点击聚合图标平滑放大
-         * - z ≥ 10：展开为单个图钉；同址（坐标四舍五入相同）的机构做扇形展开，避免完全叠压
-         */
-        const renderNodes = () => {
-          const currentMap = mapRef.current
-          const nodeLayer = nodeLayerRef.current
-          const clusterLayer = clusterLayerRef.current
-          if (!currentMap || !nodeLayer || !clusterLayer) return
-
-          nodeLayer.clearLayers()
-          clusterLayer.clearLayers()
-
-          const z = currentMap.getZoom()
-          if (z < NODE_ZOOM_THRESHOLD) {
-            nodeLayer.remove()
-            clusterLayer.remove()
-            nodesOnRef.current = false
-            return
-          }
-          nodesOnRef.current = true
-
-          const hospitals = propsRef.current.mapHospitals
-
-          if (z >= CLUSTER_MAX_ZOOM) {
-            // 同址分组 → 扇形展开（spiderfy）
-            const byCoord = new Map<string, MapHospital[]>()
-            for (const hospital of hospitals) {
-              const key = `${hospital.lat.toFixed(4)},${hospital.lng.toFixed(4)}`
-              const list = byCoord.get(key) ?? []
-              list.push(hospital)
-              byCoord.set(key, list)
-            }
-            for (const group of byCoord.values()) {
-              if (group.length === 1) {
-                nodeLayer.addLayer(createPin(group[0]))
-                continue
-              }
-              // 按当前缩放级别用像素计算半径，再换算回经纬度；固定度数会随缩放变化，
-              // 导致图钉在某些级别仍重叠或看起来突然跳开。
-              const origin = currentMap.project([group[0].lat, group[0].lng], z)
-              const radius = Math.max(24, 18 * Math.sqrt(group.length))
-              group.forEach((hospital, index) => {
-                const angle = (index / group.length) * Math.PI * 2
-                const target = currentMap.unproject(
-                  origin.add([Math.sin(angle) * radius, Math.cos(angle) * radius]),
-                  z,
-                )
-                nodeLayer.addLayer(
-                  createPin(hospital, target.lat - hospital.lat, target.lng - hospital.lng),
-                )
-              })
-            }
-            clusterLayer.remove()
-            nodeLayer.addTo(currentMap)
-            return
-          }
-
-          // 屏幕像素网格聚合
-          const cells = new Map<string, NodeEntry>()
-          for (const hospital of hospitals) {
-            const point = currentMap.project([hospital.lat, hospital.lng], z)
-            const key = `${Math.floor(point.x / CLUSTER_PIXEL)}:${Math.floor(point.y / CLUSTER_PIXEL)}`
-            const entry = cells.get(key)
-            if (entry) {
-              entry.members.push(hospital)
-              entry.lat = (entry.lat * (entry.members.length - 1) + hospital.lat) / entry.members.length
-              entry.lng = (entry.lng * (entry.members.length - 1) + hospital.lng) / entry.members.length
-            } else {
-              cells.set(key, { key, lat: hospital.lat, lng: hospital.lng, members: [hospital] })
-            }
-          }
-
-          for (const entry of cells.values()) {
-            if (entry.members.length === 1) {
-              nodeLayer.addLayer(createPin(entry.members[0]))
-            } else {
-              clusterLayer.addLayer(
-                createClusterPin(entry, () => {
-                  const target = Math.min(CLUSTER_MAX_ZOOM, currentMap.getZoom() + 2)
-                  moveTo(entry.lat, entry.lng, target)
-                }),
-              )
-            }
-          }
-          nodeLayer.addTo(currentMap)
-          clusterLayer.addTo(currentMap)
-        }
-
-        const applyZoomStyles = () => {
-          const currentMap = mapRef.current
-          const geoLayer = geoLayerRef.current
-          if (!currentMap || !geoLayer) return
-          const z = currentMap.getZoom()
-          zoomRef.current = z
-          const detailed = z >= NODE_ZOOM_THRESHOLD
-          geoLayer.resetStyle()
-          geoLayer.eachLayer((layer) => {
-            if (detailed) layer.closeTooltip()
-            const element = (layer as unknown as { getElement?: () => SVGElement }).getElement?.()
-            if (element) element.style.pointerEvents = detailed ? 'none' : 'auto'
-          })
-          renderNodes()
-        }
-
-        // 省界层：密度 choropleth + 悬停概要 + 点击进详情
-        const geoLayer = L.geoJSON(geo, {
-          style: (feature) => {
-            const adcode = String(feature?.properties?.adcode ?? '')
-            if (adcode.endsWith('_JD')) {
-              return { color: '#8a93a0', weight: 1, dashArray: '4 3', fill: false }
-            }
-            const count = propsRef.current.provinceStats[adcode]?.reports ?? 0
-            const detailed = zoomRef.current >= NODE_ZOOM_THRESHOLD
-            return {
-              color: '#78a88e',
-              weight: 1.1,
-              fillColor: densityColor(count),
-              fillOpacity: detailed ? 0.06 : count ? 0.72 : 0.92,
-            }
+        runtime = createAmapRuntime(sdk, containerRef.current, {
+          hospitals: propsRef.current.mapHospitals, stats: propsRef.current.provinceStats,
+          inset: () => dockRef.current.inset, selected: () => selectedRef.current,
+          selectHospital, selectProvince, interruptDock: () => cancelDockCameraRef.current?.(),
+          limits: (atMin, atMax) => setLimits(previous => previous.atMin === atMin && previous.atMax === atMax ? previous : { atMin, atMax }),
+          closeCluster: () => setCluster(null),
+          cluster: (members, key, x, y) => {
+            const size = runtime!.camera.getSize()
+            setCluster({ members, key, x: Math.max(dockRef.current.inset + 16, Math.min(size.x - 296, x - 140)), y: Math.max(84, Math.min(size.y - 320, y - 40)) })
           },
-          onEachFeature: (feature, layer) => {
-            const adcode = String(feature?.properties?.adcode ?? '')
-            if (adcode.endsWith('_JD')) {
-              layer.on('click', (event) => L.DomEvent.stopPropagation(event))
-              return
-            }
-            const stat = propsRef.current.provinceStats[adcode]
-            const name = String(feature?.properties?.name ?? '')
-            layer.bindTooltip(
-              [
-                `<strong>${name}</strong>`,
-                `线索：${stat?.reports ?? 0} 条`,
-                `机构：${stat?.hospitals ?? 0} 家（其中具备创伤服务证据 ${stat?.withEvidence ?? 0} 家）`,
-              ].join('<br/>'),
-              { sticky: true, className: 'tc-province-tip' },
-            )
-            layer.on('click', () => { if (zoomRef.current < NODE_ZOOM_THRESHOLD) selectProvince(adcode) })
-            layer.on('mouseover', () => { if (zoomRef.current >= NODE_ZOOM_THRESHOLD) layer.closeTooltip() })
-          },
-        }).addTo(map)
-        geoLayerRef.current = geoLayer
-
-        // 所有省份都保留常驻名称；标签不参与交互，避免挡住省界点击。
-        const provinceLabels = geo.features.flatMap((feature) => {
-          const adcode = String(feature.properties?.adcode ?? '')
-          if (adcode.endsWith('_JD')) return []
-          const labelCenter = feature.properties?.centroid ?? feature.properties?.center
-          if (!Array.isArray(labelCenter)) return []
-          const province = propsRef.current.provinces.find((item) => item.adcode === adcode)
-          const labelText = province?.short_name ?? String(feature.properties?.name ?? '').replace(/省$|市$|自治区$|特别行政区$/, '')
-          if (!labelText) return []
-          const content = document.createElement('span')
-          content.className = 'tc-province-label-text'
-          content.textContent = labelText
-          content.setAttribute('aria-hidden', 'true')
-          const labelWidth = Math.max(30, Array.from(labelText).length * 12 + 6)
-          const marker = L.marker([labelCenter[1], labelCenter[0]], {
-            interactive: false,
-            keyboard: false,
-            zIndexOffset: -100,
-            icon: L.divIcon({ className: 'tc-province-label', html: content, iconSize: [labelWidth, 24], iconAnchor: [labelWidth / 2, 12] }),
-          })
-          return [marker]
+          ready: () => { if (!disposed) setMapReady(true) },
         })
-        L.layerGroup(provinceLabels).addTo(map)
-
-        const interrupt = () => { map?.stop() }
-        map.on('dragstart', interrupt)
-        map.on('zoomend', applyZoomStyles)
-        applyZoomStyles()
-        setMapReady(true)
-      } catch (error) {
-        if (!disposed) setMapError(error instanceof Error ? error.message : String(error))
-      }
+        runtimeRef.current = runtime
+        mapRef.current = runtime.camera
+        cancelWheelRef.current = runtime.cancelWheel
+        await runtime.loadDensity()
+      } catch (error) { if (!disposed) setMapError(error instanceof Error ? error.message : String(error)) }
     }
-
     void setup()
     return () => {
       disposed = true
-      wheelZoom?.dispose()
-      cancelWheelRef.current = undefined
-      map?.stop()
-      map?.remove()
+      cancelDockCameraRef.current?.()
+      runtime?.destroy()
+      runtimeRef.current = null
       mapRef.current = null
-      geoLayerRef.current = null
-      nodeLayerRef.current = null
-      clusterLayerRef.current = null
+      cancelWheelRef.current = undefined
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -598,17 +270,24 @@ export function MapApp(props: Props) {
   const backToCountry = () => {
     setSelectedHospitalId(null)
     setSelectedProvinceAdcode(null)
-    cancelWheelRef.current?.()
-    mapRef.current?.stop()
-    const map = mapRef.current as unknown as { __fitCountry?: () => void } | null
-    if (map?.__fitCountry) map.__fitCountry()
-    else {
-      const leaflet = mapRef.current
-      leaflet?.setView([35.5, 105], 4, { animate: false })
-    }
+    setCluster(null)
+    runtimeRef.current?.country()
   }
 
-  // 统一搜索：省份 / 机构 / 病症（多关键词、支持英文简称）
+  const zoomBy = (step: number) => {
+    const map = mapRef.current
+    if (!map) return
+    const anchor = map.unproject(map.project(map.getCenter(), map.getZoom()).add([dockRef.current.inset / 2, 0]), map.getZoom())
+    runtimeRef.current?.moveTo(anchor, Math.round(map.getZoom()) + step)
+  }
+
+  const closeCluster = () => {
+    const trigger = Array.from(containerRef.current?.querySelectorAll<HTMLButtonElement>('[data-node-key]') ?? []).find(node => node.dataset.nodeKey === cluster?.key)
+    setCluster(null)
+    trigger?.focus({ preventScroll: true })
+  }
+
+  // Search keeps the same region, institution, doctor and disorder entry points.
   const searchResults = useMemo<SearchResult[]>(() => {
     const q = query.trim()
     if (!q) return []
@@ -641,7 +320,7 @@ export function MapApp(props: Props) {
     }
     results.push(...hospitals)
 
-    // 医生线索：与侧栏「医生线索」标签、/doctors/ 页共用同一聚合函数，避免口径漂移
+    // Share doctor aggregation with both browsing surfaces.
     const doctors: SearchResult[] = []
     const doctorKeys = new Set<string>()
     for (const group of aggregateDoctorLeads(propsRef.current.hospitals, propsRef.current.reports, q)) {
@@ -692,7 +371,7 @@ export function MapApp(props: Props) {
         key: `topic-${topic}`,
         group: '病症',
         label: topic,
-        sub: `${count} 条原帖线索`,
+        sub: `${count} 条线索`,
         run: () => {
           setSeedDisorder(`topic:${topic}`)
           setSidebarTab('reports')
@@ -722,11 +401,18 @@ export function MapApp(props: Props) {
   const selectedProvince = props.provinces.find((item) => item.adcode === selectedProvinceAdcode) ?? null
   const selectedLeads = selectedHospital ? (props.leadsByHospital[selectedHospital.id] ?? []) : []
 
+  const closeDetail = () => {
+    setSelectedHospitalId(null)
+    setSelectedProvinceAdcode(null)
+    // The detail button is replaced by the browsing tabs at the next React commit.
+    requestAnimationFrame(() => sidebarRef.current?.querySelector<HTMLButtonElement>('[role="tab"][aria-selected="true"]')?.focus({ preventScroll: true }))
+  }
+
   const detailNode = selectedHospital ? (
     <HospitalDetail
       hospital={selectedHospital}
       leads={selectedLeads}
-      onClose={() => setSelectedHospitalId(null)}
+      onClose={closeDetail}
       onLocate={() => selectHospital(selectedHospital.id)}
     />
   ) : selectedProvince ? (
@@ -734,7 +420,7 @@ export function MapApp(props: Props) {
       provinceName={selectedProvince.name}
       stat={props.provinceStats[selectedProvince.adcode]}
       hospitals={props.mapHospitals.filter((item) => item.adcode === selectedProvince.adcode)}
-      onClose={() => setSelectedProvinceAdcode(null)}
+      onClose={closeDetail}
       onZoomToProvince={() => selectProvince(selectedProvince.adcode)}
       onSelectHospital={selectHospital}
     />
@@ -760,7 +446,6 @@ export function MapApp(props: Props) {
           disorders={props.disorders}
           provinces={props.provinces}
           reportProvince={props.reportProvince}
-          hospitalNames={props.hospitalNames}
           variant="compact"
           onSelectHospital={selectHospital}
           initialDisorder={seedDisorder}
@@ -773,7 +458,7 @@ export function MapApp(props: Props) {
     submit: (
       <div className="tc-stack">
         <h3>提交线索</h3>
-        <p className="tc-small tc-muted">提供公开原帖链接，以及医院、科室或医生线索即可。请勿提交病历、联系方式或其他个人信息。</p>
+        <p className="tc-small tc-muted">提供《就诊地图10.25》中的位置和原文。请勿提交病历、联系方式或其他个人信息。</p>
         <a className="tc-button tc-button--active" href="https://github.com/XhoIeph/TraumaCompass/issues/new?template=lead.yml" target="_blank" rel="noopener noreferrer">在 GitHub 提交线索 ↗</a>
         <p className="tc-meta">需要 GitHub 账号。提交后内容将公开可见。</p>
       </div>
@@ -781,7 +466,7 @@ export function MapApp(props: Props) {
   }
 
   return (
-    <div className={`tc-mapapp${sidebarOpen ? ' tc-mapapp--open' : ''}${query.trim() ? ' tc-mapapp--searching' : ''}`} role={sidebarOpen && !isDesktop ? 'dialog' : undefined} aria-modal={sidebarOpen && !isDesktop ? true : undefined} aria-label={sidebarOpen && !isDesktop ? '浏览就诊资源' : undefined}>
+    <div ref={shellRef} className={`tc-mapapp${sidebarOpen ? ' tc-mapapp--open' : ''}${query.trim() ? ' tc-mapapp--searching' : ''}`} role={sidebarOpen && !isDesktop ? 'dialog' : undefined} aria-modal={sidebarOpen && !isDesktop ? true : undefined} aria-label={sidebarOpen && !isDesktop ? '浏览就诊资源' : undefined}>
       <div ref={containerRef} className="tc-mapapp-canvas" role="application" aria-label="全国就诊资源与线索地图" inert={sidebarOpen && !isDesktop} />
       {!mapReady && !mapError && <div className="tc-map-loading" role="status">正在加载全国地图…</div>}
       {mapError && (
@@ -789,6 +474,15 @@ export function MapApp(props: Props) {
           地图加载失败：{mapError}（其余数据仍可在侧边栏浏览）
         </div>
       )}
+
+      {cluster && <div ref={clusterRef} className="tc-map-cluster-list" role="dialog" aria-label="选择机构" style={{ left: cluster.x, top: cluster.y }} onKeyDown={event => {
+        if (event.key !== 'Escape') return
+        event.stopPropagation()
+        closeCluster()
+      }}>
+        <div className="tc-row tc-row--between"><strong>选择机构</strong><button type="button" className="tc-linklike" onClick={closeCluster}>关闭</button></div>
+        {cluster.members.map(hospital => <button key={hospital.id} type="button" className="tc-mapapp-result" onClick={() => { focusDetailRef.current = true; selectHospital(hospital.id) }}>{hospital.name}</button>)}
+      </div>}
 
       <div className="tc-mapapp-topbar">
         <button
@@ -874,7 +568,6 @@ export function MapApp(props: Props) {
         open={sidebarOpen}
         tabs={tabs}
         detail={detailNode}
-        totals={props.totals}
         activeTab={sidebarTab}
         onTabChange={setSidebarTab}
         onClose={() => { setSidebarOpen(false); if (!desktopRef.current) burgerRef.current?.focus() }}
@@ -889,22 +582,15 @@ export function MapApp(props: Props) {
         </section>}
       </div>
 
-      <details className="tc-mapapp-legend">
-        <summary>
-          图例 · 线索密度
-          <span className="tc-ramp tc-ramp--mini" aria-hidden="true" />
-        </summary>
-        <p>色块表示各省收录线索条数，不代表患病或就诊人数。</p>
-        <div className="tc-density-key">
-          {[["#b9e6c8", "1–2"], ["#7dd3a4", "3–4"], ["#4dbb83", "5–7"], ["#2f9e68", "8–10"], ["#147a52", "11+"]].map(([color, label]) => (
-            <span key={label}><i style={{ background: color }} />{label}</span>
-          ))}
-        </div>
-        <p>白色：暂无收录。十字图钉：医院（叠放时显示数量）。</p>
-        <p>图钉位置：{coordinateNote}。</p>
-        {!tileKey && <p>示意底图 · 非标准地图</p>}
-      </details>
+      <div className="tc-mapapp-legend">
+        <span>线索密度</span>
+        <span className="tc-ramp" aria-hidden="true" />
+      </div>
 
+      <div className="tc-map-zoom" aria-label="地图缩放">
+        <button type="button" aria-label="放大地图" disabled={!mapReady || limits.atMax} onClick={() => zoomBy(1)}>+</button>
+        <button type="button" aria-label="缩小地图" disabled={!mapReady || limits.atMin} onClick={() => zoomBy(-1)}>−</button>
+      </div>
       <div className="tc-mapapp-actions">
         <button type="button" className="tc-mapapp-ctl" onClick={backToCountry} title="回到全国视图" aria-label="回到全国视图">
           <LocateFixed size={18} aria-hidden="true" />
@@ -912,7 +598,7 @@ export function MapApp(props: Props) {
         </button>
       </div>
       {!sidebarOpen && <button type="button" className="tc-mobile-browse" onClick={() => setSidebarOpen(true)} aria-controls="tc-map-sidebar">
-        <ListFilter size={18} aria-hidden="true" />浏览机构与线索 <span>{props.totals.hospitals} 家机构</span>
+        <ListFilter size={18} aria-hidden="true" />浏览机构与线索
       </button>}
     </div>
   )

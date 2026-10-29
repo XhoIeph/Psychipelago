@@ -31,12 +31,25 @@ jobs:
       - name: Validate data (schema + referential integrity + privacy rules)
         run: npm run data:validate
 
+      - name: Source regression tests
+        run: npm run test:data
+
+      - name: Geocoding regression tests
+        run: npm run test:geo
+
+      - name: Map regression tests
+        run: npm run test:map-layout && npm run test:map-wheel && npm run test:amap
+
       - name: Build static export
         run: npm run build
         env:
           GITHUB_PAGES: 'true'
-          # 天地图浏览器端 key（本就随页面公开）；未配置时站点回退为矢量示意底图
-          NEXT_PUBLIC_TIANDITU_KEY: ${{ secrets.NEXT_PUBLIC_TIANDITU_KEY }}
+          # The security code belongs to the external proxy, never to this static build.
+          NEXT_PUBLIC_AMAP_JS_KEY: ${{ secrets.NEXT_PUBLIC_AMAP_JS_KEY }}
+          NEXT_PUBLIC_AMAP_SERVICE_HOST: ${{ vars.NEXT_PUBLIC_AMAP_SERVICE_HOST }}
+
+      - name: Typecheck generated routes
+        run: npm run typecheck
 
       - uses: actions/configure-pages@v5
 

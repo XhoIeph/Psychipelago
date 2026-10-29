@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { ChevronDown } from 'lucide-react'
 import { formatReportSource } from '@/lib/format'
+import { LeadEvidence } from './LeadEvidence'
 import type { DoctorLead } from '@/lib/doctor-leads'
 import type { Report } from '@/lib/schema'
 
@@ -24,16 +25,13 @@ export function DoctorLeadItem({ entry, reports, onSelectHospital }: {
       <div className="tc-doctor-result-body">
         {related.map((report) => (
           <div key={report.id} className="tc-doctor-evidence">
-            <p className="tc-small tc-muted">
-              来源：<a href={report.source_url} target="_blank" rel="nofollow noopener noreferrer">{formatReportSource(report)} ↗</a>
-            </p>
-            <blockquote>「{report.evidence_quote}」</blockquote>
-            {report.evidence_full_text && report.evidence_full_text !== report.evidence_quote && (
-              <details>
-                <summary>展开原文</summary>
-                <blockquote>{report.evidence_full_text}</blockquote>
-              </details>
-            )}
+            <LeadEvidence
+              sourceLabel={formatReportSource(report)}
+              url={report.source_url}
+              quote={report.evidence_quote}
+              contextNote={report.evidence_context?.parent_excerpt ? `该评论回复的原话：「${report.evidence_context.parent_excerpt}」` : undefined}
+              fullText={report.evidence_full_text}
+            />
           </div>
         ))}
         {onSelectHospital && hospitalId ? (

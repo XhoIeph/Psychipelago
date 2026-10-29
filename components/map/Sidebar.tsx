@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState, type ReactNode, type Ref } from 'react'
-import Link from 'next/link'
+import { gsap } from 'gsap'
+import { useGSAP } from '@gsap/react'
 import { Brand } from '@/components/Brand'
 import { PanelMotion } from '@/components/PanelMotion'
 import { X } from 'lucide-react'
@@ -14,20 +15,16 @@ const TABS: { id: SidebarTabId; label: string }[] = [
   { id: 'doctors', label: '医生线索' },
   { id: 'submit', label: '投稿' },
 ]
+gsap.registerPlugin(useGSAP)
 
 /**
- * Google Maps 式左侧抽屉：
- * - 无选中详情时显示「品牌 + 用量 + Tab 列表」
- * - 选中省份/医院时整个面板切换成详情卡（返回即恢复列表）
- * - 标签栏实现完整 tablist 键盘交互（←/→/Home/End）
- * - 移动端为 modal drawer：由 MapApp 负责遮罩、焦点进入与 Escape 关闭；这里提供显式关闭按钮
+ * MapApp owns the mobile modal focus cycle; the sidebar keeps tab navigation intact.
  */
 export function Sidebar({
   id,
   open,
   tabs,
   detail,
-  totals,
   onClose,
   panelRef,
   activeTab,
@@ -37,7 +34,6 @@ export function Sidebar({
   open: boolean
   tabs: Record<SidebarTabId, ReactNode>
   detail: ReactNode | null
-  totals: { reports: number; hospitals: number; provincesWithReports: number }
   onClose?: () => void
   panelRef?: Ref<HTMLElement>
   /** 受控标签（地图全局搜索需要切换到指定标签）；不传时组件自管 */
@@ -47,6 +43,17 @@ export function Sidebar({
   const [internalTab, setInternalTab] = useState<SidebarTabId>('hospitals')
   const tab = activeTab ?? internalTab
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({})
+  const navRef = useRef<HTMLElement>(null)
+  const indicatorRef = useRef<HTMLSpanElement>(null)
+  const slideIndex = TABS.findIndex(item => item.id === tab)
+
+  useGSAP(() => {
+    const indicator = indicatorRef.current
+    if (!indicator) return
+    const target = { xPercent: slideIndex * 100, x: slideIndex * 4 }
+    if (!indicator.style.transform || window.matchMedia('(prefers-reduced-motion: reduce)').matches) gsap.set(indicator, target)
+    else gsap.to(indicator, { ...target, duration: .26, ease: 'power3.out', overwrite: true })
+  }, { scope: navRef, dependencies: [tab, !!detail] })
 
   const setTab = (next: SidebarTabId) => {
     setInternalTab(next)
@@ -83,18 +90,14 @@ export function Sidebar({
             </button>
           )}
         </div>
-        <div className="tc-sidebar-stats" aria-label="收录概况">
-          <div><strong>{totals.reports}</strong><span>条就诊线索</span></div>
-          <div><strong>{totals.hospitals}</strong><span>家收录机构</span></div>
-          <div><strong>{totals.provincesWithReports}</strong><span>个覆盖省份</span></div>
-        </div>
       </div>
 
       {detail ? (
         <div className="tc-sidebar-body"><PanelMotion motionKey="detail">{detail}</PanelMotion></div>
       ) : (
         <>
-          <nav className="tc-sidebar-tabs" role="tablist" aria-label="侧边栏功能">
+          <nav ref={navRef} className="tc-sidebar-tabs" role="tablist" aria-label="侧边栏功能">
+            <span ref={indicatorRef} className="tc-sidebar-tab-indicator" aria-hidden="true" />
             {TABS.map((item) => (
               <button
                 key={item.id}
@@ -119,7 +122,7 @@ export function Sidebar({
             ))}
           </nav>
           <div className="tc-sidebar-body" role="tabpanel" id="tc-sidebar-panel" aria-labelledby={`tc-sidebar-tab-${tab}`}>
-            <PanelMotion motionKey={tab}>{tabs[tab]}</PanelMotion>
+            <PanelMotion motionKey={tab} slideIndex={slideIndex}>{tabs[tab]}</PanelMotion>
           </div>
         </>
       )}

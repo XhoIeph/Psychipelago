@@ -79,7 +79,7 @@ export const hospitalSchema = z.object({
   address: z.string().optional(),
   website: httpUrl.optional(),
   phone_public: z.string().optional(),
-  /** 地图坐标。真实地理编码优先；暂无时用省级质心＋确定性偏移，并在 coordinates_source 如实标注 */
+  /** Unresolved institutions stay null; province centroids must not become hospital pins. */
   coordinates: z.object({ lat: z.number(), lng: z.number() }).nullable(),
   coordinates_source: z.enum(['geocoded', 'province-centroid', 'manual']).optional(),
   /** 官方来源（医院官网 / 卫健委等）；level=official 的依据 */
