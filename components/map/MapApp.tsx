@@ -18,7 +18,7 @@ import { DoctorExplorer } from './DoctorExplorer'
 import { HospitalDetail } from './HospitalDetail'
 import { ProvinceDetail } from './ProvinceDetail'
 import type { MapHospital, MapLead, MapProvinceStat } from './types'
-import { ArrowUpRight, ListFilter, LocateFixed, Menu, Search, X } from 'lucide-react'
+import { ListFilter, LocateFixed, Menu, Search, X } from 'lucide-react'
 
 const HOSPITAL_ZOOM = 10
 gsap.registerPlugin(useGSAP)
@@ -459,7 +459,7 @@ export function MapApp(props: Props) {
       <div className="tc-stack">
         <h3>提交线索</h3>
         <p className="tc-small tc-muted">提供《就诊地图10.25》中的位置和原文。请勿提交病历、联系方式或其他个人信息。</p>
-        <a className="tc-button tc-button--active" href="https://github.com/XhoIeph/TraumaCompass/issues/new?template=lead.yml" target="_blank" rel="noopener noreferrer">在 GitHub 提交线索 ↗</a>
+        <a className="tc-button tc-button--active" href="https://github.com/XhoIeph/TraumaCompass/issues/new?template=lead.yml" target="_blank" rel="noopener noreferrer">在 GitHub 提交线索</a>
         <p className="tc-meta">需要 GitHub 账号。提交后内容将公开可见。</p>
       </div>
     ),
@@ -578,7 +578,7 @@ export function MapApp(props: Props) {
         {aboutOpen && <section id="tc-project-card" className="tc-project-card" aria-label="关于项目">
           <div className="tc-row tc-row--between"><strong>TraumaCompass</strong><button type="button" className="tc-linklike" onClick={() => { setAboutOpen(false); aboutButtonRef.current?.focus() }}>关闭</button></div>
           <p>本项目旨在为CPTSD/BPD人群提供全国就诊地图，帮助更多人治疗心理创伤与障碍</p>
-          <Link className="tc-card-action" href="/about/">了解我们 <ArrowUpRight size={16} aria-hidden="true" /></Link>
+          <Link className="tc-card-action" href="/about/">了解我们</Link>
         </section>}
       </div>
 

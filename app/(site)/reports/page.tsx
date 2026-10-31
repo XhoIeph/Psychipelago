@@ -13,7 +13,7 @@ export default function ReportsPage() {
     <div>
       <header className="tc-page-heading">
         <h1>就诊线索</h1>
-        <Link href="/submit/" className="tc-button">提交线索 ↗</Link>
+        <Link href="/submit/" className="tc-button">提交线索</Link>
       </header>
       <Suspense fallback={<p className="tc-muted">加载筛选中……</p>}>
         <ReportExplorer

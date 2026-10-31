@@ -1,6 +1,6 @@
 import { gsap } from 'gsap'
 import type { MapHospital, MapProvinceStat } from '../components/map/types'
-import { MapPoint, project, unproject, fitMapBounds, type GeoPoint, type MapCamera } from './map-camera'
+import { MAP_MAX_ZOOM, MapPoint, project, unproject, fitMapBounds, type GeoPoint, type MapCamera } from './map-camera'
 import { CHINA_BOUNDS, constrainChinaCenter } from './map-sidebar'
 import { gcjCoordinateTree, type CoordinateTree } from './map-coordinates'
 import { mapNodeLayout } from './map-nodes'
@@ -8,7 +8,6 @@ import { NODE_ZOOM_THRESHOLD, showMapNodes } from './map-mode'
 import { attachMapWheelZoom } from './map-wheel-zoom'
 import { attachMapPointer } from './map-pointer'
 
-const MAX_ZOOM = 12
 const colors = ['#ffffff', '#b9e6c8', '#7dd3a4', '#4dbb83', '#2f9e68', '#147a52']
 const densityColor = (count: number) => colors[count <= 0 ? 0 : count <= 2 ? 1 : count <= 4 ? 2 : count <= 7 ? 3 : count <= 10 ? 4 : 5]
 type Geometry = { features: { properties: { adcode: string | number }; geometry: { coordinates: CoordinateTree } }[] }
@@ -29,7 +28,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   ready(): void
 }) {
   const map = new sdk.Map(container, {
-    viewMode: '2D', center: [105, 35.5], zoom: 4, zooms: [2, MAX_ZOOM],
+    viewMode: '2D', center: [105, 35.5], zoom: 4, zooms: [2, MAP_MAX_ZOOM],
     animateEnable: false, jogEnable: false, scrollWheel: false, rotateEnable: false, pitchEnable: false,
     dragEnable: false, touchZoom: false, keyboardEnable: false, doubleClickZoom: false,
   })
@@ -49,7 +48,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   const center = (): GeoPoint => { const point = map.getCenter(); return { lat: point.getLat(), lng: point.getLng() } }
   const camera: MapCamera = {
     project, unproject, getContainer: () => container, getCenter: center,
-    getSize: () => size, getZoom: () => map.getZoom(8), getMinZoom: () => minZoom, getMaxZoom: () => MAX_ZOOM,
+    getSize: () => size, getZoom: () => map.getZoom(8), getMinZoom: () => minZoom, getMaxZoom: () => MAP_MAX_ZOOM,
     mouseEventToContainerPoint(event) { const rect = container.getBoundingClientRect(); return new MapPoint(event.clientX - rect.left, event.clientY - rect.top) },
     containerPointToLatLng(point) { return unproject(project(center(), camera.getZoom()).add(point.subtract(size.divideBy(2))), camera.getZoom()) },
     beginMove() { options.closeCluster() },
@@ -62,7 +61,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   function setMinZoom(value: number) {
     if (value === minZoom) return
     minZoom = value
-    map.setZooms([value, MAX_ZOOM])
+    map.setZooms([value, MAP_MAX_ZOOM])
   }
   function syncSelection() {
     for (const node of liveNodes.values()) {
@@ -104,7 +103,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
           element.addEventListener('click', event => {
             event.stopPropagation()
             if (single) options.selectHospital(entry.members[0].id)
-            else if (camera.getZoom() < MAX_ZOOM - .001) moveTo({ lat: entry.lat, lng: entry.lng }, Math.min(MAX_ZOOM, Math.floor(camera.getZoom()) + 2))
+            else if (camera.getZoom() < MAP_MAX_ZOOM - .001) moveTo({ lat: entry.lat, lng: entry.lng }, Math.min(MAP_MAX_ZOOM, Math.floor(camera.getZoom()) + 2))
             else {
               const point = map.lngLatToContainer([entry.lng, entry.lat])
               options.cluster(entry.members, entry.key, point.getX(), point.getY())
@@ -118,7 +117,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
         }
         node.exit?.kill(); node.exit = undefined
         node.element.inert = !nodesOn
-        node.element.setAttribute('aria-label', entry.members.length === 1 ? entry.members[0].name : `${entry.members.length} 家机构，${level >= MAX_ZOOM ? '查看机构' : '点击放大'}`)
+        node.element.setAttribute('aria-label', entry.members.length === 1 ? entry.members[0].name : `${entry.members.length} 家机构，${level >= MAP_MAX_ZOOM ? '查看机构' : '点击放大'}`)
         if (nodesOn) node.marker.show()
         gsap.to(node.element.firstElementChild, { autoAlpha: 1, scale: 1, duration: reduced() ? 0 : .32, overwrite: true })
       }
@@ -152,7 +151,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
     }
     const level = Math.max(NODE_ZOOM_THRESHOLD, Math.floor(zoom + 1e-7))
     if (nodesOn && level !== renderedLevel) renderNodes(level)
-    const atMin = zoom <= minZoom + .001, atMax = zoom >= MAX_ZOOM - .001
+    const atMin = zoom <= minZoom + .001, atMax = zoom >= MAP_MAX_ZOOM - .001
     if (atMin !== previousMin || atMax !== previousMax) {
       previousMin = atMin; previousMax = atMax
       options.limits(atMin, atMax)
@@ -172,7 +171,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
     })
   }
   function moveTo(point: GeoPoint, zoom: number, inset = options.inset()) {
-    const targetZoom = Math.max(minZoom, Math.min(MAX_ZOOM, Math.round(zoom)))
+    const targetZoom = Math.max(minZoom, Math.min(MAP_MAX_ZOOM, Math.round(zoom)))
     animateTo(unproject(project(point, targetZoom).subtract([inset / 2, 0]), targetZoom), targetZoom)
   }
   function countryFrame() {

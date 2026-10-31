@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { mapHospitalInputs, wgs84ToGcj02, gcjCoordinateTree } from '../lib/map-coordinates.ts'
 import { gcj02ToWgs84 } from '../scripts/geocode-hospitals.ts'
-import { MapPoint, project, unproject, fitMapBounds } from '../lib/map-camera.ts'
+import { MAP_MAX_ZOOM, MapPoint, project, unproject, fitMapBounds } from '../lib/map-camera.ts'
 import { chinaCameraBounds } from '../lib/map-sidebar.ts'
 
 const read = path => JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'))
@@ -39,7 +39,7 @@ test('省界只在地图适配层转 GCJ-02，与已有逆转换相符', () => {
 
 test('投影世界宽度与官方 SDK z5 的 8192px 相同，往返无缩放偏移', () => {
   assert.equal(4 * (project([0,90],5).x - project([0,0],5).x),8192)
-  for (const zoom of [2,3,6.7,10,12]) {
+  for (const zoom of [2,3,6.7,10,12,15,20]) {
     const point = { lat:39.9, lng:116.4 }, actual = unproject(project(point,zoom),zoom)
     assert.ok(Math.abs(actual.lat-point.lat) < 1e-10)
     assert.ok(Math.abs(actual.lng-point.lng) < 1e-10)
@@ -60,4 +60,10 @@ test('全国构图装入桌面与窄屏，边界约束不产生反向区间', ()
     const [nw,se] = chinaCameraBounds(camera,inset)
     assert.ok(nw.lng < se.lng && nw.lat > se.lat)
   }
+})
+
+test('小范围构图不再被旧12级截断，仍遵守统一20级上限', () => {
+  const frame=fitMapBounds([{lat:40.8168,lng:111.69},{lat:40.8168001,lng:111.6900001}],new MapPoint(1280,720),380,[0,0,0,0])
+  assert.equal(frame.zoom,MAP_MAX_ZOOM)
+  assert.equal(frame.zoom,20)
 })

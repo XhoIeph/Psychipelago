@@ -2,13 +2,13 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { CHINA_BOUNDS, chinaCameraBounds, constrainChinaCenter, sidebarCameraFrame } from '../lib/map-sidebar.ts'
-import { MapPoint, project as projectCamera, unproject } from '../lib/map-camera.ts'
+import { MAP_MAX_ZOOM, MapPoint, project as projectCamera, unproject } from '../lib/map-camera.ts'
 import { attachMapPointer } from '../lib/map-pointer.ts'
 import { groupMapNodes, mapNodeLayout, NODE_SPACING } from '../lib/map-nodes.ts'
 import { mapHospitalInputs } from '../lib/map-coordinates.ts'
 
 const camera = {
-  getMaxZoom: () => 12,
+  getMaxZoom: () => MAP_MAX_ZOOM,
   project: (point, zoom) => ({
     x: point.lng * 2 ** zoom,
     y: point.lat * 2 ** zoom,
@@ -45,14 +45,14 @@ test('中途换向从当前构图接续，不回到起点', () => {
 test('展开收回均落整数级，并保留最大缩放限制', () => {
   const anchor = { lng: 105, lat: 35 }
   assert.equal(sidebarCameraFrame(camera, anchor, 1280, 0, 380, 6, 4).zoom, 5)
-  assert.equal(sidebarCameraFrame(camera, anchor, 1280, 380, 0, 12, 4).zoom, 12)
+  assert.equal(sidebarCameraFrame(camera, anchor, 1280, 380, 0, MAP_MAX_ZOOM, 4).zoom, MAP_MAX_ZOOM)
   assert.equal(sidebarCameraFrame(camera, anchor, 1280, 0, 380, 4, 4).zoom, 4)
   assert.equal(sidebarCameraFrame(camera, anchor, 1280, 380, 0, 4, 4).zoom, 4)
 })
 
 test('中国边界按剩余视区计算，全国下限居中、放大后不能移出省域范围', () => {
   for (const inset of [0, 180, 380]) {
-    for (const zoom of [4, 10]) {
+    for (const zoom of [4, 10, MAP_MAX_ZOOM]) {
       const scale = 2 ** zoom
       const map = {
         getZoom: () => zoom,
@@ -100,7 +100,7 @@ function assertNodeCoordinates(hospitals) {
   const before = structuredClone(hospitals)
   const locations = new Map()
   let singles = 0
-  for (const zoom of [7, 8, 9, 10, 10.5, 11, 12, 11, 10, 9, 7, 12]) {
+  for (const zoom of [7, 8, 9, 10, 10.5, 11, 12, 14, 15, 18, MAP_MAX_ZOOM, 18, 14, 10, 7, MAP_MAX_ZOOM]) {
     const layout = mapNodeLayout(hospitals, hospital => project(hospital, zoom))
     assert.deepEqual(layout.flatMap(node => node.members.map(hospital => hospital.id)).sort(), hospitals.map(hospital => hospital.id).sort())
     for (const node of layout) {
@@ -144,11 +144,25 @@ test('空机构库存返回空布局，不投影或生成占位节点', () => {
 
 test('同址机构保留聚合，不生成扇形假位置', () => {
   const hospitals = ['a', 'b', 'c'].map(id => ({ id, lat: 28.19, lng: 112.98 }))
-  for (const zoom of [7, 10, 12]) {
+  for (const zoom of [7, 10, 12, MAP_MAX_ZOOM]) {
     const [node] = mapNodeLayout(hospitals, hospital => project(hospital, zoom))
     assert.equal(node.members.length, 3)
     assert.ok(Math.abs(node.lat - 28.19) < 1e-12)
     assert.ok(Math.abs(node.lng - 112.98) < 1e-12)
+  }
+})
+
+test('呼和浩特相邻机构越过旧12级上限后拆分，保留各自原坐标', () => {
+  assert.equal(MAP_MAX_ZOOM,20)
+  const hospitals = [
+    {id:'third',lat:40.820986,lng:111.697089},
+    {id:'people',lat:40.816876,lng:111.694245},
+  ]
+  assert.equal(mapNodeLayout(hospitals,p=>project(p,12)).length,1)
+  for (const zoom of [15,MAP_MAX_ZOOM]) {
+    const nodes=mapNodeLayout(hospitals,p=>project(p,zoom))
+    assert.equal(nodes.length,2)
+    for (const node of nodes) assert.deepEqual([node.lat,node.lng],[node.members[0].lat,node.members[0].lng])
   }
 })
 
@@ -166,7 +180,7 @@ function pointerFixture() {
   }
   const map = {
     zoom:6, center:{lat:35,lng:105}, project:projectCamera, unproject,
-    getContainer:()=>container, getSize:()=>new MapPoint(1000,600), getZoom(){return this.zoom}, getMinZoom:()=>4, getMaxZoom:()=>12,
+    getContainer:()=>container, getSize:()=>new MapPoint(1000,600), getZoom(){return this.zoom}, getMinZoom:()=>4, getMaxZoom:()=>MAP_MAX_ZOOM,
     getCenter(){return this.center},
     containerPointToLatLng(point){return unproject(projectCamera(this.center,this.zoom).add(point.subtract(this.getSize().divideBy(2))),this.zoom)},
     mouseEventToContainerPoint:event=>new MapPoint(event.clientX,event.clientY),
@@ -239,5 +253,9 @@ test('双击保留鼠标地理锚点，键盘保留平移和缩放入口', () =>
   const before=projectCamera(f.map.center,8)
   f.event('keydown',{key:'ArrowRight'})
   assert.ok(Math.abs(projectCamera(f.map.center,8).x-before.x-80)<1e-8)
+  f.map.zoom=MAP_MAX_ZOOM-1
+  f.event('keydown',{key:'+'});assert.equal(f.map.zoom,MAP_MAX_ZOOM)
+  f.event('keydown',{key:'+'});assert.equal(f.map.zoom,MAP_MAX_ZOOM)
+  f.event('dblclick');assert.equal(f.map.zoom,MAP_MAX_ZOOM)
   f.controller.dispose()
 })

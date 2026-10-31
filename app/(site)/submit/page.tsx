@@ -20,21 +20,21 @@ export default function SubmitPage() {
           <h2>核对主线线索</h2>
           <p>提供《就诊地图10.25》中的位置和原文摘录。</p>
           <a className="tc-button tc-button--active" href={`${TEMPLATE_URL}lead.yml`} target="_blank" rel="noopener noreferrer">
-            打开线索模板 ↗
+            打开线索模板
           </a>
         </section>
         <section className="tc-card">
           <h2>更正记录</h2>
           <p>提供记录编号、需更正的内容及来源。</p>
           <a className="tc-button" href={`${TEMPLATE_URL}correction.yml`} target="_blank" rel="noopener noreferrer">
-            打开更正模板 ↗
+            打开更正模板
           </a>
         </section>
         <section className="tc-card">
           <h2>申请撤下</h2>
           <p>提供记录编号或页面链接。</p>
           <a className="tc-button" href={`${TEMPLATE_URL}takedown.yml`} target="_blank" rel="noopener noreferrer">
-            打开撤下模板 ↗
+            打开撤下模板
           </a>
         </section>
       </div>

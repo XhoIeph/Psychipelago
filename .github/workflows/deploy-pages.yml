@@ -40,10 +40,17 @@ jobs:
       - name: Map regression tests
         run: npm run test:map-layout && npm run test:map-wheel && npm run test:amap
 
-      - name: Build static export
-        run: npm run build
+      - name: Deployment path regression tests
+        run: node --test tests/deployment-config.test.mjs
+
+      - name: Build static export (custom domain root)
+        run: |
+          : "${NEXT_PUBLIC_AMAP_JS_KEY:?Configure the Amap JS Key repository secret}"
+          : "${NEXT_PUBLIC_AMAP_SERVICE_HOST:?Configure the Amap serviceHost repository variable}"
+          npm run build
         env:
           GITHUB_PAGES: 'true'
+          NEXT_PUBLIC_BASE_PATH: ''
           # The security code belongs to the external proxy, never to this static build.
           NEXT_PUBLIC_AMAP_JS_KEY: ${{ secrets.NEXT_PUBLIC_AMAP_JS_KEY }}
           NEXT_PUBLIC_AMAP_SERVICE_HOST: ${{ vars.NEXT_PUBLIC_AMAP_SERVICE_HOST }}

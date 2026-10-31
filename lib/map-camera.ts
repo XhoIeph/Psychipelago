@@ -1,5 +1,6 @@
 export type GeoPoint = { lat: number; lng: number }
 export type PointLike = { x: number; y: number } | readonly [number, number]
+export const MAP_MAX_ZOOM = 20
 
 export class MapPoint {
   x: number
@@ -53,7 +54,7 @@ export function fitMapBounds(bounds: readonly [GeoPoint, GeoPoint], size: MapPoi
   const a = project(bounds[0], 0), b = project(bounds[1], 0)
   const [top, bottom, left, right] = padding
   const width = size.x - inset - left - right, height = size.y - top - bottom
-  const zoom = Math.max(2, Math.min(12, Math.floor(Math.log2(Math.min(width / Math.abs(b.x - a.x), height / Math.abs(b.y - a.y))))))
+  const zoom = Math.max(2, Math.min(MAP_MAX_ZOOM, Math.floor(Math.log2(Math.min(width / Math.abs(b.x - a.x), height / Math.abs(b.y - a.y))))))
   const center = unproject(a.add(b).divideBy(2).multiplyBy(2 ** zoom).subtract([(inset + left - right) / 2, (top - bottom) / 2]), zoom)
   return { zoom, center }
 }

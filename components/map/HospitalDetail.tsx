@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowLeft, ArrowUpRight, MapPin } from 'lucide-react'
+import { ArrowLeft, MapPin } from 'lucide-react'
 import { LeadEvidence } from '@/components/LeadEvidence'
 import type { MapHospital, MapLead } from './types'
 import { STAGE_LABELS } from './types'
@@ -25,7 +25,7 @@ export function HospitalDetail({
         <button type="button" className="tc-button tc-button--active" onClick={onLocate}>
           <MapPin size={16} aria-hidden="true" />在地图上定位
         </button>
-        <Link className="tc-detail-link" href={`/hospitals/${hospital.id}/`}>医院详细信息<ArrowUpRight size={16} aria-hidden="true" /></Link>
+        <Link className="tc-detail-link" href={`/hospitals/${hospital.id}/`}>医院详细信息</Link>
       </div>
       <section className="tc-detail-section">
       <h3>就诊线索<span className="tc-detail-count">{leads.length} 条</span></h3>

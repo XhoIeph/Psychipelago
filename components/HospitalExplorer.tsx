@@ -7,7 +7,7 @@ import type { Hospital, Province, Report } from '@/lib/schema'
 
 import { hospitalSearchText, matchesSearch } from '@/lib/search'
 import { FilterPanel } from './FilterPanel'
-import { ArrowUpRight, MapPin } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 
 const SERVICE_LABELS: Record<string, string> = {
   yes: '明确依据',
@@ -23,7 +23,7 @@ type Props = {
   reportCounts: Record<string, number>
   /** compact：适配侧边栏窄面板的筛选与卡片布局（默认 page 不变） */
   variant?: 'page' | 'compact'
-  /** 提供时每张机构卡出现「在地图上查看」按钮（首页地图侧栏联动） */
+  /** Keep institution selection inside the map instead of leaving its context. */
   onSelectHospital?: (id: string) => void
   /** 外部（如地图全局搜索命中病症）注入的关键词，变化时同步到筛选框 */
   initialQuery?: string
@@ -41,7 +41,6 @@ export function HospitalExplorer({
   const searchParams = useSearchParams()
   const [province, setProvince] = useState(() => searchParams.get('province') ?? '')
   const [category, setCategory] = useState('')
-  const [onlyEvidence, setOnlyEvidence] = useState(false)
   const [keyword, setKeyword] = useState(() => initialQuery ?? '')
 
   useEffect(() => {
@@ -59,24 +58,16 @@ export function HospitalExplorer({
     return hospitals.filter((hospital) => {
       if (province && hospital.adcode !== province) return false
       if (category && hospital.category !== category) return false
-      if (onlyEvidence) {
-        const service = hospital.trauma_service
-        const hasEvidence =
-          service.evidence.length > 0 ||
-          service.cptsd_assessment === 'yes' ||
-          service.cptsd_bpd_diagnosis === 'yes'
-        if (!hasEvidence) return false
-      }
       if (needle) {
         const haystack = hospitalSearchText(hospital, reports)
         if (!matchesSearch(haystack, needle)) return false
       }
       return true
     })
-  }, [category, hospitals, reports, keyword, onlyEvidence, province])
+  }, [category, hospitals, reports, keyword, province])
 
-  const filterCount = [province, category, keyword.trim(), onlyEvidence].filter(Boolean).length
-  const reset = () => { setProvince(''); setCategory(''); setKeyword(''); setOnlyEvidence(false) }
+  const filterCount = [province, category, keyword.trim()].filter(Boolean).length
+  const reset = () => { setProvince(''); setCategory(''); setKeyword('') }
 
   if (hospitals.length === 0) {
     return (
@@ -128,14 +119,6 @@ export function HospitalExplorer({
           />
         </label>
 
-        <label className="tc-row tc-small" style={{ gap: 6 }}>
-          <input
-            type="checkbox"
-            checked={onlyEvidence}
-            onChange={(event) => setOnlyEvidence(event.target.checked)}
-          />
-          仅显示具备创伤服务证据的机构
-        </label>
         {filterCount > 0 && <button type="button" className="tc-button tc-filter-reset" onClick={reset}>清除筛选</button>}
       </form>
       </FilterPanel>
@@ -174,7 +157,7 @@ export function HospitalExplorer({
               </div>}
               <div className="tc-hospital-card-footer">
                 <span className="tc-meta"><b>{reportCounts[hospital.id] ?? 0}</b> 条线索{hospital.official_sources.length > 0 && ` · ${hospital.official_sources.length} 个官方来源`}</span>
-                <span className="tc-hospital-card-hint" aria-hidden="true">{onSelectHospital ? '查看' : '详情'}<ArrowUpRight size={16} /></span>
+                {!onSelectHospital && <span className="tc-hospital-card-hint" aria-hidden="true">详情</span>}
               </div>
             </article>
           ))}

@@ -30,10 +30,14 @@ jobs:
       - name: Map regression tests
         run: npm run test:map-layout && npm run test:map-wheel && npm run test:amap
 
-      - name: Build (with GitHub Pages basePath)
+      - name: Deployment path regression tests
+        run: node --test tests/deployment-config.test.mjs
+
+      - name: Build (custom domain root)
         run: npm run build
         env:
           GITHUB_PAGES: 'true'
+          NEXT_PUBLIC_BASE_PATH: ''
 
       - name: Typecheck generated routes
         run: npm run typecheck

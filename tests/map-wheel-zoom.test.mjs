@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { attachMapWheelZoom } from '../lib/map-wheel-zoom.ts'
 import { showMapNodes } from '../lib/map-mode.ts'
+import { MAP_MAX_ZOOM } from '../lib/map-camera.ts'
 
 class Point {
   constructor(x, y) { this.x = x; this.y = y }
@@ -34,7 +35,7 @@ function fixture(reducedMotion = false) {
     }),
     getZoom() { return this.zoom },
     getMinZoom: () => 4,
-    getMaxZoom: () => 12,
+    getMaxZoom: () => MAP_MAX_ZOOM,
     getSize() { return this.size },
     mouseEventToContainerPoint: (event) => event.point,
     project({ lat, lng }, zoom) {
@@ -171,12 +172,25 @@ test('保留上下限、Ctrl 和横向手势', () => {
   const f = fixture()
   f.map.zoom = 4
   f.wheel(100); f.flush(); assert.equal(f.moves.length, 0)
-  f.map.zoom = 12
+  f.map.zoom = MAP_MAX_ZOOM
   f.wheel(-100); f.flush(); assert.equal(f.moves.length, 0)
   const prevented = f.prevented
   f.wheel(100, { ctrlKey: true }); f.wheel(1, { deltaX: 100 }); f.flush()
   assert.equal(f.prevented, prevented)
   assert.equal(f.moves.length, 0)
+})
+
+test('19至20级仍逐帧保持光标锚点，到达新上限后不再放大', () => {
+  const f = fixture()
+  f.map.zoom = MAP_MAX_ZOOM - 1
+  const point = new Point(800,200), anchor = f.map.containerPointToLatLng(point)
+  f.wheel(-100,{point})
+  while (f.frames.size) { f.flush(); assertAnchor(f,anchor,point) }
+  assert.equal(f.map.zoom,20)
+  const moves=f.moves.length
+  f.wheel(-100,{point});f.settle()
+  assert.equal(f.moves.length,moves)
+  f.controller.dispose()
 })
 
 test('减少动态效果时一次到位，中断回到整数级并正确清理', () => {

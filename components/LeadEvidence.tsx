@@ -1,5 +1,3 @@
-import { ArrowUpRight } from 'lucide-react'
-
 export function LeadEvidence({ sourceLabel, url, quote, contextNote, fullText }: {
   sourceLabel: string
   url: string
@@ -10,7 +8,7 @@ export function LeadEvidence({ sourceLabel, url, quote, contextNote, fullText }:
   return (
     <div className="tc-evidence">
       <a className="tc-evidence-source" href={url} target="_blank" rel="nofollow noopener noreferrer">
-        <span>{sourceLabel}</span><ArrowUpRight size={16} aria-hidden="true" />
+        {sourceLabel}
       </a>
       {contextNote && <p className="tc-small tc-muted">{contextNote}</p>}
       <blockquote className="tc-quote">{quote}</blockquote>
