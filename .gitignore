@@ -12,6 +12,19 @@ login-state.json
 # raw collection captures: contain real handles, full post text, raw API payloads
 data/raw/
 
+# retired collection tooling and query thesaurus (local only)
+/scripts/collect/
+/data/queries/
+
+# internal collaboration material: handoffs, department docs, agent rules (local only)
+/docs/
+/HANDOFF.md
+/AGENTS.md
+/CLAUDE.md
+
+# source-document screenshot used only for local transcription checks
+/data/evidence/kdocs/**/last-page.png
+
 # scratch space for collection runs (opencli json output, drafts)
 tmp/
 
