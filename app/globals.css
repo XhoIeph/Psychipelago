@@ -276,7 +276,7 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 /* Controls respond without changing SDK-owned geographic transforms. */
 :is(.tc-button,.tc-mapapp-ctl,.tc-mapapp-burger,.tc-sidebar-close,.tc-sidebar-tab,.tc-filter-toggle,.tc-mapapp-result,.tc-card-action,.tc-nav a,.tc-mobile-browse,.tc-search-clear,.tc-linklike) { transition:background-color .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease; }
 .tc-field input:focus-visible,.tc-field select:focus-visible,.tc-field textarea:focus-visible { border-color:var(--tc-text); }
-.tc-mapapp-search input:focus-visible { border-color:var(--tc-border-strong); }
+.tc-mapapp-search input:focus-visible { border-color:var(--tc-text); }
 .tc-mapapp-search:has(input:focus-visible) .tc-search-icon { color:var(--tc-text); }
 .tc-sidebar-close:hover,.tc-search-clear:hover { background:var(--tc-accent-soft); color:var(--tc-accent); }
 @media (hover:hover) {
