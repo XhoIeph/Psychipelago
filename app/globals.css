@@ -31,7 +31,8 @@ p { margin:0 0 12px; }
 ul,ol { margin:0 0 12px; padding-left:1.3em; }
 img,svg { vertical-align:middle; }
 svg { flex-shrink:0; }
-:is(button,a,input,select,textarea,summary):focus-visible { outline:3px solid var(--tc-accent); outline-offset:3px; }
+:is(button,a,summary):focus-visible { outline:2px solid var(--tc-text); outline-offset:2px; }
+:is(input,select,textarea):focus-visible { outline:none; }
 [hidden] { display:none !important; }
 ::selection { background:#bee9dc; color:#153f35; }
 
@@ -120,6 +121,7 @@ svg { flex-shrink:0; }
 .tc-field:has(input) { flex-grow:2; }
 .tc-field input,.tc-field select { width:100%; min-width:0; border:1px solid var(--tc-border-strong); border-radius:var(--tc-control-radius); background:#fff; color:var(--tc-text); padding:9px 12px; min-height:44px; font-size:16px; }
 input::placeholder { color:#637770; }
+:is(input):focus-visible::placeholder { color:var(--tc-text-muted); }
 input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent); flex-shrink:0; }
 .tc-filters > .tc-row { min-height:44px; }
 .tc-filters--compact { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
@@ -140,7 +142,7 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-hospital-card h2 button:hover,.tc-hospital-card h2 a:hover { color:var(--tc-accent); }
 /* One full-card target avoids a second 44px action row without shrinking the hit area. */
 .tc-hospital-card h2 :is(a,button)::after { content:''; position:absolute; inset:0; border-radius:var(--tc-radius); }
-.tc-hospital-card:has(:focus-visible) { outline:3px solid var(--tc-accent); outline-offset:3px; }
+.tc-hospital-card:has(:focus-visible) { outline:2px solid var(--tc-text); outline-offset:2px; }
 .tc-hospital-card h2 :is(a,button):focus-visible { outline:none; }
 .tc-hospital-card > :is(p,.tc-row) { margin:8px 0 0; }
 .tc-hospital-departments { color:var(--tc-text-muted); font-size:13px; margin:8px 0 10px; line-height:1.7; }
@@ -273,7 +275,9 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 
 /* Controls respond without changing SDK-owned geographic transforms. */
 :is(.tc-button,.tc-mapapp-ctl,.tc-mapapp-burger,.tc-sidebar-close,.tc-sidebar-tab,.tc-filter-toggle,.tc-mapapp-result,.tc-card-action,.tc-nav a,.tc-mobile-browse,.tc-search-clear,.tc-linklike) { transition:background-color .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease; }
-.tc-field input:focus-visible,.tc-field select:focus-visible,.tc-mapapp-search input:focus-visible { border-color:var(--tc-accent); box-shadow:0 0 0 4px #087f7b1a; }
+.tc-field input:focus-visible,.tc-field select:focus-visible,.tc-field textarea:focus-visible { border-color:var(--tc-text); }
+.tc-mapapp-search input:focus-visible { border-color:var(--tc-border-strong); }
+.tc-mapapp-search:has(input:focus-visible) .tc-search-icon { color:var(--tc-text); }
 .tc-sidebar-close:hover,.tc-search-clear:hover { background:var(--tc-accent-soft); color:var(--tc-accent); }
 @media (hover:hover) {
   :is(.tc-button,.tc-mapapp-ctl,.tc-mapapp-burger):not(:disabled):hover { box-shadow:0 5px 14px #193b3819; }
