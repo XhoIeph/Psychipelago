@@ -164,10 +164,13 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-detail-section > h3 { margin:0 0 16px; line-height:1.5; }
 .tc-detail-count { margin-left:8px; color:var(--tc-text-muted); font-size:13px; font-weight:400; }
 .tc-province-list { list-style:none; margin:0; padding:0; }
-.tc-province-list li { display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid var(--tc-border); }
+.tc-province-list li { border-bottom:1px solid var(--tc-border); }
 .tc-province-list li:last-child { border-bottom:0; }
-.tc-province-list button { flex:1; min-width:0; min-height:44px; font-size:14px; color:var(--tc-text); }
-.tc-province-list li > span { white-space:nowrap; }
+/* 整行就是一个按钮：行内文字与家数属于同一个可点区域，hover 底色才和命中区一致。 */
+.tc-province-row { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-height:48px; padding:8px 0; border:0; background:transparent; font-size:14px; color:var(--tc-text); text-align:left; transition:background-color .16s ease; }
+.tc-province-row:hover { background:var(--tc-accent-soft); }
+.tc-province-name { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.tc-province-count { flex-shrink:0; font-size:13px; color:var(--tc-text-muted); }
 .tc-breadcrumb { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:0 0 8px; color:var(--tc-text-muted); font-size:13px; line-height:1.6; }
 .tc-breadcrumb button { font:inherit; min-height:24px; padding:0; border:0; background:transparent; color:inherit; text-decoration:underline; text-underline-offset:3px; }
 .tc-breadcrumb button:hover { color:var(--tc-text); }

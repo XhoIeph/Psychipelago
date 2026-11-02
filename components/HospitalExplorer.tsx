@@ -129,8 +129,10 @@ export function HospitalExplorer({
       <ul className="tc-province-list">
         {provinceRows.map((row) => (
           <li key={row.adcode}>
-            <button type="button" className="tc-linklike" onClick={() => onSelectProvince?.(row.adcode)}>{row.name}</button>
-            <span className="tc-small tc-muted">· {row.count} 家机构</span>
+            <button type="button" className="tc-province-row" onClick={() => onSelectProvince?.(row.adcode)}>
+              <span className="tc-province-name">{row.name}</span>
+              <span className="tc-province-count">{row.count} 家机构</span>
+            </button>
           </li>
         ))}
       </ul>
