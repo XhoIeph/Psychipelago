@@ -166,8 +166,10 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-province-list { list-style:none; margin:0; padding:0; }
 .tc-province-list li { border-bottom:1px solid var(--tc-border); }
 .tc-province-list li:last-child { border-bottom:0; }
-/* 整行就是一个按钮：行内文字与家数属于同一个可点区域，hover 底色才和命中区一致。 */
-.tc-province-row { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-height:44px; padding:0; border:0; background:transparent; color:var(--tc-text); text-align:left; transition:background-color .16s ease; }
+/* 整行就是一个按钮：行内文字与家数属于同一个可点区域，hover 底色才和命中区一致。
+   底色块向外各扩 8px（负外边距 + 等量内边距抵消），文字左缘不变；宽度用 calc 让两侧对称，
+   只写 width:100% 会把整块向左挪 8px、右侧贴边。 */
+.tc-province-row { display:flex; align-items:center; justify-content:space-between; gap:12px; width:calc(100% + 16px); margin-inline:-8px; min-height:44px; padding:0 8px; border:0; border-radius:var(--tc-radius-sm); background:transparent; color:var(--tc-text); text-align:left; transition:background-color .16s ease; }
 .tc-province-name { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:15px; font-weight:500; }
 .tc-province-count { flex-shrink:0; font-size:13px; color:var(--tc-text-muted); }
 /* 中性浅色，不用品牌绿：绿色在这站代表地图数据与选中，行底色用绿会被读成已选中。 */
@@ -176,7 +178,7 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-hospital-list { list-style:none; margin:0; padding:0; }
 .tc-hospital-list li { border-bottom:1px solid var(--tc-border); }
 .tc-hospital-list li:last-child { border-bottom:0; }
-.tc-hospital-row { display:flex; flex-direction:column; gap:4px; width:100%; padding:10px 0; border:0; background:transparent; color:var(--tc-text); text-align:left; transition:background-color .16s ease; }
+.tc-hospital-row { display:flex; flex-direction:column; gap:4px; width:calc(100% + 16px); margin-inline:-8px; padding:10px 8px; border:0; border-radius:var(--tc-radius-sm); background:transparent; color:var(--tc-text); text-align:left; transition:background-color .16s ease; }
 .tc-hospital-row-name { font-size:15px; font-weight:500; line-height:1.5; }
 .tc-hospital-row-count { font-size:13px; color:var(--tc-text-muted); }
 @media (hover: hover) { .tc-hospital-row:hover { background:var(--tc-surface-muted); } }
@@ -206,7 +208,6 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 /* Doctor detail: same level as the institution detail, entered from a lead's name */
 .tc-lead-doctor .tc-doctor-link { padding:0; border:0; background:transparent; font:inherit; color:inherit; cursor:pointer; text-decoration:underline; text-decoration-style:dotted; text-decoration-color:var(--tc-border-strong); text-underline-offset:3px; }
 .tc-lead-doctor .tc-doctor-link:hover { color:var(--tc-accent-strong); text-decoration-color:currentColor; }
-.tc-detail > .tc-doctor-note { margin-top:6px; font-size:13px; line-height:1.6; color:var(--tc-text-muted); }
 .tc-detail > .tc-doctor-origin { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:16px; font-size:13px; color:var(--tc-text-muted); }
 .tc-doctor-origin button { padding:0; border:0; background:transparent; font:inherit; font-weight:650; color:var(--tc-text); text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
 .tc-doctor-origin button:hover { color:var(--tc-accent-strong); }

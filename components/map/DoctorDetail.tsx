@@ -40,7 +40,6 @@ export function DoctorDetail({
       </nav>
       <button type="button" className="tc-detail-back" onClick={onBackToHospital}><ArrowLeft size={16} aria-hidden="true" />返回 {hospital.name}</button>
       <h2 className="tc-detail-title">{name}</h2>
-      <p className="tc-doctor-note">姓名取自线索原文，未核对</p>
       <p className="tc-doctor-origin">
         所在机构
         <button type="button" onClick={onBackToHospital}>{hospital.name}</button>
