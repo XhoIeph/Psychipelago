@@ -5,10 +5,7 @@ import { usePathname } from 'next/navigation'
 
 const NAV = [
   { href: '/', label: '地图' },
-  { href: '/hospitals/', label: '医院' },
-  { href: '/doctors/', label: '医生线索' },
-  { href: '/reports/', label: '就诊线索' },
-  { href: '/submit/', label: '提交线索' },
+  { href: '/about/', label: '关于' },
 ]
 
 /** 常规页头导航：标出当前页（aria-current="page" + 视觉高亮） */

@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import type { Hospital, Province, Report } from '@/lib/schema'
 
@@ -73,7 +72,6 @@ export function HospitalExplorer({
     return (
       <div className="tc-empty">
         <p>机构尚未定位。</p>
-        <Link href="/reports/">查看来源线索 →</Link>
       </div>
     )
   }
@@ -139,7 +137,7 @@ export function HospitalExplorer({
             <article className="tc-card tc-hospital-card" key={hospital.id}>
               <div className="tc-hospital-location"><MapPin size={16} aria-hidden="true" />{hospital.province}{hospital.city === hospital.province ? '' : ` · ${hospital.city}`}</div>
               <h2>
-                {onSelectHospital ? <button type="button" className="tc-linklike" aria-label={`查看机构：${hospital.name}`} onClick={() => onSelectHospital(hospital.id)}>{hospital.name}</button> : <Link href={`/hospitals/${hospital.id}/`} aria-label={`查看机构：${hospital.name}`}>{hospital.name}</Link>}
+                {onSelectHospital ? <button type="button" className="tc-linklike" aria-label={`查看机构：${hospital.name}`} onClick={() => onSelectHospital(hospital.id)}>{hospital.name}</button> : hospital.name}
               </h2>
               {(hospital.level !== '未知' || hospital.category !== '其他') && <p className="tc-small tc-muted">
                 {[hospital.level !== '未知' && hospital.level, hospital.category !== '其他' && hospital.category].filter(Boolean).join(' · ')}

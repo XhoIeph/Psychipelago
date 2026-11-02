@@ -4,8 +4,7 @@ import { matchesSearch } from './search'
 /**
  * 医生线索聚合（单一事实源）
  *
- * 地图侧栏（components/map/DoctorExplorer.tsx）与独立页（app/(site)/doctors/page.tsx）
- * 共用本文件，避免两处各算一套而漂移。
+ * 地图侧栏（components/map/DoctorExplorer.tsx）共用本文件，避免两处各算一套而漂移。
  *
  * 口径：
  * - 医生姓名来自线索原文的 `report.doctor_name_raw`，按原文呈现。

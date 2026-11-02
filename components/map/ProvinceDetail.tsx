@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { ArrowLeft, MapPin } from 'lucide-react'
 import type { MapHospital, MapProvinceStat } from './types'
 
@@ -64,9 +63,6 @@ export function ProvinceDetail({
       ) : (
         <div className="tc-empty">
           <p>该省暂无已收录的线索与机构记录。</p>
-          <p className="tc-small tc-faint">
-            有公开来源？<Link href="/submit/">提交线索</Link>
-          </p>
         </div>
       )}
     </div>

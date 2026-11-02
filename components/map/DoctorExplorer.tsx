@@ -9,7 +9,7 @@ import type { Hospital, Report } from '@/lib/schema'
 /**
  * 地图侧栏「医生线索」面板。
  *
- * 聚合与关键词判定全部来自 lib/doctor-leads.ts（与 /doctors/ 页面共用同一函数），
+ * 聚合与关键词判定全部来自 lib/doctor-leads.ts，
  * 这里只负责搜索框、分组标题与结果列表的呈现。
  */
 export function DoctorExplorer({ hospitals, reports, onSelectHospital }: {
