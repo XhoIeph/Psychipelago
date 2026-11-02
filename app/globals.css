@@ -181,7 +181,7 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-hospital-list li:last-child { border-bottom:0; }
 .tc-hospital-row { display:flex; flex-direction:column; gap:4px; width:calc(100% + 16px); margin-inline:-8px; padding:10px 8px; border:0; border-radius:var(--tc-radius-sm); background:transparent; color:var(--tc-text); text-align:left; transition:background-color .16s ease; }
 .tc-hospital-row-name { font-size:15px; font-weight:500; line-height:1.5; }
-.tc-hospital-row-count { font-size:13px; color:var(--tc-text-muted); }
+.tc-hospital-row-meta { font-size:13px; color:var(--tc-text-muted); }
 @media (hover: hover) { .tc-hospital-row:hover { background:var(--tc-surface-muted); } }
 /* 机构面板顶部的常驻病症筛选：带边框的卡，行规格与省份行一致（44px、15/500、家数 13 次要色）。
    选中整行铺 --tc-accent-soft，不加粗、不加边框、不加左边色条；取消靠再点同一行。 */

@@ -1,6 +1,7 @@
 'use client'
 
 import { ArrowLeft, MapPin } from 'lucide-react'
+import { hospitalRowMeta } from '@/lib/hospital-row'
 import type { MapHospital, MapProvinceStat } from './types'
 
 export function ProvinceDetail({
@@ -50,7 +51,7 @@ export function ProvinceDetail({
                       onClick={() => onSelectHospital(hospital.id)}
                     >
                       <span className="tc-hospital-row-name">{hospital.name}</span>
-                      <span className="tc-hospital-row-count">{hospital.leads} 条线索</span>
+                      <span className="tc-hospital-row-meta">{hospitalRowMeta(hospital.city, hospital.leads)}</span>
                     </button>
                   </li>
                 ))}

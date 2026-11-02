@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { hospitalRowMeta } from '@/lib/hospital-row'
 import type { Hospital, Province } from '@/lib/schema'
 
 /** 病症筛选卡片的一行：只有名称，家数不在筛选里出现（数量看结果表头） */
@@ -104,7 +105,7 @@ export function HospitalExplorer({
             onClick={() => onSelectHospital?.(hospital.id)}
           >
             <span className="tc-hospital-row-name">{hospital.name}</span>
-            <span className="tc-hospital-row-count">{reportCounts[hospital.id] ?? 0} 条线索</span>
+            <span className="tc-hospital-row-meta">{hospitalRowMeta(hospital.city, reportCounts[hospital.id] ?? 0)}</span>
           </button>
         </li>
       ))}
