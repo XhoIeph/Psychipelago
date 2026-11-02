@@ -167,10 +167,19 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-province-list li { border-bottom:1px solid var(--tc-border); }
 .tc-province-list li:last-child { border-bottom:0; }
 /* 整行就是一个按钮：行内文字与家数属于同一个可点区域，hover 底色才和命中区一致。 */
-.tc-province-row { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-height:48px; padding:8px 0; border:0; background:transparent; font-size:14px; color:var(--tc-text); text-align:left; transition:background-color .16s ease; }
-.tc-province-row:hover { background:var(--tc-accent-soft); }
-.tc-province-name { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.tc-province-row { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-height:44px; padding:0; border:0; background:transparent; color:var(--tc-text); text-align:left; transition:background-color .16s ease; }
+.tc-province-name { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:15px; font-weight:500; }
 .tc-province-count { flex-shrink:0; font-size:13px; color:var(--tc-text-muted); }
+/* 中性浅色，不用品牌绿：绿色在这站代表地图数据与选中，行底色用绿会被读成已选中。 */
+@media (hover: hover) { .tc-province-row:hover { background:var(--tc-surface-muted); } }
+/* 省内机构行：名称独占一行，条数另起一行，避免读成「机构名 + 4 条」一串。 */
+.tc-hospital-list { list-style:none; margin:0; padding:0; }
+.tc-hospital-list li { border-bottom:1px solid var(--tc-border); }
+.tc-hospital-list li:last-child { border-bottom:0; }
+.tc-hospital-row { display:flex; flex-direction:column; gap:4px; width:100%; padding:10px 0; border:0; background:transparent; color:var(--tc-text); text-align:left; transition:background-color .16s ease; }
+.tc-hospital-row-name { font-size:15px; font-weight:500; line-height:1.5; }
+.tc-hospital-row-count { font-size:13px; color:var(--tc-text-muted); }
+@media (hover: hover) { .tc-hospital-row:hover { background:var(--tc-surface-muted); } }
 .tc-breadcrumb { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:0 0 8px; color:var(--tc-text-muted); font-size:13px; line-height:1.6; }
 .tc-breadcrumb button { font:inherit; min-height:24px; padding:0; border:0; background:transparent; color:inherit; text-decoration:underline; text-underline-offset:3px; }
 .tc-breadcrumb button:hover { color:var(--tc-text); }
@@ -194,33 +203,17 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-table th:first-child { padding-left:0; width:28%; }
 .tc-table td:last-child { padding-right:0; }
 .tc-table td { overflow-wrap:anywhere; }
-.tc-doctor-group { margin-top:12px; border-bottom:1px solid var(--tc-border); }
-.tc-doctor-group > summary { display:flex; align-items:center; gap:12px; min-height:56px; padding:12px 4px; cursor:pointer; list-style:none; border-radius:var(--tc-radius-sm); }
-.tc-doctor-group > summary::-webkit-details-marker { display:none; }
-.tc-doctor-group > summary:hover { background:var(--tc-accent-soft); }
-.tc-doctor-group h2 { flex:1; min-width:0; margin:0; font-size:17px; color:var(--tc-text); overflow-wrap:anywhere; }
-.tc-doctor-group-count { flex-shrink:0; min-width:30px; padding:3px 9px; border-radius:6px; font-size:13px; text-align:center; color:var(--tc-accent-strong); background:var(--tc-accent-soft); }
-.tc-doctor-group-chevron { color:var(--tc-text-muted); transition:transform .2s ease; }
-.tc-doctor-group[open] > summary .tc-doctor-group-chevron { transform:rotate(180deg); }
-.tc-doctor-group-body { padding-bottom:16px; }
-.tc-doctor-result { width:100%; padding:0 16px; margin-top:10px; border:1px solid var(--tc-border); border-radius:12px; background:#fff; color:var(--tc-text); text-align:left; transition:border-color .18s,box-shadow .18s; }
-.tc-doctor-result:hover,.tc-doctor-result[open] { border-color:var(--tc-border-strong); box-shadow:0 3px 12px #193b380d; }
-.tc-doctor-result > summary { display:flex; flex-direction:column; gap:5px; position:relative; padding:16px 22px 16px 0; min-height:62px; cursor:pointer; list-style:none; }
-.tc-doctor-result > summary::-webkit-details-marker { display:none; }
-.tc-doctor-chevron { position:absolute; right:0; top:19px; color:var(--tc-accent); transition:transform .18s; }
-.tc-doctor-result[open] > summary .tc-doctor-chevron { transform:rotate(180deg); }
-@supports (interpolate-size:allow-keywords) and selector(details::details-content) {
-  .tc-doctor-result,.tc-doctor-group { interpolate-size:allow-keywords; }
-  .tc-doctor-result::details-content,.tc-doctor-group::details-content { block-size:0; overflow:clip; opacity:0; transition:block-size .2s ease,opacity .2s ease,content-visibility .2s allow-discrete; }
-  .tc-doctor-result[open]::details-content,.tc-doctor-group[open]::details-content { block-size:auto; opacity:1; }
-}
-.tc-doctor-result-body { padding:0 0 16px; }
-.tc-doctor-evidence { border-top:1px solid var(--tc-border); padding:16px 0; overflow-wrap:anywhere; }
-.tc-doctor-result-body > :is(a,button) { display:inline-flex; min-height:40px; align-items:center; }
-.tc-doctor-evidence details > summary { cursor:pointer; padding:8px 0; color:var(--tc-accent); }
-.tc-doctor-result small { color:var(--tc-text-muted); font-size:12px; }
-.tc-doctor-explorer > .tc-meta { margin:8px 0 0; }
-.tc-doctor-explorer--page { margin-bottom:36px; }
+/* Doctor detail: same level as the institution detail, entered from a lead's name */
+.tc-lead-doctor .tc-doctor-link { padding:0; border:0; background:transparent; font:inherit; color:inherit; cursor:pointer; text-decoration:underline; text-decoration-style:dotted; text-decoration-color:var(--tc-border-strong); text-underline-offset:3px; }
+.tc-lead-doctor .tc-doctor-link:hover { color:var(--tc-accent-strong); text-decoration-color:currentColor; }
+.tc-detail > .tc-doctor-note { margin-top:6px; font-size:13px; line-height:1.6; color:var(--tc-text-muted); }
+.tc-detail > .tc-doctor-origin { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:16px; font-size:13px; color:var(--tc-text-muted); }
+.tc-doctor-origin button { padding:0; border:0; background:transparent; font:inherit; font-weight:650; color:var(--tc-text); text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+.tc-doctor-origin button:hover { color:var(--tc-accent-strong); }
+.tc-doctor-disorders { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0; padding:0; list-style:none; }
+.tc-doctor-disorders li { display:inline-flex; align-items:center; gap:8px; padding:4px 10px; border-radius:999px; background:var(--tc-accent-soft); font-size:13px; line-height:1.6; }
+.tc-doctor-disorders li span:last-child { color:var(--tc-text-muted); }
+.tc-doctor-profile ul { margin:8px 0 0; padding-left:18px; }
 .tc-secondary-section { margin-top:36px; }
 .tc-secondary-section > summary { cursor:pointer; min-height:44px; color:var(--tc-text-muted); }
 

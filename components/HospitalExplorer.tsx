@@ -131,7 +131,7 @@ export function HospitalExplorer({
           <li key={row.adcode}>
             <button type="button" className="tc-province-row" onClick={() => onSelectProvince?.(row.adcode)}>
               <span className="tc-province-name">{row.name}</span>
-              <span className="tc-province-count">{row.count} 家机构</span>
+              <span className="tc-province-count">{row.count} 家</span>
             </button>
           </li>
         ))}
