@@ -103,8 +103,8 @@ export function HospitalExplorer({
     return (
       <div>
         <div className="tc-results-heading" role="status" aria-live="polite">
-          <span><strong>{matched.length}</strong> 家机构</span>
-          <span>{resultFilter.label} · {resultFilter.hint}</span>
+          <span><strong>{matched.length}</strong> 家机构 · {resultFilter.hint}</span>
+          <span>{resultFilter.label}</span>
         </div>
         {onClearResult && (
           <div className="tc-hospital-actions">
