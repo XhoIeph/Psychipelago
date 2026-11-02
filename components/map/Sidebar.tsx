@@ -23,6 +23,8 @@ export function Sidebar({
   open,
   tabs,
   detail,
+  detailKey,
+  detailDepth,
   onClose,
   panelRef,
   activeTab,
@@ -32,6 +34,10 @@ export function Sidebar({
   open: boolean
   tabs: Record<SidebarTabId, ReactNode>
   detail: ReactNode | null
+  /** 详情态的身份（province:xxx / hospital:xxx / doctor:xxx），变化时重跑进场动画 */
+  detailKey?: string
+  /** 详情层级：省 1、机构 2、医生 3；返回时层级变小，动画方向随之反向 */
+  detailDepth?: number
   onClose?: () => void
   panelRef?: Ref<HTMLElement>
   /** 受控标签（地图全局搜索需要切换到指定标签）；不传时组件自管 */
@@ -91,7 +97,7 @@ export function Sidebar({
       </div>
 
       {detail ? (
-        <div className="tc-sidebar-body"><PanelMotion motionKey="detail">{detail}</PanelMotion></div>
+        <div className="tc-sidebar-body"><PanelMotion motionKey={detailKey ?? 'detail'} slideIndex={detailDepth ?? 1}>{detail}</PanelMotion></div>
       ) : (
         <>
           <nav ref={navRef} className="tc-sidebar-tabs" role="tablist" aria-label="侧边栏功能">

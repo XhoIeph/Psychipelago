@@ -2521,7 +2521,7 @@
       "hospital_name_raw": "北京回龙观医院",
       "doctor_name_raw": "于宏华、曹文胜",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -2560,7 +2560,7 @@
       "hospital_name_raw": "北京大学第六医院",
       "doctor_name_raw": "刘靖、王向群、唐宏宇、于欣",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -2599,7 +2599,7 @@
       "hospital_name_raw": "北京回龙观医院",
       "doctor_name_raw": "李献云、崔勇、杨甫德",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -2638,7 +2638,7 @@
       "hospital_name_raw": "首都医科大学附属北京安定医院",
       "doctor_name_raw": "王刚、李占江、姜长青",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -2677,7 +2677,7 @@
       "hospital_name_raw": "中国人民解放军总医院301",
       "doctor_name_raw": "祝卓宏",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -2716,7 +2716,7 @@
       "hospital_name_raw": "北京协和医院",
       "doctor_name_raw": "洪霞、魏镜",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -2755,7 +2755,7 @@
       "hospital_name_raw": "河南商丘市第一人民医院",
       "doctor_name_raw": "陈彦",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -2795,7 +2795,7 @@
       "hospital_name_raw": "河北省荣军医院（保定）",
       "doctor_name_raw": "回秀清",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -2835,7 +2835,7 @@
       "hospital_name_raw": "山东省精卫（青岛）",
       "doctor_name_raw": "乔东东、曾波涛",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -2875,7 +2875,7 @@
       "hospital_name_raw": "内蒙古自治区人民医院",
       "doctor_name_raw": "巴图、赵静",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -2914,7 +2914,7 @@
       "hospital_name_raw": "内蒙古医科大学附属医院",
       "doctor_name_raw": "刘畅、李媛媛",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -2954,7 +2954,7 @@
       "hospital_name_raw": "内蒙古自治区第三医院",
       "doctor_name_raw": "孙雅、张蔷、景兰",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -2994,7 +2994,7 @@
       "hospital_name_raw": "宁夏回族自治区宁安医院",
       "doctor_name_raw": "徐卫国、王焕秋、雍生满",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3033,7 +3033,7 @@
       "hospital_name_raw": "银川市第一人民医院",
       "doctor_name_raw": "马风红、邱虹",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3072,7 +3072,7 @@
       "hospital_name_raw": "宁夏医科大学总医院",
       "doctor_name_raw": "李秀萍、陈彦华",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3111,7 +3111,7 @@
       "hospital_name_raw": "尉犁县人民医院",
       "doctor_name_raw": "莫先行",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3150,7 +3150,7 @@
       "hospital_name_raw": "喀什地区第一人民医院",
       "doctor_name_raw": "李健博",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3189,7 +3189,7 @@
       "hospital_name_raw": "乌鲁木齐市南湖医院",
       "doctor_name_raw": "万魏",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3228,7 +3228,7 @@
       "hospital_name_raw": "乌鲁木齐药业集团附属医院",
       "doctor_name_raw": "齐小军",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3267,7 +3267,7 @@
       "hospital_name_raw": "新疆医科大学第一附属医院",
       "doctor_name_raw": "伊琪忠、胡红星",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3307,7 +3307,7 @@
       "hospital_name_raw": "新疆维吾尔自治区人民医院",
       "doctor_name_raw": "阿地拉·阿吉、刘若楠、胡曼娜",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3347,7 +3347,7 @@
       "hospital_name_raw": "上海市精卫",
       "doctor_name_raw": "徐一峰、王继军、张海音、陈钰、杜亚松",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3386,7 +3386,7 @@
       "hospital_name_raw": "上海和睦家医院（私立，普通门诊就诊费用500-1600，心理咨询2400-2520每45分钟）",
       "doctor_name_raw": "Herda",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3425,7 +3425,7 @@
       "hospital_name_raw": "复旦大学附属华山医院",
       "doctor_name_raw": "施慎逊、王立松",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3464,7 +3464,7 @@
       "hospital_name_raw": "上海交通大学医学院附属仁济医院",
       "doctor_name_raw": "骆艳丽、吴志国",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3503,7 +3503,7 @@
       "hospital_name_raw": "同济大学附属精神卫生中心",
       "doctor_name_raw": "赵旭东",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3542,7 +3542,7 @@
       "hospital_name_raw": "广州医科大学附属脑科医院（芳村）",
       "doctor_name_raw": "彭红军、苗国栋、李从铸、刘铁榜、郭扬波、陆小兵、钟华清",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3581,7 +3581,7 @@
       "hospital_name_raw": "广州市惠爱医院",
       "doctor_name_raw": "郑英君、林伟成、徐贵云、宁玉萍",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3620,7 +3620,7 @@
       "hospital_name_raw": "广州白云区心理医院",
       "doctor_name_raw": "郑洪波",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3660,7 +3660,7 @@
       "hospital_name_raw": "广东省精神卫生中心",
       "doctor_name_raw": "贾福军",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3699,7 +3699,7 @@
       "hospital_name_raw": "中山大学法医鉴定中心",
       "doctor_name_raw": "许明智、张晋碚、崔立谦、赵虎、童俊",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3738,7 +3738,7 @@
       "hospital_name_raw": "厦门市仙岳医院",
       "doctor_name_raw": "郑一雄、吴素英、丁丽君、陈进东、王文强、聂小伟",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3777,7 +3777,7 @@
       "hospital_name_raw": "厦门大学附属第一医院",
       "doctor_name_raw": "林多朵、黄伟容",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3816,7 +3816,7 @@
       "hospital_name_raw": "厦门大学附属中山医院",
       "doctor_name_raw": "陈素芬、朱月龙",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3855,7 +3855,7 @@
       "hospital_name_raw": "厦门市中医院",
       "doctor_name_raw": "林国清",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3894,7 +3894,7 @@
       "hospital_name_raw": "温州医科大学附属第一医院",
       "doctor_name_raw": "赵永忠",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3933,7 +3933,7 @@
       "hospital_name_raw": "武汉精神卫生中心",
       "doctor_name_raw": "张红",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -3972,7 +3972,7 @@
       "hospital_name_raw": "广西南宁第一人民医院",
       "doctor_name_raw": "韦盛中",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4011,7 +4011,7 @@
       "hospital_name_raw": "广西北海市人民医院",
       "doctor_name_raw": "陈伟刚",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4050,7 +4050,7 @@
       "hospital_name_raw": "广西北海市人民医院（银滩院区）",
       "doctor_name_raw": "蓝丹凤",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4090,7 +4090,7 @@
       "hospital_name_raw": "贵州省人民医院",
       "doctor_name_raw": "向慧",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4130,7 +4130,7 @@
       "hospital_name_raw": "贵州省第二人民医院",
       "doctor_name_raw": "周曹、覃颖",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4169,7 +4169,7 @@
       "hospital_name_raw": "贵州医科大学附属医院",
       "doctor_name_raw": "朱祥路",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4208,7 +4208,7 @@
       "hospital_name_raw": "大理州第二人民医院",
       "doctor_name_raw": "李丽洁",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4247,7 +4247,7 @@
       "hospital_name_raw": "文山州第二人民医院",
       "doctor_name_raw": "戴敏",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4286,7 +4286,7 @@
       "hospital_name_raw": "玉溪市第二人民医院",
       "doctor_name_raw": "李文勇",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4325,7 +4325,7 @@
       "hospital_name_raw": "保山市第三人民医院",
       "doctor_name_raw": "张亚娟",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4364,7 +4364,7 @@
       "hospital_name_raw": "昆明医科大学第一附属医院",
       "doctor_name_raw": "梁志中",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4402,7 +4402,7 @@
       "hospital_id": "kdocs-amap-b0ffliuheg",
       "hospital_name_raw": "四川大学华西厦门医院",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4442,7 +4442,7 @@
       "hospital_name_raw": "四川省精神卫生中心（绵阳三医院）",
       "doctor_name_raw": "杨昆、银春燕",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4481,7 +4481,7 @@
       "hospital_name_raw": "成都市第一人民医院",
       "doctor_name_raw": "耿婷",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4521,7 +4521,7 @@
       "hospital_name_raw": "四川省人民医院",
       "doctor_name_raw": "李静、李江波",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4560,7 +4560,7 @@
       "hospital_name_raw": "成都市第四人民医院",
       "doctor_name_raw": "胡玉凤、马敏、晏铁峻、方玫",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4599,7 +4599,7 @@
       "hospital_name_raw": "四川大学华西医院",
       "doctor_name_raw": "彭祖贵、邓红",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4639,7 +4639,7 @@
       "hospital_name_raw": "重庆市精神卫生中心",
       "doctor_name_raw": "汪波、况利、周建初、罗捷",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4678,7 +4678,7 @@
       "hospital_name_raw": "重庆医科大学附属第一医院",
       "doctor_name_raw": "况利、蒙华庆、李静、博一笑",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4717,7 +4717,7 @@
       "hospital_name_raw": "重庆医科大学附属第二医院",
       "doctor_name_raw": "郭志勇、张琪",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4756,7 +4756,7 @@
       "hospital_name_raw": "陆军军医大学西南医院",
       "doctor_name_raw": "何梅、瞿伟",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4795,7 +4795,7 @@
       "hospital_name_raw": "赣州市第三人民医院",
       "doctor_name_raw": "申璎、刘少华、谢秀东、方锋峰",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4834,7 +4834,7 @@
       "hospital_name_raw": "赣南医学院第一附属医院",
       "doctor_name_raw": "唐宏、郑亚楠",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4873,7 +4873,7 @@
       "hospital_name_raw": "湖南长沙湘雅医院",
       "doctor_name_raw": "肖茜",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4912,7 +4912,7 @@
       "hospital_name_raw": "湖南省立第二人民医院/脑科医院",
       "doctor_name_raw": "刘光亚、曾丽红",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4951,7 +4951,7 @@
       "hospital_name_raw": "湖南儿童医院",
       "doctor_name_raw": "马静",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -4990,7 +4990,7 @@
       "hospital_name_raw": "南京脑科医院",
       "doctor_name_raw": "史家波、王纯",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5029,7 +5029,7 @@
       "hospital_name_raw": "中国人民解放军总医院（海南）",
       "doctor_name_raw": "崔红",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5068,7 +5068,7 @@
       "hospital_name_raw": "海南医学院第一附属医院",
       "doctor_name_raw": "苏朝霞",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5108,7 +5108,7 @@
       "hospital_name_raw": "海南省肿瘤医院",
       "doctor_name_raw": "郑慧凝",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5148,7 +5148,7 @@
       "hospital_name_raw": "海南省安宁医院",
       "doctor_name_raw": "王文伶、罗儒献、肖玉瑛",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5187,7 +5187,7 @@
       "hospital_name_raw": "华西医院西藏成办分院",
       "doctor_name_raw": "何兰、王大海",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5226,7 +5226,7 @@
       "hospital_name_raw": "拉萨市人民医院",
       "doctor_name_raw": "赵文暄、刘毅",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5266,7 +5266,7 @@
       "hospital_name_raw": "西藏自治区人民医院",
       "doctor_name_raw": "王丽平",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5306,7 +5306,7 @@
       "hospital_name_raw": "青山医院",
       "doctor_name_raw": "陈永凯",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5346,7 +5346,7 @@
       "hospital_name_raw": "葵涌医院",
       "doctor_name_raw": "李诚",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5386,7 +5386,7 @@
       "hospital_name_raw": "东区尤德夫人那打素医院",
       "doctor_name_raw": "黄炽荣",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5426,7 +5426,7 @@
       "hospital_name_raw": "玛丽医院",
       "doctor_name_raw": "麦基恩",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5466,7 +5466,7 @@
       "hospital_name_raw": "伊利沙伯医院",
       "doctor_name_raw": "张鸿坚",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5506,7 +5506,7 @@
       "hospital_name_raw": "威尔斯亲王医院",
       "doctor_name_raw": "唐继志",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5546,7 +5546,7 @@
       "hospital_name_raw": "屯门医院",
       "doctor_name_raw": "林明",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5586,7 +5586,7 @@
       "hospital_name_raw": "养和医院",
       "doctor_name_raw": "陈佳鼐",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5626,7 +5626,7 @@
       "hospital_name_raw": "港安医院",
       "doctor_name_raw": "黄以谦",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5666,7 +5666,7 @@
       "hospital_name_raw": "仁伯爵综合医院",
       "doctor_name_raw": "黄辉",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5706,7 +5706,7 @@
       "hospital_name_raw": "澳门大学心理学系诊所",
       "doctor_name_raw": "杨蕴萍",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5746,7 +5746,7 @@
       "hospital_name_raw": "澳门科技大学医院",
       "doctor_name_raw": "张华庆",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5785,7 +5785,7 @@
       "hospital_name_raw": "澳门心理卫生中心",
       "doctor_name_raw": "李丽华",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5825,7 +5825,7 @@
       "hospital_name_raw": "台北市立联合医院松德院区",
       "doctor_name_raw": "邱智强",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5865,7 +5865,7 @@
       "hospital_name_raw": "台湾大学医学院附设医院",
       "doctor_name_raw": "高淑芬",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5905,7 +5905,7 @@
       "hospital_name_raw": "台北荣民总医院",
       "doctor_name_raw": "陈牧宏",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5945,7 +5945,7 @@
       "hospital_name_raw": "马偕纪念医院",
       "doctor_name_raw": "方俊凯",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -5985,7 +5985,7 @@
       "hospital_name_raw": "高雄医学大学附设医院",
       "doctor_name_raw": "陈正宗",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -6025,7 +6025,7 @@
       "hospital_name_raw": "中国医药大学附设医院",
       "doctor_name_raw": "苏冠宾",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -6065,7 +6065,7 @@
       "hospital_name_raw": "成功大学医学院附设医院",
       "doctor_name_raw": "郭乃文",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"
@@ -6105,7 +6105,7 @@
       "hospital_name_raw": "长庚医院",
       "doctor_name_raw": "刘嘉逸",
       "disorders": [
-        "other"
+        "pd"
       ],
       "source_topics": [
         "人格障碍"

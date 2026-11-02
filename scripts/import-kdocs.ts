@@ -54,7 +54,13 @@ export function reportsFromDocument(document: SourceDocument): Report[] {
       // University names can contain a province unrelated to the hospital's location.
       const explicitRegion = hospitalName.match(/^(河南省|陕西省|山东省|甘肃省|辽宁省|黑龙江省|新疆维吾尔自治区|广东省|浙江省|贵州省|四川省|海南省|河北省|内蒙古自治区|宁夏回族自治区|江西省|西藏自治区|上海市|重庆市)/u)?.[0]
       const hospitalRegion = region ?? explicitRegion
-      const disorders: Report['disorders'] = section === 'cptsd' ? ['cptsd'] : section === 'osdd/did' ? ['osdd', 'did'] : ['other']
+      const disorders: Report['disorders'] = section === 'cptsd'
+        ? ['cptsd']
+        : section === 'osdd/did'
+          ? ['osdd', 'did']
+          : section === '人格障碍'
+            ? ['pd']
+            : ['other']
 
       reports.push({
         id: `kdocs-crolzfweu2gy-p${page.page}-l${index + 1}`,

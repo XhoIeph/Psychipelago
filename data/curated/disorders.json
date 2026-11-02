@@ -74,6 +74,21 @@
       "sources": ["https://icd.who.int/browse11/l-m/en"]
     },
     {
+      "id": "pd",
+      "name_zh": "人格障碍",
+      "name_en": "Personality disorder",
+      "icd11_code": "（源文档第三段标题，未细分到具体类型）",
+      "icd10_equivalent": null,
+      "icd11_only": false,
+      "summary": "源文档「就诊地图」的第 3–5 页把这一段线索统一标为「人格障碍」，未细分到边缘型、回避型等具体类型，本站按原文照录。",
+      "diagnostic_notes": "仅作数据归类用途，不代表本站承认或否认该诊断。凡使用本类目的线索，归类依据是源文档该章节的标题，不是线索原句里的诊断名。",
+      "visible": true,
+      "code_review_status": "pending_review",
+      "sources": [
+        "https://icd.who.int/browse11/l-m/en"
+      ]
+    },
+    {
       "id": "other",
       "name_zh": "其他创伤相关诊断",
       "name_en": "Other trauma-related diagnoses",

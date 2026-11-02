@@ -39,14 +39,14 @@ test('source identity, wording and location cover every report', () => {
 })
 
 test('source headings are categories rather than invented diagnoses or dates', () => {
-  assert.deepEqual(Object.fromEntries(['cptsd', 'osdd/did', 'other'].map((group) => [group, reports.filter((r) => r.disorders.join('/') === group).length])), { cptsd: 32, 'osdd/did': 36, other: 92 })
+  assert.deepEqual(Object.fromEntries(['cptsd', 'osdd/did', 'pd'].map((group) => [group, reports.filter((r) => r.disorders.join('/') === group).length])), { cptsd: 32, 'osdd/did': 36, pd: 92 })
   for (const report of reports) {
     assert.equal(report.stage, 'unknown')
     assert.equal(report.published_at, undefined)
     assert.equal(report.published_at_precision, 'unknown')
     assert.equal(report.diagnosis_claimed, undefined)
     assert.equal(report.verification.level, 'unverified')
-    if (report.disorders.includes('other')) assert.deepEqual(report.source_topics, ['人格障碍'])
+    if (report.disorders.includes('pd')) assert.deepEqual(report.source_topics, ['人格障碍'])
   }
   assert.equal(document.document_updated_at, null)
 })
@@ -68,7 +68,7 @@ test('retired reports, entities, evidence and run logs are outside the active tr
   assert.deepEqual(readJson('data/curated/hospitals.json').items, existsSync(LOCATION_EVIDENCE) ? hospitalsFromRun(readJson(LOCATION_EVIDENCE)) : [])
   assert.deepEqual(readJson('data/curated/doctors.json').items, [])
   assert.equal(readJson('data/curated/provinces.json').items.length, 34)
-  assert.equal(readJson('data/curated/disorders.json').items.length, 6)
+  assert.equal(readJson('data/curated/disorders.json').items.length, 7)
   assert.ok(!existsSync('data/evidence/manifest.json'))
   assert.ok(!existsSync('data/evidence/xiaohongshu'))
   assert.deepEqual(existsSync('data/runs') ? readdirSync('data/runs') : [], [])

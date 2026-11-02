@@ -1,5 +1,6 @@
 import type { DisorderId, Hospital, Report } from './schema'
 import { matchesSearch } from './search'
+import { DISORDER_DISPLAY_LABELS } from './disorder-labels'
 
 /**
  * 医生线索聚合（单一事实源）
@@ -12,25 +13,19 @@ import { matchesSearch } from './search'
  * - 纯函数、无副作用、不依赖浏览器 API。
  */
 
-/** 分组展示顺序：cptsd, bpd, osdd, did, ptsd, other */
+/** 分组展示顺序：cptsd, bpd, osdd, did, ptsd, pd, other */
 export const DOCTOR_LEAD_DISORDER_ORDER: readonly DisorderId[] = [
   'cptsd',
   'bpd',
   'osdd',
   'did',
   'ptsd',
+  'pd',
   'other',
 ]
 
-/** 分组标题（other 显示「其他」，其余用大写 ID，与地图侧栏一致） */
-export const DOCTOR_LEAD_DISORDER_LABELS: Record<DisorderId, string> = {
-  cptsd: 'CPTSD',
-  bpd: 'BPD',
-  osdd: 'OSDD',
-  did: 'DID',
-  ptsd: 'PTSD',
-  other: '其他',
-}
+/** 分组标题与界面标签同源：cptsd / osdd-did / 人格障碍，见 lib/disorder-labels.ts */
+export const DOCTOR_LEAD_DISORDER_LABELS: Record<DisorderId, string> = { ...DISORDER_DISPLAY_LABELS }
 
 /** 同一条线索里多条医生姓名的分隔符 */
 const DOCTOR_NAME_SEPARATOR = /[、,，/]/

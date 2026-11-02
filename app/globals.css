@@ -84,6 +84,7 @@ svg { flex-shrink:0; }
 .tc-row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
 .tc-row--between { justify-content:space-between; }
 .tc-stack > * + * { margin-top:12px; }
+.tc-submit-placeholder { font-size:15px; color:var(--tc-text-muted); }
 .tc-divider { border:0; border-top:1px solid var(--tc-border); margin:24px 0; }
 .tc-badge { display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; font-size:12px; line-height:1.6; border:1px solid transparent; }
 .tc-badge--neutral { background:var(--tc-surface-muted); color:var(--tc-text-muted); border-color:#e5ede9; }

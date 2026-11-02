@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from '
 import Link from 'next/link'
 import { hospitalSearchText, matchesSearch } from '@/lib/search'
 import { aggregateDoctorLeads, splitDoctorNames } from '@/lib/doctor-leads'
+import { displayDisorderLabels, disorderDisplayLabel, disorderDisplayRank } from '@/lib/disorder-labels'
 import { loadAmap } from '@/lib/amap-loader'
 import { createAmapRuntime } from '@/lib/amap-runtime'
 import type { MapCamera } from '@/lib/map-camera'
@@ -390,20 +391,30 @@ export function MapApp(props: Props) {
     }
     results.push(...doctors)
 
-    const disorders: SearchResult[] = []
+    // 病症按显示标签分组：源文档只有 cptsd / osdd-did / 人格障碍 三段，osdd 与 did 合成一行。
+    const disorderBuckets = new Map<string, { label: string; ids: string[]; haystack: string[] }>()
     for (const disorder of propsRef.current.disorders) {
-      if (!matchesSearch(`${disorder.name_zh} ${disorder.name_en} ${disorder.id}`, q)) continue
-      const count = propsRef.current.reports.filter((report) => report.disorders.includes(disorder.id)).length
+      const label = disorderDisplayLabel(disorder.id)
+      const bucket = disorderBuckets.get(label) ?? { label, ids: [], haystack: [] }
+      bucket.ids.push(disorder.id)
+      bucket.haystack.push(disorder.name_zh, disorder.name_en, disorder.id)
+      disorderBuckets.set(label, bucket)
+    }
+    const disorders: SearchResult[] = []
+    for (const bucket of disorderBuckets.values()) {
+      if (!matchesSearch(bucket.haystack.join(' '), q)) continue
+      const hits = propsRef.current.reports.filter((report) =>
+        report.disorders.some((id) => bucket.ids.includes(id)))
       disorders.push({
-        key: `disorder-${disorder.id}`,
+        key: `disorder-${bucket.label}`,
         group: '病症',
-        label: disorder.id === 'other' ? disorder.name_zh : `${disorder.name_zh}（${disorder.id.toUpperCase()}）`,
-        sub: `${count} 条线索`,
+        label: bucket.label,
+        sub: `${hits.length} 条线索`,
         run: () => {
-          const hospitalIds = [...new Set(propsRef.current.reports
-            .filter((report) => report.disorders.includes(disorder.id) && report.hospital_id)
+          const hospitalIds = [...new Set(hits
+            .filter((report) => report.hospital_id)
             .map((report) => report.hospital_id as string))]
-          setResultFilter({ label: disorder.name_zh, hint: `${count} 条线索`, hospitalIds })
+          setResultFilter({ label: bucket.label, hint: `${hits.length} 条线索`, hospitalIds })
           setSidebarTab('hospitals')
           setSidebarOpen(true)
         },
@@ -464,17 +475,16 @@ export function MapApp(props: Props) {
   const doctorDisorders = useMemo<DoctorDisorderStat[]>(() => {
     if (!selectedDoctor) return []
     const reportIds = new Set(doctorLeads.map((lead) => lead.id))
+    // 按显示标签计数：osdd 与 did 合成一条，同一条线索不会在两个标签下各记一次。
     const counts = new Map<string, number>()
     for (const report of props.reports) {
       if (!reportIds.has(report.id)) continue
-      const ids = report.disorders?.length ? report.disorders : ['other']
-      for (const id of new Set(ids)) counts.set(id, (counts.get(id) ?? 0) + 1)
+      for (const label of displayDisorderLabels(report.disorders)) counts.set(label, (counts.get(label) ?? 0) + 1)
     }
-    const order = ['cptsd', 'bpd', 'osdd', 'did', 'ptsd', 'other']
     return [...counts.entries()]
-      .sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]))
-      .map(([id, count]) => ({ id, label: props.disorders.find((item) => item.id === id)?.name_zh ?? id.toUpperCase(), count }))
-  }, [selectedDoctor, doctorLeads, props.reports, props.disorders])
+      .sort((a, b) => disorderDisplayRank(a[0]) - disorderDisplayRank(b[0]))
+      .map(([label, count]) => ({ id: label, label, count }))
+  }, [selectedDoctor, doctorLeads, props.reports])
 
   // The record section only exists when doctors.json actually holds this person.
   const doctorProfile = selectedDoctor
@@ -526,6 +536,15 @@ export function MapApp(props: Props) {
     />
   ) : null
 
+  // 详情态身份 + 层级：侧栏用它决定进场动画的 key 与方向（省 1、机构 2、医生 3）。
+  const detailState = selectedDoctor
+    ? { key: `doctor:${selectedDoctor.hospitalId}:${selectedDoctor.name}`, depth: 3 }
+    : selectedHospital
+      ? { key: `hospital:${selectedHospital.id}`, depth: 2 }
+      : selectedProvince
+        ? { key: `province:${selectedProvince.adcode}`, depth: 1 }
+        : { key: 'none', depth: 1 }
+
   const tabs: Record<SidebarTabId, ReactNode> = {
     hospitals: (
       <Suspense fallback={<p className="tc-small tc-muted">加载中……</p>}>
@@ -543,10 +562,7 @@ export function MapApp(props: Props) {
     ),
     submit: (
       <div className="tc-stack">
-        <h3>提交线索</h3>
-        <p className="tc-small tc-muted">提供《就诊地图10.25》中的位置和原文。请勿提交病历、联系方式或其他个人信息。</p>
-        <a className="tc-button tc-button--active" href="https://github.com/XhoIeph/TraumaCompass/issues/new?template=lead.yml" target="_blank" rel="noopener noreferrer">在 GitHub 提交线索</a>
-        <p className="tc-meta">需要 GitHub 账号。提交后内容将公开可见。</p>
+        <p className="tc-submit-placeholder">这里还没定好（；´д｀）ゞ</p>
       </div>
     ),
   }
@@ -654,6 +670,8 @@ export function MapApp(props: Props) {
         open={sidebarOpen}
         tabs={tabs}
         detail={detailNode}
+        detailKey={detailState.key}
+        detailDepth={detailState.depth}
         activeTab={sidebarTab}
         onTabChange={setSidebarTab}
         onClose={() => { setSidebarOpen(false); if (!desktopRef.current) burgerRef.current?.focus() }}

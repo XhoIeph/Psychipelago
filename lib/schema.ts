@@ -32,7 +32,7 @@ export const platformSchema = z.enum([
 
 export const sourceChannelSchema = z.enum(['browser_session', 'public_web', 'manual'])
 
-export const disorderIdSchema = z.enum(['cptsd', 'bpd', 'osdd', 'did', 'ptsd', 'other'])
+export const disorderIdSchema = z.enum(['cptsd', 'bpd', 'osdd', 'did', 'ptsd', 'pd', 'other'])
 
 export const verificationLevelSchema = z.enum(['unverified', 'corroborated', 'official'])
 
