@@ -8,17 +8,28 @@ import { STAGE_LABELS } from './types'
 export function HospitalDetail({
   hospital,
   leads,
-  onClose,
+  provinceName,
+  onBackToProvince,
+  onBackToCountry,
   onLocate,
 }: {
   hospital: MapHospital
   leads: MapLead[]
-  onClose: () => void
+  provinceName: string
+  onBackToProvince: () => void
+  onBackToCountry: () => void
   onLocate: () => void
 }) {
   return (
     <div className="tc-detail">
-      <button type="button" className="tc-detail-back" onClick={onClose}><ArrowLeft size={16} aria-hidden="true" />返回浏览</button>
+      <nav className="tc-breadcrumb" aria-label="位置">
+        <button type="button" onClick={onBackToCountry}>全国</button>
+        <span className="tc-breadcrumb-sep" aria-hidden="true">›</span>
+        <button type="button" onClick={onBackToProvince}>{provinceName}</button>
+        <span className="tc-breadcrumb-sep" aria-hidden="true">›</span>
+        <span aria-current="page">{hospital.name}</span>
+      </nav>
+      <button type="button" className="tc-detail-back" onClick={onBackToProvince}><ArrowLeft size={16} aria-hidden="true" />返回 {provinceName}</button>
       <h2 className="tc-detail-title">{hospital.name}</h2>
       <div className="tc-hospital-actions">
         <button type="button" className="tc-button tc-button--active" onClick={onLocate}>
@@ -38,6 +49,7 @@ export function HospitalDetail({
                 {lead.publishedAt && <span>{lead.publishedAt}</span>}
               </div>
             )}
+            {lead.doctorName && <p className="tc-lead-doctor">{lead.doctorName}</p>}
             <LeadEvidence sourceLabel={lead.sourceLabel} url={lead.url} quote={lead.quote} contextNote={lead.contextNote} />
           </article>
         ))

@@ -29,6 +29,8 @@ export type MapLead = {
   stage: string
   publishedAt?: string
   url: string
+  /** 线索原文里的医生姓名，照录 `doctor_name_raw`；没有姓名时不出现 */
+  doctorName?: string
 }
 
 export type MapProvinceStat = {

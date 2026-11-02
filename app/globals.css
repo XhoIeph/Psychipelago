@@ -168,6 +168,12 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-province-list li:last-child { border-bottom:0; }
 .tc-province-list button { flex:1; min-width:0; min-height:44px; font-size:14px; color:var(--tc-text); }
 .tc-province-list li > span { white-space:nowrap; }
+.tc-breadcrumb { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:0 0 8px; color:var(--tc-text-muted); font-size:13px; line-height:1.6; }
+.tc-breadcrumb button { font:inherit; min-height:24px; padding:0; border:0; background:transparent; color:inherit; text-decoration:underline; text-underline-offset:3px; }
+.tc-breadcrumb button:hover { color:var(--tc-text); }
+.tc-breadcrumb [aria-current='page'] { color:var(--tc-text); }
+.tc-breadcrumb-sep { color:var(--tc-border-strong); }
+.tc-lead-doctor { font-size:13px; font-weight:650; color:var(--tc-text); }
 
 /* Reports and evidence: quotes remain verbatim */
 .tc-report { display:grid; gap:12px; border:1px solid var(--tc-border); border-radius:var(--tc-radius); background:#fff; padding:var(--tc-card-padding); margin:0 0 16px; overflow-wrap:anywhere; }
@@ -246,7 +252,7 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-sidebar-head { padding:24px var(--tc-gutter) 16px; }
 .tc-sidebar .tc-brand { font-size:24px; letter-spacing:-.9px; }
 .tc-sidebar-tabs { position:relative; isolation:isolate; display:flex; flex-shrink:0; gap:4px; margin:0 var(--tc-gutter) 16px; padding:4px; background:var(--tc-surface-muted); border-radius:10px; }
-.tc-sidebar-tab-indicator { position:absolute; left:4px; top:4px; bottom:4px; width:calc((100% - 20px) / 4); border-radius:7px; background:#fff; box-shadow:0 1px 4px #193b3812; pointer-events:none; }
+.tc-sidebar-tab-indicator { position:absolute; left:4px; top:4px; bottom:4px; width:calc((100% - 12px) / 2); border-radius:7px; background:#fff; box-shadow:0 1px 4px #193b3812; pointer-events:none; }
 .tc-sidebar-tab { position:relative; flex:1; min-width:0; min-height:44px; padding:8px 2px; font-size:13px; border:0; border-radius:7px; background:transparent; color:var(--tc-text-muted); }
 .tc-sidebar-tab--active { color:var(--tc-accent); font-weight:650; }
 .tc-sidebar-tab:hover { color:var(--tc-accent); }

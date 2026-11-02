@@ -11,10 +11,8 @@ import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { sidebarCameraFrame } from '@/lib/map-sidebar'
 import type { Disorder, Hospital, Province, Report } from '@/lib/schema'
-import { HospitalExplorer } from '@/components/HospitalExplorer'
-import { ReportExplorer } from '@/components/ReportExplorer'
+import { HospitalExplorer, type ResultFilter } from '@/components/HospitalExplorer'
 import { Sidebar, type SidebarTabId } from './Sidebar'
-import { DoctorExplorer } from './DoctorExplorer'
 import { HospitalDetail } from './HospitalDetail'
 import { ProvinceDetail } from './ProvinceDetail'
 import type { MapHospital, MapLead, MapProvinceStat } from './types'
@@ -79,8 +77,8 @@ export function MapApp(props: Props) {
   const focusDetailRef = useRef(false)
   const [activeResult, setActiveResult] = useState(-1)
   const [sidebarTab, setSidebarTab] = useState<SidebarTabId>('hospitals')
-  // Global disorder searches seed the existing report filter.
-  const [seedDisorder, setSeedDisorder] = useState<string | undefined>(undefined)
+  // A disorder or source-topic search lists the hospitals that mention it, in the institution panel.
+  const [resultFilter, setResultFilter] = useState<ResultFilter | null>(null)
 
   const selectedRef = useRef<string | null>(null)
   selectedRef.current = selectedHospitalId
@@ -91,7 +89,7 @@ export function MapApp(props: Props) {
       focusDetailRef.current = false
       sidebarRef.current?.querySelector<HTMLButtonElement>('.tc-detail-back')?.focus({ preventScroll: true })
     }
-  }, [selectedHospitalId, cluster])
+  }, [selectedHospitalId, selectedProvinceAdcode, cluster])
 
   useEffect(() => {
     if (!cluster) return
@@ -230,6 +228,17 @@ export function MapApp(props: Props) {
     runtimeRef.current?.province(adcode, desktopRef.current ? 380 : 0)
   }
 
+  // Sidebar lists move focus into the detail they open; map clicks keep their own focus.
+  const openProvince = (adcode: string) => {
+    focusDetailRef.current = true
+    selectProvince(adcode)
+  }
+
+  const openHospital = (id: string) => {
+    focusDetailRef.current = true
+    selectHospital(id)
+  }
+
   useEffect(() => {
     let disposed = false
     let runtime: ReturnType<typeof createAmapRuntime> | undefined
@@ -316,7 +325,7 @@ export function MapApp(props: Props) {
           run: () => selectHospital(hospital.id),
         })
       }
-      if (hospitals.length >= 6) break
+      if (hospitals.length >= 4) break
     }
     results.push(...hospitals)
 
@@ -334,16 +343,19 @@ export function MapApp(props: Props) {
           label: entry.name,
           sub: `${entry.hospitalName} · ${group.label} · 线索 ${entry.leadCount} 条`,
           run: () => {
-            if (entry.hospitalId) selectHospital(entry.hospitalId)
-            else {
-              setSidebarTab('doctors')
-              setSidebarOpen(true)
-            }
+            if (entry.hospitalId) { selectHospital(entry.hospitalId); return }
+            // Until the doctor panel lands, a lead without a linked record resolves to its institution.
+            const hospitalIds = propsRef.current.hospitals
+              .filter((hospital) => hospital.name === entry.hospitalName)
+              .map((hospital) => hospital.id)
+            setResultFilter({ label: entry.name, hint: `线索 ${entry.leadCount} 条`, hospitalIds })
+            setSidebarTab('hospitals')
+            setSidebarOpen(true)
           },
         })
-        if (doctors.length >= 5) break
+        if (doctors.length >= 2) break
       }
-      if (doctors.length >= 5) break
+      if (doctors.length >= 2) break
     }
     results.push(...doctors)
 
@@ -357,8 +369,11 @@ export function MapApp(props: Props) {
         label: disorder.id === 'other' ? disorder.name_zh : `${disorder.name_zh}（${disorder.id.toUpperCase()}）`,
         sub: `${count} 条线索`,
         run: () => {
-          setSeedDisorder(disorder.id)
-          setSidebarTab('reports')
+          const hospitalIds = [...new Set(propsRef.current.reports
+            .filter((report) => report.disorders.includes(disorder.id) && report.hospital_id)
+            .map((report) => report.hospital_id as string))]
+          setResultFilter({ label: disorder.name_zh, hint: `${count} 条线索`, hospitalIds })
+          setSidebarTab('hospitals')
           setSidebarOpen(true)
         },
       })
@@ -373,14 +388,18 @@ export function MapApp(props: Props) {
         label: topic,
         sub: `${count} 条线索`,
         run: () => {
-          setSeedDisorder(`topic:${topic}`)
-          setSidebarTab('reports')
+          const hospitalIds = [...new Set(propsRef.current.reports
+            .filter((report) => report.source_topics?.includes(topic) && report.hospital_id)
+            .map((report) => report.hospital_id as string))]
+          setResultFilter({ label: topic, hint: `${count} 条线索`, hospitalIds })
+          setSidebarTab('hospitals')
           setSidebarOpen(true)
         },
       })
     }
-    results.push(...disorders.slice(0, 2))
-    return results.slice(0, 10)
+    // Every group keeps a slot so a disorder or source-topic hit is always reachable.
+    const provinceHits = results.filter((item) => item.group === '省份').slice(0, 2)
+    return [...provinceHits, ...hospitals.slice(0, 4), ...doctors.slice(0, 2), ...disorders.slice(0, 2)]
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query])
 
@@ -401,18 +420,26 @@ export function MapApp(props: Props) {
   const selectedProvince = props.provinces.find((item) => item.adcode === selectedProvinceAdcode) ?? null
   const selectedLeads = selectedHospital ? (props.leadsByHospital[selectedHospital.id] ?? []) : []
 
-  const closeDetail = () => {
-    setSelectedHospitalId(null)
-    setSelectedProvinceAdcode(null)
-    // The detail button is replaced by the browsing tabs at the next React commit.
-    requestAnimationFrame(() => sidebarRef.current?.querySelector<HTMLButtonElement>('[role="tab"][aria-selected="true"]')?.focus({ preventScroll: true }))
+  // Back navigation walks one level up: institution → province → the browsing tabs.
+  const focusActiveTab = () => requestAnimationFrame(() => sidebarRef.current?.querySelector<HTMLButtonElement>('[role="tab"][aria-selected="true"]')?.focus({ preventScroll: true }))
+
+  const backToProvince = (adcode: string) => {
+    focusDetailRef.current = true
+    selectProvince(adcode)
+  }
+
+  const backToCountryFromDetail = () => {
+    backToCountry()
+    focusActiveTab()
   }
 
   const detailNode = selectedHospital ? (
     <HospitalDetail
       hospital={selectedHospital}
       leads={selectedLeads}
-      onClose={closeDetail}
+      provinceName={selectedHospital.province}
+      onBackToProvince={() => backToProvince(selectedHospital.adcode)}
+      onBackToCountry={backToCountryFromDetail}
       onLocate={() => selectHospital(selectedHospital.id)}
     />
   ) : selectedProvince ? (
@@ -420,9 +447,9 @@ export function MapApp(props: Props) {
       provinceName={selectedProvince.name}
       stat={props.provinceStats[selectedProvince.adcode]}
       hospitals={props.mapHospitals.filter((item) => item.adcode === selectedProvince.adcode)}
-      onClose={closeDetail}
+      onBackToCountry={backToCountryFromDetail}
       onZoomToProvince={() => selectProvince(selectedProvince.adcode)}
-      onSelectHospital={selectHospital}
+      onSelectHospital={openHospital}
     />
   ) : null
 
@@ -431,29 +458,15 @@ export function MapApp(props: Props) {
       <Suspense fallback={<p className="tc-small tc-muted">加载中……</p>}>
         <HospitalExplorer
           hospitals={props.hospitals}
-          reports={props.reports}
           provinces={props.provinces}
           reportCounts={props.reportCounts}
           variant="compact"
-          onSelectHospital={selectHospital}
+          onSelectHospital={openHospital}
+          onSelectProvince={openProvince}
+          resultFilter={resultFilter}
+          onClearResult={() => setResultFilter(null)}
         />
       </Suspense>
-    ),
-    reports: (
-      <Suspense fallback={<p className="tc-small tc-muted">加载中……</p>}>
-        <ReportExplorer
-          reports={props.reports}
-          disorders={props.disorders}
-          provinces={props.provinces}
-          reportProvince={props.reportProvince}
-          variant="compact"
-          onSelectHospital={selectHospital}
-          initialDisorder={seedDisorder}
-        />
-      </Suspense>
-    ),
-    doctors: (
-      <DoctorExplorer hospitals={props.hospitals} reports={props.reports} onSelectHospital={selectHospital} />
     ),
     submit: (
       <div className="tc-stack">

@@ -7,14 +7,14 @@ export function ProvinceDetail({
   provinceName,
   stat,
   hospitals,
-  onClose,
+  onBackToCountry,
   onZoomToProvince,
   onSelectHospital,
 }: {
   provinceName: string
   stat: MapProvinceStat | undefined
   hospitals: MapHospital[]
-  onClose: () => void
+  onBackToCountry: () => void
   onZoomToProvince: () => void
   onSelectHospital: (id: string) => void
 }) {
@@ -22,7 +22,12 @@ export function ProvinceDetail({
 
   return (
     <div className="tc-detail">
-      <button type="button" className="tc-detail-back" onClick={onClose}><ArrowLeft size={16} aria-hidden="true" />返回浏览</button>
+      <nav className="tc-breadcrumb" aria-label="位置">
+        <button type="button" onClick={onBackToCountry}>全国</button>
+        <span className="tc-breadcrumb-sep" aria-hidden="true">›</span>
+        <span aria-current="page">{provinceName}</span>
+      </nav>
+      <button type="button" className="tc-detail-back" onClick={onBackToCountry}><ArrowLeft size={16} aria-hidden="true" />返回 全国</button>
       <h2 className="tc-detail-title">{provinceName}</h2>
 
       {hasData ? (

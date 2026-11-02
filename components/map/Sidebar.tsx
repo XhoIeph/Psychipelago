@@ -7,12 +7,10 @@ import { Brand } from '@/components/Brand'
 import { PanelMotion } from '@/components/PanelMotion'
 import { X } from 'lucide-react'
 
-export type SidebarTabId = 'hospitals' | 'reports' | 'doctors' | 'submit'
+export type SidebarTabId = 'hospitals' | 'submit'
 
 const TABS: { id: SidebarTabId; label: string }[] = [
   { id: 'hospitals', label: '机构' },
-  { id: 'reports', label: '线索' },
-  { id: 'doctors', label: '医生线索' },
   { id: 'submit', label: '投稿' },
 ]
 gsap.registerPlugin(useGSAP)

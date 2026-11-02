@@ -29,6 +29,7 @@ export default function MapPage() {
           stage: report.stage,
           publishedAt: formatPublishedAt(report.published_at, report.published_at_precision),
           url: report.source_url,
+          doctorName: report.doctor_name_raw,
         })),
     ]),
   )
