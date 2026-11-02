@@ -2,6 +2,7 @@
 
 import { ArrowLeft, MapPin } from 'lucide-react'
 import { LeadEvidence } from '@/components/LeadEvidence'
+import { splitDoctorNames } from '@/lib/doctor-leads'
 import type { MapHospital, MapLead } from './types'
 import { STAGE_LABELS } from './types'
 
@@ -12,6 +13,7 @@ export function HospitalDetail({
   onBackToProvince,
   onBackToCountry,
   onLocate,
+  onSelectDoctor,
 }: {
   hospital: MapHospital
   leads: MapLead[]
@@ -19,6 +21,7 @@ export function HospitalDetail({
   onBackToProvince: () => void
   onBackToCountry: () => void
   onLocate: () => void
+  onSelectDoctor: (name: string) => void
 }) {
   return (
     <div className="tc-detail">
@@ -49,7 +52,16 @@ export function HospitalDetail({
                 {lead.publishedAt && <span>{lead.publishedAt}</span>}
               </div>
             )}
-            {lead.doctorName && <p className="tc-lead-doctor">{lead.doctorName}</p>}
+            {lead.doctorName && (
+              <p className="tc-lead-doctor">
+                {splitDoctorNames(lead.doctorName).map((name, index) => (
+                  <span key={name}>
+                    {index > 0 && <span aria-hidden="true">、</span>}
+                    <button type="button" className="tc-doctor-link" data-doctor-name={name} onClick={() => onSelectDoctor(name)}>{name}</button>
+                  </span>
+                ))}
+              </p>
+            )}
             <LeadEvidence sourceLabel={lead.sourceLabel} url={lead.url} quote={lead.quote} contextNote={lead.contextNote} />
           </article>
         ))

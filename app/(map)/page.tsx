@@ -4,6 +4,7 @@ import { mapHospitalInputs } from '@/lib/map-coordinates'
 import locationEvidence from '@/data/evidence/locations/amap-2026-10-27.json'
 import {
   disorders,
+  doctors,
   hospitals,
   provinceStats,
   provinces,
@@ -65,6 +66,7 @@ export default function MapPage() {
       disorders={disorders}
       reportProvince={reportProvinceMap()}
       reportCounts={reportCounts}
+      doctorProfiles={doctors}
     />
   )
 }

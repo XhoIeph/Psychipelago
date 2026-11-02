@@ -3,17 +3,18 @@
 import { Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { hospitalSearchText, matchesSearch } from '@/lib/search'
-import { aggregateDoctorLeads } from '@/lib/doctor-leads'
+import { aggregateDoctorLeads, splitDoctorNames } from '@/lib/doctor-leads'
 import { loadAmap } from '@/lib/amap-loader'
 import { createAmapRuntime } from '@/lib/amap-runtime'
 import type { MapCamera } from '@/lib/map-camera'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { sidebarCameraFrame } from '@/lib/map-sidebar'
-import type { Disorder, Hospital, Province, Report } from '@/lib/schema'
+import type { Disorder, Doctor, Hospital, Province, Report } from '@/lib/schema'
 import { HospitalExplorer, type ResultFilter } from '@/components/HospitalExplorer'
 import { Sidebar, type SidebarTabId } from './Sidebar'
 import { HospitalDetail } from './HospitalDetail'
+import { DoctorDetail, type DoctorDisorderStat } from './DoctorDetail'
 import { ProvinceDetail } from './ProvinceDetail'
 import type { MapHospital, MapLead, MapProvinceStat } from './types'
 import { ListFilter, LocateFixed, Menu, Search, X } from 'lucide-react'
@@ -31,6 +32,7 @@ type Props = {
   disorders: Disorder[]
   reportProvince: Record<string, string>
   reportCounts: Record<string, number>
+  doctorProfiles: Doctor[]
 }
 
 type SearchGroup = '省份' | '机构' | '医生' | '病症'
@@ -79,6 +81,9 @@ export function MapApp(props: Props) {
   const [sidebarTab, setSidebarTab] = useState<SidebarTabId>('hospitals')
   // A disorder or source-topic search lists the hospitals that mention it, in the institution panel.
   const [resultFilter, setResultFilter] = useState<ResultFilter | null>(null)
+  // The doctor detail is a sibling of the institution detail, not a modal or a route.
+  const [selectedDoctor, setSelectedDoctor] = useState<{ hospitalId: string; name: string } | null>(null)
+  const doctorReturnFocusRef = useRef<string | null>(null)
 
   const selectedRef = useRef<string | null>(null)
   selectedRef.current = selectedHospitalId
@@ -88,8 +93,15 @@ export function MapApp(props: Props) {
     if (focusDetailRef.current) {
       focusDetailRef.current = false
       sidebarRef.current?.querySelector<HTMLButtonElement>('.tc-detail-back')?.focus({ preventScroll: true })
+      return
     }
-  }, [selectedHospitalId, selectedProvinceAdcode, cluster])
+    // Returning from a doctor detail puts focus back on the name that opened it.
+    const returnName = doctorReturnFocusRef.current
+    if (!selectedDoctor && returnName) {
+      doctorReturnFocusRef.current = null
+      sidebarRef.current?.querySelector<HTMLButtonElement>(`[data-doctor-name="${CSS.escape(returnName)}"]`)?.focus({ preventScroll: true })
+    }
+  }, [selectedHospitalId, selectedProvinceAdcode, selectedDoctor, cluster])
 
   useEffect(() => {
     if (!cluster) return
@@ -212,6 +224,7 @@ export function MapApp(props: Props) {
     const hospital = propsRef.current.mapHospitals.find(item => item.id === id)
     if (!hospital) return
     setCluster(null)
+    setSelectedDoctor(null)
     setSelectedHospitalId(id)
     setSelectedProvinceAdcode(null)
     navigationInsetRef.current = desktopRef.current ? 380 : 0
@@ -221,6 +234,7 @@ export function MapApp(props: Props) {
 
   const selectProvince = (adcode: string) => {
     setCluster(null)
+    setSelectedDoctor(null)
     setSelectedProvinceAdcode(adcode)
     setSelectedHospitalId(null)
     navigationInsetRef.current = desktopRef.current ? 380 : 0
@@ -237,6 +251,17 @@ export function MapApp(props: Props) {
   const openHospital = (id: string) => {
     focusDetailRef.current = true
     selectHospital(id)
+  }
+
+  // A doctor detail keeps the institution selected behind it, so Back lands on the same institution.
+  const openDoctor = (name: string, hospitalId: string) => {
+    focusDetailRef.current = true
+    setSelectedDoctor({ hospitalId, name })
+  }
+
+  const backToHospital = () => {
+    doctorReturnFocusRef.current = selectedDoctor?.name ?? null
+    setSelectedDoctor(null)
   }
 
   useEffect(() => {
@@ -277,6 +302,7 @@ export function MapApp(props: Props) {
   }, [])
 
   const backToCountry = () => {
+    setSelectedDoctor(null)
     setSelectedHospitalId(null)
     setSelectedProvinceAdcode(null)
     setCluster(null)
@@ -343,8 +369,13 @@ export function MapApp(props: Props) {
           label: entry.name,
           sub: `${entry.hospitalName} · ${group.label} · 线索 ${entry.leadCount} 条`,
           run: () => {
-            if (entry.hospitalId) { selectHospital(entry.hospitalId); return }
-            // Until the doctor panel lands, a lead without a linked record resolves to its institution.
+            if (entry.hospitalId) {
+              focusDetailRef.current = true
+              selectHospital(entry.hospitalId)
+              setSelectedDoctor({ hospitalId: entry.hospitalId, name: entry.name })
+              return
+            }
+            // A lead without a linked record resolves to the institutions that carry its name.
             const hospitalIds = propsRef.current.hospitals
               .filter((hospital) => hospital.name === entry.hospitalName)
               .map((hospital) => hospital.id)
@@ -420,6 +451,36 @@ export function MapApp(props: Props) {
   const selectedProvince = props.provinces.find((item) => item.adcode === selectedProvinceAdcode) ?? null
   const selectedLeads = selectedHospital ? (props.leadsByHospital[selectedHospital.id] ?? []) : []
 
+  const doctorHospital = selectedDoctor
+    ? props.mapHospitals.find((item) => item.id === selectedDoctor.hospitalId) ?? null
+    : null
+
+  const doctorLeads = useMemo(() => {
+    if (!selectedDoctor) return []
+    return (props.leadsByHospital[selectedDoctor.hospitalId] ?? []).filter((lead) =>
+      splitDoctorNames(lead.doctorName).includes(selectedDoctor.name))
+  }, [selectedDoctor, props.leadsByHospital])
+
+  const doctorDisorders = useMemo<DoctorDisorderStat[]>(() => {
+    if (!selectedDoctor) return []
+    const reportIds = new Set(doctorLeads.map((lead) => lead.id))
+    const counts = new Map<string, number>()
+    for (const report of props.reports) {
+      if (!reportIds.has(report.id)) continue
+      const ids = report.disorders?.length ? report.disorders : ['other']
+      for (const id of new Set(ids)) counts.set(id, (counts.get(id) ?? 0) + 1)
+    }
+    const order = ['cptsd', 'bpd', 'osdd', 'did', 'ptsd', 'other']
+    return [...counts.entries()]
+      .sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]))
+      .map(([id, count]) => ({ id, label: props.disorders.find((item) => item.id === id)?.name_zh ?? id.toUpperCase(), count }))
+  }, [selectedDoctor, doctorLeads, props.reports, props.disorders])
+
+  // The record section only exists when doctors.json actually holds this person.
+  const doctorProfile = selectedDoctor
+    ? props.doctorProfiles.find((item) => item.hospital_id === selectedDoctor.hospitalId && item.name === selectedDoctor.name) ?? null
+    : null
+
   // Back navigation walks one level up: institution → province → the browsing tabs.
   const focusActiveTab = () => requestAnimationFrame(() => sidebarRef.current?.querySelector<HTMLButtonElement>('[role="tab"][aria-selected="true"]')?.focus({ preventScroll: true }))
 
@@ -433,7 +494,18 @@ export function MapApp(props: Props) {
     focusActiveTab()
   }
 
-  const detailNode = selectedHospital ? (
+  const detailNode = selectedDoctor && doctorHospital ? (
+    <DoctorDetail
+      name={selectedDoctor.name}
+      hospital={doctorHospital}
+      leads={doctorLeads}
+      disorders={doctorDisorders}
+      profile={doctorProfile}
+      onBackToHospital={backToHospital}
+      onBackToProvince={() => backToProvince(doctorHospital.adcode)}
+      onBackToCountry={backToCountryFromDetail}
+    />
+  ) : selectedHospital ? (
     <HospitalDetail
       hospital={selectedHospital}
       leads={selectedLeads}
@@ -441,6 +513,7 @@ export function MapApp(props: Props) {
       onBackToProvince={() => backToProvince(selectedHospital.adcode)}
       onBackToCountry={backToCountryFromDetail}
       onLocate={() => selectHospital(selectedHospital.id)}
+      onSelectDoctor={(name) => openDoctor(name, selectedHospital.id)}
     />
   ) : selectedProvince ? (
     <ProvinceDetail
