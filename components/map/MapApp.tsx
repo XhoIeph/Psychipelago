@@ -22,6 +22,8 @@ import { ListFilter, LocateFixed, Menu, Search, X } from 'lucide-react'
 
 const HOSPITAL_ZOOM = 10
 gsap.registerPlugin(useGSAP)
+// 掉帧时不拉长动画时间：dock 入场 0.68 秒在节流或卡顿的机器上不该拖成二十秒。
+gsap.ticker.lagSmoothing(0)
 
 type Props = {
   provinces: Province[]
@@ -111,7 +113,7 @@ export function MapApp(props: Props) {
 
   useGSAP(() => {
     const shell = shellRef.current
-    if (!shell || (!mapReady && !mapError)) return
+    if (!shell) return
     dockTweenRef.current?.kill()
     cancelDockCameraRef.current?.()
     const dock = dockRef.current
@@ -421,8 +423,12 @@ export function MapApp(props: Props) {
       })
     }
     const sourceTopics = new Set(propsRef.current.reports.flatMap((report) => report.source_topics ?? []))
+    // 话题与病症共用一个组：同名时只留病症那行，否则「人格障碍」会出现两次。
+    const groupedLabels = new Set(disorders.map((item) => item.label))
     for (const topic of sourceTopics) {
       if (!matchesSearch(topic, q)) continue
+      if (groupedLabels.has(topic)) continue
+      groupedLabels.add(topic)
       const count = propsRef.current.reports.filter((report) => report.source_topics?.includes(topic)).length
       disorders.push({
         key: `topic-${topic}`,
