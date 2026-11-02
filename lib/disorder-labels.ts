@@ -54,3 +54,20 @@ export function disorderDisplayRank(label: string): number {
   const index = DISORDER_DISPLAY_ORDER.indexOf(label)
   return index === -1 ? DISORDER_DISPLAY_ORDER.length : index
 }
+
+/**
+ * 机构面板顶部常驻筛选的三个可筛分组。
+ * `id` 是按钮上的 `data-disorder`（osdd 与 did 合成一组，所以是 `osdd-did`），
+ * `ids` 是落回数据时要匹配的原始 id。
+ */
+export type DisorderFilterGroup = {
+  id: 'cptsd' | 'osdd-did' | 'pd'
+  ids: readonly DisorderId[]
+  label: string
+}
+
+export const DISORDER_FILTER_GROUPS: readonly DisorderFilterGroup[] = [
+  { id: 'cptsd', ids: ['cptsd'], label: DISORDER_DISPLAY_LABELS.cptsd },
+  { id: 'osdd-did', ids: ['osdd', 'did'], label: DISORDER_DISPLAY_LABELS.osdd },
+  { id: 'pd', ids: ['pd'], label: DISORDER_DISPLAY_LABELS.pd },
+]

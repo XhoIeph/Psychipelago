@@ -2,13 +2,11 @@
 
 import { useMemo } from 'react'
 import type { Hospital, Province } from '@/lib/schema'
-import { MapPin } from 'lucide-react'
 
-const SERVICE_LABELS: Record<string, string> = {
-  yes: '明确依据',
-  claimed: '间接证据',
-  unknown: '未知',
-  no: '无',
+/** 病症筛选卡片的一行：只有名称，家数不在筛选里出现（数量看结果表头） */
+export type DisorderOption = {
+  id: string
+  label: string
 }
 
 /** 全局搜索命中病症或来源话题时，机构栏目按命中集合列机构 */
@@ -22,14 +20,17 @@ type Props = {
   hospitals: Hospital[]
   provinces: Province[]
   reportCounts: Record<string, number>
-  /** compact：适配侧边栏窄面板的卡片布局（默认 page 不变） */
+  /** compact：适配侧边栏窄面板的布局（默认 page 不变） */
   variant?: 'page' | 'compact'
   /** Keep institution selection inside the map instead of leaving its context. */
   onSelectHospital?: (id: string) => void
   /** 省份列表行：进入该省概要（侧栏内） */
   onSelectProvince?: (adcode: string) => void
+  /** 常驻的病症筛选：三个可筛分组，按当前数据算家数 */
+  disorderOptions: DisorderOption[]
+  activeDisorder: string | null
+  onSelectDisorder: (id: string) => void
   resultFilter?: ResultFilter | null
-  onClearResult?: () => void
 }
 
 export function HospitalExplorer({
@@ -39,8 +40,10 @@ export function HospitalExplorer({
   variant = 'page',
   onSelectHospital,
   onSelectProvince,
+  disorderOptions,
+  activeDisorder,
+  onSelectDisorder,
   resultFilter = null,
-  onClearResult,
 }: Props) {
   const provinceRows = useMemo(() => {
     const counts = new Map<string, number>()
@@ -68,64 +71,70 @@ export function HospitalExplorer({
     )
   }
 
-  const cards = (list: Hospital[]) => (
-    <div className={`tc-grid tc-grid--cards${variant === 'compact' ? ' tc-grid--compact' : ''}`}>
+  // 常驻：筛选态下也留着，取消就是再点一次同一行。
+  const filterCard = disorderOptions.length > 0 && (
+    <section className="tc-disorder-filter" aria-label="按病症筛选">
+      <p className="tc-disorder-filter-title">按病症筛选</p>
+      <ul className="tc-disorder-options">
+        {disorderOptions.map((option) => (
+          <li key={option.id}>
+            <button
+              type="button"
+              className="tc-disorder-option"
+              data-disorder={option.id}
+              aria-pressed={activeDisorder === option.id}
+              onClick={() => onSelectDisorder(option.id)}
+            >
+              <span className="tc-disorder-name">{option.label}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+
+  // 筛选结果与省份详情里的机构行同一套：名称一行、条数一行，行间 1px 分隔线。
+  const rows = (list: Hospital[]) => (
+    <ul className="tc-hospital-list">
       {list.map((hospital) => (
-        <article className="tc-card tc-hospital-card" key={hospital.id}>
-          <div className="tc-hospital-location"><MapPin size={16} aria-hidden="true" />{hospital.province}{hospital.city === hospital.province ? '' : ` · ${hospital.city}`}</div>
-          <h2>
-            {onSelectHospital ? <button type="button" className="tc-linklike" aria-label={`查看机构：${hospital.name}`} onClick={() => onSelectHospital(hospital.id)}>{hospital.name}</button> : hospital.name}
-          </h2>
-          {(hospital.level !== '未知' || hospital.category !== '其他') && <p className="tc-small tc-muted">
-            {[hospital.level !== '未知' && hospital.level, hospital.category !== '其他' && hospital.category].filter(Boolean).join(' · ')}
-          </p>}
-          {hospital.departments.some(item => item !== '未录入') && <p className="tc-hospital-departments">
-            科室：{hospital.departments.filter(item => item !== '未录入').join('、')}
-          </p>}
-          {(hospital.trauma_service.cptsd_assessment !== 'unknown' || hospital.trauma_service.cptsd_bpd_diagnosis !== 'unknown') && <div className="tc-row tc-small">
-            {hospital.trauma_service.cptsd_assessment !== 'unknown' && <span className="tc-badge tc-badge--neutral">
-              CPTSD 评估：{SERVICE_LABELS[hospital.trauma_service.cptsd_assessment]}
-            </span>}
-            {hospital.trauma_service.cptsd_bpd_diagnosis !== 'unknown' && <span className="tc-badge tc-badge--neutral">
-              CPTSD/BPD 诊断：{SERVICE_LABELS[hospital.trauma_service.cptsd_bpd_diagnosis]}
-            </span>}
-          </div>}
-          <div className="tc-hospital-card-footer">
-            <span className="tc-meta"><b>{reportCounts[hospital.id] ?? 0}</b> 条线索{hospital.official_sources.length > 0 && ` · ${hospital.official_sources.length} 个官方来源`}</span>
-            {!onSelectHospital && <span className="tc-hospital-card-hint" aria-hidden="true">详情</span>}
-          </div>
-        </article>
+        <li key={hospital.id}>
+          <button
+            type="button"
+            className="tc-hospital-row"
+            onClick={() => onSelectHospital?.(hospital.id)}
+          >
+            <span className="tc-hospital-row-name">{hospital.name}</span>
+            <span className="tc-hospital-row-count">{reportCounts[hospital.id] ?? 0} 条线索</span>
+          </button>
+        </li>
       ))}
-    </div>
+    </ul>
   )
 
   if (resultFilter && matched) {
     return (
-      <div>
+      <div className={variant === 'compact' ? 'tc-compact' : undefined}>
         <div className="tc-results-heading" role="status" aria-live="polite">
           <span><strong>{matched.length}</strong> 家机构 · {resultFilter.hint}</span>
           <span>{resultFilter.label}</span>
         </div>
-        {onClearResult && (
-          <div className="tc-hospital-actions">
-            <button type="button" className="tc-button" onClick={onClearResult}>清除筛选</button>
-          </div>
-        )}
+        {filterCard}
         {matched.length === 0 ? (
           <div className="tc-empty">
             <p>没有符合这个条件的机构记录。</p>
           </div>
-        ) : cards(matched)}
+        ) : rows(matched)}
       </div>
     )
   }
 
   return (
-    <div>
+    <div className={variant === 'compact' ? 'tc-compact' : undefined}>
       <div className="tc-results-heading" role="status" aria-live="polite">
         <span><strong>{hospitals.length}</strong> 家机构</span>
         <span>全国收录</span>
       </div>
+      {filterCard}
       <ul className="tc-province-list">
         {provinceRows.map((row) => (
           <li key={row.adcode}>

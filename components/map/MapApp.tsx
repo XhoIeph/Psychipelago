@@ -4,7 +4,7 @@ import { Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from '
 import Link from 'next/link'
 import { hospitalSearchText, matchesSearch } from '@/lib/search'
 import { aggregateDoctorLeads, splitDoctorNames } from '@/lib/doctor-leads'
-import { displayDisorderLabels, disorderDisplayLabel, disorderDisplayRank } from '@/lib/disorder-labels'
+import { displayDisorderLabels, disorderDisplayLabel, disorderDisplayRank, DISORDER_FILTER_GROUPS } from '@/lib/disorder-labels'
 import { loadAmap } from '@/lib/amap-loader'
 import { createAmapRuntime } from '@/lib/amap-runtime'
 import type { MapCamera } from '@/lib/map-camera'
@@ -12,7 +12,7 @@ import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { sidebarCameraFrame } from '@/lib/map-sidebar'
 import type { Disorder, Doctor, Hospital, Province, Report } from '@/lib/schema'
-import { HospitalExplorer, type ResultFilter } from '@/components/HospitalExplorer'
+import { HospitalExplorer, type ResultFilter, type DisorderOption } from '@/components/HospitalExplorer'
 import { Sidebar, type SidebarTabId } from './Sidebar'
 import { HospitalDetail } from './HospitalDetail'
 import { DoctorDetail, type DoctorDisorderStat } from './DoctorDetail'
@@ -84,6 +84,8 @@ export function MapApp(props: Props) {
   const [sidebarTab, setSidebarTab] = useState<SidebarTabId>('hospitals')
   // A disorder or source-topic search lists the hospitals that mention it, in the institution panel.
   const [resultFilter, setResultFilter] = useState<ResultFilter | null>(null)
+  // 常驻筛选卡片当前选中的分组（cptsd / osdd-did / pd），再点一次同一行取消。
+  const [activeDisorder, setActiveDisorder] = useState<string | null>(null)
   // The doctor detail is a sibling of the institution detail, not a modal or a route.
   const [selectedDoctor, setSelectedDoctor] = useState<{ hospitalId: string; name: string } | null>(null)
   const doctorReturnFocusRef = useRef<string | null>(null)
@@ -325,6 +327,47 @@ export function MapApp(props: Props) {
     trigger?.focus({ preventScroll: true })
   }
 
+  // 常驻筛选的三个分组：家数按不同机构计，不按线索条数；没有线索的分组不出现。
+  const disorderIndex = useMemo(() => {
+    return DISORDER_FILTER_GROUPS.map((group) => {
+      const wanted = new Set<string>(group.ids)
+      const reports = props.reports.filter((report) => report.disorders.some((id) => wanted.has(id)))
+      const hospitalIds = [...new Set(reports
+        .map((report) => report.hospital_id)
+        .filter((id): id is string => Boolean(id)))]
+      return { id: group.id, label: group.label, leads: reports.length, hospitalIds }
+    }).filter((option) => option.leads > 0)
+  }, [props.reports])
+
+  const disorderOptions = useMemo<DisorderOption[]>(
+    () => disorderIndex.map((option) => ({ id: option.id, label: option.label })),
+    [disorderIndex])
+
+  // 任何进入筛选的入口都走这里：不先回全国列表，筛选结果会挂在旧详情下面（面包屑还在）。
+  const enterFilter = (filter: ResultFilter | null, disorderId: string | null) => {
+    setSelectedDoctor(null)
+    setSelectedHospitalId(null)
+    setSelectedProvinceAdcode(null)
+    setCluster(null)
+    doctorReturnFocusRef.current = null
+    setResultFilter(filter)
+    setActiveDisorder(disorderId)
+    setSidebarTab('hospitals')
+    setSidebarOpen(true)
+    runtimeRef.current?.country()
+  }
+
+  // 取消筛选就是再点一次同一行。
+  const toggleDisorder = (id: string) => {
+    if (activeDisorder === id) {
+      enterFilter(null, null)
+      return
+    }
+    const option = disorderIndex.find((item) => item.id === id)
+    if (!option) return
+    enterFilter({ label: option.label, hint: `${option.leads} 条线索`, hospitalIds: option.hospitalIds }, id)
+  }
+
   // Search keeps the same region, institution, doctor and disorder entry points.
   const searchResults = useMemo<SearchResult[]>(() => {
     const q = query.trim()
@@ -382,9 +425,7 @@ export function MapApp(props: Props) {
             const hospitalIds = propsRef.current.hospitals
               .filter((hospital) => hospital.name === entry.hospitalName)
               .map((hospital) => hospital.id)
-            setResultFilter({ label: entry.name, hint: `线索 ${entry.leadCount} 条`, hospitalIds })
-            setSidebarTab('hospitals')
-            setSidebarOpen(true)
+            enterFilter({ label: entry.name, hint: `线索 ${entry.leadCount} 条`, hospitalIds }, null)
           },
         })
         if (doctors.length >= 2) break
@@ -416,9 +457,9 @@ export function MapApp(props: Props) {
           const hospitalIds = [...new Set(hits
             .filter((report) => report.hospital_id)
             .map((report) => report.hospital_id as string))]
-          setResultFilter({ label: bucket.label, hint: `${hits.length} 条线索`, hospitalIds })
-          setSidebarTab('hospitals')
-          setSidebarOpen(true)
+          // 搜索命中的病症也点亮常驻卡片上对应的那一行。
+          const groupId = DISORDER_FILTER_GROUPS.find((item) => item.label === bucket.label)?.id ?? null
+          enterFilter({ label: bucket.label, hint: `${hits.length} 条线索`, hospitalIds }, groupId)
         },
       })
     }
@@ -439,9 +480,7 @@ export function MapApp(props: Props) {
           const hospitalIds = [...new Set(propsRef.current.reports
             .filter((report) => report.source_topics?.includes(topic) && report.hospital_id)
             .map((report) => report.hospital_id as string))]
-          setResultFilter({ label: topic, hint: `${count} 条线索`, hospitalIds })
-          setSidebarTab('hospitals')
-          setSidebarOpen(true)
+          enterFilter({ label: topic, hint: `${count} 条线索`, hospitalIds }, null)
         },
       })
     }
@@ -561,8 +600,10 @@ export function MapApp(props: Props) {
           variant="compact"
           onSelectHospital={openHospital}
           onSelectProvince={openProvince}
+          disorderOptions={disorderOptions}
+          activeDisorder={activeDisorder}
+          onSelectDisorder={toggleDisorder}
           resultFilter={resultFilter}
-          onClearResult={() => setResultFilter(null)}
         />
       </Suspense>
     ),
