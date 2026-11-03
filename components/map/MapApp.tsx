@@ -684,7 +684,7 @@ export function MapApp(props: Props) {
   }
 
   return (
-    <div ref={shellRef} className={`tc-mapapp${sidebarOpen ? ' tc-mapapp--open' : ''}${query.trim() ? ' tc-mapapp--searching' : ''}`} role={sidebarOpen && !isDesktop ? 'dialog' : undefined} aria-modal={sidebarOpen && !isDesktop ? true : undefined} aria-label={sidebarOpen && !isDesktop ? '浏览就诊资源' : undefined}>
+    <div ref={shellRef} className={`tc-mapapp${sidebarOpen ? ' tc-mapapp--open' : ''}${query.trim() ? ' tc-mapapp--searching' : ''}`}>
       <div ref={containerRef} className="tc-mapapp-canvas" role="application" aria-label="全国就诊资源与线索地图" inert={sidebarOpen && !isDesktop} />
       {!mapReady && !mapError && <div className="tc-map-loading" role="status">正在加载全国地图…</div>}
       {mapError && (
@@ -798,6 +798,7 @@ export function MapApp(props: Props) {
         detailDepth={detailState.depth}
         activeTab={sidebarTab}
         onTabChange={setSidebarTab}
+        modal={sidebarOpen && !isDesktop}
         onClose={() => { restoreDrawerFocusRef.current = true; setSidebarOpen(false) }}
       />
 

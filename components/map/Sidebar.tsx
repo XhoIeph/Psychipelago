@@ -29,6 +29,7 @@ export function Sidebar({
   panelRef,
   activeTab,
   onTabChange,
+  modal = false,
 }: {
   id?: string
   open: boolean
@@ -43,6 +44,8 @@ export function Sidebar({
   /** 受控标签（地图全局搜索需要切换到指定标签）；不传时组件自管 */
   activeTab?: SidebarTabId
   onTabChange?: (tab: SidebarTabId) => void
+  /** 手机抽屉打开时它是模态对话框；桌面停靠态只是普通区域。 */
+  modal?: boolean
 }) {
   const [internalTab, setInternalTab] = useState<SidebarTabId>('hospitals')
   const tab = activeTab ?? internalTab
@@ -82,6 +85,8 @@ export function Sidebar({
       id={id}
       ref={panelRef}
       className={`tc-sidebar${open ? '' : ' tc-sidebar--closed'}`}
+      role={modal ? 'dialog' : undefined}
+      aria-modal={modal ? true : undefined}
       aria-label="地图侧边栏"
       inert={!open}
     >

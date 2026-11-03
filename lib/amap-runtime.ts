@@ -82,6 +82,8 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
           const single = entry.members.length === 1
           const element = document.createElement('button')
           element.type = 'button'
+          // 地图点与侧栏列表是同一批内容，键盘搬运走画布容器；点本身不进 Tab 序。
+          element.tabIndex = -1
           element.className = `tc-map-node ${single ? 'tc-hospital-pin' : 'tc-cluster-pin'}`
           element.dataset.nodeKey = entry.key
           element.dataset.nodeInstance = String(++instance)
