@@ -170,7 +170,7 @@ export function HospitalExplorer({
         <ul className="tc-province-list">
           {provinceRows.map((row) => (
             <li key={row.adcode}>
-              <button type="button" className="tc-province-row" onClick={() => onSelectProvince?.(row.adcode)}>
+              <button type="button" className="tc-province-row" data-province={row.adcode} onClick={() => onSelectProvince?.(row.adcode)}>
                 <span className="tc-province-name">{row.name}</span>
                 <span className="tc-province-count">{row.count} 家</span>
               </button>

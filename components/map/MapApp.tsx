@@ -89,12 +89,21 @@ export function MapApp(props: Props) {
   // The doctor detail is a sibling of the institution detail, not a modal or a route.
   const [selectedDoctor, setSelectedDoctor] = useState<{ hospitalId: string; name: string } | null>(null)
   const doctorReturnFocusRef = useRef<string | null>(null)
+  // 返回省份列表时要还原焦点的那个省，从省行进入时记下。
+  const provinceReturnFocusRef = useRef<string | null>(null)
 
   const selectedRef = useRef<string | null>(null)
   selectedRef.current = selectedHospitalId
 
   useEffect(() => {
     runtimeRef.current?.syncSelection()
+    // 从省详情返回省份列表：焦点回到刚才点开的那一行，不掉到侧栏 tab。
+    const returnProvince = provinceReturnFocusRef.current
+    if (!selectedHospitalId && !selectedProvinceAdcode && !selectedDoctor && returnProvince) {
+      provinceReturnFocusRef.current = null
+      sidebarRef.current?.querySelector<HTMLButtonElement>(`[data-province="${CSS.escape(returnProvince)}"]`)?.focus({ preventScroll: true })
+      return
+    }
     if (focusDetailRef.current) {
       focusDetailRef.current = false
       sidebarRef.current?.querySelector<HTMLButtonElement>('.tc-detail-back')?.focus({ preventScroll: true })
@@ -249,6 +258,7 @@ export function MapApp(props: Props) {
 
   // Sidebar lists move focus into the detail they open; map clicks keep their own focus.
   const openProvince = (adcode: string) => {
+    provinceReturnFocusRef.current = adcode
     focusDetailRef.current = true
     selectProvince(adcode)
   }
@@ -555,9 +565,9 @@ export function MapApp(props: Props) {
     selectProvince(adcode)
   }
 
+  // 返回全国时，若刚从某省进来就把焦点放回那一行；焦点落地交给下面的 effect，不抢到 tab 上。
   const backToCountryFromDetail = () => {
     backToCountry()
-    focusActiveTab()
   }
 
   const detailNode = selectedDoctor && doctorHospital ? (
