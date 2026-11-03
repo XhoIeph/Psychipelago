@@ -153,6 +153,8 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-detail-back { display:inline-flex; min-height:44px; align-items:center; gap:8px; border:0; border-radius:var(--tc-control-radius); padding:0 12px; margin:0 0 16px -12px; background:transparent; color:var(--tc-text-muted); font-size:14px; }
 .tc-detail-back:hover { background:var(--tc-surface-muted); }
 .tc-detail-title { font-size:22px; line-height:1.45; margin:0; overflow-wrap:anywhere; }
+/* 医生姓名短，放大一档；机构和省份标题名字长会换行，保持 22px。 */
+.tc-doctor-detail .tc-detail-title { font-size:26px; font-weight:600; line-height:1.3; }
 .tc-detail > p { margin-top:16px; }
 .tc-detail > .tc-empty { margin-top:24px; }
 .tc-hospital-actions { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0; }
@@ -194,16 +196,16 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-breadcrumb button:hover { color:var(--tc-text); }
 .tc-breadcrumb [aria-current='page'] { color:var(--tc-text); }
 .tc-breadcrumb-sep { color:var(--tc-border-strong); }
-.tc-lead-doctor { font-size:13px; font-weight:650; color:var(--tc-text); }
+.tc-lead-doctor { font-size:16px; line-height:1.5; font-weight:650; color:var(--tc-text); }
 
 /* Reports and evidence: quotes remain verbatim */
 .tc-report { display:grid; gap:12px; border:1px solid var(--tc-border); border-radius:var(--tc-radius); background:#fff; padding:var(--tc-card-padding); margin:0 0 16px; overflow-wrap:anywhere; }
 .tc-report > * { margin:0; }
 .tc-report:last-child { margin-bottom:0; }
-.tc-evidence { display:grid; gap:12px; min-width:0; overflow-wrap:anywhere; }
+.tc-evidence { display:grid; gap:10px; min-width:0; overflow-wrap:anywhere; }
 .tc-evidence > * { margin:0; }
-.tc-evidence-source { display:block; font-size:13px; line-height:1.6; }
-.tc-quote { padding:0; margin:0; color:var(--tc-text); font-size:15px; line-height:1.75; }
+.tc-evidence-source { display:block; font-size:12px; line-height:1.5; }
+.tc-quote { padding:0; margin:0; color:var(--tc-text); font-size:14px; line-height:1.7; }
 .tc-evidence details > summary { min-height:44px; padding-block:10px; cursor:pointer; color:var(--tc-accent); font-size:13px; }
 .tc-evidence details > .tc-quote { margin-top:12px; }
 .tc-table { width:100%; border-collapse:collapse; font-size:14px; }
@@ -216,6 +218,11 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-lead-doctor .tc-doctor-link { padding:0; border:0; background:transparent; font:inherit; color:inherit; cursor:pointer; text-decoration:underline; text-decoration-style:dotted; text-decoration-color:var(--tc-border-strong); text-underline-offset:3px; }
 .tc-lead-doctor .tc-doctor-link:hover { color:var(--tc-accent-strong); text-decoration-color:currentColor; }
 .tc-detail > .tc-doctor-origin { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:16px; font-size:13px; color:var(--tc-text-muted); }
+.tc-doctor-meta { display:flex; align-items:baseline; gap:6px; margin:0; }
+.tc-doctor-meta--note { margin-top:12px; }
+.tc-doctor-meta--rating { margin-top:24px; padding-top:20px; border-top:1px solid var(--tc-border); }
+.tc-doctor-meta-label { font-size:13px; color:var(--tc-text-muted); }
+.tc-doctor-meta-value { font-size:14px; font-weight:500; color:var(--tc-text); }
 .tc-doctor-origin button { padding:0; border:0; background:transparent; font:inherit; font-weight:650; color:var(--tc-text); text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
 .tc-doctor-origin button:hover { color:var(--tc-accent-strong); }
 .tc-doctor-disorders { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0; padding:0; list-style:none; }

@@ -40,6 +40,10 @@ export function DoctorDetail({
       </nav>
       <button type="button" className="tc-detail-back" onClick={onBackToHospital}><ArrowLeft size={16} aria-hidden="true" />返回 {hospital.name}</button>
       <h2 className="tc-detail-title">{name}</h2>
+      <p className="tc-doctor-meta tc-doctor-meta--note">
+        <span className="tc-doctor-meta-label">备注</span>
+        <span className="tc-doctor-meta-value">{profile?.note?.trim() || '无'}</span>
+      </p>
       <p className="tc-doctor-origin">
         所在机构
         <button type="button" onClick={onBackToHospital}>{hospital.name}</button>
@@ -72,6 +76,10 @@ export function DoctorDetail({
           ))
         )}
       </section>
+      <p className="tc-doctor-meta tc-doctor-meta--rating">
+        <span className="tc-doctor-meta-label">评价</span>
+        <span className="tc-doctor-meta-value">{profile?.evaluation?.trim() || '无'}</span>
+      </p>
       {profile && (
         <section className="tc-detail-section tc-doctor-profile">
           <h3>档案</h3>

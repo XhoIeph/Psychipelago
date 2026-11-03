@@ -754,7 +754,7 @@ export function MapApp(props: Props) {
       <div className="tc-project-corner" ref={projectRef}>
         <button ref={aboutButtonRef} type="button" className="tc-mapapp-ctl" aria-expanded={aboutOpen} aria-controls="tc-project-card" onClick={() => setAboutOpen((v) => !v)}>关于项目</button>
         {aboutOpen && <section id="tc-project-card" className="tc-project-card" aria-label="关于项目">
-          <div className="tc-row tc-row--between"><strong>TraumaCompass</strong><button type="button" className="tc-linklike" onClick={() => { setAboutOpen(false); aboutButtonRef.current?.focus() }}>关闭</button></div>
+          <div className="tc-row tc-row--between"><strong>TraumaCompass</strong></div>
           <p>本项目旨在为CPTSD/BPD人群提供全国就诊地图，帮助更多人治疗心理创伤与障碍</p>
           <Link className="tc-card-action" href="/about/">了解我们</Link>
         </section>}

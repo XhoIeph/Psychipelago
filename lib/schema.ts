@@ -101,6 +101,8 @@ export const doctorSchema = z.object({
   official_sources: z.array(httpUrl),
   last_verified_at: isoDate,
   note: z.string().optional(),
+  /** 医生评价，留空时界面上写「无」，不隐藏这一行 */
+  evaluation: z.string().optional(),
 })
 
 /* ------------------------------------------------------------------ 就诊线索 */
