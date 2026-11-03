@@ -40,14 +40,22 @@ export function DoctorDetail({
       </nav>
       <button type="button" className="tc-detail-back" onClick={onBackToHospital}><ArrowLeft size={16} aria-hidden="true" />返回 {hospital.name}</button>
       <h2 className="tc-detail-title">{name}</h2>
-      <p className="tc-doctor-meta tc-doctor-meta--note">
-        <span className="tc-doctor-meta-label">备注</span>
-        <span className="tc-doctor-meta-value">{profile?.note?.trim() || '无'}</span>
-      </p>
-      <p className="tc-doctor-origin">
-        所在医院
-        <button type="button" onClick={onBackToHospital}>{hospital.name}</button>
-      </p>
+      <div className="tc-doctor-meta-list">
+        <p className="tc-doctor-meta tc-doctor-meta--clinic">
+          <span className="tc-doctor-meta-label">门诊</span>
+          <span className="tc-doctor-meta-value">{profile?.department?.trim() || '无'}</span>
+        </p>
+        <p className="tc-doctor-meta tc-doctor-meta--origin tc-doctor-origin">
+          <span className="tc-doctor-meta-label">所在医院</span>
+          <span className="tc-doctor-meta-value">
+            <button type="button" onClick={onBackToHospital}>{hospital.name}</button>
+          </span>
+        </p>
+        <p className="tc-doctor-meta tc-doctor-meta--note">
+          <span className="tc-doctor-meta-label">备注</span>
+          <span className="tc-doctor-meta-value">{profile?.note?.trim() || '无'}</span>
+        </p>
+      </div>
       {disorders.length > 0 && (
         <ul className="tc-doctor-disorders" aria-label="关联病症">
           {disorders.map((disorder) => (
