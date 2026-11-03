@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useId, useMemo, useState } from 'react'
 import { hospitalRowMeta } from '@/lib/hospital-row'
 import type { Hospital, Province } from '@/lib/schema'
 
@@ -72,26 +72,43 @@ export function HospitalExplorer({
     )
   }
 
-  // 常驻：筛选态下也留着，取消就是再点一次同一行。
+  const [panelOpen, setPanelOpen] = useState(false)
+  const panelId = useId()
+  const activeLabel = disorderOptions.find((option) => option.id === activeDisorder)?.label
+
+  // 下拉式：收起只占一行（选中后写病症名），展开最多三行，点一项即收起。
   const filterCard = disorderOptions.length > 0 && (
-    <section className="tc-disorder-filter" aria-label="按病症筛选">
-      <p className="tc-disorder-filter-title">按病症筛选</p>
-      <ul className="tc-disorder-options">
-        {disorderOptions.map((option) => (
-          <li key={option.id}>
-            <button
-              type="button"
-              className="tc-disorder-option"
-              data-disorder={option.id}
-              aria-pressed={activeDisorder === option.id}
-              onClick={() => onSelectDisorder(option.id)}
-            >
-              <span className="tc-disorder-name">{option.label}</span>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <div className="tc-disorder-filter">
+      <button
+        type="button"
+        className="tc-disorder-toggle"
+        aria-expanded={panelOpen}
+        aria-controls={panelId}
+        onClick={() => setPanelOpen((open) => !open)}
+      >
+        <span className="tc-disorder-toggle-label">{activeLabel ?? '按病症筛选'}</span>
+      </button>
+      {panelOpen && (
+        <ul className="tc-disorder-options" id={panelId}>
+          {disorderOptions.map((option) => (
+            <li key={option.id}>
+              <button
+                type="button"
+                className="tc-disorder-option"
+                data-disorder={option.id}
+                aria-pressed={activeDisorder === option.id}
+                onClick={() => {
+                  onSelectDisorder(option.id)
+                  setPanelOpen(false)
+                }}
+              >
+                <span className="tc-disorder-name">{option.label}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   )
 
   // 筛选结果与省份详情里的机构行同一套：名称一行、条数一行，行间 1px 分隔线。

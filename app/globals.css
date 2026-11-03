@@ -183,14 +183,17 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-hospital-row-name { font-size:15px; font-weight:500; line-height:1.5; }
 .tc-hospital-row-meta { font-size:13px; color:var(--tc-text-muted); }
 @media (hover: hover) { .tc-hospital-row:hover { background:var(--tc-surface-muted); } }
-/* 机构面板顶部的常驻病症筛选：带边框的卡，行规格与省份行一致（44px、15/500、家数 13 次要色）。
-   选中整行铺 --tc-accent-soft，不加粗、不加边框、不加左边色条；取消靠再点同一行。 */
-.tc-disorder-filter { margin:0 0 16px; padding:12px 12px 4px; border:1px solid var(--tc-border); border-radius:var(--tc-radius); }
-.tc-disorder-filter-title { margin:0 0 4px; font-size:13px; font-weight:400; color:var(--tc-text-muted); }
-.tc-disorder-options { list-style:none; margin:0; padding:0; }
+/* 机构面板顶部的病症筛选：收起只有一行，展开是下挂面板（复用旧下拉的内边距与下圆角）。
+   行 44px、名称 15/500、左对齐；选中整行铺 --tc-accent-soft，不加粗、不加边框、不加左边色条。 */
+.tc-disorder-filter { margin:0 0 16px; border:1px solid var(--tc-border); border-radius:var(--tc-radius); background:var(--tc-surface); box-shadow:0 1px 2px rgb(0 0 0 / 0.05); }
+.tc-disorder-toggle { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-height:48px; padding:0 16px; border:0; border-radius:inherit; background:transparent; color:var(--tc-text); text-align:left; font-size:15px; font-weight:500; }
+.tc-disorder-toggle::after { content:''; flex:none; width:8px; height:8px; margin-right:3px; border-right:1.5px solid var(--tc-text-muted); border-bottom:1.5px solid var(--tc-text-muted); transform:rotate(45deg); transition:transform .18s ease; }
+.tc-disorder-toggle[aria-expanded='true']::after { transform:rotate(-135deg); }
+.tc-disorder-toggle-label { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.tc-disorder-options { list-style:none; margin:0; padding:0 16px 4px; border-top:1px solid var(--tc-border); border-radius:0 0 var(--tc-radius) var(--tc-radius); overflow:hidden; }
 .tc-disorder-options li { border-bottom:1px solid var(--tc-border); }
 .tc-disorder-options li:last-child { border-bottom:0; }
-.tc-disorder-option { display:flex; align-items:center; gap:12px; width:100%; min-height:44px; padding:0; border:0; border-radius:var(--tc-radius-sm); background:transparent; color:var(--tc-text); text-align:left; transition:background-color .16s ease; }
+.tc-disorder-option { display:flex; align-items:center; width:100%; min-height:44px; padding:0; border:0; background:transparent; color:var(--tc-text); text-align:left; transition:background-color .16s ease; }
 .tc-disorder-name { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:15px; font-weight:500; }
 @media (hover: hover) { .tc-disorder-option:hover { background:var(--tc-surface-muted); } }
 .tc-disorder-option[aria-pressed='true'] { background:var(--tc-accent-soft); }
