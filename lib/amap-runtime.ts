@@ -117,7 +117,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
         }
         node.exit?.kill(); node.exit = undefined
         node.element.inert = !nodesOn
-        node.element.setAttribute('aria-label', entry.members.length === 1 ? entry.members[0].name : `${entry.members.length} 家机构，${level >= MAP_MAX_ZOOM ? '查看机构' : '点击放大'}`)
+        node.element.setAttribute('aria-label', entry.members.length === 1 ? entry.members[0].name : `${entry.members.length} 家医院，${level >= MAP_MAX_ZOOM ? '查看医院' : '点击放大'}`)
         if (nodesOn) node.marker.show()
         gsap.to(node.element.firstElementChild, { autoAlpha: 1, scale: 1, duration: reduced() ? 0 : .32, overwrite: true })
       }

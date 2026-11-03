@@ -45,7 +45,7 @@ export function DoctorDetail({
         <span className="tc-doctor-meta-value">{profile?.note?.trim() || '无'}</span>
       </p>
       <p className="tc-doctor-origin">
-        所在机构
+        所在医院
         <button type="button" onClick={onBackToHospital}>{hospital.name}</button>
       </p>
       {disorders.length > 0 && (

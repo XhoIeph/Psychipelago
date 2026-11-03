@@ -84,7 +84,7 @@ export function HospitalExplorer({
   if (hospitals.length === 0) {
     return (
       <div className="tc-empty">
-        <p>机构尚未定位。</p>
+        <p>这家医院还没有地图坐标。</p>
       </div>
     )
   }
@@ -118,17 +118,17 @@ export function HospitalExplorer({
       <div className="tc-results-heading" role="status" aria-live="polite">
         {activeGroup ? (
           <>
-            <span><strong>{provinceRows.reduce((sum, row) => sum + row.count, 0)}</strong> 家机构 · {activeGroup.leads} 条线索</span>
+            <span><strong>{provinceRows.reduce((sum, row) => sum + row.count, 0)}</strong> 家医院 · {activeGroup.leads} 条线索</span>
             <span>{activeGroup.label}</span>
           </>
         ) : searchList ? (
           <>
-            <span><strong>{searchList.length}</strong> 家机构 · {resultFilter?.hint}</span>
+            <span><strong>{searchList.length}</strong> 家医院 · {resultFilter?.hint}</span>
             <span>{resultFilter?.label}</span>
           </>
         ) : (
           <>
-            <span><strong>{hospitals.length}</strong> 家机构</span>
+            <span><strong>{hospitals.length}</strong> 家医院</span>
             <span>全国收录</span>
           </>
         )}
@@ -163,7 +163,7 @@ export function HospitalExplorer({
       {searchList ? (
         searchList.length === 0 ? (
           <div className="tc-empty">
-            <p>没有符合这个条件的机构记录。</p>
+            <p>没有符合这个条件的医院记录。</p>
           </div>
         ) : rows(searchList)
       ) : (

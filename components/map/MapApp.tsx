@@ -38,7 +38,7 @@ type Props = {
   doctorProfiles: Doctor[]
 }
 
-type SearchGroup = '省份' | '机构' | '医生' | '病症'
+type SearchGroup = '省份' | '医院' | '医生' | '病症'
 
 type SearchResult = {
   key: string
@@ -415,7 +415,7 @@ export function MapApp(props: Props) {
       if (matchesSearch(haystack, q)) {
         hospitals.push({
           key: `hospital-${hospital.id}`,
-          group: '机构',
+          group: '医院',
           label: hospital.name,
           sub: `${hospital.city && hospital.city !== hospital.province ? `${hospital.province} · ${hospital.city}` : hospital.province} · 线索 ${propsRef.current.reportCounts[hospital.id] ?? 0} 条`,
           run: () => selectHospital(hospital.id),
@@ -512,7 +512,7 @@ export function MapApp(props: Props) {
   }, [query])
 
   const grouped = useMemo(() => {
-    const order: SearchGroup[] = ['省份', '机构', '医生', '病症']
+    const order: SearchGroup[] = ['省份', '医院', '医生', '病症']
     return order
       .map((group) => ({ group, items: searchResults.filter((item) => item.group === group) }))
       .filter((entry) => entry.items.length > 0)
@@ -651,12 +651,12 @@ export function MapApp(props: Props) {
         </div>
       )}
 
-      {cluster && <div ref={clusterRef} className="tc-map-cluster-list" role="dialog" aria-label="选择机构" style={{ left: cluster.x, top: cluster.y }} onKeyDown={event => {
+      {cluster && <div ref={clusterRef} className="tc-map-cluster-list" role="dialog" aria-label="选择医院" style={{ left: cluster.x, top: cluster.y }} onKeyDown={event => {
         if (event.key !== 'Escape') return
         event.stopPropagation()
         closeCluster()
       }}>
-        <div className="tc-row tc-row--between"><strong>选择机构</strong><button type="button" className="tc-linklike" onClick={closeCluster}>关闭</button></div>
+        <div className="tc-row tc-row--between"><strong>选择医院</strong><button type="button" className="tc-linklike" onClick={closeCluster}>关闭</button></div>
         {cluster.members.map(hospital => <button key={hospital.id} type="button" className="tc-mapapp-result" onClick={() => { focusDetailRef.current = true; selectHospital(hospital.id) }}>{hospital.name}</button>)}
       </div>}
 
@@ -677,8 +677,8 @@ export function MapApp(props: Props) {
           <input
             type="search"
             value={query}
-            placeholder="搜索省份 / 机构 / 病症"
-            aria-label="搜索省份、机构、医生或病症"
+            placeholder="搜索省份 / 医院 / 病症"
+            aria-label="搜索省份、医院、医生或病症"
             role="combobox"
             aria-expanded={searchResults.length > 0}
             aria-controls="tc-map-search-results"
@@ -705,7 +705,7 @@ export function MapApp(props: Props) {
             }}
           />
           {query && <button type="button" className="tc-search-clear" aria-label="清除搜索" onClick={() => { setQuery(''); setActiveResult(-1) }}><X size={16} aria-hidden="true" /></button>}
-          {query.trim() && searchResults.length === 0 && <div className="tc-mapapp-no-results" role="status">没有找到匹配结果，试试省份、机构或医生名称。</div>}
+          {query.trim() && searchResults.length === 0 && <div className="tc-mapapp-no-results" role="status">没有找到匹配结果，试试省份、医院或医生名称。</div>}
           {searchResults.length > 0 && (
             <ul className="tc-mapapp-results" id="tc-map-search-results" role="listbox" aria-label="搜索结果">
               {grouped.map((entry) => (
@@ -776,7 +776,7 @@ export function MapApp(props: Props) {
         </button>
       </div>
       {!sidebarOpen && <button type="button" className="tc-mobile-browse" onClick={() => setSidebarOpen(true)} aria-controls="tc-map-sidebar">
-        <ListFilter size={18} aria-hidden="true" />浏览机构与线索
+        <ListFilter size={18} aria-hidden="true" />浏览医院与线索
       </button>}
     </div>
   )

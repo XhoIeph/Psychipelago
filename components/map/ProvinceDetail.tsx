@@ -33,7 +33,7 @@ export function ProvinceDetail({
 
       {hasData ? (
         <>
-          <p className="tc-small tc-muted">{hospitals.length} 家机构</p>
+          <p className="tc-small tc-muted">{hospitals.length} 家医院</p>
 
           <div className="tc-hospital-actions"><button type="button" className="tc-button tc-button--active" onClick={onZoomToProvince}>
             <MapPin size={16} aria-hidden="true" />在地图上定位
@@ -41,7 +41,7 @@ export function ProvinceDetail({
 
           {hospitals.length > 0 && (
             <section className="tc-detail-section">
-              <h3>机构</h3>
+              <h3>医院</h3>
               <ul className="tc-hospital-list">
                 {hospitals.map((hospital) => (
                   <li key={hospital.id}>
@@ -61,7 +61,7 @@ export function ProvinceDetail({
         </>
       ) : (
         <div className="tc-empty">
-          <p>该省暂无已收录的线索与机构记录。</p>
+          <p>该省暂无已收录的线索与医院记录。</p>
         </div>
       )}
     </div>

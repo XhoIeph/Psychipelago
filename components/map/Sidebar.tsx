@@ -10,7 +10,7 @@ import { X } from 'lucide-react'
 export type SidebarTabId = 'hospitals' | 'submit'
 
 const TABS: { id: SidebarTabId; label: string }[] = [
-  { id: 'hospitals', label: '机构' },
+  { id: 'hospitals', label: '医院' },
   { id: 'submit', label: '投稿' },
 ]
 gsap.registerPlugin(useGSAP)

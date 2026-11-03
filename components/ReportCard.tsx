@@ -50,7 +50,7 @@ export function ReportCard({
       </div>
       )}
       {onSelectHospital && report.hospital_id && (
-        <button type="button" className="tc-detail-link" onClick={() => onSelectHospital(report.hospital_id!)}>查看机构</button>
+        <button type="button" className="tc-detail-link" onClick={() => onSelectHospital(report.hospital_id!)}>查看医院</button>
       )}
     </article>
   )
