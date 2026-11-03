@@ -103,6 +103,7 @@ export function HospitalExplorer({
                 }}
               >
                 <span className="tc-disorder-name">{option.label}</span>
+                {activeDisorder === option.id && <span className="tc-disorder-check" aria-hidden="true" />}
               </button>
             </li>
           ))}

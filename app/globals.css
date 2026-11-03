@@ -190,11 +190,12 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-disorder-toggle::after { content:''; flex:none; width:8px; height:8px; margin-right:3px; border-right:1.5px solid var(--tc-text-muted); border-bottom:1.5px solid var(--tc-text-muted); transform:rotate(45deg); transition:transform .18s ease; }
 .tc-disorder-toggle[aria-expanded='true']::after { transform:rotate(-135deg); }
 .tc-disorder-toggle-label { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.tc-disorder-options { list-style:none; margin:0; padding:0 16px 4px; border-top:1px solid var(--tc-border); border-radius:0 0 var(--tc-radius) var(--tc-radius); overflow:hidden; }
-.tc-disorder-options li { border-bottom:1px solid var(--tc-border); }
-.tc-disorder-options li:last-child { border-bottom:0; }
-.tc-disorder-option { display:flex; align-items:center; width:100%; min-height:44px; padding:0; border:0; background:transparent; color:var(--tc-text); text-align:left; transition:background-color .16s ease; }
-.tc-disorder-name { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:15px; font-weight:500; }
+.tc-disorder-options { list-style:none; margin:0; padding:0; border-top:1px solid var(--tc-border); border-radius:0 0 var(--tc-radius) var(--tc-radius); overflow:hidden; }
+.tc-disorder-options li { position:relative; }
+.tc-disorder-options li + li::before { content:''; position:absolute; left:16px; right:16px; top:0; height:1px; background:var(--tc-border); }
+.tc-disorder-option { display:flex; align-items:center; width:100%; min-height:44px; padding:0 16px; border:0; background:transparent; color:var(--tc-text); text-align:left; transition:background-color .16s ease; }
+.tc-disorder-name { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:14px; font-weight:400; }
+.tc-disorder-check { flex:none; margin-left:auto; width:12px; height:7px; border-left:1.5px solid var(--tc-text); border-bottom:1.5px solid var(--tc-text); transform:rotate(-45deg) translateY(-2px); }
 @media (hover: hover) { .tc-disorder-option:hover { background:var(--tc-surface-muted); } }
 .tc-disorder-option[aria-pressed='true'] { background:var(--tc-accent-soft); }
 .tc-breadcrumb { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:0 0 8px; color:var(--tc-text-muted); font-size:13px; line-height:1.6; }
