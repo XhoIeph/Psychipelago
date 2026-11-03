@@ -53,7 +53,8 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
     containerPointToLatLng(point) { return unproject(project(center(), camera.getZoom()).add(point.subtract(size.divideBy(2))), camera.getZoom()) },
     beginMove() { options.closeCluster() },
     move(point, zoom) {
-      const target = constrainChinaCenter({ ...camera, getZoom: () => zoom }, point, size.x >= 1000 ? options.inset() : 0)
+      const wide = size.x >= 1000
+      const target = constrainChinaCenter({ ...camera, getZoom: () => zoom }, point, wide ? options.inset() : 0, wide ? 0 : 48)
       map.setZoomAndCenter(zoom, [target.lng, target.lat], true)
     },
     endMove() { update() },
@@ -177,7 +178,8 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   function countryFrame() {
     const wide = size.x >= 1000
     const bounds: [GeoPoint, GeoPoint] = CHINA_BOUNDS.map(([lat, lng]) => ({ lat, lng })) as [GeoPoint, GeoPoint]
-    return fitMapBounds(bounds, size, wide ? options.inset() : 0, [80, wide ? 70 : 136, 16, 16])
+    // The phone canvas no longer sits under floating bars, so it needs a small uniform pad, not 136px.
+    return fitMapBounds(bounds, size, wide ? options.inset() : 0, wide ? [80, 70, 16, 16] : [12, 12, 12, 12])
   }
   function country(animate = true) {
     const frame = countryFrame()
@@ -217,7 +219,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
       const bounds = provinces.get(adcode)?.getBounds()
       if (!bounds) return
       const sw = bounds.getSouthWest(), ne = bounds.getNorthEast()
-      const frame = fitMapBounds([{ lat: sw.getLat(), lng: sw.getLng() }, { lat: ne.getLat(), lng: ne.getLng() }], size, 0, [84, 70, 20, 20])
+      const frame = fitMapBounds([{ lat: sw.getLat(), lng: sw.getLng() }, { lat: ne.getLat(), lng: ne.getLng() }], size, 0, size.x >= 1000 ? [84, 70, 20, 20] : [12, 12, 12, 12])
       const midpoint = bounds.getCenter()
       moveTo({ lat: midpoint.getLat(), lng: midpoint.getLng() }, Math.max(NODE_ZOOM_THRESHOLD, frame.zoom), inset)
     },

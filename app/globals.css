@@ -239,7 +239,9 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-mapapp-canvas { touch-action:none; position:absolute; inset:0; z-index:var(--tc-z-map); background:#e6eef0; }
 .tc-mapapp-canvas { --tc-nodes-opacity:0; font-family:var(--tc-font); }
 .tc-mapapp-canvas .amap-logo,.tc-mapapp-canvas .amap-copyright { margin-left:var(--tc-sidebar-offset); }
-.tc-mapapp-topbar { position:absolute; top:20px; left:20px; right:calc(152px + var(--tc-sidebar-offset)); transform:translateX(var(--tc-sidebar-offset)); z-index:var(--tc-z-topbar); display:flex; align-items:center; gap:10px; }
+/* 顶栏随侧栏停靠右移时，右边界必须留在视口里：宽度同步减掉侧栏占位，
+   否则右侧控件（关于项目）会被推到 1440 视口外，点击直接超时。 */
+.tc-mapapp-topbar { position:absolute; top:20px; left:20px; right:calc(20px + var(--tc-sidebar-offset)); transform:translateX(var(--tc-sidebar-offset)); z-index:var(--tc-z-topbar); display:flex; align-items:center; gap:10px; }
 .tc-mapapp-burger { width:48px; height:48px; display:grid; place-items:center; flex-shrink:0; border:1px solid var(--tc-border); border-radius:14px; background:#fff; box-shadow:var(--tc-shadow); color:var(--tc-text); }
 .tc-mapapp-burger:hover { background:var(--tc-accent-soft); }
 .tc-mapapp-search { position:relative; width:min(100%,470px); min-width:0; }
@@ -271,8 +273,8 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-sidebar .tc-hospital-card h2 button:hover { color:var(--tc-accent); }
 .tc-sidebar .tc-hospital-card-footer { display:block; text-align:left; }
 .tc-sidebar-close { width:44px; height:44px; border:0; border-radius:50%; display:grid; place-items:center; background:var(--tc-surface-muted); color:var(--tc-text-muted); flex-shrink:0; }
-.tc-project-corner { position:absolute; top:20px; right:20px; z-index:var(--tc-z-ctl); }
-.tc-project-card { position:absolute; right:0; top:62px; width:min(320px,calc(100vw - 40px)); padding:24px; background:#fff; border:1px solid var(--tc-border); border-radius:16px; box-shadow:0 12px 36px #193b3824; font-size:14px; }
+.tc-project-corner { position:relative; z-index:var(--tc-z-ctl); margin-left:auto; flex-shrink:0; }
+.tc-project-card { position:absolute; right:0; top:calc(100% + 8px); width:min(320px,calc(100vw - 40px)); padding:24px; background:#fff; border:1px solid var(--tc-border); border-radius:16px; box-shadow:0 12px 36px #193b3824; font-size:14px; }
 .tc-project-card p { margin:16px 0; }
 .tc-project-card .tc-linklike { min-height:44px; }
 .tc-mapapp-ctl { min-width:46px; min-height:46px; padding:10px 14px; display:inline-flex; align-items:center; justify-content:center; gap:8px; border:1px solid var(--tc-border); border-radius:12px; background:#fff; color:var(--tc-text); box-shadow:var(--tc-shadow); font-size:13px; }
@@ -318,6 +320,8 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 }
 @media (max-width:999px) {
   .tc-mapapp-topbar,.tc-mapapp--open .tc-mapapp-topbar { top:12px; left:12px; right:12px; gap:8px; transform:none; }
+  /* The canvas sits between the top bar and the browse bar; neither floats over the map. */
+  .tc-mapapp-canvas { top:72px; bottom:96px; }
   .tc-mapapp-search { flex:1; width:auto; }
   .tc-mapapp-search input { font-size:16px; padding-left:40px; }
   .tc-sidebar { top:104px; bottom:0; left:0; width:min(440px,100vw); border-radius:22px 22px 0 0; box-shadow:0 -8px 40px #193b3820; transform:translateY(calc((1 - var(--tc-sidebar-progress)) * 105%)); }
@@ -327,16 +331,16 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
   .tc-sidebar-head { padding:20px var(--tc-gutter) 16px; }
   .tc-sidebar .tc-brand { font-size:23px; }
   .tc-sidebar-body { padding-bottom:calc(24px + env(safe-area-inset-bottom,0px)); }
-  .tc-project-corner { top:76px; right:12px; }
-  .tc-project-card { top:56px; }
+  /* 浮层在手机上让位：汉堡由底部条替代，图例与比例尺不上屏 */
+  .tc-mapapp-burger { display:none; }
+  .tc-mapapp-legend,.tc-mapapp--open .tc-mapapp-legend { display:none; }
+  .tc-mapapp-canvas .amap-scalecontrol { display:none; }
   .tc-mobile-browse { position:absolute; left:12px; right:12px; bottom:calc(30px + env(safe-area-inset-bottom,0px)); z-index:var(--tc-z-ctl); display:flex; align-items:center; justify-content:center; gap:10px; min-height:54px; background:var(--tc-accent); color:#fff; border:1px solid #086c67; border-radius:14px; box-shadow:0 4px 20px #193b3826; font-size:14px; font-weight:600; }
-  .tc-mapapp-legend,.tc-mapapp--open .tc-mapapp-legend { left:12px; bottom:calc(132px + env(safe-area-inset-bottom,0px)); max-width:calc(100vw - 84px); transform:none; }
-  .tc-mapapp-canvas .amap-scalecontrol { left:12px !important; bottom:calc(94px + env(safe-area-inset-bottom,0px)) !important; margin-left:0; }
   .tc-mapapp-actions { right:12px; bottom:calc(242px + env(safe-area-inset-bottom,0px)); }
   .tc-mapapp-ctl-label { display:none; }
   .tc-map-zoom { right:12px; bottom:100px; }
-  .tc-mapapp--open :is(.tc-mapapp-legend,.tc-mapapp-actions,.tc-project-corner,.tc-map-zoom,.amap-scalecontrol),
-  .tc-mapapp--searching :is(.tc-mapapp-legend,.tc-mapapp-actions,.tc-project-corner,.tc-mobile-browse) { display:none; }
+  .tc-mapapp--open :is(.tc-mapapp-legend,.tc-mapapp-actions,.tc-map-zoom,.amap-scalecontrol),
+  .tc-mapapp--searching :is(.tc-mapapp-legend,.tc-mapapp-actions,.tc-mobile-browse) { display:none; }
   .tc-map-loading,.tc-mapapp-error { top:140px; right:12px; }
 }
 @media (max-width:700px) {

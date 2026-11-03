@@ -23,13 +23,14 @@ export function sidebarCameraFrame(
 }
 
 // The covered canvas does not contribute to the visible geographic bounds.
-export function chinaCameraBounds(map: Pick<MapCamera, 'getZoom' | 'getSize' | 'project' | 'unproject'>, inset: number) {
+// `margin` shrinks the draggable area further, so a phone can pull the outer provinces in.
+export function chinaCameraBounds(map: Pick<MapCamera, 'getZoom' | 'getSize' | 'project' | 'unproject'>, inset: number, margin = 0) {
   const zoom = map.getZoom()
   const size = map.getSize()
   const nw = map.project([CHINA_BOUNDS[1][0], CHINA_BOUNDS[0][1]], zoom)
   const se = map.project([CHINA_BOUNDS[0][0], CHINA_BOUNDS[1][1]], zoom)
   const midX = (nw.x + se.x) / 2, midY = (nw.y + se.y) / 2
-  const halfX = (size.x - inset) / 2, halfY = size.y / 2
+  const halfX = (size.x - inset - 2 * margin) / 2, halfY = (size.y - 2 * margin) / 2
   return [
     map.unproject([Math.min(midX, nw.x + halfX) - (size.x + inset) / 2, Math.min(midY, nw.y + halfY) - halfY], zoom),
     map.unproject([Math.max(midX, se.x - halfX) + (size.x - inset) / 2, Math.max(midY, se.y - halfY) + halfY], zoom),
@@ -37,9 +38,9 @@ export function chinaCameraBounds(map: Pick<MapCamera, 'getZoom' | 'getSize' | '
 }
 
 // Constrain the requested camera before it reaches the renderer, not after a drag has painted.
-export function constrainChinaCenter(map: Pick<MapCamera, 'getZoom' | 'getSize' | 'project' | 'unproject'>, center: GeoPoint, inset: number) {
+export function constrainChinaCenter(map: Pick<MapCamera, 'getZoom' | 'getSize' | 'project' | 'unproject'>, center: GeoPoint, inset: number, margin = 0) {
   const zoom = map.getZoom(), size = map.getSize()
-  const [nw, se] = chinaCameraBounds(map, inset)
+  const [nw, se] = chinaCameraBounds(map, inset, margin)
   const min = map.project(nw, zoom).add(size.divideBy(2))
   const max = map.project(se, zoom).subtract(size.divideBy(2))
   const point = map.project(center, zoom)
