@@ -85,7 +85,7 @@ export function MapApp(props: Props) {
   // A disorder or source-topic search lists the hospitals that mention it, in the institution panel.
   const [resultFilter, setResultFilter] = useState<ResultFilter | null>(null)
   // 常驻筛选卡片当前选中的分组（cptsd / osdd-did / pd），再点一次同一行取消。
-  const [activeDisorder, setActiveDisorder] = useState<string | null>(null)
+  const [selectedDisorders, setSelectedDisorders] = useState<string[]>([])
   // The doctor detail is a sibling of the institution detail, not a modal or a route.
   const [selectedDoctor, setSelectedDoctor] = useState<{ hospitalId: string; name: string } | null>(null)
   const doctorReturnFocusRef = useRef<string | null>(null)
@@ -353,41 +353,58 @@ export function MapApp(props: Props) {
     () => disorderIndex.map((group) => ({ id: group.id, label: group.label, hospitalIds: group.hospitalIds, leads: group.leads })),
     [disorderIndex])
 
-  // 选中的病症：省详情只列命中的机构，条数也只算该病的线索。
-  const activeGroup = activeDisorder ? disorderGroups.find((group) => group.id === activeDisorder) : undefined
-  const activeHospitalIds = useMemo(() => (activeGroup ? new Set(activeGroup.hospitalIds) : null), [activeGroup])
+  // 选中的病症可以多个：医院取并集，线索按条去重（osdd/did 是同一批线索的两个标签）。
+  const selectedSet = useMemo(() => new Set(selectedDisorders), [selectedDisorders])
+  const activeHospitalIds = useMemo(() => {
+    if (selectedDisorders.length === 0) return null
+    const ids = new Set<string>()
+    for (const group of disorderGroups) {
+      if (!selectedSet.has(group.id)) continue
+      for (const id of group.hospitalIds) ids.add(id)
+    }
+    return ids
+  }, [disorderGroups, selectedDisorders.length, selectedSet])
   const activeDisorderIds = useMemo(() => {
-    const ids = activeGroup ? DISORDER_FILTER_GROUPS.find((group) => group.id === activeGroup.id)?.ids : undefined
-    return ids ? new Set<string>(ids) : null
-  }, [activeGroup])
+    if (selectedDisorders.length === 0) return null
+    const ids = new Set<string>()
+    for (const group of DISORDER_FILTER_GROUPS) {
+      if (!selectedSet.has(group.id)) continue
+      for (const id of group.ids) ids.add(id)
+    }
+    return ids
+  }, [selectedDisorders.length, selectedSet])
+  const activeLeads = activeDisorderIds
+    ? props.reports.filter((report) => report.disorders.some((id) => activeDisorderIds.has(id))).length
+    : null
   const leadCountFor = (hospitalId: string) => activeDisorderIds
     ? props.reports.filter((report) => report.hospital_id === hospitalId && report.disorders.some((id) => activeDisorderIds.has(id))).length
     : props.reportCounts[hospitalId] ?? 0
 
   // 任何进入筛选的入口都走这里：不先回全国列表，筛选结果会挂在旧详情下面（面包屑还在）。
-  const enterFilter = (filter: ResultFilter | null, disorderId: string | null) => {
+  const enterFilter = (filter: ResultFilter | null, disorderIds: string[]) => {
     setSelectedDoctor(null)
     setSelectedHospitalId(null)
     setSelectedProvinceAdcode(null)
     setCluster(null)
     doctorReturnFocusRef.current = null
     setResultFilter(filter)
-    setActiveDisorder(disorderId)
+    setSelectedDisorders(disorderIds)
     setSidebarTab('hospitals')
     setSidebarOpen(true)
     runtimeRef.current?.country()
   }
 
-  // 选中病症只换内容区（省份列表收窄成有该病线索的省），不切成结果页；回全国只走「清除筛选」。
-  const selectDisorder = (id: string) => {
+  // 点一下选中、再点同一个取消；面板不收起，内容区只把省份列表收窄到命中集合。
+  const toggleDisorder = (id: string) => {
     if (!disorderGroups.some((group) => group.id === id)) return
+    const next = selectedSet.has(id) ? selectedDisorders.filter((item) => item !== id) : [...selectedDisorders, id]
     setSelectedDoctor(null)
     setSelectedHospitalId(null)
     setSelectedProvinceAdcode(null)
     setCluster(null)
     doctorReturnFocusRef.current = null
     setResultFilter(null)
-    setActiveDisorder(id)
+    setSelectedDisorders(next)
     setSidebarTab('hospitals')
     setSidebarOpen(true)
   }
@@ -449,7 +466,7 @@ export function MapApp(props: Props) {
             const hospitalIds = propsRef.current.hospitals
               .filter((hospital) => hospital.name === entry.hospitalName)
               .map((hospital) => hospital.id)
-            enterFilter({ label: entry.name, hint: `线索 ${entry.leadCount} 条`, hospitalIds }, null)
+            enterFilter({ label: entry.name, hint: `线索 ${entry.leadCount} 条`, hospitalIds }, [])
           },
         })
         if (doctors.length >= 2) break
@@ -480,7 +497,7 @@ export function MapApp(props: Props) {
         run: () => {
           // 搜索命中的病症点亮面板里对应那一行，内容区回到省份列表。
           const groupId = DISORDER_FILTER_GROUPS.find((item) => item.label === bucket.label)?.id
-          if (groupId) selectDisorder(groupId)
+          if (groupId) enterFilter(null, [groupId])
         },
       })
     }
@@ -501,7 +518,7 @@ export function MapApp(props: Props) {
           const hospitalIds = [...new Set(propsRef.current.reports
             .filter((report) => report.source_topics?.includes(topic) && report.hospital_id)
             .map((report) => report.hospital_id as string))]
-          enterFilter({ label: topic, hint: `${count} 条线索`, hospitalIds }, null)
+          enterFilter({ label: topic, hint: `${count} 条线索`, hospitalIds }, [])
         },
       })
     }
@@ -624,12 +641,9 @@ export function MapApp(props: Props) {
           onSelectHospital={openHospital}
           onSelectProvince={openProvince}
           disorderGroups={disorderGroups}
-          activeDisorder={activeDisorder}
-          onSelectDisorder={selectDisorder}
-          onClearFilters={() => {
-            setActiveDisorder(null)
-            setResultFilter(null)
-          }}
+          selectedDisorders={selectedDisorders}
+          onToggleDisorder={toggleDisorder}
+          activeLeads={activeLeads}
           resultFilter={resultFilter}
         />
       </Suspense>

@@ -121,9 +121,6 @@ svg { flex-shrink:0; }
 input::placeholder { color:#637770; }
 :is(input):focus-visible::placeholder { color:var(--tc-text-muted); }
 input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent); flex-shrink:0; }
-/* 面板最后一行：清除筛选，与病症行同宽同高，通栏 */
-.tc-filter-reset { display:flex; align-items:center; width:100%; min-height:44px; padding:0 16px; border:0; border-top:1px solid var(--tc-border); background:transparent; color:var(--tc-text-muted); font-size:14px; text-align:left; transition:background-color .16s ease; }
-@media (hover: hover) { .tc-filter-reset:hover { background:var(--tc-surface-muted); color:var(--tc-text); } }
 .tc-results-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; color:var(--tc-text-muted); font-size:13px; margin:0 0 16px; }
 .tc-results-heading strong { font-size:16px; color:var(--tc-text); font-variant-numeric:tabular-nums; }
 .tc-results-heading > span:last-child { font-size:11px; color:var(--tc-text-faint); }

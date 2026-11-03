@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
+import { useMemo } from 'react'
 import { FilterPanel } from '@/components/FilterPanel'
 import { hospitalRowMeta } from '@/lib/hospital-row'
 import type { Hospital, Province } from '@/lib/schema'
@@ -32,10 +32,11 @@ type Props = {
   onSelectProvince?: (adcode: string) => void
   /** 面板里的病症分组 */
   disorderGroups: DisorderGroup[]
-  activeDisorder: string | null
-  onSelectDisorder: (id: string) => void
-  /** 清空病症（与搜索话题）条件 */
-  onClearFilters: () => void
+  /** 已选病症（可多选，点同一行取消） */
+  selectedDisorders: string[]
+  onToggleDisorder: (id: string) => void
+  /** 选中病症时并集命中的线索条数（按条去重） */
+  activeLeads?: number | null
   resultFilter?: ResultFilter | null
 }
 
@@ -47,16 +48,22 @@ export function HospitalExplorer({
   onSelectHospital,
   onSelectProvince,
   disorderGroups,
-  activeDisorder,
-  onSelectDisorder,
-  onClearFilters,
+  selectedDisorders,
+  onToggleDisorder,
+  activeLeads = null,
   resultFilter = null,
 }: Props) {
-  const rootRef = useRef<HTMLDivElement>(null)
-  // 选完病症仍然是省份列表，只是收窄到有该病线索的省。
-  const matched = useMemo(
-    () => (activeDisorder ? new Set(disorderGroups.find((group) => group.id === activeDisorder)?.hospitalIds ?? []) : null),
-    [activeDisorder, disorderGroups])
+  const selectedSet = useMemo(() => new Set(selectedDisorders), [selectedDisorders])
+  // 选完病症仍然是省份列表，只是收窄到有命中线索的省；多选取并集。
+  const matched = useMemo(() => {
+    if (selectedDisorders.length === 0) return null
+    const ids = new Set<string>()
+    for (const group of disorderGroups) {
+      if (!selectedSet.has(group.id)) continue
+      for (const id of group.hospitalIds) ids.add(id)
+    }
+    return ids
+  }, [disorderGroups, selectedDisorders, selectedSet])
 
   const provinceRows = useMemo(() => {
     const matchedByProvince = new Map<string, number>()
@@ -74,12 +81,16 @@ export function HospitalExplorer({
   }, [hospitals, provinces, matched])
 
   // 搜索命中话题时仍按命中集合列机构；病症不换页面。
-  const searchList = !activeDisorder && resultFilter
+  const searchList = selectedDisorders.length === 0 && resultFilter
     ? hospitals.filter((hospital) => resultFilter.hospitalIds.includes(hospital.id))
     : null
 
-  const activeGroup = activeDisorder ? disorderGroups.find((group) => group.id === activeDisorder) : undefined
-  const conditionCount = activeGroup || searchList ? 1 : 0
+  const selectedLabels = disorderGroups.filter((group) => selectedSet.has(group.id)).map((group) => group.label)
+  const toggleLabel = selectedLabels.length === 0
+    ? '按病症筛选'
+    : selectedLabels.length === 1
+      ? selectedLabels[0]
+      : `${selectedLabels.length} 个病症`
 
   if (hospitals.length === 0) {
     return (
@@ -87,12 +98,6 @@ export function HospitalExplorer({
         <p>这家医院还没有地图坐标。</p>
       </div>
     )
-  }
-
-  const resetFilters = () => {
-    onClearFilters()
-    // 清除筛选按钮随条件消失，焦点不能掉到 body：交回入口。
-    requestAnimationFrame(() => rootRef.current?.querySelector<HTMLButtonElement>('.tc-filter-toggle')?.focus())
   }
 
   // 筛选结果与省份详情里的机构行同一套：名称一行、城市与条数一行，行间 1px 分隔线。
@@ -114,18 +119,12 @@ export function HospitalExplorer({
   )
 
   return (
-    <div ref={rootRef} className={variant === 'compact' ? 'tc-compact' : undefined}>
+    <div className={variant === 'compact' ? 'tc-compact' : undefined}>
       <div className="tc-results-heading" role="status" aria-live="polite">
-        {activeGroup ? (
-          <>
-            <span><strong>{provinceRows.reduce((sum, row) => sum + row.count, 0)}</strong> 家医院 · {activeGroup.leads} 条线索</span>
-            <span>{activeGroup.label}</span>
-          </>
+        {matched && activeLeads != null ? (
+          <span><strong>{provinceRows.reduce((sum, row) => sum + row.count, 0)}</strong> 家医院 · {activeLeads} 条线索</span>
         ) : searchList ? (
-          <>
-            <span><strong>{searchList.length}</strong> 家医院 · {resultFilter?.hint}</span>
-            <span>{resultFilter?.label}</span>
-          </>
+          <span><strong>{searchList.length}</strong> 家医院 · {resultFilter?.hint}</span>
         ) : (
           <>
             <span><strong>{hospitals.length}</strong> 家医院</span>
@@ -136,8 +135,8 @@ export function HospitalExplorer({
 
       <FilterPanel
         compact
-        label={activeGroup?.label ?? '按病症筛选'}
-        hint={conditionCount > 0 ? '已筛选' : '全部地区'}
+        label={toggleLabel}
+        hint={selectedLabels.length > 0 ? '已筛选' : '全部地区'}
       >
         <ul className="tc-disorder-options">
           {disorderGroups.map((group) => (
@@ -146,18 +145,15 @@ export function HospitalExplorer({
                 type="button"
                 className="tc-disorder-option"
                 data-disorder={group.id}
-                aria-pressed={activeDisorder === group.id}
-                onClick={() => onSelectDisorder(group.id)}
+                aria-pressed={selectedSet.has(group.id)}
+                onClick={() => onToggleDisorder(group.id)}
               >
                 <span className="tc-disorder-name">{group.label}</span>
-                {activeDisorder === group.id && <span className="tc-disorder-check" aria-hidden="true" />}
+                {selectedSet.has(group.id) && <span className="tc-disorder-check" aria-hidden="true" />}
               </button>
             </li>
           ))}
         </ul>
-        {conditionCount > 0 && (
-          <button type="button" className="tc-filter-reset" onClick={resetFilters}>清除筛选</button>
-        )}
       </FilterPanel>
 
       {searchList ? (
