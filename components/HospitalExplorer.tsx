@@ -1,16 +1,19 @@
 'use client'
 
-import { useId, useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
+import { FilterPanel } from '@/components/FilterPanel'
 import { hospitalRowMeta } from '@/lib/hospital-row'
 import type { Hospital, Province } from '@/lib/schema'
 
-/** 病症筛选卡片的一行：只有名称，家数不在筛选里出现（数量看结果表头） */
-export type DisorderOption = {
+/** 一个病症分组：筛选面板的一行，带上它命中的机构与线索数 */
+export type DisorderGroup = {
   id: string
   label: string
+  hospitalIds: string[]
+  leads: number
 }
 
-/** 全局搜索命中病症或来源话题时，机构栏目按命中集合列机构 */
+/** 全局搜索命中来源话题时，机构栏目按命中集合列机构 */
 export type ResultFilter = {
   label: string
   hint: string
@@ -27,10 +30,12 @@ type Props = {
   onSelectHospital?: (id: string) => void
   /** 省份列表行：进入该省概要（侧栏内） */
   onSelectProvince?: (adcode: string) => void
-  /** 常驻的病症筛选：三个可筛分组，按当前数据算家数 */
-  disorderOptions: DisorderOption[]
+  /** 面板里的病症分组 */
+  disorderGroups: DisorderGroup[]
   activeDisorder: string | null
   onSelectDisorder: (id: string) => void
+  /** 清空病症（与搜索话题）条件 */
+  onClearFilters: () => void
   resultFilter?: ResultFilter | null
 }
 
@@ -41,28 +46,40 @@ export function HospitalExplorer({
   variant = 'page',
   onSelectHospital,
   onSelectProvince,
-  disorderOptions,
+  disorderGroups,
   activeDisorder,
   onSelectDisorder,
+  onClearFilters,
   resultFilter = null,
 }: Props) {
+  const rootRef = useRef<HTMLDivElement>(null)
+  // 选完病症仍然是省份列表，只是收窄到有该病线索的省。
+  const matched = useMemo(
+    () => (activeDisorder ? new Set(disorderGroups.find((group) => group.id === activeDisorder)?.hospitalIds ?? []) : null),
+    [activeDisorder, disorderGroups])
+
   const provinceRows = useMemo(() => {
-    const counts = new Map<string, number>()
-    for (const hospital of hospitals) counts.set(hospital.adcode, (counts.get(hospital.adcode) ?? 0) + 1)
+    const matchedByProvince = new Map<string, number>()
+    for (const hospital of hospitals) {
+      if (matched && !matched.has(hospital.id)) continue
+      matchedByProvince.set(hospital.adcode, (matchedByProvince.get(hospital.adcode) ?? 0) + 1)
+    }
     return provinces
       .map((province) => ({
         adcode: province.adcode,
         name: province.short_name,
-        count: counts.get(province.adcode) ?? 0,
+        count: matchedByProvince.get(province.adcode) ?? 0,
       }))
       .filter((row) => row.count > 0)
-  }, [hospitals, provinces])
+  }, [hospitals, provinces, matched])
 
-  const matched = useMemo(() => {
-    if (!resultFilter) return null
-    const ids = new Set(resultFilter.hospitalIds)
-    return hospitals.filter((hospital) => ids.has(hospital.id))
-  }, [hospitals, resultFilter])
+  // 搜索命中话题时仍按命中集合列机构；病症不换页面。
+  const searchList = !activeDisorder && resultFilter
+    ? hospitals.filter((hospital) => resultFilter.hospitalIds.includes(hospital.id))
+    : null
+
+  const activeGroup = activeDisorder ? disorderGroups.find((group) => group.id === activeDisorder) : undefined
+  const conditionCount = activeGroup || searchList ? 1 : 0
 
   if (hospitals.length === 0) {
     return (
@@ -72,50 +89,16 @@ export function HospitalExplorer({
     )
   }
 
-  const [panelOpen, setPanelOpen] = useState(false)
-  const panelId = useId()
-  const activeLabel = disorderOptions.find((option) => option.id === activeDisorder)?.label
+  const resetFilters = () => {
+    onClearFilters()
+    // 清除筛选按钮随条件消失，焦点不能掉到 body：交回入口。
+    requestAnimationFrame(() => rootRef.current?.querySelector<HTMLButtonElement>('.tc-filter-toggle')?.focus())
+  }
 
-  // 下拉式：收起只占一行（选中后写病症名），展开最多三行，点一项即收起。
-  const filterCard = disorderOptions.length > 0 && (
-    <div className="tc-disorder-filter">
-      <button
-        type="button"
-        className="tc-disorder-toggle"
-        aria-expanded={panelOpen}
-        aria-controls={panelId}
-        onClick={() => setPanelOpen((open) => !open)}
-      >
-        <span className="tc-disorder-toggle-label">{activeLabel ?? '按病症筛选'}</span>
-      </button>
-      {panelOpen && (
-        <ul className="tc-disorder-options" id={panelId}>
-          {disorderOptions.map((option) => (
-            <li key={option.id}>
-              <button
-                type="button"
-                className="tc-disorder-option"
-                data-disorder={option.id}
-                aria-pressed={activeDisorder === option.id}
-                onClick={() => {
-                  onSelectDisorder(option.id)
-                  setPanelOpen(false)
-                }}
-              >
-                <span className="tc-disorder-name">{option.label}</span>
-                {activeDisorder === option.id && <span className="tc-disorder-check" aria-hidden="true" />}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  )
-
-  // 筛选结果与省份详情里的机构行同一套：名称一行、条数一行，行间 1px 分隔线。
-  const rows = (list: Hospital[]) => (
+  // 筛选结果与省份详情里的机构行同一套：名称一行、城市与条数一行，行间 1px 分隔线。
+  const rows = (items: Hospital[]) => (
     <ul className="tc-hospital-list">
-      {list.map((hospital) => (
+      {items.map((hospital) => (
         <li key={hospital.id}>
           <button
             type="button"
@@ -130,40 +113,71 @@ export function HospitalExplorer({
     </ul>
   )
 
-  if (resultFilter && matched) {
-    return (
-      <div className={variant === 'compact' ? 'tc-compact' : undefined}>
-        <div className="tc-results-heading" role="status" aria-live="polite">
-          <span><strong>{matched.length}</strong> 家机构 · {resultFilter.hint}</span>
-          <span>{resultFilter.label}</span>
-        </div>
-        {filterCard}
-        {matched.length === 0 ? (
+  return (
+    <div ref={rootRef} className={variant === 'compact' ? 'tc-compact' : undefined}>
+      <div className="tc-results-heading" role="status" aria-live="polite">
+        {activeGroup ? (
+          <>
+            <span><strong>{provinceRows.reduce((sum, row) => sum + row.count, 0)}</strong> 家机构 · {activeGroup.leads} 条线索</span>
+            <span>{activeGroup.label}</span>
+          </>
+        ) : searchList ? (
+          <>
+            <span><strong>{searchList.length}</strong> 家机构 · {resultFilter?.hint}</span>
+            <span>{resultFilter?.label}</span>
+          </>
+        ) : (
+          <>
+            <span><strong>{hospitals.length}</strong> 家机构</span>
+            <span>全国收录</span>
+          </>
+        )}
+      </div>
+
+      <FilterPanel
+        compact
+        label={activeGroup?.label ?? '按病症筛选'}
+        hint={conditionCount > 0 ? '已筛选' : '全部地区'}
+      >
+        <ul className="tc-disorder-options">
+          {disorderGroups.map((group) => (
+            <li key={group.id}>
+              <button
+                type="button"
+                className="tc-disorder-option"
+                data-disorder={group.id}
+                aria-pressed={activeDisorder === group.id}
+                onClick={() => onSelectDisorder(group.id)}
+              >
+                <span className="tc-disorder-name">{group.label}</span>
+                {activeDisorder === group.id && <span className="tc-disorder-check" aria-hidden="true" />}
+              </button>
+            </li>
+          ))}
+        </ul>
+        {conditionCount > 0 && (
+          <button type="button" className="tc-filter-reset" onClick={resetFilters}>清除筛选</button>
+        )}
+      </FilterPanel>
+
+      {searchList ? (
+        searchList.length === 0 ? (
           <div className="tc-empty">
             <p>没有符合这个条件的机构记录。</p>
           </div>
-        ) : rows(matched)}
-      </div>
-    )
-  }
-
-  return (
-    <div className={variant === 'compact' ? 'tc-compact' : undefined}>
-      <div className="tc-results-heading" role="status" aria-live="polite">
-        <span><strong>{hospitals.length}</strong> 家机构</span>
-        <span>全国收录</span>
-      </div>
-      {filterCard}
-      <ul className="tc-province-list">
-        {provinceRows.map((row) => (
-          <li key={row.adcode}>
-            <button type="button" className="tc-province-row" onClick={() => onSelectProvince?.(row.adcode)}>
-              <span className="tc-province-name">{row.name}</span>
-              <span className="tc-province-count">{row.count} 家</span>
-            </button>
-          </li>
-        ))}
-      </ul>
+        ) : rows(searchList)
+      ) : (
+        <ul className="tc-province-list">
+          {provinceRows.map((row) => (
+            <li key={row.adcode}>
+              <button type="button" className="tc-province-row" onClick={() => onSelectProvince?.(row.adcode)}>
+                <span className="tc-province-name">{row.name}</span>
+                <span className="tc-province-count">{row.count} 家</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

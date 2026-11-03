@@ -12,7 +12,7 @@ import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { sidebarCameraFrame } from '@/lib/map-sidebar'
 import type { Disorder, Doctor, Hospital, Province, Report } from '@/lib/schema'
-import { HospitalExplorer, type ResultFilter, type DisorderOption } from '@/components/HospitalExplorer'
+import { HospitalExplorer, type DisorderGroup, type ResultFilter } from '@/components/HospitalExplorer'
 import { Sidebar, type SidebarTabId } from './Sidebar'
 import { HospitalDetail } from './HospitalDetail'
 import { DoctorDetail, type DoctorDisorderStat } from './DoctorDetail'
@@ -339,9 +339,20 @@ export function MapApp(props: Props) {
     }).filter((option) => option.leads > 0)
   }, [props.reports])
 
-  const disorderOptions = useMemo<DisorderOption[]>(
-    () => disorderIndex.map((option) => ({ id: option.id, label: option.label })),
+  const disorderGroups = useMemo<DisorderGroup[]>(
+    () => disorderIndex.map((group) => ({ id: group.id, label: group.label, hospitalIds: group.hospitalIds, leads: group.leads })),
     [disorderIndex])
+
+  // 选中的病症：省详情只列命中的机构，条数也只算该病的线索。
+  const activeGroup = activeDisorder ? disorderGroups.find((group) => group.id === activeDisorder) : undefined
+  const activeHospitalIds = useMemo(() => (activeGroup ? new Set(activeGroup.hospitalIds) : null), [activeGroup])
+  const activeDisorderIds = useMemo(() => {
+    const ids = activeGroup ? DISORDER_FILTER_GROUPS.find((group) => group.id === activeGroup.id)?.ids : undefined
+    return ids ? new Set<string>(ids) : null
+  }, [activeGroup])
+  const leadCountFor = (hospitalId: string) => activeDisorderIds
+    ? props.reports.filter((report) => report.hospital_id === hospitalId && report.disorders.some((id) => activeDisorderIds.has(id))).length
+    : props.reportCounts[hospitalId] ?? 0
 
   // 任何进入筛选的入口都走这里：不先回全国列表，筛选结果会挂在旧详情下面（面包屑还在）。
   const enterFilter = (filter: ResultFilter | null, disorderId: string | null) => {
@@ -357,15 +368,18 @@ export function MapApp(props: Props) {
     runtimeRef.current?.country()
   }
 
-  // 取消筛选就是再点一次同一行。
-  const toggleDisorder = (id: string) => {
-    if (activeDisorder === id) {
-      enterFilter(null, null)
-      return
-    }
-    const option = disorderIndex.find((item) => item.id === id)
-    if (!option) return
-    enterFilter({ label: option.label, hint: `${option.leads} 条线索`, hospitalIds: option.hospitalIds }, id)
+  // 选中病症只换内容区（省份列表收窄成有该病线索的省），不切成结果页；回全国只走「清除筛选」。
+  const selectDisorder = (id: string) => {
+    if (!disorderGroups.some((group) => group.id === id)) return
+    setSelectedDoctor(null)
+    setSelectedHospitalId(null)
+    setSelectedProvinceAdcode(null)
+    setCluster(null)
+    doctorReturnFocusRef.current = null
+    setResultFilter(null)
+    setActiveDisorder(id)
+    setSidebarTab('hospitals')
+    setSidebarOpen(true)
   }
 
   // Search keeps the same region, institution, doctor and disorder entry points.
@@ -454,12 +468,9 @@ export function MapApp(props: Props) {
         label: bucket.label,
         sub: `${hits.length} 条线索`,
         run: () => {
-          const hospitalIds = [...new Set(hits
-            .filter((report) => report.hospital_id)
-            .map((report) => report.hospital_id as string))]
-          // 搜索命中的病症也点亮常驻卡片上对应的那一行。
-          const groupId = DISORDER_FILTER_GROUPS.find((item) => item.label === bucket.label)?.id ?? null
-          enterFilter({ label: bucket.label, hint: `${hits.length} 条线索`, hospitalIds }, groupId)
+          // 搜索命中的病症点亮面板里对应那一行，内容区回到省份列表。
+          const groupId = DISORDER_FILTER_GROUPS.find((item) => item.label === bucket.label)?.id
+          if (groupId) selectDisorder(groupId)
         },
       })
     }
@@ -574,7 +585,9 @@ export function MapApp(props: Props) {
     <ProvinceDetail
       provinceName={selectedProvince.name}
       stat={props.provinceStats[selectedProvince.adcode]}
-      hospitals={props.mapHospitals.filter((item) => item.adcode === selectedProvince.adcode)}
+      hospitals={props.mapHospitals
+        .filter((item) => item.adcode === selectedProvince.adcode && (!activeHospitalIds || activeHospitalIds.has(item.id)))
+        .map((item) => (activeHospitalIds ? { ...item, leads: leadCountFor(item.id) } : item))}
       onBackToCountry={backToCountryFromDetail}
       onZoomToProvince={() => selectProvince(selectedProvince.adcode)}
       onSelectHospital={openHospital}
@@ -600,9 +613,13 @@ export function MapApp(props: Props) {
           variant="compact"
           onSelectHospital={openHospital}
           onSelectProvince={openProvince}
-          disorderOptions={disorderOptions}
+          disorderGroups={disorderGroups}
           activeDisorder={activeDisorder}
-          onSelectDisorder={toggleDisorder}
+          onSelectDisorder={selectDisorder}
+          onClearFilters={() => {
+            setActiveDisorder(null)
+            setResultFilter(null)
+          }}
           resultFilter={resultFilter}
         />
       </Suspense>

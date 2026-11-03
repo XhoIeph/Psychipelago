@@ -105,29 +105,25 @@ svg { flex-shrink:0; }
 .tc-plainlist li { margin:4px 0; }
 .tc-plainlist button { text-align:left; min-height:44px; }
 
-/* Filters: progressive disclosure with persistent result counts */
-.tc-filter-panel { margin-bottom:24px; border:1px solid var(--tc-border); border-radius:var(--tc-radius); background:var(--tc-surface); }
-.tc-filter-toggle { width:100%; min-height:48px; display:flex; align-items:center; gap:8px; border:0; border-radius:inherit; background:transparent; color:var(--tc-text); text-align:left; padding:12px 16px; font-size:14px; }
-.tc-filter-toggle > span:first-of-type { flex:1; font-weight:600; }
-.tc-filter-toggle b { display:inline-grid; place-items:center; margin-left:8px; width:20px; height:20px; border-radius:50%; background:var(--tc-accent); color:#fff; font-size:11px; }
+/* Filters: 机构栏只有一个入口，展开是病症三行，收起时把已选病症写进入口 */
+.tc-filter-panel { margin-bottom:16px; border:1px solid var(--tc-border); border-radius:var(--tc-radius); background:var(--tc-surface); box-shadow:0 1px 2px rgb(0 0 0 / 0.05); }
+.tc-filter-toggle { width:100%; min-height:48px; display:flex; align-items:center; gap:8px; border:0; border-radius:inherit; background:transparent; color:var(--tc-text); text-align:left; padding:12px 16px; font-size:15px; }
+.tc-filter-toggle > span:first-of-type { flex:1; font-weight:500; }
 .tc-filter-hint { color:var(--tc-text-faint); font-size:12px; }
-.tc-filter-toggle svg { color:var(--tc-accent); transition:transform .18s; }
+.tc-filter-toggle svg { flex:none; color:var(--tc-text-muted); transition:transform .18s; }
 .tc-chevron--open { transform:rotate(180deg); }
 .tc-filter-content { display:grid; grid-template-rows:0fr; visibility:hidden; transition:grid-template-rows .2s ease,visibility 0s linear .2s; }
 .tc-filter-content--open { grid-template-rows:1fr; visibility:visible; transition:grid-template-rows .2s ease,visibility 0s; }
-.tc-filter-content > div { min-height:0; overflow:hidden; }
-.tc-filters { display:flex; flex-wrap:wrap; align-items:end; gap:16px; }
-.tc-filter-panel .tc-filters { border:0; border-radius:0 0 var(--tc-radius) var(--tc-radius); margin:0; border-top:1px solid var(--tc-border); padding:20px; background:#f9fbfa; }
+.tc-filter-content > div { min-height:0; overflow:hidden; border-top:1px solid var(--tc-border); border-radius:0 0 var(--tc-radius) var(--tc-radius); background:#f9fbfa; }
 .tc-field { display:flex; flex:1; flex-direction:column; gap:8px; min-width:140px; color:var(--tc-text-muted); font-size:13px; }
 .tc-field:has(input) { flex-grow:2; }
 .tc-field input,.tc-field select { width:100%; min-width:0; border:1px solid var(--tc-border-strong); border-radius:var(--tc-control-radius); background:#fff; color:var(--tc-text); padding:9px 12px; min-height:44px; font-size:16px; }
 input::placeholder { color:#637770; }
 :is(input):focus-visible::placeholder { color:var(--tc-text-muted); }
 input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent); flex-shrink:0; }
-.tc-filters > .tc-row { min-height:44px; }
-.tc-filters--compact { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-.tc-filters--compact .tc-field { min-width:0; }
-.tc-filters--compact .tc-field:has(input),.tc-filters--compact > .tc-row,.tc-filters--compact .tc-filter-reset { grid-column:1 / -1; }
+/* 面板最后一行：清除筛选，与病症行同宽同高，通栏 */
+.tc-filter-reset { display:flex; align-items:center; width:100%; min-height:44px; padding:0 16px; border:0; border-top:1px solid var(--tc-border); background:transparent; color:var(--tc-text-muted); font-size:14px; text-align:left; transition:background-color .16s ease; }
+@media (hover: hover) { .tc-filter-reset:hover { background:var(--tc-surface-muted); color:var(--tc-text); } }
 .tc-results-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; color:var(--tc-text-muted); font-size:13px; margin:0 0 16px; }
 .tc-results-heading strong { font-size:16px; color:var(--tc-text); font-variant-numeric:tabular-nums; }
 .tc-results-heading > span:last-child { font-size:11px; color:var(--tc-text-faint); }
@@ -185,12 +181,7 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 @media (hover: hover) { .tc-hospital-row:hover { background:var(--tc-surface-muted); } }
 /* 机构面板顶部的病症筛选：收起只有一行，展开是下挂面板（复用旧下拉的内边距与下圆角）。
    行 44px、名称 15/500、左对齐；选中整行铺 --tc-accent-soft，不加粗、不加边框、不加左边色条。 */
-.tc-disorder-filter { margin:0 0 16px; border:1px solid var(--tc-border); border-radius:var(--tc-radius); background:var(--tc-surface); box-shadow:0 1px 2px rgb(0 0 0 / 0.05); }
-.tc-disorder-toggle { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-height:48px; padding:0 16px; border:0; border-radius:inherit; background:transparent; color:var(--tc-text); text-align:left; font-size:15px; font-weight:500; }
-.tc-disorder-toggle::after { content:''; flex:none; width:8px; height:8px; margin-right:3px; border-right:1.5px solid var(--tc-text-muted); border-bottom:1.5px solid var(--tc-text-muted); transform:rotate(45deg); transition:transform .18s ease; }
-.tc-disorder-toggle[aria-expanded='true']::after { transform:rotate(-135deg); }
-.tc-disorder-toggle-label { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.tc-disorder-options { list-style:none; margin:0; padding:0; border-top:1px solid var(--tc-border); border-radius:0 0 var(--tc-radius) var(--tc-radius); overflow:hidden; }
+.tc-disorder-options { list-style:none; margin:0; padding:0; }
 .tc-disorder-options li { position:relative; }
 .tc-disorder-options li + li::before { content:''; position:absolute; left:16px; right:16px; top:0; height:1px; background:var(--tc-border); }
 .tc-disorder-option { display:flex; align-items:center; width:100%; min-height:44px; padding:0 16px; border:0; background:transparent; color:var(--tc-text); text-align:left; transition:background-color .16s ease; }

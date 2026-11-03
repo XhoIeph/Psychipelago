@@ -3,10 +3,14 @@
 import { useId, useState, type ReactNode } from 'react'
 import { ChevronDown, SlidersHorizontal } from 'lucide-react'
 
-/** 两种列表共用的筛选入口。窄面板默认收起，已选条件仍明确显示。 */
-export function FilterPanel({ compact, count, children }: {
+/** 两种列表共用的筛选入口。窄面板默认收起，已选条件写进入口文字。 */
+export function FilterPanel({ compact, label, hint, count = 0, children }: {
   compact: boolean
-  count: number
+  /** 入口文字：没有条件时是默认文案，有条件时是当前选中的条件 */
+  label: string
+  /** 右侧状态字：「全部地区」/「已筛选」 */
+  hint?: string
+  count?: number
   children: ReactNode
 }) {
   const [open, setOpen] = useState(!compact)
@@ -15,8 +19,8 @@ export function FilterPanel({ compact, count, children }: {
     <section className="tc-filter-panel">
       <button className="tc-filter-toggle" type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>
         <SlidersHorizontal size={16} aria-hidden="true" />
-        <span>筛选条件{count > 0 && <b>{count}</b>}</span>
-        <span className="tc-filter-hint">{count ? '已筛选' : '全部地区'}</span>
+        <span>{label}{count > 0 && <b>{count}</b>}</span>
+        <span className="tc-filter-hint">{hint ?? (count ? '已筛选' : '全部地区')}</span>
         <ChevronDown size={16} aria-hidden="true" className={open ? 'tc-chevron--open' : ''} />
       </button>
       <div id={id} className={`tc-filter-content${open ? ' tc-filter-content--open' : ''}`} inert={!open}>
