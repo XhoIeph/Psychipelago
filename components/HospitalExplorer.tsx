@@ -108,6 +108,7 @@ export function HospitalExplorer({
           <button
             type="button"
             className="tc-hospital-row"
+            data-hospital-id={hospital.id}
             onClick={() => onSelectHospital?.(hospital.id)}
           >
             <span className="tc-hospital-row-name">{hospital.name}</span>

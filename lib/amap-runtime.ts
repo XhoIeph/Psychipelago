@@ -188,6 +188,13 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
     else camera.move(frame.center, frame.zoom)
   }
   container.tabIndex = 0
+  // 高德在画布容器里注入的 iframe 与 .amap-maps 自带 tabindex，键盘会在两个看不见的
+  // 元素上停两拍。画布本身可聚焦，这两个替身一律移出 Tab 序。
+  const muffleMapInternals = () => {
+    container.querySelectorAll<HTMLElement>('iframe, .amap-maps').forEach((node) => node.setAttribute('tabindex', '-1'))
+  }
+  muffleMapInternals()
+  map.on('complete', muffleMapInternals)
   const wheel = attachMapWheelZoom(camera)
   function onInput(event: Event) { interrupt(); if (event.type !== 'wheel') wheel.cancel() }
   function pinToOrigin() { container.scrollTop = 0; container.scrollLeft = 0 }

@@ -63,6 +63,10 @@ export function MapApp(props: Props) {
   propsRef.current = props
   const sidebarRef = useRef<HTMLElement | null>(null)
   const burgerRef = useRef<HTMLButtonElement | null>(null)
+  // 手机端抽屉的入口在底部条上；关闭抽屉要把焦点还给它，而不是还给 display:none 的汉堡。
+  // 入口按钮在抽屉打开时被卸载，所以只能等收起后的下一帧再还焦点。
+  const mobileBrowseRef = useRef<HTMLButtonElement | null>(null)
+  const restoreDrawerFocusRef = useRef(false)
   const projectRef = useRef<HTMLDivElement | null>(null)
   const aboutButtonRef = useRef<HTMLButtonElement | null>(null)
   const desktopRef = useRef(false)
@@ -91,9 +95,22 @@ export function MapApp(props: Props) {
   const doctorReturnFocusRef = useRef<string | null>(null)
   // 返回省份列表时要还原焦点的那个省，从省行进入时记下。
   const provinceReturnFocusRef = useRef<string | null>(null)
+  // 从省详情的医院行进入医院后，返回时把焦点还给那一行。
+  const hospitalReturnFocusRef = useRef<string | null>(null)
 
   const selectedRef = useRef<string | null>(null)
   selectedRef.current = selectedHospitalId
+
+  // 抽屉收起后才把焦点还给入口：移动端入口按钮在面板打开时不渲染。
+  useEffect(() => {
+    if (sidebarOpen || !restoreDrawerFocusRef.current) return
+    restoreDrawerFocusRef.current = false
+    const frame = requestAnimationFrame(() => {
+      if (desktopRef.current) burgerRef.current?.focus()
+      else mobileBrowseRef.current?.focus()
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [sidebarOpen])
 
   useEffect(() => {
     runtimeRef.current?.syncSelection()
@@ -102,6 +119,13 @@ export function MapApp(props: Props) {
     if (!selectedHospitalId && !selectedProvinceAdcode && !selectedDoctor && returnProvince) {
       provinceReturnFocusRef.current = null
       sidebarRef.current?.querySelector<HTMLButtonElement>(`[data-province="${CSS.escape(returnProvince)}"]`)?.focus({ preventScroll: true })
+      return
+    }
+    // 从医院详情返回省详情：焦点回到刚才点开的那家医院，不掉到「返回 全国」。
+    const returnHospital = hospitalReturnFocusRef.current
+    if (!selectedHospitalId && selectedProvinceAdcode && returnHospital) {
+      hospitalReturnFocusRef.current = null
+      sidebarRef.current?.querySelector<HTMLButtonElement>(`[data-hospital-id="${CSS.escape(returnHospital)}"]`)?.focus({ preventScroll: true })
       return
     }
     if (focusDetailRef.current) {
@@ -213,7 +237,9 @@ export function MapApp(props: Props) {
     const focusFrame = requestAnimationFrame(() => (activeTab ?? fallback)?.focus({ preventScroll: true }))
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Tab') {
-        const controls = Array.from(panel?.parentElement?.querySelectorAll<HTMLElement>(
+        // 焦点池只取侧栏本身：顶栏（搜索框、关于项目）在抽屉之上但不在面板里，
+        // 池子放宽到根节点会让 Tab 走到遮罩外面的控件上。
+        const controls = Array.from(panel?.querySelectorAll<HTMLElement>(
           'button:not([disabled]), a[href], input, select, summary, [tabindex="0"]',
         ) ?? []).filter((node) => node.getClientRects().length > 0 && !node.closest('[inert]') && node.tabIndex >= 0)
         const first = controls[0]
@@ -224,8 +250,8 @@ export function MapApp(props: Props) {
       }
       if (event.key !== 'Escape') return
       event.stopPropagation()
+      restoreDrawerFocusRef.current = true
       setSidebarOpen(false)
-      burgerRef.current?.focus()
     }
     document.addEventListener('keydown', onKey)
     return () => {
@@ -259,11 +285,13 @@ export function MapApp(props: Props) {
   // Sidebar lists move focus into the detail they open; map clicks keep their own focus.
   const openProvince = (adcode: string) => {
     provinceReturnFocusRef.current = adcode
+    hospitalReturnFocusRef.current = null
     focusDetailRef.current = true
     selectProvince(adcode)
   }
 
   const openHospital = (id: string) => {
+    hospitalReturnFocusRef.current = id
     focusDetailRef.current = true
     selectHospital(id)
   }
@@ -758,7 +786,7 @@ export function MapApp(props: Props) {
         </div>
       </div>
 
-      <div className="tc-mapapp-backdrop" aria-hidden="true" onClick={() => { setSidebarOpen(false); burgerRef.current?.focus() }} />
+      <div className="tc-mapapp-backdrop" aria-hidden="true" onClick={() => { restoreDrawerFocusRef.current = true; setSidebarOpen(false) }} />
 
       <Sidebar
         id="tc-map-sidebar"
@@ -770,7 +798,7 @@ export function MapApp(props: Props) {
         detailDepth={detailState.depth}
         activeTab={sidebarTab}
         onTabChange={setSidebarTab}
-        onClose={() => { setSidebarOpen(false); if (!desktopRef.current) burgerRef.current?.focus() }}
+        onClose={() => { restoreDrawerFocusRef.current = true; setSidebarOpen(false) }}
       />
 
       <div className="tc-mapapp-legend">
@@ -788,7 +816,7 @@ export function MapApp(props: Props) {
           <span className="tc-mapapp-ctl-label">回到全国</span>
         </button>
       </div>
-      {!sidebarOpen && <button type="button" className="tc-mobile-browse" onClick={() => setSidebarOpen(true)} aria-controls="tc-map-sidebar">
+      {!sidebarOpen && <button ref={mobileBrowseRef} type="button" className="tc-mobile-browse" onClick={() => setSidebarOpen(true)} aria-controls="tc-map-sidebar">
         <ListFilter size={18} aria-hidden="true" />浏览医院与线索
       </button>}
     </div>
