@@ -2792,18 +2792,22 @@
     {
       "id": "a11y.close-during-anim-focus",
       "type": "focusOn",
-      "desc": "390：抽屉入场动画还没走完就点关闭（force，不等稳定），关闭的同轮次焦点回入口",
+      "desc": "390：抽屉入场过渡还在走的时候（class 已翻成打开、透明度刚起步）用 DOM 派发点关闭，关闭的同轮次焦点回入口",
       "selector": ".tc-mobile-browse",
       "at": 390,
       "precondition": [
         {
           "action": "click",
-          "selector": ".tc-mobile-browse"
+          "selector": ".tc-mobile-browse",
+          "unlessVisible": ".tc-province-row"
         },
         {
-          "action": "click",
-          "selector": ".tc-sidebar-close",
-          "force": true
+          "action": "wait",
+          "selector": ".tc-sidebar:not(.tc-sidebar--closed)"
+        },
+        {
+          "action": "clickjs",
+          "selector": ".tc-sidebar-close"
         }
       ]
     },
@@ -2957,14 +2961,15 @@
         },
         {
           "action": "wait",
-          "selector": ".tc-map-node"
+          "selector": ".tc-map-node",
+          "envGate": "amap"
         }
       ]
     },
     {
       "id": "a11y.no-marker-tabbable-1440",
       "type": "count",
-      "desc": "1440：没有任何地图标记带 tabindex=\"0\"（配合上一条：上一条锚存在性，这条查广覆盖，省视图 51 个标记）",
+      "desc": "1440：没有任何地图标记带 tabindex=\"0\"（守卫组件不存在时记不适用，不把整批缺席数成 0）",
       "selector": ".tc-mapapp-canvas button.tc-map-node[tabindex=\"0\"]",
       "expect": 0,
       "at": 1440,
@@ -2982,7 +2987,8 @@
           "action": "wait",
           "selector": ".tc-detail"
         }
-      ]
+      ],
+      "requireSelector": ".tc-mapapp-canvas button.tc-map-node"
     }
   ],
   "appliesTo": [
