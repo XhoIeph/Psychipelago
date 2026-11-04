@@ -819,8 +819,8 @@ async function applyPrecondition(page, steps) {
         // remember 必须在点击前读：点了以后这个元素可能整块消失（例如线索行跳进详情）。
         if (action === 'click' && step.remember) memo[step.remember] = (await el.textContent() || '').replace(/\s+/g, ' ').trim();
         if (action === 'fill') await el.fill(String(step.value == null ? '' : step.value));
-        // force：不等元素稳定就点。测「动画进行中关闭抽屉」这类要用它，否则 playright 会
-        // 等过渡结束再点，动画那一瞬间根本测不到。
+        // force：跳过稳定性检查直接点，但仍受视口与可点区域约束——元素在视口外照样点不到。
+        // 要测「过渡还在跑的时候点关闭」用 clickjs（在页面里直接派发），它才不等稳定、不看视口。
         else if (step.force) await el.click({ force: true });
         else await el.click();
       }
