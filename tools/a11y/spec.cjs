@@ -109,6 +109,15 @@ function runChecks(checks) {
   for (const c of checks) {
     const r = { id: c.id || c.type + ':' + (c.selector || c.container || ''), type: c.type, desc: c.desc || '', pass: null, note: '', evidence: [] };
 
+    // 通用存在性守卫：requireSelector 不匹配时这条记不适用——既不记假绿，也不记红。
+    // 用于「count 期望 0」这类断言：组件整批缺席时数到 0 毫无意义。
+    if (c.requireSelector && !document.querySelector(c.requireSelector)) {
+      r.pass = null;
+      r.note = '守卫组件不存在，断言不适用：' + c.requireSelector;
+      out.push(r);
+      continue;
+    }
+
     if (c.type === 'computed') {
       // 计算样式跟尺寸无关：body 在这种全固定布局里高度为 0，但 fontSize/lineHeight 仍然有意义。
       // 所以优先取可见元素，没有可见的退到第一个匹配（不因为尺寸为 0 就判失败）。
@@ -281,7 +290,11 @@ function runChecks(checks) {
         return rc.width > 0 && rc.height > 0;
       });
       const flat = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
-      if (!els.length) { r.pass = false; r.note = '选择器没有可见元素：' + c.selector; out.push(r); continue; }
+      if (!els.length) {
+        r.pass = c.skipIfMissing ? null : false;
+        r.note = (c.skipIfMissing ? '本页没有该组件，断言不适用：' : '选择器没有可见元素：') + c.selector;
+        out.push(r); continue;
+      }
       const actual = flat(els[0].getAttribute(c.attr));
       const miss = [];
       if (c.contains && !actual.includes(c.contains)) miss.push(`应含「${c.contains}」`);
@@ -706,7 +719,7 @@ async function runSpecial(page, checks) {
 
 // 断言的「前置状态」：写在断言文件的 precondition 里，只允许三种动作。
 // 直接操作页面（不是参数化的全局开关），这样同一份文件就能说清「这条要在什么状态下量」。
-const PRECONDITION_ACTIONS = new Set(['fill', 'click', 'wait', 'select', 'key', 'press', 'focus', 'expectfocus']);
+const PRECONDITION_ACTIONS = new Set(['fill', 'click', 'clickjs', 'wait', 'select', 'key', 'press', 'focus', 'expectfocus']);
 
 async function applyPrecondition(page, steps) {
   const memo = {};
@@ -765,6 +778,19 @@ async function applyPrecondition(page, steps) {
         }
         continue;
       }
+      if (action === 'clickjs') {
+        // 在页面里直接派发 click：不等动画稳定、不要求元素在视口内。
+        // 用来测「过渡还在走的时候点关闭」，force:true 仍会等元素进入可点位置，测不到真实时序。
+        const sel = stepSelector || step.text;
+        const ok = await page.evaluate((q) => {
+          const el = document.querySelector(q);
+          if (!el) return false;
+          el.click();
+          return true;
+        }, sel);
+        if (!ok) return { ok: false, note: `clickjs 找不到元素：${sel}`, memo };
+        continue;
+      }
       if (action === 'select') {
         const value = step.value === undefined ? '' : String(step.value);
         await page.locator(stepSelector).first().selectOption(value, { timeout });
@@ -802,7 +828,8 @@ async function applyPrecondition(page, steps) {
       await page.waitForTimeout(step.settle || 350);
     } catch (e) {
       const why = String((e && e.message) || e).split('\n')[0].slice(0, 160);
-      return { ok: false, note: `前置没跑成（${action} ${stepSelector || step.text}）：${why}`, memo };
+      const gate = step.envGate ? String(step.envGate) : '';
+            return { ok: false, gate, note: `前置没跑成（${action} ${stepSelector || step.text}）：${why}`, memo };
     }
   }
   return { ok: true, note: '', memo };
@@ -879,10 +906,20 @@ async function applyPrecondition(page, steps) {
       if (steps.length) {
         pre = await applyPrecondition(page, steps);
         if (!pre.ok) {
-          // 前置失败必须显形，不能退化成「不适用」——那等于让断言静默失效。
+          // 前置失败必须显形：默认判红，不悄悄退化成「不适用」。
+          // 唯一例外：失败的那一步显式声明了 envGate（能力名，如 amap）。
+          // 那种失败是「这台机器没有这个运行时」，记不适用；其余失败照旧红。
           for (const i of idx) {
             const c = applicable[i];
-            results[i] = { id: c.id || c.type + ':' + (c.selector || ''), type: c.type, desc: c.desc || '', pass: false, note: pre.note, evidence: [] };
+            const gated = Boolean(pre.gate);
+            results[i] = {
+              id: c.id || c.type + ':' + (c.selector || ''),
+              type: c.type,
+              desc: c.desc || '',
+              pass: gated ? null : false,
+              note: gated ? ('运行时未就绪（envGate=' + pre.gate + '）：' + pre.note) : pre.note,
+              evidence: [],
+            };
           }
           continue;
         }
