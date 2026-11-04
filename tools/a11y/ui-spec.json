@@ -2685,11 +2685,13 @@
       "at": 390
     },
     {
-      "id": "a11y.no-marker-tabstops",
-      "type": "count",
-      "desc": "地图上的医院点与聚合点不进 Tab 序（省视图 51 个按钮，多数在视口外；内容与侧栏列表重复）",
-      "selector": ".tc-mapapp-canvas button.tc-map-node:not([tabindex=\"-1\"])",
-      "expect": 0,
+      "id": "a11y.marker-tabindex-1440",
+      "type": "attr",
+      "desc": "1440：省视图的地图标记存在且 tabindex=-1（标记不存在＝没有地图运行时，记不适用，不记假绿）",
+      "selector": ".tc-mapapp-canvas button.tc-map-node",
+      "attr": "tabindex",
+      "equals": "-1",
+      "skipIfMissing": true,
       "at": 1440,
       "precondition": [
         {
@@ -2768,9 +2770,8 @@
     {
       "id": "a11y.escape-returns-focus",
       "type": "focusOn",
-      "desc": "390：Escape 关抽屉后焦点回到手机底部条入口（抽屉入场 200ms，等焦点用轮询不用固定 sleep）",
+      "desc": "390：Escape 关抽屉后，关闭的同轮次焦点就回到手机底部条入口（判据是「第一次读 activeElement 就是入口」，不写毫秒阈值）",
       "selector": ".tc-mobile-browse",
-      "pollMs": 250,
       "at": 390,
       "precondition": [
         {
@@ -2791,9 +2792,8 @@
     {
       "id": "a11y.close-during-anim-focus",
       "type": "focusOn",
-      "desc": "390：抽屉入场动画进行中就点关闭，焦点仍要回到底部条（force 点击，不等动画结束）",
+      "desc": "390：抽屉入场动画还没走完就点关闭（force，不等稳定），关闭的同轮次焦点回入口",
       "selector": ".tc-mobile-browse",
-      "pollMs": 250,
       "at": 390,
       "precondition": [
         {
@@ -2885,6 +2885,104 @@
       },
       "skipIfMissing": true,
       "at": 1440
+    },
+    {
+      "id": "a11y.close-returns-focus",
+      "type": "focusOn",
+      "desc": "390：点关闭键关抽屉后，同轮次焦点回入口——判据是关闭后第一次读 activeElement 就是入口，不写毫秒",
+      "selector": ".tc-mobile-browse",
+      "at": 390,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mobile-browse",
+          "unlessVisible": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-sidebar-close"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-sidebar-close"
+        }
+      ]
+    },
+    {
+      "id": "a11y.tab-stays-within-sidebar",
+      "type": "tabStaysWithin",
+      "desc": "390：抽屉打开时连按 40 次 Tab，焦点不越出侧栏（模态焦点陷阱）",
+      "selector": ".tc-sidebar",
+      "presses": 40,
+      "at": 390,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mobile-browse",
+          "unlessVisible": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-sidebar-close"
+        },
+        {
+          "action": "focus",
+          "selector": ".tc-sidebar-close"
+        }
+      ]
+    },
+    {
+      "id": "a11y.marker-tabindex-390",
+      "type": "attr",
+      "desc": "390：进北京省视图后地图标记存在且 tabindex=-1（标记不存在＝没有地图运行时，记不适用，不记假绿）",
+      "selector": ".tc-mapapp-canvas button.tc-map-node",
+      "attr": "tabindex",
+      "equals": "-1",
+      "skipIfMissing": true,
+      "at": 390,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mobile-browse",
+          "unlessVisible": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-sidebar-close"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-map-node"
+        }
+      ]
+    },
+    {
+      "id": "a11y.no-marker-tabbable-1440",
+      "type": "count",
+      "desc": "1440：没有任何地图标记带 tabindex=\"0\"（配合上一条：上一条锚存在性，这条查广覆盖，省视图 51 个标记）",
+      "selector": ".tc-mapapp-canvas button.tc-map-node[tabindex=\"0\"]",
+      "expect": 0,
+      "at": 1440,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        }
+      ]
     }
   ],
   "appliesTo": [

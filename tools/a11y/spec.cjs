@@ -281,7 +281,11 @@ function runChecks(checks) {
         return rc.width > 0 && rc.height > 0;
       });
       const flat = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
-      if (!els.length) { r.pass = false; r.note = '选择器没有可见元素：' + c.selector; out.push(r); continue; }
+      if (!els.length) {
+        r.pass = c.skipIfMissing ? null : false;
+        r.note = (c.skipIfMissing ? '本页没有该组件，断言不适用：' : '选择器没有可见元素：') + c.selector;
+        out.push(r); continue;
+      }
       const actual = flat(els[0].getAttribute(c.attr));
       const miss = [];
       if (c.contains && !actual.includes(c.contains)) miss.push(`应含「${c.contains}」`);
