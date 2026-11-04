@@ -2594,12 +2594,13 @@
     {
       "id": "mobile.scale-hidden",
       "type": "computed",
-      "desc": "§6 手机端不显示比例尺",
+      "desc": "§6 手机端不显示比例尺（控件压根没创建时等同不显示；正向由 desktop.scale-present 兜）",
       "selector": ".tc-mapapp-canvas .amap-scalecontrol",
       "props": {
         "display": "none"
       },
-      "at": 390
+      "at": 390,
+      "absentOk": true
     },
     {
       "id": "mobile.about-right-of-search",
@@ -2872,6 +2873,18 @@
           "selector": ".tc-sidebar-close"
         }
       ]
+    },
+    {
+      "id": "desktop.scale-present",
+      "type": "rect",
+      "desc": "1440：比例尺控件必须真的渲染出来且可见——否则「该出现却没渲染」会随上一条放宽而无人看管（CI 里 AMap 起不来时记不适用）",
+      "selector": ".tc-mapapp-canvas .amap-scalecontrol",
+      "min": {
+        "w": 40,
+        "h": 10
+      },
+      "skipIfMissing": true,
+      "at": 1440
     }
   ],
   "appliesTo": [

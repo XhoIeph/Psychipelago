@@ -79,7 +79,9 @@ if (!URL_ARG || !SPEC_ARG || URL_ARG.startsWith('--')) {
   console.error('usage: node spec.cjs <url> <spec.json> [--out dir] [--name slug] [--viewports 1440x900,999x900,375x812]');
   process.exit(2);
 }
-const OUT = arg('out', 'reports');
+// 默认写到本 skill 的 reports 目录，不落 cwd：多人共享工作树时，谁清一次 cwd 下的 reports/
+// 都会让正在跑的 spec 中途 ENOENT（我们踩过两次）。要用别的目录传 --out。
+const OUT = arg('out', path.join(__dirname, '..', 'reports'));
 const NAME = arg('name', 'spec-' + new URL(URL_ARG).hostname.replace(/[^\w.-]+/g, '_'));
 const VIEWPORTS = String(arg('viewports', '1440x900,999x900,375x812'))
   .split(',').map(s => { const [w, h] = s.split('x').map(Number); return { width: w, height: h }; });
@@ -117,6 +119,15 @@ function runChecks(checks) {
       });
       const els = visible.length ? visible : allEls;
       if (!els.length) {
+        // absentOk：本断言要证明的是「该组件此刻不显示」。组件压根没被创建出来，
+        // 与 display:none 是同一个可见性结论，所以判 pass 并记 absent。这不是 skipIfMissing
+        // 那种「没验到」——必须逐条显式打开，且要配一条正向断言（如 desktop.scale-present）。
+        if (c.absentOk) {
+          r.pass = true;
+          r.evidence.push('absent: 选择器没匹配到元素');
+          r.note = '元素不存在，等同不显示（absentOk）：' + c.selector;
+          out.push(r); continue;
+        }
         r.pass = c.skipIfMissing ? null : false;
         r.note = (c.skipIfMissing ? '本页没有该组件，断言不适用：' : '选择器没有可见元素：') + c.selector;
         out.push(r); continue;
