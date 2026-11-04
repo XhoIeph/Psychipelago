@@ -28,9 +28,11 @@ jobs:
           GITHUB_PAGES: 'true'
           NEXT_PUBLIC_BASE_PATH: ''
 
+      # runner 在步骤结束时可能收掉整个进程组，所以服务要脱离当前会话（nohup + setsid），
+      # 否则后面两个 step 会撞 connection refused。
       - name: Serve out/ on 4177
         run: |
-          node scripts/preview.ts --port 4177 > /tmp/preview.log 2>&1 &
+          nohup setsid node scripts/preview.ts --port 4177 > /tmp/preview.log 2>&1 &
           for attempt in $(seq 1 40); do
             if curl -fsS http://127.0.0.1:4177/ > /dev/null; then
               echo "preview up after ${attempt}s"
@@ -47,22 +49,45 @@ jobs:
           npm i --no-save --prefix .ci playwright@1.63.0
           .ci/node_modules/.bin/playwright install --with-deps chromium
 
+      # sha 是用来对表的，所以写进 job summary（日志要人翻，summary 在 PR 页面上直接可见）。
       - name: Snapshot provenance
         run: |
           node - <<'NODE'
           const crypto = require('crypto')
           const fs = require('fs')
+          const rows = []
           for (const file of ['tools/a11y/spec.cjs', 'tools/a11y/ui-spec.json']) {
             const bytes = fs.readFileSync(file)
             const sha = crypto.createHash('sha256').update(bytes).digest('hex').slice(0, 16)
+            const count = file.endsWith('ui-spec.json') ? JSON.parse(bytes.toString('utf8')).checks.length : '—'
+            rows.push(`| \`${file}\` | ${bytes.length} | \`${sha}\` | ${count} |`)
             console.log(`${file}\t${bytes.length} bytes\tsha256:${sha}`)
           }
+          const summary = [
+            '### a11y 快照（CI 跑的就是这两份）',
+            '',
+            '| 文件 | 字节 | sha256:前16 | 断言数 |',
+            '| --- | --- | --- | --- |',
+            ...rows,
+            '',
+            '与 `tools/a11y/README.md` 表里的值不一致，说明快照没重做。',
+            '',
+          ].join('\n')
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary + '\n')
           NODE
 
       - name: Spec at 1440x900
         env:
           NODE_PATH: ${{ github.workspace }}/.ci/node_modules
         run: |
+          # 上一步的服务若被 runner 收掉，这里就地重启，不让它变成一条「connection refused」的假红。
+          if ! curl -fsS http://127.0.0.1:4177/ > /dev/null; then
+            nohup setsid node scripts/preview.ts --port 4177 > /tmp/preview.log 2>&1 &
+            for attempt in $(seq 1 40); do
+              curl -fsS http://127.0.0.1:4177/ > /dev/null && break
+              sleep 1
+            done
+          fi
           mkdir -p reports/a11y
           node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json \
             --viewports 1440x900 --out reports/a11y --name ci-1440
@@ -72,6 +97,13 @@ jobs:
         env:
           NODE_PATH: ${{ github.workspace }}/.ci/node_modules
         run: |
+          if ! curl -fsS http://127.0.0.1:4177/ > /dev/null; then
+            nohup setsid node scripts/preview.ts --port 4177 > /tmp/preview.log 2>&1 &
+            for attempt in $(seq 1 40); do
+              curl -fsS http://127.0.0.1:4177/ > /dev/null && break
+              sleep 1
+            done
+          fi
           node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json \
             --viewports 390x844 --out reports/a11y --name ci-390
 
