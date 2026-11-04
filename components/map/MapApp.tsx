@@ -66,7 +66,6 @@ export function MapApp(props: Props) {
   // 手机端抽屉的入口在底部条上；关闭抽屉要把焦点还给它，而不是还给 display:none 的汉堡。
   // 入口按钮在抽屉打开时被卸载，所以只能等收起后的下一帧再还焦点。
   const mobileBrowseRef = useRef<HTMLButtonElement | null>(null)
-  const restoreDrawerFocusRef = useRef(false)
   const projectRef = useRef<HTMLDivElement | null>(null)
   const aboutButtonRef = useRef<HTMLButtonElement | null>(null)
   const desktopRef = useRef(false)
@@ -101,16 +100,19 @@ export function MapApp(props: Props) {
   const selectedRef = useRef<string | null>(null)
   selectedRef.current = selectedHospitalId
 
-  // 抽屉收起后才把焦点还给入口：移动端入口按钮在面板打开时不渲染。
-  useEffect(() => {
-    if (sidebarOpen || !restoreDrawerFocusRef.current) return
-    restoreDrawerFocusRef.current = false
-    const frame = requestAnimationFrame(() => {
-      if (desktopRef.current) burgerRef.current?.focus()
-      else mobileBrowseRef.current?.focus()
-    })
-    return () => cancelAnimationFrame(frame)
-  }, [sidebarOpen])
+  // 抽屉收起时同一步就把焦点还给底部条入口：入口常驻挂载、被抽屉盖住，
+  // 所以不用等重渲染，也不用等关闭动画放完，键盘用户不会在中间态丢掉焦点。
+  const closeDrawer = () => {
+    setSidebarOpen(false)
+    if (desktopRef.current) return
+    const entry = mobileBrowseRef.current
+    if (!entry) return
+    // 先把入口从「被抽屉盖住」的可达性状态里摘出来，再聚焦：
+    // 顺序反了屏幕阅读器上焦点会落在一个 aria-hidden 子树里，等于丢了。
+    entry.removeAttribute('aria-hidden')
+    entry.tabIndex = 0
+    entry.focus({ preventScroll: true })
+  }
 
   useEffect(() => {
     runtimeRef.current?.syncSelection()
@@ -250,8 +252,7 @@ export function MapApp(props: Props) {
       }
       if (event.key !== 'Escape') return
       event.stopPropagation()
-      restoreDrawerFocusRef.current = true
-      setSidebarOpen(false)
+      closeDrawer()
     }
     document.addEventListener('keydown', onKey)
     return () => {
@@ -786,7 +787,7 @@ export function MapApp(props: Props) {
         </div>
       </div>
 
-      <div className="tc-mapapp-backdrop" aria-hidden="true" onClick={() => { restoreDrawerFocusRef.current = true; setSidebarOpen(false) }} />
+      <div className="tc-mapapp-backdrop" aria-hidden="true" onClick={closeDrawer} />
 
       <Sidebar
         id="tc-map-sidebar"
@@ -799,7 +800,7 @@ export function MapApp(props: Props) {
         activeTab={sidebarTab}
         onTabChange={setSidebarTab}
         modal={sidebarOpen && !isDesktop}
-        onClose={() => { restoreDrawerFocusRef.current = true; setSidebarOpen(false) }}
+        onClose={closeDrawer}
       />
 
       <div className="tc-mapapp-legend">
@@ -817,9 +818,17 @@ export function MapApp(props: Props) {
           <span className="tc-mapapp-ctl-label">回到全国</span>
         </button>
       </div>
-      {!sidebarOpen && <button ref={mobileBrowseRef} type="button" className="tc-mobile-browse" onClick={() => setSidebarOpen(true)} aria-controls="tc-map-sidebar">
+      <button
+        ref={mobileBrowseRef}
+        type="button"
+        className="tc-mobile-browse"
+        onClick={() => setSidebarOpen(true)}
+        aria-controls="tc-map-sidebar"
+        aria-hidden={sidebarOpen || undefined}
+        tabIndex={sidebarOpen ? -1 : 0}
+      >
         <ListFilter size={18} aria-hidden="true" />浏览医院与线索
-      </button>}
+      </button>
     </div>
   )
 }
