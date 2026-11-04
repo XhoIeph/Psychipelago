@@ -4,7 +4,7 @@
 
 | 文件 | 原件位置 | 快照 sha256（前 16 位） | 字节 |
 | --- | --- | --- | --- |
-| `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `2d361fdb6c11be6e` | 55246 |
+| `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `e3879b8d3f758f47` | 55321 |
 | `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `5c478b32abf6848c` | 80647 |
 
 `ui-spec.json` 是从 `docs/` 原件的逐字节拷贝，只改名不改内容；`spec.cjs` 同样逐字节拷贝。**唯一例外是换行**：原件是 CRLF，仓库里统一存 LF，所以 sha 与字节数按 LF 版本算（工作流里打印的也是这个）。快照这一版：149 条断言，按视口生效 1440 = 112 条、390 = 33 条（`at` 与 `all` 门控后）。本地两档 112 / 0 / 0 与 33 / 0 / 0。
