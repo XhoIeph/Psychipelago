@@ -1,0 +1,2928 @@
+{
+  "name": "traumacompass-ui-spec-v2",
+  "source": [
+    "D:\\DeepseekHarness\\cptsd_web\\docs\\departments\\designer\\UI_SPEC.md",
+    "第 2–7 节；分两批建成：第一批 2026-11-01（字号/字重/尺寸/层序），第二批 2026-11-01（§5 组件状态、§6 断点与图层、§7 动效时长）"
+  ],
+  "note": "只断言规范里写死的值，选择器全部取自线上 DOM 实测。skipIfMissing 用于本页不渲染的组件（如 .tc-button 只出现在其他路由）；notAssertable 记录 spec.cjs 判不了但已探针补测的项。",
+  "checks": [
+    {
+      "id": "type.body",
+      "type": "computed",
+      "desc": "正文 15px / 1.75 / 400",
+      "selector": "body",
+      "props": {
+        "fontSize": "15px",
+        "lineHeight": "26.25px",
+        "fontWeight": "400"
+      }
+    },
+    {
+      "id": "type.hospital-row-name",
+      "type": "computed",
+      "desc": "§1.1：机构行名称 15px / 500（旧卡片断言改指行）",
+      "selector": ".tc-hospital-row-name",
+      "props": {
+        "fontSize": "15px",
+        "fontWeight": "500"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row-name"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "type.location",
+      "type": "hasText",
+      "desc": "§1.1：机构行第二行必须含城市——筛选结果跨省，只写机构名用户要点开才知道在哪",
+      "selector": ".tc-hospital-row-meta",
+      "text": "北京市",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row-meta"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "type.hospital-row-meta",
+      "type": "computed",
+      "desc": "§1.1：机构行第二行 13px（城市 · N 条线索）",
+      "selector": ".tc-hospital-row-meta",
+      "props": {
+        "fontSize": "13px"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row-meta"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "type.tab",
+      "type": "computed",
+      "desc": "侧栏标签 13px，选中 650",
+      "selector": ".tc-sidebar-tab--active",
+      "props": {
+        "fontSize": "13px",
+        "fontWeight": "650"
+      },
+      "at": 1440,
+      "skipIfMissing": true
+    },
+    {
+      "id": "type.brand-desktop",
+      "type": "computed",
+      "desc": "桌面侧栏品牌 24px / 750 / 字距 -0.9px / 行高 1.15",
+      "selector": ".tc-sidebar .tc-brand-wordmark",
+      "props": {
+        "fontSize": "24px",
+        "fontWeight": "750",
+        "letterSpacing": "-0.9px",
+        "lineHeight": "27.6px"
+      },
+      "at": 1440
+    },
+    {
+      "id": "type.brand-narrow",
+      "type": "computed",
+      "desc": "≤999px 侧栏品牌 23px / 750",
+      "selector": ".tc-sidebar .tc-brand-wordmark",
+      "props": {
+        "fontSize": "23px",
+        "fontWeight": "750"
+      },
+      "at": 375
+    },
+    {
+      "id": "type.input",
+      "type": "computed",
+      "desc": "输入 16px（页面唯一的文本输入是顶部搜索框）",
+      "selector": ".tc-mapapp-search input",
+      "props": {
+        "fontSize": "16px"
+      },
+      "skipIfMissing": true
+    },
+    {
+      "id": "type.button",
+      "type": "computed",
+      "desc": "常规按钮 14px（机构详情「在地图上定位」；筛选开关已随批 2 删除）",
+      "selector": ".tc-button",
+      "props": {
+        "fontSize": "14px"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-button"
+        }
+      ],
+      "skipIfMissing": true
+    },
+    {
+      "id": "size.sidebar",
+      "type": "rect",
+      "desc": "桌面侧栏宽 380px",
+      "selector": ".tc-sidebar",
+      "min": {
+        "w": 380
+      },
+      "max": {
+        "w": 380
+      },
+      "at": 1440
+    },
+    {
+      "id": "size.zoom",
+      "type": "rect",
+      "desc": "地图缩放按钮 44×44",
+      "selector": ".tc-map-zoom button",
+      "min": {
+        "w": 44,
+        "h": 44
+      },
+      "at": 1440
+    },
+    {
+      "id": "size.tab",
+      "type": "rect",
+      "desc": "侧栏标签 min-height 44",
+      "selector": ".tc-sidebar-tab",
+      "min": {
+        "h": 44
+      },
+      "at": 1440
+    },
+    {
+      "id": "entry.card-single",
+      "type": "singleEntry",
+      "desc": "§1.1：一行最多一个可聚焦入口（旧卡片 → 机构行）",
+      "container": ".tc-hospital-row",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "layer.ctl-sidebar",
+      "type": "layerOrder",
+      "desc": "图层 ctl(800) < sidebar(1100)",
+      "selectors": [
+        ".tc-map-zoom",
+        ".tc-sidebar"
+      ],
+      "at": 1440
+    },
+    {
+      "id": "copy.no-arrow",
+      "type": "forbidText",
+      "desc": "全站删除装饰性斜箭头 ↗",
+      "text": "↗"
+    },
+    {
+      "id": "copy.no-disease-count",
+      "type": "forbidText",
+      "desc": "不按病症统计线索条数（把「有这类线索」读成「这家涉及这个病」）",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        }
+      ],
+      "text": "线索涉及"
+    },
+    {
+      "id": "copy.no-scope-explainer",
+      "type": "forbidText",
+      "desc": "不写替数据解释的括注小字",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        }
+      ],
+      "text": "同一条线索"
+    },
+    {
+      "id": "copy.no-unsourced-service",
+      "type": "forbidText",
+      "desc": "不写「创伤服务证据 N 家」——该字段库内全为 unknown，写出来是把没采到的当证据",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        }
+      ],
+      "text": "创伤服务证据"
+    },
+    {
+      "id": "scroll.no-horizontal",
+      "type": "noHScroll",
+      "desc": "页面不得横向滚动",
+      "at": 375
+    },
+    {
+      "id": "type.brand-320",
+      "type": "computed",
+      "desc": "≤360px 品牌 20px / 750",
+      "selector": ".tc-sidebar .tc-brand-wordmark",
+      "props": {
+        "fontSize": "20px",
+        "fontWeight": "750"
+      },
+      "at": 320
+    },
+    {
+      "id": "size.drawer-375",
+      "type": "rect",
+      "desc": "≤999px 抽屉宽 = min(440,100vw)，375px 下铺满",
+      "selector": ".tc-sidebar",
+      "min": {
+        "w": 375
+      },
+      "max": {
+        "w": 375
+      },
+      "at": 375
+    },
+    {
+      "id": "size.province-row",
+      "type": "rect",
+      "desc": "省行整行是一个可点目标，高度不小于 44px",
+      "selector": ".tc-province-row",
+      "min": {
+        "h": 44
+      },
+      "at": 1440
+    },
+    {
+      "id": "type.province-name",
+      "type": "computed",
+      "desc": "省名 15px / 500，按一级列表项读",
+      "selector": ".tc-province-name",
+      "props": {
+        "fontSize": "15px",
+        "fontWeight": "500"
+      },
+      "at": 1440
+    },
+    {
+      "id": "type.province-count",
+      "type": "computed",
+      "desc": "家数 13px 次要色；行内写「N 家」，单位只在表头",
+      "selector": ".tc-province-count",
+      "props": {
+        "fontSize": "13px",
+        "color": "rgb(83, 107, 102)"
+      },
+      "at": 1440
+    },
+    {
+      "id": "size.ctl",
+      "type": "rect",
+      "desc": "普通地图控件最小高 46px",
+      "selector": ".tc-mapapp-actions button",
+      "min": {
+        "h": 46
+      },
+      "skipIfMissing": true
+    },
+    {
+      "id": "size.tab-375",
+      "type": "rect",
+      "desc": "侧栏标签 min-height 44（窄屏同样）",
+      "selector": ".tc-sidebar-tab",
+      "min": {
+        "h": 44
+      },
+      "at": 375
+    },
+    {
+      "id": "type.input-375",
+      "type": "computed",
+      "desc": "窄屏搜索框字号（页面上唯一的文本输入）",
+      "selector": ".tc-mapapp-search input",
+      "props": {
+        "fontSize": "16px"
+      },
+      "at": 375,
+      "skipIfMissing": true
+    },
+    {
+      "id": "size.filter-375",
+      "type": "rect",
+      "desc": "筛选入口 ≥48px（窄屏同样）",
+      "selector": ".tc-filter-toggle",
+      "min": {
+        "h": 48
+      },
+      "at": 375,
+      "skipIfMissing": true
+    },
+    {
+      "id": "s5-card-single-entry-375",
+      "type": "singleEntry",
+      "desc": "§5：移动端机构行仍是单一入口，不嵌第二个可聚焦元素（卡片已改成行；先进入某省）",
+      "container": ".tc-hospital-row",
+      "at": 375,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        }
+      ]
+    },
+    {
+      "id": "s5-card-title-no-decoration",
+      "type": "computed",
+      "desc": "§1.1：机构行名称不加下划线（旧卡片标题 → 行名）",
+      "selector": ".tc-hospital-row-name",
+      "props": {
+        "textDecorationLine": "none"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row-name"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "s5-button-geometry",
+      "type": "computed",
+      "desc": "§5：常规按钮 min-height 44px、10px 圆角、padding 10px 12px、gap 8px（机构详情「在地图上定位」）",
+      "selector": ".tc-button",
+      "props": {
+        "minHeight": "44px",
+        "borderRadius": "10px",
+        "padding": "10px 12px",
+        "gap": "8px"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-button"
+        }
+      ],
+      "skipIfMissing": true,
+      "at": 1440
+    },
+    {
+      "id": "s5-tab-min-height-999",
+      "type": "rect",
+      "desc": "§5：侧栏标签 min-height 44px（≤999px 抽屉态同样成立）",
+      "selector": ".tc-sidebar-tab",
+      "min": {
+        "h": 44
+      },
+      "at": 999
+    },
+    {
+      "id": "s5-tab-selected-one",
+      "type": "count",
+      "desc": "§5：侧栏标签选中态由 aria-selected 表达，且有且仅有一个选中项",
+      "selector": ".tc-sidebar-tab[aria-selected=\"true\"]",
+      "expect": 1,
+      "at": 1440
+    },
+    {
+      "id": "s5-ctl-min-46",
+      "type": "rect",
+      "desc": "§5：普通地图控件命中区最小 46px",
+      "selector": ".tc-mapapp-ctl",
+      "min": {
+        "w": 46,
+        "h": 46
+      },
+      "at": 1440
+    },
+    {
+      "id": "s5-search-height-48",
+      "type": "rect",
+      "desc": "§5：全局搜索输入高 48px",
+      "selector": ".tc-mapapp-search input",
+      "min": {
+        "h": 48
+      },
+      "at": 1440
+    },
+    {
+      "id": "s5-search-icon-left-15",
+      "type": "cssProp",
+      "desc": "§5：搜索图标左距 15px",
+      "selector": ".tc-search-icon",
+      "prop": "left",
+      "expect": "15px",
+      "at": 1440
+    },
+    {
+      "id": "s5-disabled-opacity",
+      "type": "cssProp",
+      "desc": "§5：禁用态用原生 disabled，全局 opacity .55",
+      "selector": ".tc-map-zoom button[disabled]",
+      "prop": "opacity",
+      "expect": "0.55",
+      "skipIfMissing": true
+    },
+    {
+      "id": "s6-backdrop-none-1440",
+      "type": "computed",
+      "desc": "§6：≥1000px 为桌面 dock，无遮罩层",
+      "selector": ".tc-mapapp-backdrop",
+      "props": {
+        "display": "none"
+      },
+      "at": 1440
+    },
+    {
+      "id": "s6-backdrop-block-999",
+      "type": "cssProp",
+      "desc": "§6：≤999px 抽屉态出现遮罩层",
+      "selector": ".tc-mapapp-backdrop",
+      "prop": "display",
+      "expect": "block",
+      "at": 999
+    },
+    {
+      "id": "s6-dock-sync-1440",
+      "type": "mustNotExist",
+      "desc": "§6：≥1000px 侧栏为常驻 dock（JS 状态与 CSS 一致，不带抽屉关闭类）",
+      "selector": ".tc-sidebar.tc-sidebar--closed",
+      "at": 1440
+    },
+    {
+      "id": "s6-drawer-closed-999",
+      "type": "mustExist",
+      "desc": "§6：≤999px 侧栏为抽屉，默认收起（tc-sidebar--closed 与 CSS 同步）",
+      "selector": ".tc-sidebar.tc-sidebar--closed",
+      "at": 999
+    },
+    {
+      "id": "s6-drawer-top-104",
+      "type": "cssProp",
+      "desc": "§6：抽屉顶部留 104px",
+      "selector": ".tc-sidebar",
+      "prop": "top",
+      "expect": "104px",
+      "at": 999
+    },
+    {
+      "id": "s6-drawer-width-999",
+      "type": "rect",
+      "desc": "§6：抽屉宽 min(440px,100vw)，999px 视口下取 440px",
+      "selector": ".tc-sidebar",
+      "min": {
+        "w": 440
+      },
+      "max": {
+        "w": 440
+      },
+      "at": 999
+    },
+    {
+      "id": "s6-drawer-width-320",
+      "type": "rect",
+      "desc": "§6：抽屉宽 min(440px,100vw)，320px 视口下取满宽 320px",
+      "selector": ".tc-sidebar",
+      "min": {
+        "w": 320
+      },
+      "max": {
+        "w": 320
+      },
+      "at": 320
+    },
+    {
+      "id": "s6-card-padding-320",
+      "type": "computed",
+      "desc": "§6：≤360px 卡片内边距收窄至 16px",
+      "selector": ".tc-hospital-card",
+      "props": {
+        "padding": "16px"
+      },
+      "at": 320
+    },
+    {
+      "id": "s6-z-map",
+      "type": "computed",
+      "desc": "§6：图层 map = 1",
+      "selector": ".tc-mapapp-canvas",
+      "props": {
+        "zIndex": "1"
+      }
+    },
+    {
+      "id": "s6-z-ctl",
+      "type": "computed",
+      "desc": "§6：图层 ctl（地图控件）= 800",
+      "selector": ".tc-map-zoom",
+      "props": {
+        "zIndex": "800"
+      }
+    },
+    {
+      "id": "s6-z-backdrop",
+      "type": "computed",
+      "desc": "§6：图层 backdrop（抽屉遮罩）= 1050",
+      "selector": ".tc-mapapp-backdrop",
+      "props": {
+        "zIndex": "1050"
+      }
+    },
+    {
+      "id": "s6-z-sidebar",
+      "type": "computed",
+      "desc": "§6：图层 sidebar = 1100",
+      "selector": ".tc-sidebar",
+      "props": {
+        "zIndex": "1100"
+      }
+    },
+    {
+      "id": "s6-z-topbar",
+      "type": "computed",
+      "desc": "§6：图层 topbar = 1200",
+      "selector": ".tc-mapapp-topbar",
+      "props": {
+        "zIndex": "1200"
+      }
+    },
+    {
+      "id": "s6-gutter-375",
+      "type": "computed",
+      "desc": "§6：≤700px 侧栏 gutter 收窄到 20px（.tc-sidebar-body 左右内边距）",
+      "selector": ".tc-sidebar-body",
+      "props": {
+        "padding": "8px 20px 24px"
+      },
+      "at": 375
+    },
+    {
+      "id": "s6-gutter-320",
+      "type": "computed",
+      "desc": "§6：≤360px 侧栏 gutter 收窄到 16px（.tc-sidebar-body 左右内边距）",
+      "selector": ".tc-sidebar-body",
+      "props": {
+        "padding": "8px 16px 24px"
+      },
+      "at": 320
+    },
+    {
+      "id": "s6-mobile-browse-54",
+      "type": "rect",
+      "desc": "§6：手机底部浏览条最小高 54px",
+      "selector": ".tc-mobile-browse",
+      "min": {
+        "h": 54
+      },
+      "at": 375
+    },
+    {
+      "id": "s6-no-hscroll-320",
+      "type": "noHScroll",
+      "desc": "§6：320px 视口正文不横向滚动",
+      "at": 320
+    },
+    {
+      "id": "s7-hover-160",
+      "type": "computed",
+      "desc": "§7：常规 hover/状态过渡 160ms ease（.tc-sidebar-tab 的 background-color/border-color/color/box-shadow）",
+      "selector": ".tc-sidebar-tab",
+      "props": {
+        "transitionDuration": "0.16s, 0.16s, 0.16s, 0.16s",
+        "transitionTimingFunction": "ease, ease, ease, ease"
+      },
+      "at": 1440
+    },
+    {
+      "id": "s5-focus-ring-card",
+      "type": "focusRing",
+      "desc": "§5：机构行焦点环 2px 墨色、offset 2（旧整卡环随卡片退役，改落在行按钮上）",
+      "selector": ".tc-hospital-row",
+      "levels": 1,
+      "minWidth": 2,
+      "offset": 2,
+      "expectColor": "#193b38",
+      "forbidColor": "#087f7b",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "s5-focus-search-border",
+      "type": "focusBorder",
+      "desc": "§5：地图搜索框聚焦只把边框 #DDE7E3 加深到 #193B38，1px 不变，投影不变，不加外描边",
+      "selector": ".tc-mapapp-search input",
+      "expectRestColor": "#dde7e3",
+      "expectColor": "#193b38",
+      "expectWidth": 1,
+      "forbidColor": "#087f7b",
+      "at": 1440
+    },
+    {
+      "id": "s5-focus-no-brand-green",
+      "type": "focusNoColor",
+      "desc": "§5：逐次 Tab，任何元素及 3 层祖先的焦点态都不得使用品牌绿 #087F7B（描边/投影/边框）",
+      "forbid": [
+        "#087f7b"
+      ],
+      "levels": 3,
+      "maxTab": 160,
+      "at": 1440
+    },
+    {
+      "id": "s7-reduce-transition",
+      "type": "media",
+      "desc": "§7：prefers-reduced-motion:reduce 下过渡时长归零（浏览器会把四段合并成单个 0s）",
+      "selector": ".tc-sidebar-tab",
+      "media": {
+        "reducedMotion": "reduce"
+      },
+      "props": {
+        "transitionDuration": "0s"
+      },
+      "at": 1440
+    },
+    {
+      "id": "doctor.detail-title",
+      "type": "mustExist",
+      "desc": "医生详情有标题位：从机构线索行的医生名进入后，顶部写医生姓名（照录线索原文）",
+      "selector": ".tc-doctor-detail .tc-detail-title",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "doctor.title-matches-lead",
+      "type": "textEquals",
+      "desc": "医生详情标题与线索行里的姓名逐字一致（照录，不改写）",
+      "selector": ".tc-doctor-detail .tc-detail-title",
+      "from": "doctor",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "remember": "doctor"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "copy.no-verify-disclaimer",
+      "type": "forbidText",
+      "desc": "医生详情不写「姓名取自线索原文，未核对」这类自我说明（全站不写免责式小字）",
+      "text": "未核对",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "doctor.no-disorder-label-other",
+      "type": "forbidText",
+      "desc": "医生详情不出现「其他创伤相关诊断」：源文档写的是「人格障碍」，这个正式病名是数据表的桶名",
+      "text": "其他创伤相关诊断",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "click",
+          "text": "于宏华"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "doctor.no-disorder-label-osdd",
+      "type": "forbidText",
+      "desc": "医生详情不出现「部分解离性身份障碍」：源文档那一节写的是 osdd/did",
+      "text": "部分解离性身份障碍",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "click",
+          "text": "高士元"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "doctor.origin-link",
+      "type": "mustExist",
+      "desc": "医生详情里的所在机构可点回机构详情",
+      "selector": ".tc-doctor-origin button",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "doctor.profile-only-with-record",
+      "type": "mustNotExist",
+      "desc": "doctors.json 没有同院同名记录时不渲染档案区块（不放空壳）",
+      "selector": ".tc-doctor-detail .tc-doctor-profile",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "copy.no-browse-back",
+      "type": "forbidText",
+      "desc": "医生详情返回键写「返回 机构名」，不是「返回浏览」",
+      "text": "返回浏览",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-link"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "s5-row-highlight-hospital",
+      "type": "computed",
+      "desc": "§1.1：机构行高亮是外扩 8px 的圆角块（左右 -8px + 内补 8px + 8px 圆角），文字仍与标题左对齐",
+      "selector": ".tc-hospital-row",
+      "props": {
+        "borderRadius": "8px",
+        "paddingLeft": "8px",
+        "marginLeft": "-8px"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        }
+      ]
+    },
+    {
+      "id": "s5-row-highlight-province",
+      "type": "computed",
+      "desc": "§1.1：省份行高亮同一套形状（-8px 外扩、8px 圆角）",
+      "selector": ".tc-province-row",
+      "props": {
+        "borderRadius": "8px",
+        "paddingLeft": "8px",
+        "marginLeft": "-8px"
+      },
+      "at": 1440
+    },
+    {
+      "id": "copy.submit-placeholder",
+      "type": "hasText",
+      "desc": "§1.1：投稿栏只有占位文案（用户原话「这里还没定好（；´д｀）ゞ」），通道定下来之前不写入口",
+      "selector": "#tc-sidebar-panel",
+      "text": "这里还没定好",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": "#tc-sidebar-tab-submit"
+        },
+        {
+          "action": "wait",
+          "selector": "#tc-sidebar-panel"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "copy.submit-no-public-notice",
+      "type": "forbidText",
+      "desc": "投稿栏不得再写「提交后内容将公开可见」：仓库私有时这句话是错的",
+      "text": "提交后内容将公开可见",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": "#tc-sidebar-tab-submit"
+        },
+        {
+          "action": "wait",
+          "selector": "#tc-sidebar-panel"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "copy.submit-no-github",
+      "type": "forbidText",
+      "desc": "投稿栏不得指向 GitHub issue 入口（指向私有仓库，且要求用户公开身份）",
+      "text": "GitHub",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": "#tc-sidebar-tab-submit"
+        },
+        {
+          "action": "wait",
+          "selector": "#tc-sidebar-panel"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "search.no-duplicate-result-labels",
+      "type": "uniqueText",
+      "desc": "搜索「人格障碍」时病症组不得出现两条同名的「人格障碍 N 条线索」：病症行与来源话题行撞名，用户读成重复项",
+      "selector": ".tc-mapapp-results button.tc-mapapp-result strong",
+      "precondition": [
+        {
+          "action": "fill",
+          "selector": ".tc-mapapp-search input",
+          "value": "人格障碍"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-results button.tc-mapapp-result"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "filter.single-entry",
+      "type": "count",
+      "at": 1440,
+      "expect": 1,
+      "selector": ".tc-filter-toggle",
+      "desc": "§1.1 机构栏只有一个筛选入口（病症），不做并列的第二个控件"
+    },
+    {
+      "id": "filter.entry-height",
+      "type": "rect",
+      "at": 1440,
+      "selector": ".tc-filter-toggle",
+      "min": {
+        "h": 48
+      },
+      "desc": "§1.1 入口 48px，沿用旧 FilterPanel"
+    },
+    {
+      "id": "filter.entry-icons",
+      "type": "count",
+      "at": 1440,
+      "selector": ".tc-filter-toggle svg",
+      "min": 2,
+      "desc": "§1.1 沿用 codex 那套：左图标 + 右 ChevronDown，不自画小箭头"
+    },
+    {
+      "id": "copy.entry-label",
+      "type": "hasText",
+      "at": 1440,
+      "selector": ".tc-filter-toggle",
+      "text": "按病症筛选",
+      "desc": "§1.1 未选时写「按病症筛选」"
+    },
+    {
+      "id": "filter.no-province-control",
+      "type": "mustNotExist",
+      "at": 1440,
+      "selector": ".tc-filter-province",
+      "desc": "§1.1 省份不进筛选面板（主图打回：两个入口两种写法）"
+    },
+    {
+      "id": "filter.no-select-in-panel",
+      "type": "mustNotExist",
+      "at": 1440,
+      "selector": ".tc-filter-toggle select",
+      "desc": "§1.1 面板里不放原生下拉"
+    },
+    {
+      "id": "filter.panel-collapsed",
+      "type": "cssProp",
+      "at": 1440,
+      "selector": ".tc-filter-content",
+      "prop": "visibility",
+      "expect": "hidden",
+      "desc": "§1.1 默认收起，内容不可见、不可 Tab"
+    },
+    {
+      "id": "filter.panel-animates-property",
+      "type": "cssProp",
+      "at": 1440,
+      "contains": true,
+      "selector": ".tc-filter-content",
+      "prop": "transitionProperty",
+      "expect": "grid-template-rows",
+      "desc": "§1.1 展开收起走 grid-template-rows 过渡"
+    },
+    {
+      "id": "filter.panel-animates-duration",
+      "type": "cssProp",
+      "at": 1440,
+      "contains": true,
+      "selector": ".tc-filter-content",
+      "prop": "transitionDuration",
+      "expect": "0.2s",
+      "desc": "§1.1 200ms（§7 折叠 200ms）"
+    },
+    {
+      "id": "filter.panel-expands",
+      "type": "cssProp",
+      "at": 1440,
+      "selector": ".tc-filter-content",
+      "prop": "visibility",
+      "expect": "visible",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        }
+      ],
+      "desc": "§1.1 点入口后内容可见"
+    },
+    {
+      "id": "filter.options-count",
+      "type": "count",
+      "at": 1440,
+      "expect": 3,
+      "selector": ".tc-disorder-option",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        }
+      ],
+      "desc": "§1.1 展开是三个病症行（只列有线索的）"
+    },
+    {
+      "id": "filter.option-height",
+      "type": "rect",
+      "at": 1440,
+      "selector": ".tc-disorder-option",
+      "min": {
+        "h": 44
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        }
+      ],
+      "desc": "§1.1 选项 44px"
+    },
+    {
+      "id": "filter.option-type",
+      "type": "computed",
+      "at": 1440,
+      "selector": ".tc-disorder-name",
+      "props": {
+        "fontSize": "14px",
+        "fontWeight": "400"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        }
+      ],
+      "desc": "§1.1 选项 14px/400，与入口 15px/500 分开层级"
+    },
+    {
+      "id": "filter.option-flush",
+      "type": "computed",
+      "at": 1440,
+      "selector": ".tc-disorder-options",
+      "props": {
+        "paddingLeft": "0px",
+        "paddingRight": "0px"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        }
+      ],
+      "desc": "§1.1 选中底色通栏，两侧无白缝"
+    },
+    {
+      "id": "filter.option-no-counts",
+      "type": "mustNotExist",
+      "at": 1440,
+      "selector": ".tc-disorder-count",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        }
+      ],
+      "desc": "§1.1 选项不写家数"
+    },
+    {
+      "id": "filter.pick-keeps-provinces",
+      "type": "mustExist",
+      "at": 1440,
+      "selector": ".tc-province-row",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder=\"pd\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-province-row"
+        }
+      ],
+      "desc": "§1.1 选完病症仍是省份列表，不变成结果页"
+    },
+    {
+      "id": "filter.pick-has-no-rows",
+      "type": "mustNotExist",
+      "at": 1440,
+      "selector": ".tc-hospital-row",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder=\"pd\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-province-row"
+        }
+      ],
+      "desc": "§1.1 选完病症不直接铺机构行"
+    },
+    {
+      "id": "copy.pick-shows-name",
+      "type": "hasText",
+      "at": 1440,
+      "selector": ".tc-filter-toggle",
+      "text": "人格障碍",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder=\"pd\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-province-row"
+        }
+      ],
+      "desc": "§1.1 选后入口写病症名"
+    },
+    {
+      "id": "filter.province-shows-filtered-rows",
+      "type": "mustExist",
+      "at": 1440,
+      "selector": ".tc-hospital-row",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder=\"pd\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        }
+      ],
+      "desc": "§1.1 选病症后点省，省详情只列匹配的机构"
+    },
+    {
+      "id": "filter.province-has-breadcrumb",
+      "type": "mustExist",
+      "at": 1440,
+      "selector": ".tc-breadcrumb",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder=\"pd\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        }
+      ],
+      "desc": "§1.1 省详情有「全国 › 省名」面包屑"
+    },
+    {
+      "id": "filter.back-keeps-disorder",
+      "type": "hasText",
+      "at": 1440,
+      "selector": ".tc-filter-toggle",
+      "text": "人格障碍",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder=\"pd\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-detail-back"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-province-row"
+        }
+      ],
+      "desc": "§1.1 从省详情返回后病症条件仍在"
+    },
+    {
+      "id": "filter.back-focus-province",
+      "type": "focusOn",
+      "at": 1440,
+      "selector": ".tc-province-row",
+      "text": "北京",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder=\"pd\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-detail-back"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-province-row"
+        }
+      ],
+      "desc": "§1.1 从机构详情返回省份列表后，焦点回到刚才那一行（北京），不掉到侧栏 tab"
+    },
+    {
+      "id": "copy.no-verify-disclaimer",
+      "type": "forbidText",
+      "at": 1440,
+      "selector": ".tc-sidebar",
+      "text": "未核对",
+      "desc": "§1.1 不写「姓名取自线索原文，未核对」这类自我说明"
+    },
+    {
+      "id": "type.lead-doctor",
+      "type": "computed",
+      "desc": "§1.1：线索卡医生名 16px / 650（2026-11-03 放大）",
+      "selector": ".tc-report .tc-lead-doctor",
+      "props": {
+        "fontSize": "16px",
+        "fontWeight": "650"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "type.lead-quote",
+      "type": "computed",
+      "desc": "§1.1：线索卡原文 14px / 1.7",
+      "selector": ".tc-report .tc-quote",
+      "props": {
+        "fontSize": "14px",
+        "lineHeight": "23.8px"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "type.lead-source",
+      "type": "computed",
+      "desc": "§1.1：线索卡来源行 12px",
+      "selector": ".tc-report .tc-evidence-source",
+      "props": {
+        "fontSize": "12px"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "copy.lead-quote-before-source",
+      "type": "mustExist",
+      "desc": "§1.1：来源行在原文下方（.tc-quote 紧邻 .tc-evidence-source）",
+      "selector": ".tc-evidence > .tc-quote + .tc-evidence-source",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "order.lead-source-not-first",
+      "type": "mustNotExist",
+      "desc": "§1.1：来源行不再排在原文上方",
+      "selector": ".tc-evidence > .tc-evidence-source + .tc-quote",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "type.doctor-meta-label",
+      "type": "computed",
+      "desc": "§1.1：备注/评价标签 13px 次要色",
+      "selector": ".tc-doctor-meta-label",
+      "props": {
+        "fontSize": "13px"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "type.doctor-meta-value",
+      "type": "computed",
+      "desc": "§1.1：备注/评价值 14px / 500",
+      "selector": ".tc-doctor-meta-value",
+      "props": {
+        "fontSize": "14px",
+        "fontWeight": "500"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "doctor.note-row",
+      "type": "hasText",
+      "desc": "§1.1：姓名下方有「备注」行",
+      "selector": ".tc-doctor-meta--note",
+      "text": "备注",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "doctor.note-empty",
+      "type": "hasText",
+      "desc": "§1.1：没有备注内容时写「无」，不隐藏",
+      "selector": ".tc-doctor-meta--note",
+      "text": "无",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "doctor.rating-row",
+      "type": "hasText",
+      "desc": "§1.1：线索原文之后有「评价」行",
+      "selector": ".tc-doctor-meta--rating",
+      "text": "评价",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "doctor.rating-empty",
+      "type": "hasText",
+      "desc": "§1.1：没有评价内容时写「无」，不隐藏",
+      "selector": ".tc-doctor-meta--rating",
+      "text": "无",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "copy.project-no-close",
+      "type": "forbidText",
+      "desc": "§1.1：关于项目卡片不设「关闭」按钮",
+      "text": "关闭",
+      "scope": "#tc-project-card",
+      "skipIfMissing": true,
+      "precondition": [
+        {
+          "action": "click",
+          "text": "关于项目"
+        },
+        {
+          "action": "wait",
+          "selector": "#tc-project-card"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "type.doctor-title",
+      "type": "computed",
+      "desc": "§1.1：医生详情姓名 26px / 600（机构与省份标题仍 22px）",
+      "selector": ".tc-doctor-detail .tc-detail-title",
+      "props": {
+        "fontSize": "26px",
+        "fontWeight": "600"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "copy.no-jigou",
+      "type": "forbidText",
+      "desc": "称呼统一用「医院」：界面上不出现「机构」二字（数据字段、类名不动）",
+      "text": "机构",
+      "at": 1440
+    },
+    {
+      "id": "copy.tab-hospital-label",
+      "type": "hasText",
+      "desc": "侧栏第一个栏目写「医院」",
+      "selector": "#tc-sidebar-tab-hospitals",
+      "text": "医院",
+      "at": 1440
+    },
+    {
+      "id": "copy.search-placeholder-hospital",
+      "type": "attr",
+      "desc": "搜索框占位文案写「医院」，不写「机构」",
+      "selector": ".tc-mapapp-search input",
+      "attr": "placeholder",
+      "contains": "医院",
+      "notContains": "机构",
+      "at": 1440
+    },
+    {
+      "id": "copy.doctor-origin-hospital",
+      "type": "hasText",
+      "desc": "医生详情的所在行写「所在医院」",
+      "selector": ".tc-doctor-origin",
+      "text": "所在医院",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "filter.no-reset-row",
+      "type": "mustNotExist",
+      "desc": "§1.1：面板里没有「清除筛选」，取消靠再点同一行",
+      "selector": ".tc-filter-reset",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-disorder-option"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder='pd']"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "filter.no-condition-in-heading",
+      "type": "forbidText",
+      "desc": "§1.1：表头只报数量，右侧不再写当前病症名",
+      "text": "人格障碍",
+      "scope": ".tc-results-heading",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-disorder-option"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder='pd']"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "filter.multi-checkmarks",
+      "type": "count",
+      "desc": "§1.1：可以同时选多个病症（选 cptsd + 人格障碍 → 两个对勾）",
+      "selector": ".tc-disorder-check",
+      "expect": 2,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-disorder-option"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder='cptsd']"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder='pd']"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "copy.entry-multi-count",
+      "type": "hasText",
+      "desc": "§1.1：选两个以上时入口写「2 个病症」",
+      "selector": ".tc-filter-toggle",
+      "text": "2 个病症",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-disorder-option"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder='cptsd']"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder='pd']"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "filter.multi-select-union-hospitals",
+      "type": "hasText",
+      "desc": "§1.1：多选是或关系，医院取并集（cptsd 32 + 人格障碍 89 = 106 家）",
+      "selector": ".tc-results-heading strong",
+      "text": "106",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-disorder-option"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder='cptsd']"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder='pd']"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "filter.multi-select-union-leads",
+      "type": "hasText",
+      "desc": "§1.1：多选线索按条去重（32 + 92 = 124 条）",
+      "selector": ".tc-results-heading",
+      "text": "124 条线索",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-disorder-option"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder='cptsd']"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder='pd']"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "filter.toggle-off-returns-all",
+      "type": "count",
+      "desc": "§1.1：再点一次选中的行即取消，回到 30 省",
+      "selector": ".tc-province-row",
+      "expect": 30,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-disorder-option"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder='cptsd']"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder='cptsd']"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "copy.toggle-off-restores-label",
+      "type": "hasText",
+      "desc": "§1.1：取消后入口回到「按病症筛选」",
+      "selector": ".tc-filter-toggle",
+      "text": "按病症筛选",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-filter-toggle"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-disorder-option"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder='cptsd']"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-option[data-disorder='cptsd']"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "doctor.clinic-row",
+      "type": "hasText",
+      "desc": "§1.1：姓名下方第一行是「门诊」，标签不写「诊室」",
+      "selector": ".tc-doctor-meta--clinic",
+      "text": "门诊",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "doctor.clinic-empty",
+      "type": "hasText",
+      "desc": "§1.1：门诊暂无数据时写「无」，不隐藏这一行",
+      "selector": ".tc-doctor-meta--clinic",
+      "text": "无",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "copy.no-clinic-room",
+      "type": "forbidText",
+      "desc": "§1.1：这一栏叫「门诊」，不叫「诊室」",
+      "text": "诊室",
+      "scope": ".tc-doctor-detail",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "order.doctor-meta-rows",
+      "type": "mustExist",
+      "desc": "§1.1：三行固定顺序 门诊 → 所在医院 → 备注，且是一个整体",
+      "selector": ".tc-doctor-meta-list > .tc-doctor-meta--clinic + .tc-doctor-meta--origin + .tc-doctor-meta--note",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "doctor.meta-gap",
+      "type": "computed",
+      "desc": "§1.1：三行之间 8px，不再用零散的 12/16px 上边距撑开",
+      "selector": ".tc-doctor-meta-list",
+      "props": {
+        "rowGap": "8px"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "doctor.meta-row-line-height",
+      "type": "computed",
+      "desc": "§1.1：所在医院那行行高 21px（14px × 1.5），按钮不自带块级高度把行撑高",
+      "selector": ".tc-doctor-meta--origin",
+      "props": {
+        "lineHeight": "21px"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row",
+          "mobileSelector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-lead-doctor"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-detail-title"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "mobile.burger-hidden",
+      "type": "computed",
+      "desc": "§6 手机端不设汉堡：侧栏由底部条打开，汉堡 display:none（DOM 保留，桌面仍用）",
+      "selector": ".tc-mapapp-burger",
+      "props": {
+        "display": "none"
+      },
+      "at": 390
+    },
+    {
+      "id": "mobile.legend-hidden",
+      "type": "computed",
+      "desc": "§6 手机端不显示线索密度图例，左下角留给地图边缘",
+      "selector": ".tc-mapapp-legend",
+      "props": {
+        "display": "none"
+      },
+      "at": 390
+    },
+    {
+      "id": "mobile.scale-hidden",
+      "type": "computed",
+      "desc": "§6 手机端不显示比例尺（控件压根没创建时等同不显示；正向由 desktop.scale-present 兜）",
+      "selector": ".tc-mapapp-canvas .amap-scalecontrol",
+      "props": {
+        "display": "none"
+      },
+      "at": 390,
+      "absentOk": true
+    },
+    {
+      "id": "mobile.about-right-of-search",
+      "type": "layoutRel",
+      "desc": "§6 顶栏顺序：关于项目在搜索框右侧（右上角），间距 ≥8px",
+      "a": "button.tc-mapapp-about",
+      "b": ".tc-mapapp-search",
+      "relation": "rightOf",
+      "gap": 8,
+      "at": 390
+    },
+    {
+      "id": "mobile.about-above-canvas",
+      "type": "layoutRel",
+      "desc": "§6 关于项目 在画布上方，不压地图",
+      "a": "button.tc-mapapp-about",
+      "b": ".tc-mapapp-canvas",
+      "relation": "above",
+      "gap": 8,
+      "at": 390
+    },
+    {
+      "id": "mobile.canvas-below-topbar",
+      "type": "layoutRel",
+      "desc": "§6 画布顶边在顶栏下方 ≥8px，内蒙古与黑龙江北缘不被浮层挡住",
+      "a": ".tc-mapapp-canvas",
+      "b": ".tc-mapapp-topbar",
+      "relation": "below",
+      "gap": 8,
+      "at": 390
+    },
+    {
+      "id": "mobile.canvas-above-browse",
+      "type": "layoutRel",
+      "desc": "§6 画布底边在底部浏览条上方 ≥8px，海南与广东南缘不被浮层挡住",
+      "a": ".tc-mapapp-canvas",
+      "b": ".tc-mobile-browse",
+      "relation": "above",
+      "gap": 8,
+      "at": 390
+    },
+    {
+      "id": "mobile.sidebar-opens",
+      "type": "mustExist",
+      "desc": "§6 底部条能打开侧栏（删汉堡后唯一入口）",
+      "selector": ".tc-sidebar:not(.tc-sidebar--closed)",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mobile-browse"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-sidebar-close"
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "mobile.sidebar-closes",
+      "type": "mustExist",
+      "desc": "§6 侧栏自己的关闭键能收起，收起后底部条回来",
+      "selector": ".tc-sidebar.tc-sidebar--closed",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mobile-browse"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-sidebar-close"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-sidebar-close"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-mobile-browse"
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "a11y.no-marker-tabstops",
+      "type": "count",
+      "desc": "地图上的医院点与聚合点不进 Tab 序（省视图 51 个按钮，多数在视口外；内容与侧栏列表重复）",
+      "selector": ".tc-mapapp-canvas button.tc-map-node:not([tabindex=\"-1\"])",
+      "expect": 0,
+      "at": 1440,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        }
+      ]
+    },
+    {
+      "id": "a11y.mapapp-not-dialog",
+      "type": "mustNotExist",
+      "desc": "整页根节点不是对话框（真正在遮的是侧栏抽屉）",
+      "selector": ".tc-mapapp[role=\"dialog\"]",
+      "at": 390,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mobile-browse",
+          "unlessVisible": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-sidebar-close"
+        }
+      ]
+    },
+    {
+      "id": "a11y.sidebar-is-dialog",
+      "type": "attr",
+      "desc": "手机抽屉打开时侧栏面板自己是 dialog",
+      "selector": ".tc-sidebar",
+      "attr": "role",
+      "equals": "dialog",
+      "at": 390,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mobile-browse",
+          "unlessVisible": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-sidebar-close"
+        }
+      ]
+    },
+    {
+      "id": "a11y.sidebar-is-modal",
+      "type": "attr",
+      "desc": "抽屉模态，背后的地图对读屏和 Tab 都不可达",
+      "selector": ".tc-sidebar",
+      "attr": "aria-modal",
+      "equals": "true",
+      "at": 390,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mobile-browse",
+          "unlessVisible": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-sidebar-close"
+        }
+      ]
+    },
+    {
+      "id": "a11y.escape-returns-focus",
+      "type": "focusOn",
+      "desc": "390：Escape 关抽屉后焦点回到手机底部条入口（抽屉入场 200ms，等焦点用轮询不用固定 sleep）",
+      "selector": ".tc-mobile-browse",
+      "pollMs": 250,
+      "at": 390,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mobile-browse",
+          "unlessVisible": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-sidebar-close"
+        },
+        {
+          "action": "key",
+          "value": "Escape"
+        }
+      ]
+    },
+    {
+      "id": "a11y.close-during-anim-focus",
+      "type": "focusOn",
+      "desc": "390：抽屉入场动画进行中就点关闭，焦点仍要回到底部条（force 点击，不等动画结束）",
+      "selector": ".tc-mobile-browse",
+      "pollMs": 250,
+      "at": 390,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mobile-browse"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-sidebar-close",
+          "force": true
+        }
+      ]
+    },
+    {
+      "id": "a11y.hospital-back-focus",
+      "type": "focusOn",
+      "desc": "1440：从医院详情返回，焦点落回刚才点进的那一行，文本与进入时一致",
+      "selector": ".tc-hospital-row",
+      "from": "hospital",
+      "pollMs": 250,
+      "at": 1440,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-burger",
+          "unlessVisible": ".tc-province-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "remember": "hospital"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail-back"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-detail-back"
+        }
+      ]
+    },
+    {
+      "id": "a11y.focus-restore-not-hidden",
+      "type": "focusLog",
+      "desc": "390：点关闭键收抽屉，焦点回到入口的那一刻，入口不能在 aria-hidden=\"true\" 的子树里；关闭前焦点先钉在关闭键上，否则 focus() 是空操作、断言什么都没证明",
+      "selector": "button.tc-mobile-browse",
+      "at": 390,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-mobile-browse",
+          "unlessVisible": ".tc-province-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-sidebar-close"
+        },
+        {
+          "action": "focus",
+          "selector": ".tc-sidebar-close"
+        },
+        {
+          "action": "expectFocus",
+          "selector": ".tc-sidebar-close"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-sidebar-close"
+        }
+      ]
+    },
+    {
+      "id": "desktop.scale-present",
+      "type": "rect",
+      "desc": "1440：比例尺控件必须真的渲染出来且可见——否则「该出现却没渲染」会随上一条放宽而无人看管（CI 里 AMap 起不来时记不适用）",
+      "selector": ".tc-mapapp-canvas .amap-scalecontrol",
+      "min": {
+        "w": 40,
+        "h": 10
+      },
+      "skipIfMissing": true,
+      "at": 1440
+    }
+  ],
+  "appliesTo": [
+    "/"
+  ],
+  "appliesToNote": "这批断言的选择器取自地图首页的 DOM（.tc-sidebar / .tc-map-zoom / .tc-hospital-card 等）。拿到别的路由跑会大面积假失败——不是那些页面不合格，是断言不适用。要覆盖其他路由，另写一份带自己选择器的文件，在 appliesTo 里写明路由。",
+  "retired": [
+    {
+      "id": "type.sidebar-card-h2",
+      "why": "机构行里没有标题元素；名称字号由 type.hospital-row-name 覆盖"
+    },
+    {
+      "id": "grid.gap",
+      "why": "列表不再是网格，改为单列行"
+    },
+    {
+      "id": "s5-card-padding",
+      "why": "行没有卡片内边距；行内缩进由 s5-row-highlight-* 的 8px 外扩规格覆盖"
+    },
+    {
+      "id": "filter.pick-shows-reset",
+      "reason": "2026-11-03 Master 定：病症改多选、取消靠再点同一行，「清除筛选」删除"
+    },
+    {
+      "id": "filter.reset-returns-all",
+      "reason": "2026-11-03 Master 定：病症改多选、取消靠再点同一行，「清除筛选」删除"
+    },
+    {
+      "id": "copy.reset-restores-label",
+      "reason": "2026-11-03 Master 定：病症改多选、取消靠再点同一行，「清除筛选」删除"
+    },
+    {
+      "id": "filter.reset-hides-itself",
+      "reason": "2026-11-03 Master 定：病症改多选、取消靠再点同一行，「清除筛选」删除"
+    },
+    {
+      "id": "s5-burger-48-375",
+      "reason": "手机端 2026-11-03 起不显示汉堡（侧栏由底部浏览条打开），48px 入口由 s6-mobile-browse-54 覆盖；桌面汉堡仍由 s5 相关断言管"
+    }
+  ]
+}
