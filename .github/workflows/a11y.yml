@@ -1,0 +1,84 @@
+name: A11y spec (advisory)
+
+# 设计断言的整站走查，只做参考，不进 required。
+# 在 pull_request 上跑：改动合并前就能看见红项；合并后不再重复跑，发布仍由 deploy-pages 负责。
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  spec:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build static site
+        run: npm run build
+        env:
+          GITHUB_PAGES: 'true'
+          NEXT_PUBLIC_BASE_PATH: ''
+
+      - name: Serve out/ on 4177
+        run: |
+          node scripts/preview.ts --port 4177 > /tmp/preview.log 2>&1 &
+          for attempt in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:4177/ > /dev/null; then
+              echo "preview up after ${attempt}s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "preview did not start"
+          cat /tmp/preview.log
+          exit 1
+
+      - name: Install playwright for the spec runner
+        run: |
+          npm i --no-save --prefix .ci playwright@1.63.0
+          .ci/node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Snapshot provenance
+        run: |
+          node - <<'NODE'
+          const crypto = require('crypto')
+          const fs = require('fs')
+          for (const file of ['tools/a11y/spec.cjs', 'tools/a11y/ui-spec.json']) {
+            const bytes = fs.readFileSync(file)
+            const sha = crypto.createHash('sha256').update(bytes).digest('hex').slice(0, 16)
+            console.log(`${file}\t${bytes.length} bytes\tsha256:${sha}`)
+          }
+          NODE
+
+      - name: Spec at 1440x900
+        env:
+          NODE_PATH: ${{ github.workspace }}/.ci/node_modules
+        run: |
+          mkdir -p reports/a11y
+          node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json \
+            --viewports 1440x900 --out reports/a11y --name ci-1440
+
+      - name: Spec at 390x844
+        if: always()
+        env:
+          NODE_PATH: ${{ github.workspace }}/.ci/node_modules
+        run: |
+          node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json \
+            --viewports 390x844 --out reports/a11y --name ci-390
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a11y-spec-reports
+          path: reports/a11y
+          if-no-files-found: warn
