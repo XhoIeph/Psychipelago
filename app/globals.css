@@ -295,7 +295,7 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 /* 把手本身是按钮：方向键换档，聚焦时把手变品牌绿并给出 3px 环。 */
 .grab:focus-visible { outline:3px solid var(--tc-accent); border-radius:8px; }
 .grab:focus-visible i { background:var(--tc-accent); }
-.searchrow { display:flex; align-items:center; gap:8px; flex:none; padding:0 12px 10px; }
+.searchrow { display:flex; align-items:center; gap:0; flex:none; padding:0 12px 10px; }
 .sfield { display:flex; align-items:center; flex:1; min-width:0; height:44px; padding:0 10px 0 12px; border-radius:14px; background:#fff; box-shadow:inset 0 0 0 1px #193b3814,0 1px 2px #092a390a; }
 .sfield:focus-within { box-shadow:inset 0 0 0 1px var(--tc-text); }
 .sfield .sq { color:var(--tc-text-faint); }
@@ -328,6 +328,33 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .sr-name { font-size:15px; line-height:1.4; }
 .sr-meta { color:var(--tc-text-faint); font-size:12px; line-height:1.4; }
 .sr-empty { margin:0; padding:28px 0 32px; color:var(--tc-text-muted); font-size:14px; text-align:center; }
+
+/* 筛选入口：聚焦、展开或有选中时才从 0 展到 48，平时把宽度还给搜索框。 */
+.fbtn { display:flex; align-items:center; justify-content:center; gap:5px; flex:none; width:0; height:44px; margin-left:0; padding:0; overflow:hidden; opacity:0; border:0; border-radius:14px; background:#dff0e7; color:var(--tc-accent-strong); box-shadow:inset 0 0 0 1px #087f7b1a;
+  transition:width 240ms cubic-bezier(.32,.72,0,1),margin-left 240ms cubic-bezier(.32,.72,0,1),opacity 180ms ease,background-color .16s ease; }
+.searchrow.is-eng .fbtn { width:48px; margin-left:8px; opacity:1; }
+.fbtn:hover { background:#d5eade; }
+.fbtn[aria-expanded="true"] { background:#c9e4d7; box-shadow:inset 0 0 0 1px #087f7b38; }
+.fbtn .cnt { display:none; font-size:11px; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; }
+.fbtn.has .cnt { display:block; }
+/* 面板在正文顶部展开；0fr → 1fr 的过渡比 max-height 更贴内容。 */
+.fpanel { display:grid; grid-template-rows:0fr; visibility:hidden; transition:grid-template-rows .2s ease,visibility .2s; }
+.fpanel.is-open { grid-template-rows:1fr; visibility:visible; }
+.fp-inner { overflow:hidden; border-bottom:1px solid var(--tc-border); }
+.fpanel ul { margin:0; padding:0 0 6px; list-style:none; }
+.fp-row { display:flex; align-items:center; justify-content:space-between; gap:8px; width:calc(100% + 16px); height:44px; margin:0 -8px; padding:0 8px; border:0; border-radius:8px; background:transparent; color:var(--tc-text); font-size:14px; text-align:left; }
+.fp-row:hover { background:var(--tc-surface-muted); }
+.fp-row[aria-checked="true"] { background:var(--tc-accent-soft); }
+.fp-row .tick { flex:none; color:var(--tc-accent-strong); opacity:0; }
+.fp-row[aria-checked="true"] .tick { opacity:1; }
+.list-note { margin:0; padding:12px 0 2px; color:var(--tc-text-faint); font-size:12.5px; line-height:1.6; }
+.tc-empty-acts { display:flex; gap:8px; justify-content:center; margin-top:12px; }
+
+/* 筛选压层：由 runtime 画在地图容器里，盖住底图、只让命中的省透出来。 */
+.tc-map-geo { position:absolute; inset:0; z-index:4; width:100%; height:100%; pointer-events:none; }
+.tc-map-geo .veil { fill:rgba(244,247,246,.66); opacity:0; transition:opacity .24s ease; }
+.tc-map-geo.is-on .veil { opacity:1; }
+.tc-map-geo .hit { fill:rgba(8,127,123,.16); stroke:rgba(8,127,123,.4); stroke-width:1; stroke-linejoin:round; }
 
 /* Controls respond without changing SDK-owned geographic transforms. */
 :is(.tc-button,.tc-mapapp-ctl,.tc-mapapp-burger,.tc-sidebar-close,.tc-sidebar-tab,.tc-filter-toggle,.tc-mapapp-result,.tc-card-action,.tc-nav a,.tc-about-icon,.tc-search-clear,.tc-linklike,.back-btn) { transition:background-color .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease; }

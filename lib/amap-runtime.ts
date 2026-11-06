@@ -179,6 +179,65 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   function densityOpacity() {
     for (const [adcode, polygon] of provinces) polygon.setOptions({ fillOpacity: opacity.density * (options.stats[adcode]?.reports ? .55 : 0), strokeOpacity: opacity.density })
   }
+
+  // 筛选联动：AMap 的省面只当密度底色，压层与命中省另画一层 SVG，
+  // 这样「盖住底图、只留几个省提亮」不用逐面改 Polygon，也不会跟密度动画打架。
+  const SVG_NS = 'http://www.w3.org/2000/svg'
+  const geoLayer = document.createElementNS(SVG_NS, 'svg')
+  geoLayer.setAttribute('class', 'tc-map-geo geo')
+  geoLayer.setAttribute('aria-hidden', 'true')
+  const veil = document.createElementNS(SVG_NS, 'rect')
+  veil.setAttribute('class', 'veil')
+  veil.setAttribute('width', '100%')
+  veil.setAttribute('height', '100%')
+  geoLayer.append(veil)
+  const hitsLayer = document.createElementNS(SVG_NS, 'g')
+  hitsLayer.setAttribute('class', 'hits')
+  geoLayer.append(hitsLayer)
+  container.append(geoLayer)
+  const provinceRings = new Map<string, number[][][][]>()
+  const hitPaths = new Map<string, SVGPathElement>()
+  let filterHits: Set<string> | null = null
+
+  function drawFilter() {
+    const active = !!filterHits && filterHits.size > 0 && !nodesOn
+    geoLayer.classList.toggle('is-on', active)
+    if (!active) {
+      for (const path of hitPaths.values()) path.remove()
+      hitPaths.clear()
+      return
+    }
+    const zoom = camera.getZoom()
+    const origin = project(camera.getCenter(), zoom).subtract(size.divideBy(2))
+    for (const adcode of filterHits!) {
+      const rings = provinceRings.get(adcode)
+      if (!rings) continue
+      let d = ''
+      for (const polygon of rings) {
+        for (const ring of polygon) {
+          for (let index = 0; index < ring.length; index++) {
+            const point = project({ lng: ring[index][0], lat: ring[index][1] }, zoom).subtract(origin)
+            d += `${index === 0 ? 'M' : 'L'}${point.x.toFixed(1)} ${point.y.toFixed(1)}`
+          }
+          d += 'Z'
+        }
+      }
+      let path = hitPaths.get(adcode)
+      if (!path) {
+        path = document.createElementNS(SVG_NS, 'path')
+        path.setAttribute('class', 'hit')
+        hitsLayer.append(path)
+        hitPaths.set(adcode, path)
+      }
+      path.setAttribute('d', d)
+    }
+    for (const [adcode, path] of hitPaths) {
+      if (filterHits!.has(adcode)) continue
+      path.remove()
+      hitPaths.delete(adcode)
+    }
+  }
+
   function update() {
     if (disposed) return
     const zoom = camera.getZoom(), detailed = showMapNodes(zoom, nodesOn)
@@ -208,6 +267,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
       if (zoomMoved || nodeSignature(zoom) !== renderedSignature) renderNodes(zoom)
     }
     const atMin = zoom <= minZoom + .001, atMax = zoom >= MAP_MAX_ZOOM - .001
+    drawFilter()
     if (atMin !== previousMin || atMax !== previousMax) {
       previousMin = atMin; previousMax = atMax
       options.limits(atMin, atMax)
@@ -278,6 +338,11 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
     camera, syncSelection, cancelWheel: wheel.cancel, interrupt, isNavigating: () => !!cameraTween,
     setMinZoom,
     moveTo, country,
+    /** 手机筛选联动：传命中省 adcode，其余被压层盖住；null 取消。 */
+    setFilterHits(adcodes: string[] | null) {
+      filterHits = adcodes && adcodes.length ? new Set(adcodes) : null
+      drawFilter()
+    },
     province(adcode: string, inset: number) {
       const bounds = provinces.get(adcode)?.getBounds()
       if (!bounds) return
@@ -294,8 +359,10 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
       for (const feature of geo.features) {
         const adcode = String(feature.properties.adcode)
         if (adcode.endsWith('_JD')) continue
+        const rings = gcjCoordinateTree(feature.geometry.coordinates) as number[][][][]
+        provinceRings.set(adcode, rings)
         const polygon = new sdk.Polygon()
-        polygon.setOptions({ path: gcjCoordinateTree(feature.geometry.coordinates) as AMap.LngLatLike[][][],
+        polygon.setOptions({ path: rings as AMap.LngLatLike[][][],
           fillColor: densityColor(options.stats[adcode]?.reports ?? 0), fillOpacity: .55,
           strokeColor: '#78a88e', strokeWeight: 1.1, zIndex: 20, bubble: false, cursor: 'pointer',
         })
@@ -313,6 +380,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
       container.removeEventListener('keydown', onInput, true)
       container.removeEventListener('scroll', pinToOrigin)
       container.removeEventListener('focusin', pinToOrigin)
+      geoLayer.remove()
       map.destroy()
     },
   }

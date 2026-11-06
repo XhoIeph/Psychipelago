@@ -11,6 +11,9 @@ export function ProvinceDetail({
   onBackToCountry,
   onZoomToProvince,
   onSelectHospital,
+  hideCount = false,
+  filteredEmpty = false,
+  onClearFilter,
 }: {
   provinceName: string
   stat: MapProvinceStat | undefined
@@ -18,8 +21,14 @@ export function ProvinceDetail({
   onBackToCountry: () => void
   onZoomToProvince: () => void
   onSelectHospital: (id: string) => void
+  /** 底卡头部已经报了家数，正文不再重复。 */
+  hideCount?: boolean
+  /** 该省本来有医院，只是被病症筛选筛掉了：和「没有收录」用不同的话。 */
+  filteredEmpty?: boolean
+  onClearFilter?: () => void
 }) {
-  const hasData = (stat?.reports ?? 0) > 0 || hospitals.length > 0
+  // 筛选把列表筛空时，省本身的收录数还在，不能据此当成「有数据」。
+  const hasData = !filteredEmpty && ((stat?.reports ?? 0) > 0 || hospitals.length > 0)
 
   return (
     <div className="tc-detail">
@@ -33,7 +42,7 @@ export function ProvinceDetail({
 
       {hasData ? (
         <>
-          <p className="tc-small tc-muted">{hospitals.length} 家医院</p>
+          {!hideCount && <p className="tc-small tc-muted">{hospitals.length} 家医院</p>}
 
           <div className="tc-hospital-actions"><button type="button" className="tc-button tc-button--active" onClick={onZoomToProvince}>
             <MapPin size={16} aria-hidden="true" />在地图上定位
@@ -62,7 +71,16 @@ export function ProvinceDetail({
         </>
       ) : (
         <div className="tc-empty">
-          <p>该省暂无已收录的线索与医院记录。</p>
+          {filteredEmpty ? (
+            <>
+              <h3>这次筛选没有匹配的医院</h3>
+              <div className="tc-empty-acts">
+                <button type="button" className="tc-button tc-button--active" onClick={onClearFilter}>清除病症筛选</button>
+              </div>
+            </>
+          ) : (
+            <p>该省暂无已收录的线索与医院记录。</p>
+          )}
         </div>
       )}
     </div>

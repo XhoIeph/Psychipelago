@@ -86,6 +86,7 @@ export function MapApp(props: Props) {
   const hospitalReturnFocusRef = useRef<string | null>(null)
   // 底卡的档位：peek 随内容，medium/large 按视口定。高度由 MapSheet 量、MapApp 只算让位。
   const [sheetStop, setSheetStop] = useState<SheetStop>('peek')
+  const [filterOpen, setFilterOpen] = useState(false)
   const [peekHeight, setPeekHeight] = useState(0)
   const [viewportHeight, setViewportHeight] = useState(0)
   // 点钉进详情时，钉在画布里的 y：让位目标是这枚钉，不是层级锚点。
@@ -410,9 +411,12 @@ export function MapApp(props: Props) {
     const next = selectedSet.has(id) ? selectedDisorders.filter((item) => item !== id) : [...selectedDisorders, id]
     setSelectedDoctor(null)
     setSelectedHospitalId(null)
-    setSelectedProvinceAdcode(null)
-    setPinFocusY(null)
-    setCluster(null)
+    // 手机底卡的筛选作用在当前层级：在省里筛就留在省里，等结果筛空再给空态。
+    if (desktopRef.current) {
+      setSelectedProvinceAdcode(null)
+      setPinFocusY(null)
+      setCluster(null)
+    }
     doctorReturnFocusRef.current = null
     setResultFilter(null)
     setSelectedDisorders(next)
@@ -605,7 +609,15 @@ export function MapApp(props: Props) {
       .map((item) => (activeHospitalIds ? { ...item, leads: leadCountFor(item.id) } : item))
     : []
 
-  const detailNode = selectedDoctor && doctorHospital ? (
+  // 该省本来有没有收录：决定「筛选筛空了」和「本来就没有」两句文案用哪句。
+  const provinceHasRecords = selectedProvince
+    ? (props.provinceStats[selectedProvince.adcode]?.reports ?? 0) > 0
+      || props.mapHospitals.some((item) => item.adcode === selectedProvince.adcode)
+    : false
+  const clearDisorderFilter = () => setSelectedDisorders([])
+
+  // 手机底卡与桌面侧栏共用详情组件；手机隐藏已经搬到卡头部的家数/标题重复行。
+  const renderDetail = (mobile: boolean) => selectedDoctor && doctorHospital ? (
     <DoctorDetail
       name={selectedDoctor.name}
       hospital={doctorHospital}
@@ -634,8 +646,14 @@ export function MapApp(props: Props) {
       onBackToCountry={backToCountryFromDetail}
       onZoomToProvince={() => selectProvince(selectedProvince.adcode)}
       onSelectHospital={openHospital}
+      hideCount={mobile}
+      filteredEmpty={mobile && selectedDisorders.length > 0 && provinceHasRecords && provinceHospitals.length === 0}
+      onClearFilter={clearDisorderFilter}
     />
   ) : null
+
+  const detailNode = renderDetail(false)
+  const mobileDetailNode = renderDetail(true)
 
   // 详情态身份 + 层级：侧栏用它决定进场动画的 key 与方向（省 1、机构 2、医生 3）。
   const detailState = selectedDoctor
@@ -671,6 +689,35 @@ export function MapApp(props: Props) {
     ),
   }
 
+  // 手机底卡的筛选入口在搜索行右侧：同样的分组，不再重复正文里的旧面板。
+  const sheetFilters = disorderGroups.map((group) => ({
+    id: group.id,
+    label: group.label,
+    count: group.hospitalIds.length,
+  }))
+
+  const mobileExplorer = (
+    <Suspense fallback={<p className="tc-small tc-muted">加载中……</p>}>
+      <HospitalExplorer
+        hospitals={props.hospitals}
+        provinces={props.provinces}
+        reportCounts={props.reportCounts}
+        variant="compact"
+        onSelectHospital={openHospital}
+        onSelectProvince={openProvince}
+        disorderGroups={disorderGroups}
+        selectedDisorders={selectedDisorders}
+        onToggleDisorder={toggleDisorder}
+        activeLeads={activeLeads}
+        resultFilter={resultFilter}
+        hideHeading
+        hideFilterPanel
+        showFilteredNote
+        onClearFilter={clearDisorderFilter}
+      />
+    </Suspense>
+  )
+
   // 底卡的标题跟着当前层级走；搜索时让位给查询词，计数只报能在结果里看到的省份与医院。
   const searching = query.trim().length > 0
   const sheetLevel: SheetLevel = searching
@@ -685,15 +732,21 @@ export function MapApp(props: Props) {
   const sheetTitle = searching
     ? query.trim()
     : selectedDoctor?.name ?? selectedHospital?.name ?? selectedProvince?.name ?? '医院与线索'
-  const searchHospitalHits = grouped.find((entry) => entry.group === '医院')?.items.length ?? 0
+  // 搜索头部只数会在结果里出现的东西：省份 → 医院 → 医生，病症是标签不是实体。
   const searchProvinceHits = grouped.find((entry) => entry.group === '省份')?.items.length ?? 0
+  const searchHospitalHits = grouped.find((entry) => entry.group === '医院')?.items.length ?? 0
+  const searchDoctorHits = grouped.find((entry) => entry.group === '医生')?.items.length ?? 0
   const sheetCounts = searching
     ? [
-      ...(searchHospitalHits > 0 ? [{ value: searchHospitalHits, unit: '家医院' }] : []),
       ...(searchProvinceHits > 0 ? [{ value: searchProvinceHits, unit: '个省份' }] : []),
+      ...(searchHospitalHits > 0 ? [{ value: searchHospitalHits, unit: '家医院' }] : []),
+      ...(searchDoctorHits > 0 ? [{ value: searchDoctorHits, unit: '位医生' }] : []),
     ]
     : sheetLevel === 'country'
-      ? [{ value: props.hospitals.length, unit: '家医院' }, { value: props.reports.length, unit: '条线索' }]
+      ? [
+        { value: activeHospitalIds ? activeHospitalIds.size : props.hospitals.length, unit: '家医院' },
+        { value: activeLeads ?? props.reports.length, unit: '条线索' },
+      ]
       : sheetLevel === 'province'
         ? [{ value: provinceHospitals.length, unit: '家医院' }]
         : []
@@ -742,17 +795,39 @@ export function MapApp(props: Props) {
     containerRef.current?.classList.toggle('tc-mapapp-canvas--pinned', pinFocusY !== null)
   }, [pinFocusY])
 
+  // 筛选联动地图：命中的省提亮，其余被半透明压层盖住（覆盖层由 runtime 自绘）。
+  useEffect(() => {
+    const runtime = runtimeRef.current
+    if (!runtime || isDesktop || !mapReady) return
+    if (!activeHospitalIds) {
+      runtime.setFilterHits(null)
+      return
+    }
+    const adcodes = new Set<string>()
+    for (const hospital of props.mapHospitals) {
+      if (activeHospitalIds.has(hospital.id)) adcodes.add(hospital.adcode)
+    }
+    runtime.setFilterHits([...adcodes])
+  }, [activeHospitalIds, isDesktop, mapReady, props.mapHospitals])
+
+  // 详情层没有 peek 这一档（A24）：所有换档都从这里过，任何调用方都绕不过去。
+  const detailSheet = sheetLevel === 'hospital' || sheetLevel === 'doctor'
+  const applySheetStop = useCallback((next: SheetStop) => {
+    setSheetStop(detailSheet && next === 'peek' ? 'medium' : next)
+  }, [detailSheet])
+
   // 换层级时换档：进省看列表用 medium，进详情看内容用 large；搜索不动档位。
   const previousSheetLevelRef = useRef<SheetLevel>('country')
   useEffect(() => {
     const previous = previousSheetLevelRef.current
     previousSheetLevelRef.current = sheetLevel
     if (previous === sheetLevel) return
-    if (sheetLevel === 'province') setSheetStop('medium')
+    setFilterOpen(false)
+    if (sheetLevel === 'province') applySheetStop('medium')
     // 点钉进来的详情用 medium，让地图露出更多；从列表或搜索进来的看内容用 large。
-    else if (sheetLevel === 'hospital' || sheetLevel === 'doctor') setSheetStop(pinFocusY !== null ? 'medium' : 'large')
-    else if (sheetLevel === 'country' && previous !== 'search') setSheetStop('medium')
-  }, [sheetLevel])
+    else if (sheetLevel === 'hospital' || sheetLevel === 'doctor') applySheetStop(pinFocusY !== null ? 'medium' : 'large')
+    else if (sheetLevel === 'country' && previous !== 'search') applySheetStop('medium')
+  }, [applySheetStop, pinFocusY, sheetLevel])
 
   const sheetBackLabel = selectedDoctor
     ? props.mapHospitals.find((item) => item.id === selectedDoctor.hospitalId)?.name
@@ -765,14 +840,42 @@ export function MapApp(props: Props) {
         ? backToCountry
         : undefined
 
-  // 搜索失焦：只有仍停在全国列表、没有关键字也没有筛选时才收回 peek。
+  // 搜索失焦：只收回因聚焦抬起来的那一档；详情层根本没有 peek 可退。
   // 点结果行、拖把手这类焦点暂时跑开的场景由 MapSheet 用 relatedTarget 和指针状态挡掉。
   const dismissSearchSheet = () => {
     if (query.trim()) return
     if (resultFilter || selectedDisorders.length > 0) return
     if (sheetLevel !== 'country') return
-    setSheetStop('peek')
+    applySheetStop('peek')
   }
+
+  // Escape：先清搜索词，再收筛选面板，再把大卡收到中档，最后退回上一层。
+  useEffect(() => {
+    if (isDesktop) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.defaultPrevented) return
+      const target = event.target
+      if (target instanceof HTMLElement && (target.closest('input, textarea, select') || target.isContentEditable)) return
+      if (query) {
+        setQuery('')
+        setActiveResult(-1)
+        return
+      }
+      if (filterOpen) {
+        setFilterOpen(false)
+        return
+      }
+      if (sheetStop === 'large') {
+        applySheetStop('medium')
+        return
+      }
+      if (selectedDoctor) backToHospital()
+      else if (selectedHospital) backToProvince(selectedHospital.adcode)
+      else if (selectedProvince) backToCountry()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [applySheetStop, backToCountry, backToHospital, backToProvince, filterOpen, isDesktop, query, selectedDoctor, selectedHospital, selectedProvince, sheetStop])
 
   return (
     <div ref={shellRef} className="tc-mapapp">
@@ -901,8 +1004,9 @@ export function MapApp(props: Props) {
           title={sheetTitle}
           meta={sheetMeta}
           stop={sheetStop}
+          minStop={detailSheet ? 'medium' : 'peek'}
           heights={sheetHeights}
-          onStopChange={setSheetStop}
+          onStopChange={applySheetStop}
           onPeekHeight={handlePeekHeight}
           onLiveHeight={handleLiveHeight}
           onDragChange={handleSheetDragChange}
@@ -918,8 +1022,13 @@ export function MapApp(props: Props) {
           activeResult={activeResult}
           onActiveResultChange={setActiveResult}
           onRunResult={runResult}
+          filters={sheetLevel === 'country' || sheetLevel === 'province' ? sheetFilters : []}
+          selectedFilters={selectedDisorders}
+          onToggleFilter={toggleDisorder}
+          filterOpen={filterOpen}
+          onFilterOpenChange={setFilterOpen}
         >
-          {detailNode ?? tabs.hospitals}
+          {mobileDetailNode ?? mobileExplorer}
         </MapSheet>
       )}
 

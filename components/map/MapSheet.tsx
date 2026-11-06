@@ -6,11 +6,12 @@ import {
   useId,
   useLayoutEffect,
   useRef,
+  useState,
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from 'react'
-import { ChevronLeft, Search, X } from 'lucide-react'
+import { Check, ChevronLeft, Search, SlidersHorizontal, X } from 'lucide-react'
 import type { SearchResult, SheetSearchGroup } from './types'
 
 /** 底卡标题的字号档位：全国与搜索结果最小，医院/省份次之，医生名最大。 */
@@ -20,6 +21,9 @@ export type SheetLevel = 'country' | 'province' | 'hospital' | 'doctor' | 'searc
 export type SheetStop = 'peek' | 'medium' | 'large'
 
 export type SheetHeights = Record<SheetStop, number>
+
+/** 筛选面板的一行：病症名与命中的医院数。 */
+export type SheetFilter = { id: string; label: string; count: number }
 
 const STOP_ORDER: SheetStop[] = ['peek', 'medium', 'large']
 // peek = 把手 + 搜索行 + 头部 + 这条余量，层级换字号或藏起搜索行都要重量。
@@ -31,6 +35,8 @@ type Props = {
   /** 标题下的计数行；没有数字可报的层级传 null。 */
   meta: ReactNode
   stop: SheetStop
+  /** 详情层没有 peek：最低只能到 medium。 */
+  minStop?: SheetStop
   heights: SheetHeights
   onStopChange: (stop: SheetStop) => void
   /** peek 实测高度变化时上报，MapApp 用它算地图让位。 */
@@ -50,6 +56,12 @@ type Props = {
   activeResult: number
   onActiveResultChange: (index: number) => void
   onRunResult: (result: SearchResult) => void
+  /** 筛选入口：只有在全国/省份列表层才给。 */
+  filters?: SheetFilter[]
+  selectedFilters?: string[]
+  onToggleFilter?: (id: string) => void
+  filterOpen?: boolean
+  onFilterOpenChange?: (open: boolean) => void
   children: ReactNode
 }
 
@@ -62,10 +74,11 @@ type DragState = {
   samples: { t: number; y: number }[]
 }
 
-function nearestStop(height: number, heights: SheetHeights): SheetStop {
-  let best: SheetStop = 'peek'
+/** 只在与当前层级允许的档位里找最近的落点。 */
+function nearestStop(height: number, heights: SheetHeights, allowed: SheetStop[]): SheetStop {
+  let best: SheetStop = allowed[0]
   let distance = Number.POSITIVE_INFINITY
-  for (const stop of STOP_ORDER) {
+  for (const stop of allowed) {
     const next = Math.abs(heights[stop] - height)
     if (next < distance) {
       distance = next
@@ -84,6 +97,7 @@ export function MapSheet({
   title,
   meta,
   stop,
+  minStop = 'peek',
   heights,
   onStopChange,
   onPeekHeight,
@@ -98,6 +112,11 @@ export function MapSheet({
   activeResult,
   onActiveResultChange,
   onRunResult,
+  filters = [],
+  selectedFilters = [],
+  onToggleFilter,
+  filterOpen = false,
+  onFilterOpenChange,
   children,
 }: Props) {
   const titleId = useId()
@@ -110,11 +129,24 @@ export function MapSheet({
   const peekRef = useRef(0)
   // 卡内按下的指针在抬起前不算失焦：点结果行、拖把手时卡片不能先缩回 peek。
   const pointerInsideRef = useRef(false)
+  // 只收回「因为聚焦才抬起来」的那一档；用户自己拖上来的卡不动。
+  const focusRaisedRef = useRef(false)
+  const [inputFocused, setInputFocused] = useState(false)
   // 分组保持搜索结果的原顺序，拍平后的下标与 MapApp 的 activeResult 一致。
   const flat = results.flatMap((entry) => entry.items)
   const searching = query.trim().length > 0
   const isDetail = level === 'hospital' || level === 'doctor'
-  const targetHeight = heights[stop]
+  const minIndex = STOP_ORDER.indexOf(minStop)
+  const allowed = STOP_ORDER.slice(minIndex)
+  // 详情层即使外面还写着 peek，落到高度上也按 medium 算。
+  const effectiveStop = STOP_ORDER.indexOf(stop) < minIndex ? minStop : stop
+  const targetHeight = heights[effectiveStop]
+  const filterActive = selectedFilters.length > 0
+  const filterCount = filters.filter((item) => selectedFilters.includes(item.id)).length
+  const filterLabel = filterCount === 0
+    ? '按病症筛选'
+    : `${filters.filter((item) => selectedFilters.includes(item.id)).map((item) => item.label).join('、')}，点击展开筛选`
+  const eng = filterActive || filterOpen || inputFocused || searching
 
   const writeHeight = useCallback((height: number) => {
     const sheet = sheetRef.current
@@ -168,6 +200,17 @@ export function MapSheet({
     if (body) body.scrollTop = 0
   }, [level, title])
 
+  // 换层级后，之前的「聚焦抬起」不再作数。
+  useLayoutEffect(() => {
+    focusRaisedRef.current = false
+  }, [level])
+
+  // 详情层没有 peek 这一档：把手、键盘、拖拽都只能落在 medium 及以上。
+  const cycleStop = (): SheetStop => {
+    const index = allowed.indexOf(effectiveStop)
+    return allowed[(index + 1) % allowed.length]
+  }
+
   const beginDrag = (event: ReactPointerEvent<HTMLElement>) => {
     if (event.button !== 0) return
     const target = event.target
@@ -193,7 +236,7 @@ export function MapSheet({
     if (!drag || drag.pointerId !== event.pointerId) return
     const dy = drag.startY - event.clientY
     drag.moved = Math.max(drag.moved, Math.abs(dy))
-    const height = Math.min(heights.large, Math.max(heights.peek, drag.startHeight + dy))
+    const height = Math.min(heights.large, Math.max(heights[minStop], drag.startHeight + dy))
     writeHeight(height)
     const now = performance.now()
     drag.samples.push({ t: now, y: event.clientY })
@@ -217,25 +260,33 @@ export function MapSheet({
     }
     let next: SheetStop
     if (drag.moved < 6 && Math.abs(velocity) < 120) {
-      // 没拖动就是点头部：按 peek → medium → large 循环。
-      next = STOP_ORDER[(STOP_ORDER.indexOf(stop) + 1) % STOP_ORDER.length]
+      // 没拖动就是点头部：在层级允许的档位里循环。
+      next = cycleStop()
     } else {
-      next = nearestStop(sheet.offsetHeight + velocity * 0.22, heights)
+      next = nearestStop(sheet.offsetHeight + velocity * 0.22, heights, allowed)
     }
+    // 用户手动换过档，这张卡不再算「聚焦抬起」。
+    focusRaisedRef.current = false
     // 落点可能与当前档位相同（拖回原位），也要把高度交还给过渡。
     writeHeight(heights[next])
     onStopChange(next)
   }
 
   const onGrabKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
-    const index = STOP_ORDER.indexOf(stop)
+    const index = allowed.indexOf(effectiveStop)
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
       event.preventDefault()
-      const next = event.key === 'ArrowUp' ? Math.min(2, index + 1) : Math.max(0, index - 1)
-      if (next !== index) onStopChange(STOP_ORDER[next])
+      const next = event.key === 'ArrowUp'
+        ? Math.min(allowed.length - 1, index + 1)
+        : Math.max(0, index - 1)
+      if (next !== index) {
+        focusRaisedRef.current = false
+        onStopChange(allowed[next])
+      }
     } else if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
       event.preventDefault()
-      onStopChange(STOP_ORDER[(index + 1) % 3])
+      focusRaisedRef.current = false
+      onStopChange(cycleStop())
     }
   }
 
@@ -249,7 +300,7 @@ export function MapSheet({
   return (
     <section
       ref={sheetRef}
-      className={`sheet is-${level}${isDetail ? ' is-detail' : ''}`}
+      className={`sheet is-${level}${isDetail ? ' is-detail' : ''}${filterActive ? ' is-filtering' : ''}`}
       aria-labelledby={titleId}
       onPointerDownCapture={() => { pointerInsideRef.current = true }}
     >
@@ -264,7 +315,7 @@ export function MapSheet({
       >
         <i aria-hidden="true" />
       </div>
-      <div className="searchrow" ref={searchRowRef}>
+      <div className={eng ? 'searchrow is-eng' : 'searchrow'} ref={searchRowRef}>
         <div className="sfield">
           <Search className="sq" size={17} aria-hidden="true" />
           <input
@@ -274,14 +325,22 @@ export function MapSheet({
             aria-label="搜索省份、医院、医生或病症"
             onChange={(event) => onQueryChange(event.target.value)}
             onFocus={() => {
+              setInputFocused(true)
               // 原型在聚焦时把 peek 抬到 medium，否则结果区只剩几像素。
-              if (stop === 'peek') onStopChange('medium')
+              if (stop === 'peek') {
+                focusRaisedRef.current = true
+                onStopChange('medium')
+              }
             }}
             onBlur={(event) => {
-              // relatedTarget 还在卡里（点结果行、返回钮、把手）就不算失去焦点。
+              setInputFocused(false)
+              // 指针还按在卡里（点结果行、点筛钮）就不算失去焦点。
               if (pointerInsideRef.current) return
               const next = event.relatedTarget
               if (next instanceof Node && sheetRef.current?.contains(next)) return
+              // 只收回因聚焦抬起来的那一档。
+              if (!focusRaisedRef.current) return
+              focusRaisedRef.current = false
               onDismiss?.()
             }}
             onKeyDown={(event) => {
@@ -315,7 +374,23 @@ export function MapSheet({
             </button>
           )}
         </div>
-        {/* 第 4 批的筛选钮 .fbtn 放在这里；这批只在搜索框右侧留出空位。 */}
+        {onFilterOpenChange && (
+          <button
+            type="button"
+            className={`fbtn${filterCount > 0 ? ' has' : ''}`}
+            aria-label={filterLabel}
+            aria-expanded={filterOpen}
+            aria-controls={`${titleId}-filters`}
+            onClick={() => {
+              const next = !filterOpen
+              if (next && stop === 'peek') onStopChange('medium')
+              onFilterOpenChange(next)
+            }}
+          >
+            <SlidersHorizontal size={19} aria-hidden="true" />
+            <span className="cnt">{filterCount}</span>
+          </button>
+        )}
       </div>
       <header className="sheet-head" ref={headRef} {...dragProps}>
         {backLabel && onBack && (
@@ -330,6 +405,33 @@ export function MapSheet({
         {meta ? <div className="head-meta">{meta}</div> : null}
       </header>
       <div className="sheet-body" ref={bodyRef}>
+        {filters.length > 0 && onToggleFilter && (
+          <div
+            id={`${titleId}-filters`}
+            className={filterOpen ? 'fpanel is-open' : 'fpanel'}
+            aria-label="按病症筛选"
+            aria-hidden={!filterOpen}
+          >
+            <div className="fp-inner">
+              <ul>
+                {filters.map((item) => (
+                  <li key={item.id}>
+                    <button
+                      type="button"
+                      className="fp-row"
+                      role="checkbox"
+                      aria-checked={selectedFilters.includes(item.id)}
+                      onClick={() => onToggleFilter(item.id)}
+                    >
+                      <span>{item.label}</span>
+                      <Check className="tick" size={16} aria-hidden="true" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
         {searching ? (
           results.length > 0 ? (
             <div className="sheet-search">
