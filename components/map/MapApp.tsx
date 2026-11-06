@@ -878,13 +878,14 @@ export function MapApp(props: Props) {
         else if (selectedHospital) backToProvince(selectedHospital.adcode)
         return
       }
-      // 列表层一次收一档；全国 peek 无处可收，就停在这里。
+      // 列表层一次收一档；全国 peek 不动，省层 peek 退回全国，别停在没出口的地方。
       if (sheetStop === 'large') applySheetStop('medium')
       else if (sheetStop === 'medium') applySheetStop('peek')
+      else if (sheetLevel === 'province') backToCountry()
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [applySheetStop, backToHospital, backToProvince, detailSheet, filterOpen, isDesktop, query, selectedDoctor, selectedHospital, sheetStop])
+  }, [applySheetStop, backToCountry, backToHospital, backToProvince, detailSheet, filterOpen, isDesktop, query, selectedDoctor, selectedHospital, sheetLevel, sheetStop])
 
   return (
     <div ref={shellRef} className="tc-mapapp">

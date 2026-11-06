@@ -128,6 +128,7 @@ export function MapSheet({
   const searchRowRef = useRef<HTMLDivElement | null>(null)
   const headRef = useRef<HTMLElement | null>(null)
   const bodyRef = useRef<HTMLDivElement | null>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null)
   const dragRef = useRef<DragState | null>(null)
   const peekRef = useRef(0)
   // 卡内按下的指针在抬起前不算失焦：点结果行、拖把手时卡片不能先缩回 peek。
@@ -328,6 +329,7 @@ export function MapSheet({
         <div className="sfield">
           <Search className="sq" size={17} aria-hidden="true" />
           <input
+            ref={inputRef}
             type="search"
             value={query}
             placeholder="搜索省份 / 医院 / 病症"
@@ -377,6 +379,9 @@ export function MapSheet({
               onClick={() => {
                 onQueryChange('')
                 onActiveResultChange(-1)
+                // 清除钮卸载后焦点会掉到 body，输入框的失焦逻辑就再也收不到事件；
+                // 把焦点交还输入框，点地图时仍由同一条失焦路径收档。
+                inputRef.current?.focus()
               }}
             >
               <X size={15} aria-hidden="true" />

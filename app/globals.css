@@ -333,6 +333,8 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .fbtn { display:flex; align-items:center; justify-content:center; gap:5px; flex:none; width:0; height:44px; margin-left:0; padding:0; overflow:hidden; opacity:0; border:0; border-radius:14px; background:#dff0e7; color:var(--tc-accent-strong); box-shadow:inset 0 0 0 1px #087f7b1a;
   transition:width 240ms cubic-bezier(.32,.72,0,1),margin-left 240ms cubic-bezier(.32,.72,0,1),opacity 180ms ease,background-color .16s ease; }
 .searchrow.is-eng .fbtn { width:48px; margin-left:8px; opacity:1; }
+/* 折叠态宽度是 0，但按钮仍要能用键盘走到：拿到焦点就先展开，焦点环才有地方画。 */
+.fbtn:focus-visible { width:48px; margin-left:8px; opacity:1; }
 .fbtn:hover { background:#d5eade; }
 .fbtn[aria-expanded="true"] { background:#c9e4d7; box-shadow:inset 0 0 0 1px #087f7b38; }
 .fbtn .cnt { display:none; font-size:11px; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; }
