@@ -231,8 +231,9 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 
 /* Map: stable canvas, docked desktop panel, mobile sheet */
 .tc-mapapp {
-  --tc-sidebar-w:380px; --tc-sidebar-progress:0; --tc-sidebar-offset:0px; --tc-z-map:1; --tc-z-ctl:800; --tc-z-backdrop:1050;
-  --tc-z-sidebar:1100; --tc-z-topbar:1200; --tc-z-popover:1300;
+  --tc-sidebar-w:380px; --tc-sidebar-progress:0; --tc-sidebar-offset:0px; --tc-sheet-h:424px;
+  --tc-z-map:1; --tc-z-ctl:800; --tc-z-sidebar:1100; --tc-z-sheet:1100;
+  --tc-z-topbar:1200; --tc-z-popover:1300;
   /* Offscreen drawer focus must not scroll the fixed map viewport. */
   position:fixed; inset:0; overflow:clip;
 }
@@ -255,8 +256,6 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-mapapp-result { display:flex; flex-direction:column; width:100%; text-align:left; gap:4px; border:0; border-radius:8px; padding:10px; background:transparent; color:var(--tc-text); font-size:13px; min-height:48px; }
 .tc-mapapp-result small { color:var(--tc-text-muted); font-size:11px; }
 .tc-mapapp-result:hover,.tc-mapapp-result--active { background:var(--tc-accent-soft); }
-.tc-mapapp-backdrop { position:absolute; inset:0; z-index:var(--tc-z-backdrop); background:#153b3847; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .22s ease,visibility 0s linear .22s; }
-.tc-mapapp--open .tc-mapapp-backdrop { opacity:1; visibility:visible; pointer-events:auto; transition:opacity .22s ease,visibility 0s; }
 .tc-sidebar { position:absolute; top:0; bottom:0; left:0; z-index:var(--tc-z-sidebar); width:var(--tc-sidebar-w); display:flex; flex-direction:column; background:#fff; box-shadow:4px 0 20px #193b3808; transform:translateX(calc((var(--tc-sidebar-progress) - 1) * 100%)); opacity:clamp(0,calc(var(--tc-sidebar-progress) * 5),1); }
 .tc-sidebar--closed { pointer-events:none; }
 .tc-sidebar-head { padding:24px var(--tc-gutter) 16px; }
@@ -277,6 +276,8 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-project-card { position:absolute; right:0; top:calc(100% + 8px); width:min(320px,calc(100vw - 40px)); padding:24px; background:#fff; border:1px solid var(--tc-border); border-radius:16px; box-shadow:0 12px 36px #193b3824; font-size:14px; }
 .tc-project-card p { margin:16px 0; }
 .tc-project-card .tc-linklike { min-height:44px; }
+/* 手机顶栏的关于入口：图标直链 /about/；桌面仍用上面的按钮与卡片。 */
+.tc-about-icon { display:none; }
 .tc-mapapp-ctl { min-width:46px; min-height:46px; padding:10px 14px; display:inline-flex; align-items:center; justify-content:center; gap:8px; border:1px solid var(--tc-border); border-radius:12px; background:#fff; color:var(--tc-text); box-shadow:var(--tc-shadow); font-size:13px; }
 .tc-mapapp-ctl:hover { background:var(--tc-accent-soft); }
 .tc-mapapp-actions { position:absolute; z-index:var(--tc-z-ctl); right:20px; bottom:calc(150px + env(safe-area-inset-bottom,0px)); }
@@ -287,10 +288,37 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-mapapp-error,.tc-map-loading { position:absolute; z-index:var(--tc-z-ctl); top:90px; right:20px; max-width:calc(100% - 40px); padding:12px 18px; border-radius:12px; font-size:13px; }
 .tc-mapapp-error { color:var(--tc-danger); background:var(--tc-danger-soft); border:1px solid #ecc8c5; }
 .tc-map-loading { color:var(--tc-text-muted); background:#fff; box-shadow:var(--tc-shadow); }
-.tc-mobile-browse { display:none; }
+/* 手机底卡：把手、搜索、层级标题与浏览内容都在卡里；桌面不渲染它。 */
+.sheet { position:absolute; left:0; right:0; bottom:0; z-index:var(--tc-z-sheet); display:flex; flex-direction:column; height:var(--tc-sheet-h); background:#fff; border-radius:22px 22px 0 0; box-shadow:0 -1px 0 #193b380f,0 -12px 40px -8px #092a2738; }
+.grab { display:grid; place-items:center; flex:none; height:22px; touch-action:none; }
+.grab i { display:block; width:36px; height:5px; border-radius:3px; background:#cbd8d3; }
+.searchrow { display:flex; align-items:center; gap:8px; flex:none; padding:0 12px 10px; }
+.sfield { display:flex; align-items:center; flex:1; min-width:0; height:44px; padding:0 10px 0 12px; border-radius:14px; background:#fff; box-shadow:inset 0 0 0 1px #193b3814,0 1px 2px #092a390a; }
+.sfield:focus-within { box-shadow:inset 0 0 0 1px var(--tc-text); }
+.sfield .sq { color:var(--tc-text-faint); }
+/* 16px：iOS 在更小的字号上聚焦搜索框会把整页放大。 */
+.sfield input { flex:1; min-width:0; height:100%; border:0; background:none; color:var(--tc-text); font-size:16px; }
+.sfield input::-webkit-search-cancel-button { display:none; }
+.sclear { display:grid; place-items:center; flex:none; width:26px; height:26px; border:0; border-radius:999px; background:transparent; color:var(--tc-text-faint); }
+.sclear:hover { background:var(--tc-accent-soft); color:var(--tc-accent); }
+.sheet-head { flex:none; padding:0 16px 10px; }
+.head-title { margin:0; font-size:20px; font-weight:650; line-height:1.3; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.head-title--province,.head-title--hospital { font-size:22px; }
+.head-title--hospital { display:-webkit-box; overflow:hidden; -webkit-box-orient:vertical; -webkit-line-clamp:2; white-space:normal; }
+.head-title--doctor { font-size:26px; letter-spacing:-.015em; }
+.head-meta { margin:3px 0 0; color:var(--tc-text-muted); font-size:12.5px; line-height:1.5; }
+.head-meta b { color:var(--tc-text); font-weight:650; }
+.sheet-body { flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:0 16px calc(24px + env(safe-area-inset-bottom,0px)); scroll-padding:8px; }
+.sheet-search .sr-label { margin:10px 0 2px; color:var(--tc-text-faint); font-size:11px; font-weight:600; letter-spacing:.06em; }
+.sr-row { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:3px; width:calc(100% + 16px); min-height:46px; margin:0 -8px; padding:10px 8px; border:0; border-bottom:1px solid var(--tc-border); background:transparent; color:var(--tc-text); text-align:left; }
+.sr-row:last-of-type { border-bottom:0; }
+.sr-row:hover,.sr-row--active { background:var(--tc-accent-soft); }
+.sr-name { font-size:15px; line-height:1.4; }
+.sr-meta { color:var(--tc-text-faint); font-size:12px; line-height:1.4; }
+.sr-empty { margin:0; padding:28px 0 32px; color:var(--tc-text-muted); font-size:14px; text-align:center; }
 
 /* Controls respond without changing SDK-owned geographic transforms. */
-:is(.tc-button,.tc-mapapp-ctl,.tc-mapapp-burger,.tc-sidebar-close,.tc-sidebar-tab,.tc-filter-toggle,.tc-mapapp-result,.tc-card-action,.tc-nav a,.tc-mobile-browse,.tc-search-clear,.tc-linklike) { transition:background-color .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease; }
+:is(.tc-button,.tc-mapapp-ctl,.tc-mapapp-burger,.tc-sidebar-close,.tc-sidebar-tab,.tc-filter-toggle,.tc-mapapp-result,.tc-card-action,.tc-nav a,.tc-about-icon,.tc-search-clear,.tc-linklike) { transition:background-color .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease; }
 .tc-field input:focus-visible,.tc-field select:focus-visible,.tc-field textarea:focus-visible { border-color:var(--tc-text); }
 .tc-mapapp-search input:focus-visible { border-color:var(--tc-text); }
 .tc-mapapp-search:has(input:focus-visible) .tc-search-icon { color:var(--tc-text); }
@@ -316,33 +344,24 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-cluster-body strong { position:absolute; top:-8px; right:-8px; min-width:20px; height:20px; padding:0 4px; background:#a65c21; color:#fff; border-radius:10px; font-size:11px; line-height:20px; text-align:center; }
 
 @media (min-width:1000px) {
-  .tc-mapapp-backdrop,.tc-sidebar-close { display:none; }
+  /* 手机底卡在水合完成前也会挂载一帧；桌面上直接不显示。 */
+  .sheet,.tc-sidebar-close { display:none; }
 }
 @media (max-width:999px) {
-  .tc-mapapp-topbar,.tc-mapapp--open .tc-mapapp-topbar { top:12px; left:12px; right:12px; gap:8px; transform:none; }
-  /* The canvas sits between the top bar and the browse bar; neither floats over the map. */
-  .tc-mapapp-canvas { top:72px; bottom:96px; }
-  .tc-mapapp-search { flex:1; width:auto; }
-  .tc-mapapp-search input { font-size:16px; padding-left:40px; }
-  .tc-sidebar { top:104px; bottom:0; left:0; width:min(440px,100vw); border-radius:22px 22px 0 0; box-shadow:0 -8px 40px #193b3820; transform:translateY(calc((1 - var(--tc-sidebar-progress)) * 105%)); }
-  .tc-mapapp--open .amap-logo { top:72px; bottom:auto !important; }
-  .tc-mapapp--open .amap-copyright { top:76px; bottom:auto !important; }
-  .tc-sidebar { --tc-gutter:20px; }
-  .tc-sidebar-head { padding:20px var(--tc-gutter) 16px; }
-  .tc-sidebar .tc-brand { font-size:23px; }
-  .tc-sidebar-body { padding-bottom:calc(24px + env(safe-area-inset-bottom,0px)); }
-  /* 浮层在手机上让位：汉堡由底部条替代，图例与比例尺不上屏 */
-  .tc-mapapp-burger { display:none; }
-  .tc-mapapp-legend,.tc-mapapp--open .tc-mapapp-legend { display:none; }
+  /* 顶栏只剩关于入口；搜索搬进底卡，汉堡随抽屉一起下线。 */
+  .tc-mapapp-topbar { top:calc(50px + env(safe-area-inset-top,0px)); left:auto; right:12px; width:48px; height:48px; gap:0; transform:none; }
+  .tc-mapapp-burger,.tc-mapapp-search,.tc-mapapp-about { display:none; }
+  .tc-about-icon { display:grid; place-items:center; width:48px; height:48px; border:1px solid var(--tc-border); border-radius:16px; background:#fff; box-shadow:var(--tc-shadow); color:var(--tc-text); }
+  .tc-about-icon:hover { background:var(--tc-accent-soft); color:var(--tc-accent-strong); text-decoration:none; }
+  /* 地图占满整屏；图例、比例尺与缩放按钮让位给底卡，双指缩放仍然可用。 */
+  .tc-mapapp-legend { display:none; }
   .tc-mapapp-canvas .amap-scalecontrol { display:none; }
-  .tc-mobile-browse { position:absolute; left:12px; right:12px; bottom:calc(30px + env(safe-area-inset-bottom,0px)); z-index:var(--tc-z-ctl); display:flex; align-items:center; justify-content:center; gap:10px; min-height:54px; background:var(--tc-accent); color:#fff; border:1px solid #086c67; border-radius:14px; box-shadow:0 4px 20px #193b3826; font-size:14px; font-weight:600; }
-  .tc-mapapp-actions { right:12px; bottom:calc(242px + env(safe-area-inset-bottom,0px)); }
+  .tc-map-zoom { display:none; }
+  /* 底卡占住底边：Amap 标识与版权行移到卡片上沿，避免被遮挡。 */
+  .tc-mapapp-canvas .amap-logo { bottom:calc(var(--tc-sheet-h) + 10px) !important; }
+  .tc-mapapp-canvas .amap-copyright { bottom:calc(var(--tc-sheet-h) + 4px) !important; }
+  .tc-mapapp-actions { right:12px; bottom:calc(var(--tc-sheet-h) + 12px + env(safe-area-inset-bottom,0px)); }
   .tc-mapapp-ctl-label { display:none; }
-  .tc-map-zoom { right:12px; bottom:100px; }
-  .tc-mapapp--open :is(.tc-mapapp-legend,.tc-mapapp-actions,.tc-map-zoom,.amap-scalecontrol),
-  .tc-mapapp--searching :is(.tc-mapapp-legend,.tc-mapapp-actions,.tc-mobile-browse) { display:none; }
-  /* 抽屉开着时入口仍挂载（关闭那一步要立刻把焦点还给它），只是被抽屉盖住、不接指针 */
-  .tc-mapapp--open .tc-mobile-browse { opacity:0; pointer-events:none; }
   .tc-map-loading,.tc-mapapp-error { top:140px; right:12px; }
 }
 @media (max-width:700px) {

@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Fragment, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { hospitalSearchText, matchesSearch } from '@/lib/search'
 import { aggregateDoctorLeads, splitDoctorNames } from '@/lib/doctor-leads'
@@ -14,11 +14,12 @@ import { sidebarCameraFrame } from '@/lib/map-sidebar'
 import type { Disorder, Doctor, Hospital, Province, Report } from '@/lib/schema'
 import { HospitalExplorer, type DisorderGroup, type ResultFilter } from '@/components/HospitalExplorer'
 import { Sidebar, type SidebarTabId } from './Sidebar'
+import { MapSheet, type SheetLevel } from './MapSheet'
 import { HospitalDetail } from './HospitalDetail'
 import { DoctorDetail, type DoctorDisorderStat } from './DoctorDetail'
 import { ProvinceDetail } from './ProvinceDetail'
-import type { MapHospital, MapLead, MapProvinceStat } from './types'
-import { ListFilter, LocateFixed, Menu, Search, X } from 'lucide-react'
+import type { MapHospital, MapLead, MapProvinceStat, SearchGroup, SearchResult } from './types'
+import { Info, LocateFixed, Menu, Search, X } from 'lucide-react'
 
 const HOSPITAL_ZOOM = 10
 gsap.registerPlugin(useGSAP)
@@ -38,16 +39,6 @@ type Props = {
   doctorProfiles: Doctor[]
 }
 
-type SearchGroup = '省份' | '医院' | '医生' | '病症'
-
-type SearchResult = {
-  key: string
-  group: SearchGroup
-  label: string
-  sub: string
-  run: () => void
-}
-
 export function MapApp(props: Props) {
   const shellRef = useRef<HTMLDivElement | null>(null)
   const dockRef = useRef({ progress: 0, inset: 0 })
@@ -63,9 +54,6 @@ export function MapApp(props: Props) {
   propsRef.current = props
   const sidebarRef = useRef<HTMLElement | null>(null)
   const burgerRef = useRef<HTMLButtonElement | null>(null)
-  // 手机端抽屉的入口在底部条上；关闭抽屉要把焦点还给它，而不是还给 display:none 的汉堡。
-  // 入口按钮在抽屉打开时被卸载，所以只能等收起后的下一帧再还焦点。
-  const mobileBrowseRef = useRef<HTMLButtonElement | null>(null)
   const projectRef = useRef<HTMLDivElement | null>(null)
   const aboutButtonRef = useRef<HTMLButtonElement | null>(null)
   const desktopRef = useRef(false)
@@ -100,19 +88,8 @@ export function MapApp(props: Props) {
   const selectedRef = useRef<string | null>(null)
   selectedRef.current = selectedHospitalId
 
-  // 抽屉收起时同一步就把焦点还给底部条入口：入口常驻挂载、被抽屉盖住，
-  // 所以不用等重渲染，也不用等关闭动画放完，键盘用户不会在中间态丢掉焦点。
-  const closeDrawer = () => {
-    setSidebarOpen(false)
-    if (desktopRef.current) return
-    const entry = mobileBrowseRef.current
-    if (!entry) return
-    // 先把入口从「被抽屉盖住」的可达性状态里摘出来，再聚焦：
-    // 顺序反了屏幕阅读器上焦点会落在一个 aria-hidden 子树里，等于丢了。
-    entry.removeAttribute('aria-hidden')
-    entry.tabIndex = 0
-    entry.focus({ preventScroll: true })
-  }
+  // 手机端的抽屉由底卡取代；桌面关闭侧栏只需要收起停靠状态。
+  const closeDrawer = () => setSidebarOpen(false)
 
   useEffect(() => {
     runtimeRef.current?.syncSelection()
@@ -226,41 +203,6 @@ export function MapApp(props: Props) {
     return () => mq.removeEventListener('change', apply)
   }, [])
 
-  // The mobile drawer owns focus while open and restores its trigger on Escape.
-  useEffect(() => {
-    if (!sidebarOpen || isDesktop) return
-    const panel = sidebarRef.current
-    // Prefer the active tab so arrow-key navigation remains available.
-    const activeTab = panel?.querySelector<HTMLElement>('.tc-sidebar-tab[tabindex="0"]')
-    const fallback = panel?.querySelector<HTMLElement>(
-      'button, a[href], input, select, [tabindex]:not([tabindex="-1"])',
-    )
-    // Focus follows the React commit that removes inert, not the animation end.
-    const focusFrame = requestAnimationFrame(() => (activeTab ?? fallback)?.focus({ preventScroll: true }))
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Tab') {
-        // 焦点池只取侧栏本身：顶栏（搜索框、关于项目）在抽屉之上但不在面板里，
-        // 池子放宽到根节点会让 Tab 走到遮罩外面的控件上。
-        const controls = Array.from(panel?.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), a[href], input, select, summary, [tabindex="0"]',
-        ) ?? []).filter((node) => node.getClientRects().length > 0 && !node.closest('[inert]') && node.tabIndex >= 0)
-        const first = controls[0]
-        const last = controls[controls.length - 1]
-        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus() }
-        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus() }
-        return
-      }
-      if (event.key !== 'Escape') return
-      event.stopPropagation()
-      closeDrawer()
-    }
-    document.addEventListener('keydown', onKey)
-    return () => {
-      cancelAnimationFrame(focusFrame)
-      document.removeEventListener('keydown', onKey)
-    }
-  }, [sidebarOpen, isDesktop])
-
   const selectHospital = (id: string) => {
     const hospital = propsRef.current.mapHospitals.find(item => item.id === id)
     if (!hospital) return
@@ -269,7 +211,7 @@ export function MapApp(props: Props) {
     setSelectedHospitalId(id)
     setSelectedProvinceAdcode(null)
     navigationInsetRef.current = desktopRef.current ? 380 : 0
-    setSidebarOpen(true)
+    if (desktopRef.current) setSidebarOpen(true)
     runtimeRef.current?.moveTo(hospital, Math.max(mapRef.current?.getZoom() ?? 0, HOSPITAL_ZOOM), desktopRef.current ? 380 : 0)
   }
 
@@ -279,7 +221,7 @@ export function MapApp(props: Props) {
     setSelectedProvinceAdcode(adcode)
     setSelectedHospitalId(null)
     navigationInsetRef.current = desktopRef.current ? 380 : 0
-    setSidebarOpen(true)
+    if (desktopRef.current) setSidebarOpen(true)
     runtimeRef.current?.province(adcode, desktopRef.current ? 380 : 0)
   }
 
@@ -419,7 +361,7 @@ export function MapApp(props: Props) {
     setResultFilter(filter)
     setSelectedDisorders(disorderIds)
     setSidebarTab('hospitals')
-    setSidebarOpen(true)
+    if (desktopRef.current) setSidebarOpen(true)
     runtimeRef.current?.country()
   }
 
@@ -435,7 +377,7 @@ export function MapApp(props: Props) {
     setResultFilter(null)
     setSelectedDisorders(next)
     setSidebarTab('hospitals')
-    setSidebarOpen(true)
+    if (desktopRef.current) setSidebarOpen(true)
   }
 
   // Search keeps the same region, institution, doctor and disorder entry points.
@@ -616,6 +558,13 @@ export function MapApp(props: Props) {
     backToCountry()
   }
 
+  // 省详情与底卡计数共用同一份筛选后的医院列表。
+  const provinceHospitals = selectedProvince
+    ? props.mapHospitals
+      .filter((item) => item.adcode === selectedProvince.adcode && (!activeHospitalIds || activeHospitalIds.has(item.id)))
+      .map((item) => (activeHospitalIds ? { ...item, leads: leadCountFor(item.id) } : item))
+    : []
+
   const detailNode = selectedDoctor && doctorHospital ? (
     <DoctorDetail
       name={selectedDoctor.name}
@@ -641,9 +590,7 @@ export function MapApp(props: Props) {
     <ProvinceDetail
       provinceName={selectedProvince.name}
       stat={props.provinceStats[selectedProvince.adcode]}
-      hospitals={props.mapHospitals
-        .filter((item) => item.adcode === selectedProvince.adcode && (!activeHospitalIds || activeHospitalIds.has(item.id)))
-        .map((item) => (activeHospitalIds ? { ...item, leads: leadCountFor(item.id) } : item))}
+      hospitals={provinceHospitals}
       onBackToCountry={backToCountryFromDetail}
       onZoomToProvince={() => selectProvince(selectedProvince.adcode)}
       onSelectHospital={openHospital}
@@ -684,9 +631,43 @@ export function MapApp(props: Props) {
     ),
   }
 
+  // 底卡的标题跟着当前层级走；搜索时让位给查询词，计数只报能在结果里看到的省份与医院。
+  const searching = query.trim().length > 0
+  const sheetLevel: SheetLevel = searching
+    ? 'search'
+    : selectedDoctor
+      ? 'doctor'
+      : selectedHospital
+        ? 'hospital'
+        : selectedProvince
+          ? 'province'
+          : 'country'
+  const sheetTitle = searching
+    ? query.trim()
+    : selectedDoctor?.name ?? selectedHospital?.name ?? selectedProvince?.name ?? '医院与线索'
+  const searchHospitalHits = grouped.find((entry) => entry.group === '医院')?.items.length ?? 0
+  const searchProvinceHits = grouped.find((entry) => entry.group === '省份')?.items.length ?? 0
+  const sheetCounts = searching
+    ? [
+      ...(searchHospitalHits > 0 ? [{ value: searchHospitalHits, unit: '家医院' }] : []),
+      ...(searchProvinceHits > 0 ? [{ value: searchProvinceHits, unit: '个省份' }] : []),
+    ]
+    : sheetLevel === 'country'
+      ? [{ value: props.hospitals.length, unit: '家医院' }, { value: props.reports.length, unit: '条线索' }]
+      : sheetLevel === 'province'
+        ? [{ value: provinceHospitals.length, unit: '家医院' }]
+        : []
+  const sheetMeta = sheetCounts.length > 0 ? (
+    <>
+      {sheetCounts.map((part, index) => (
+        <Fragment key={part.unit}>{index > 0 ? ' · ' : ''}<b>{part.value}</b> {part.unit}</Fragment>
+      ))}
+    </>
+  ) : null
+
   return (
-    <div ref={shellRef} className={`tc-mapapp${sidebarOpen ? ' tc-mapapp--open' : ''}${query.trim() ? ' tc-mapapp--searching' : ''}`}>
-      <div ref={containerRef} className="tc-mapapp-canvas" role="application" aria-label="全国就诊资源与线索地图" inert={sidebarOpen && !isDesktop} />
+    <div ref={shellRef} className="tc-mapapp">
+      <div ref={containerRef} className="tc-mapapp-canvas" role="application" aria-label="全国就诊资源与线索地图" />
       {!mapReady && !mapError && <div className="tc-map-loading" role="status">正在加载全国地图…</div>}
       {mapError && (
         <div className="tc-mapapp-error" role="alert">
@@ -779,6 +760,8 @@ export function MapApp(props: Props) {
         </div>
         <div className="tc-project-corner" ref={projectRef}>
           <button ref={aboutButtonRef} type="button" className="tc-mapapp-ctl tc-mapapp-about" aria-expanded={aboutOpen} aria-controls="tc-project-card" onClick={() => setAboutOpen((v) => !v)}>关于项目</button>
+          {/* 手机顶栏只留这个图标入口；关于页是独立路由，不再展开卡片。 */}
+          <Link className="tc-about-icon" href="/about/" aria-label="关于项目"><Info size={20} aria-hidden="true" /></Link>
           {aboutOpen && <section id="tc-project-card" className="tc-project-card" aria-label="关于项目">
             <div className="tc-row tc-row--between"><strong>TraumaCompass</strong></div>
             <p>本项目旨在为CPTSD/BPD人群提供全国就诊地图，帮助更多人治疗心理创伤与障碍</p>
@@ -787,21 +770,40 @@ export function MapApp(props: Props) {
         </div>
       </div>
 
-      <div className="tc-mapapp-backdrop" aria-hidden="true" onClick={closeDrawer} />
+      {isDesktop && (
+        <Sidebar
+          id="tc-map-sidebar"
+          panelRef={sidebarRef}
+          open={sidebarOpen}
+          tabs={tabs}
+          detail={detailNode}
+          detailKey={detailState.key}
+          detailDepth={detailState.depth}
+          activeTab={sidebarTab}
+          onTabChange={setSidebarTab}
+          modal={false}
+          onClose={closeDrawer}
+        />
+      )}
 
-      <Sidebar
-        id="tc-map-sidebar"
-        panelRef={sidebarRef}
-        open={sidebarOpen}
-        tabs={tabs}
-        detail={detailNode}
-        detailKey={detailState.key}
-        detailDepth={detailState.depth}
-        activeTab={sidebarTab}
-        onTabChange={setSidebarTab}
-        modal={sidebarOpen && !isDesktop}
-        onClose={closeDrawer}
-      />
+      {!isDesktop && (
+        <MapSheet
+          level={sheetLevel}
+          title={sheetTitle}
+          meta={sheetMeta}
+          query={query}
+          onQueryChange={(value) => {
+            setQuery(value)
+            setActiveResult(-1)
+          }}
+          results={grouped}
+          activeResult={activeResult}
+          onActiveResultChange={setActiveResult}
+          onRunResult={runResult}
+        >
+          {detailNode ?? tabs.hospitals}
+        </MapSheet>
+      )}
 
       <div className="tc-mapapp-legend">
         <span>线索密度</span>
@@ -818,17 +820,6 @@ export function MapApp(props: Props) {
           <span className="tc-mapapp-ctl-label">回到全国</span>
         </button>
       </div>
-      <button
-        ref={mobileBrowseRef}
-        type="button"
-        className="tc-mobile-browse"
-        onClick={() => setSidebarOpen(true)}
-        aria-controls="tc-map-sidebar"
-        aria-hidden={sidebarOpen || undefined}
-        tabIndex={sidebarOpen ? -1 : 0}
-      >
-        <ListFilter size={18} aria-hidden="true" />浏览医院与线索
-      </button>
     </div>
   )
 }

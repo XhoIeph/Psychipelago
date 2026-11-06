@@ -41,6 +41,23 @@ export type MapProvinceStat = {
   bpd: number
 }
 
+export type SearchGroup = '省份' | '医院' | '医生' | '病症'
+
+/** 顶栏下拉与手机底卡共用同一条搜索结果；run 负责进入对应的省、医院、医生或筛选。 */
+export type SearchResult = {
+  key: string
+  group: SearchGroup
+  label: string
+  sub: string
+  run: () => void
+}
+
+/** 底卡里按省、医院、医生、病症分组的搜索结果，组内顺序与全局顺序一致。 */
+export type SheetSearchGroup = {
+  group: SearchGroup
+  items: SearchResult[]
+}
+
 export const STAGE_LABELS: Record<string, string> = {
   seeking: '求医中',
   consulted: '已就诊',
