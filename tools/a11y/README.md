@@ -1,13 +1,13 @@
-﻿# a11y spec 快照（工具与断言）
+# a11y spec 快照（工具与断言）
 
 这两个文件是**快照**，原件的权威副本不在本仓库：
 
 | 文件 | 原件位置 | 快照 sha256（前 16 位） | 字节 |
 | --- | --- | --- | --- |
 | `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `7892d4cacd7e374e` | 57716 |
-| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `76b18e5edfcaf0bd` | 98675 |
+| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `4b074a31ab78add8` | 98769 |
 
-`ui-spec.json` 是从 `docs/` 原件的逐字节拷贝，只改名不改内容；`spec.cjs` 同样逐字节拷贝（skill 目录那份也已同步成这一版）。换行统一成 LF 后再算 sha 与字节数（工作流里打印的也是这个）；这一版原件与快照同为 LF，两个文件逐字节相同。快照这一版：**154 条断言**（其中 1 个 id `copy.no-verify-disclaimer` 重复，唯一 id 153 个；另有 27 条退役，见 `retired`），按视口生效 1440 = 111 条、390 = 48 条、375 = 20 条、320 = 14 条（`at` 与无 `at` 的并集，与 `spec.cjs` 的门控一致）。本地四档 111 / 0 / 0、47 / 0 / 1、19 / 0 / 1、13 / 0 / 1（不适用是 §5 禁用态与本页没有的控件）。
+`ui-spec.json` 是从 `docs/` 原件的逐字节拷贝，只改名不改内容；`spec.cjs` 同样逐字节拷贝（skill 目录那份也已同步成这一版）。换行统一成 LF 后再算 sha 与字节数（工作流里打印的也是这个）；这一版原件与快照同为 LF，两个文件逐字节相同。快照这一版：**153 条断言**（其中 1 个 id `copy.no-verify-disclaimer` 重复，唯一 id 152 个；另有 28 条退役，见 `retired`），按视口生效 1440 = 110 条、390 = 48 条、375 = 20 条、320 = 14 条（`at` 与无 `at` 的并集，与 `spec.cjs` 的门控一致）。四档红数这一版不再给：筛选面板外观被小雨打回、结构正在重做（A30 已重写两轮、A35 未定稿），桌面那批 `filter.*` 断言随时会跟着选择器搬家，跑出来的数不构成基线，等第 6 批与 A35 落定后整轮重跑。
 
 这一版还清掉了最后 4 条 `at:999` 的断言（`s5-tab-min-height-999`、`s6-drawer-closed-999`、`s6-drawer-top-104`、`s6-drawer-width-999`）：v3 之后 ≤999px 不渲染 `.tc-sidebar`，而 999 宽度又不在矩阵里，它们从来不会执行。改成 1440 会变成拿桌面侧栏去判手机规则，等于把断言换成另一件事，所以退役并在 `retired.why` 里写明各自被哪条接住。
 

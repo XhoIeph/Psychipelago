@@ -1084,13 +1084,6 @@
       "desc": "§1.1 未选时写「按病症筛选」"
     },
     {
-      "id": "filter.no-province-control",
-      "type": "mustNotExist",
-      "at": 1440,
-      "selector": ".tc-filter-province",
-      "desc": "§1.1 省份不进筛选面板（主图打回：两个入口两种写法）"
-    },
-    {
       "id": "filter.no-select-in-panel",
       "type": "mustNotExist",
       "at": 1440,
@@ -3506,6 +3499,10 @@
     {
       "id": "filter.reset-hides-itself",
       "reason": "2026-11-03 Master 定：病症改多选、取消靠再点同一行，「清除筛选」删除"
+    },
+    {
+      "id": "filter.no-province-control",
+      "reason": "2026-11-02 定「省份不进筛选面板」，理由是当时省份只靠侧栏列表选（两个入口两种写法）；2026-11-06 小雨明确要求把省份合并进筛选，A30 改为筛选区两张卡片、省份是其中一张，本条被 A30 覆盖"
     },
     {
       "id": "s5-burger-48-375",
