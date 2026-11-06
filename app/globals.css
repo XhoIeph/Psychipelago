@@ -416,6 +416,9 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
   /* 底卡占住底边：Amap 标识与版权行贴着卡片上沿，跟着实时卡高走。 */
   .tc-mapapp-canvas .amap-logo { bottom:calc(var(--tc-sheet-live,var(--tc-sheet-h)) + 10px) !important; }
   .tc-mapapp-canvas .amap-copyright { bottom:calc(var(--tc-sheet-live,var(--tc-sheet-h)) + 4px) !important; }
+  /* 卡片抬到 large 时可见地图只剩顶上一窄条，版权行正好横在中间；它是 auto 指针事件，
+     会把「点地图收一档」这一下吃掉。它没有可点的内容，跟 logo 一样放行。 */
+  .tc-mapapp-canvas .amap-copyright { pointer-events:none; }
   /* 它们在会随让位平移的画布里，反向抵消那一段位移，bottom 就只跟卡高有关。 */
   .tc-mapapp-canvas .amap-logo,
   .tc-mapapp-canvas .amap-copyright { transform:translate3d(0,calc(-1 * var(--tc-map-shift,0px)),0); transition:bottom 340ms cubic-bezier(.32,.72,0,1),transform 380ms cubic-bezier(.22,1,.36,1); }
