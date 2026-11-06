@@ -88,6 +88,8 @@ export function MapApp(props: Props) {
   const [sheetStop, setSheetStop] = useState<SheetStop>('peek')
   const [peekHeight, setPeekHeight] = useState(0)
   const [viewportHeight, setViewportHeight] = useState(0)
+  // 点钉进详情时，钉在画布里的 y：让位目标是这枚钉，不是层级锚点。
+  const [pinFocusY, setPinFocusY] = useState<number | null>(null)
 
   useEffect(() => {
     const update = () => setViewportHeight(window.innerHeight)
@@ -115,6 +117,8 @@ export function MapApp(props: Props) {
 
   const selectedRef = useRef<string | null>(null)
   selectedRef.current = selectedHospitalId
+  const provinceRef = useRef<string | null>(null)
+  provinceRef.current = selectedProvinceAdcode
 
   // 手机端的抽屉由底卡取代；桌面关闭侧栏只需要收起停靠状态。
   const closeDrawer = () => setSidebarOpen(false)
@@ -231,15 +235,18 @@ export function MapApp(props: Props) {
     return () => mq.removeEventListener('change', apply)
   }, [])
 
-  const selectHospital = (id: string) => {
+  const selectHospital = (id: string, fromPin?: { y: number }) => {
     const hospital = propsRef.current.mapHospitals.find(item => item.id === id)
     if (!hospital) return
     setCluster(null)
     setSelectedDoctor(null)
     setSelectedHospitalId(id)
     setSelectedProvinceAdcode(null)
+    setPinFocusY(fromPin?.y ?? null)
     navigationInsetRef.current = desktopRef.current ? 380 : 0
     if (desktopRef.current) setSidebarOpen(true)
+    // 点钉进详情只让位、不移动镜头：钉就是用户点的那个点，再居中会把人带走。
+    if (fromPin && !desktopRef.current) return
     runtimeRef.current?.moveTo(hospital, Math.max(mapRef.current?.getZoom() ?? 0, HOSPITAL_ZOOM), desktopRef.current ? 380 : 0)
   }
 
@@ -248,6 +255,7 @@ export function MapApp(props: Props) {
     setSelectedDoctor(null)
     setSelectedProvinceAdcode(adcode)
     setSelectedHospitalId(null)
+    setPinFocusY(null)
     navigationInsetRef.current = desktopRef.current ? 380 : 0
     if (desktopRef.current) setSidebarOpen(true)
     runtimeRef.current?.province(adcode, desktopRef.current ? 380 : 0)
@@ -288,6 +296,7 @@ export function MapApp(props: Props) {
         runtime = createAmapRuntime(sdk, containerRef.current, {
           hospitals: propsRef.current.mapHospitals, stats: propsRef.current.provinceStats,
           inset: () => dockRef.current.inset, selected: () => selectedRef.current,
+          province: () => provinceRef.current,
           selectHospital, selectProvince, interruptDock: () => cancelDockCameraRef.current?.(),
           limits: (atMin, atMax) => setLimits(previous => previous.atMin === atMin && previous.atMax === atMax ? previous : { atMin, atMax }),
           closeCluster: () => setCluster(null),
@@ -319,6 +328,7 @@ export function MapApp(props: Props) {
     setSelectedDoctor(null)
     setSelectedHospitalId(null)
     setSelectedProvinceAdcode(null)
+    setPinFocusY(null)
     setCluster(null)
     runtimeRef.current?.country()
   }
@@ -384,6 +394,7 @@ export function MapApp(props: Props) {
     setSelectedDoctor(null)
     setSelectedHospitalId(null)
     setSelectedProvinceAdcode(null)
+    setPinFocusY(null)
     setCluster(null)
     doctorReturnFocusRef.current = null
     setResultFilter(filter)
@@ -400,6 +411,7 @@ export function MapApp(props: Props) {
     setSelectedDoctor(null)
     setSelectedHospitalId(null)
     setSelectedProvinceAdcode(null)
+    setPinFocusY(null)
     setCluster(null)
     doctorReturnFocusRef.current = null
     setResultFilter(null)
@@ -701,15 +713,15 @@ export function MapApp(props: Props) {
   }), [peekHeight, sheetViewport])
 
   // 可见带是顶部浮层下沿到卡沿；带中心对准画面中心，卡抬起来地图跟着上移。
-  // 搜索层不改地图画面，锚点按实际所在层级取。
+  // 搜索层不改地图画面，锚点按实际所在层级取；从图钉进来的详情改用这枚钉的屏幕位置。
   const mapViewLevel: 'country' | 'province' = selectedProvinceAdcode ? 'province' : 'country'
   const sheetShift = useMemo(() => {
     const bandTop = 98
     const bandBottom = Math.max(bandTop + 240, sheetViewport - sheetHeights[sheetStop])
     const band = (bandTop + bandBottom) / 2
-    const anchor = mapViewLevel === 'country' ? 412 : 410
+    const anchor = pinFocusY ?? (mapViewLevel === 'country' ? 412 : 410)
     return Math.round(Math.max(-320, Math.min(220, band - anchor)))
-  }, [mapViewLevel, sheetHeights, sheetStop, sheetViewport])
+  }, [mapViewLevel, pinFocusY, sheetHeights, sheetStop, sheetViewport])
 
   useLayoutEffect(() => {
     const shell = shellRef.current
@@ -725,6 +737,11 @@ export function MapApp(props: Props) {
     shell.style.setProperty('--tc-sheet-live', `${sheetHeights[sheetStop]}px`)
   }, [isDesktop, sheetHeights, sheetShift, sheetStop])
 
+  // 选中钉时把其余钉压到 42%，让「卡里的详情」和「地图上的这枚钉」对得上。
+  useEffect(() => {
+    containerRef.current?.classList.toggle('tc-mapapp-canvas--pinned', pinFocusY !== null)
+  }, [pinFocusY])
+
   // 换层级时换档：进省看列表用 medium，进详情看内容用 large；搜索不动档位。
   const previousSheetLevelRef = useRef<SheetLevel>('country')
   useEffect(() => {
@@ -732,7 +749,8 @@ export function MapApp(props: Props) {
     previousSheetLevelRef.current = sheetLevel
     if (previous === sheetLevel) return
     if (sheetLevel === 'province') setSheetStop('medium')
-    else if (sheetLevel === 'hospital' || sheetLevel === 'doctor') setSheetStop('large')
+    // 点钉进来的详情用 medium，让地图露出更多；从列表或搜索进来的看内容用 large。
+    else if (sheetLevel === 'hospital' || sheetLevel === 'doctor') setSheetStop(pinFocusY !== null ? 'medium' : 'large')
     else if (sheetLevel === 'country' && previous !== 'search') setSheetStop('medium')
   }, [sheetLevel])
 
@@ -746,6 +764,15 @@ export function MapApp(props: Props) {
       : selectedProvince
         ? backToCountry
         : undefined
+
+  // 搜索失焦：只有仍停在全国列表、没有关键字也没有筛选时才收回 peek。
+  // 点结果行、拖把手这类焦点暂时跑开的场景由 MapSheet 用 relatedTarget 和指针状态挡掉。
+  const dismissSearchSheet = () => {
+    if (query.trim()) return
+    if (resultFilter || selectedDisorders.length > 0) return
+    if (sheetLevel !== 'country') return
+    setSheetStop('peek')
+  }
 
   return (
     <div ref={shellRef} className="tc-mapapp">
@@ -881,6 +908,7 @@ export function MapApp(props: Props) {
           onDragChange={handleSheetDragChange}
           backLabel={sheetBackLabel}
           onBack={sheetBack}
+          onDismiss={dismissSearchSheet}
           query={query}
           onQueryChange={(value) => {
             setQuery(value)

@@ -3,7 +3,7 @@ import type { MapHospital, MapProvinceStat } from '../components/map/types'
 import { MAP_MAX_ZOOM, MapPoint, project, unproject, fitMapBounds, type GeoPoint, type MapCamera } from './map-camera'
 import { CHINA_BOUNDS, constrainChinaCenter } from './map-sidebar'
 import { gcjCoordinateTree, type CoordinateTree } from './map-coordinates'
-import { mapNodeLayout } from './map-nodes'
+import { mapNodeLayout, NODE_SPACING } from './map-nodes'
 import { NODE_ZOOM_THRESHOLD, showMapNodes } from './map-mode'
 import { attachMapWheelZoom } from './map-wheel-zoom'
 import { attachMapPointer } from './map-pointer'
@@ -19,7 +19,10 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   stats: Record<string, MapProvinceStat>
   inset(): number
   selected(): string | null
-  selectHospital(id: string): void
+  /** 当前层级的省份 adcode；省内只画这个省的钉，全国层不画钉。 */
+  province(): string | null
+  /** fromPin 表示由地图图钉触发：手机端只让位、不移动镜头。 */
+  selectHospital(id: string, fromPin?: { y: number }): void
   selectProvince(adcode: string): void
   interruptDock(): void
   limits(atMin: boolean, atMax: boolean): void
@@ -40,7 +43,13 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   const liveNodes = new Map<string, LiveNode>()
   const provinces = new Map<string, AMap.Polygon>()
   let nodesOn = false
-  let renderedLevel: number | undefined
+  let renderedZoom: number | undefined
+  let renderedSignature = ''
+  /** 画面中心平移后同一缩放的合并结果不变，但哪些钉在屏幕内会变，靠这个签重排。 */
+  function nodeSignature(zoom: number) {
+    const point = camera.getCenter()
+    return `${zoom.toFixed(2)}|${point.lat.toFixed(3)}|${point.lng.toFixed(3)}|${size.x}x${size.y}|${options.province() ?? 'all'}`
+  }
   let instance = 0
   let previousMin: boolean | undefined, previousMax: boolean | undefined
   const motion = gsap.context(() => {}, container)
@@ -71,9 +80,33 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
       node.marker.setzIndex(selected ? 1000 : 200)
     }
   }
-  function renderNodes(level: number) {
-    renderedLevel = level
-    const layout = mapNodeLayout(options.hospitals, hospital => project(hospital, level))
+  /** 聚合钉的放大步长看「簇内最近两钉」：刚好把它们拉开到合并阈值以上，上限 1.8 级。 */
+  function clusterZoomStep(members: MapHospital[]) {
+    const zoom = camera.getZoom()
+    let nearest = Number.POSITIVE_INFINITY
+    for (let i = 0; i < members.length; i++) {
+      for (let j = i + 1; j < members.length; j++) {
+        const a = project(members[i], zoom)
+        const b = project(members[j], zoom)
+        nearest = Math.min(nearest, Math.hypot(a.x - b.x, a.y - b.y))
+      }
+    }
+    const step = Math.max(1.2, Math.log2(NODE_SPACING / Math.max(nearest, 1)) + .12)
+    return Math.min(1.8, step)
+  }
+  function renderNodes(zoom: number) {
+    // 只画屏幕内的钉：省内缩放时，其它省份的医院不该在 DOM 里挂着。
+    const origin = project(camera.getCenter(), zoom).subtract(size.divideBy(2))
+    renderedZoom = zoom
+    renderedSignature = nodeSignature(zoom)
+    // 进了某个省就只铺这个省的医院；全国层本来就不画钉。
+    const scope = options.province()
+    const source = scope ? options.hospitals.filter(hospital => hospital.adcode === scope) : options.hospitals
+    const layout = mapNodeLayout(source, hospital => project(hospital, zoom).subtract(origin))
+      .filter(entry => {
+        const point = project({ lat: entry.lat, lng: entry.lng }, zoom).subtract(origin)
+        return point.x > -48 && point.x < size.x + 48 && point.y > -48 && point.y < size.y + 48
+      })
     const keys = new Set(layout.map(entry => entry.key))
     motion.add(() => {
       for (const entry of layout) {
@@ -82,15 +115,16 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
           const single = entry.members.length === 1
           const element = document.createElement('button')
           element.type = 'button'
-          // 地图点与侧栏列表是同一批内容，键盘搬运走画布容器；点本身不进 Tab 序。
-          element.tabIndex = -1
+          // 桌面沿用画布容器搬运焦点；手机上图钉本身要能被 Tab 到。
+          element.tabIndex = size.x >= 1000 ? -1 : 0
           element.className = `tc-map-node ${single ? 'tc-hospital-pin' : 'tc-cluster-pin'}`
           element.dataset.nodeKey = entry.key
           element.dataset.nodeInstance = String(++instance)
           element.dataset.nodeLat = String(entry.lat)
           element.dataset.nodeLng = String(entry.lng)
           const body = document.createElement('span')
-          body.className = single ? 'tc-pin-body' : 'tc-cluster-body'
+          // .pin 是命中区与验收选择器的落点；::after 从边框内缘再向外 8px。
+          body.className = `pin ${single ? 'tc-pin-body is-single' : 'tc-cluster-body'}`
           body.setAttribute('aria-hidden', 'true')
           const cross = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
           cross.setAttribute('viewBox', '0 0 24 24')
@@ -105,9 +139,15 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
           element.title = entry.members.map(item => item.name).join('、')
           element.addEventListener('click', event => {
             event.stopPropagation()
-            if (single) options.selectHospital(entry.members[0].id)
-            else if (camera.getZoom() < MAP_MAX_ZOOM - .001) moveTo({ lat: entry.lat, lng: entry.lng }, Math.min(MAP_MAX_ZOOM, Math.floor(camera.getZoom()) + 2))
-            else {
+            if (single) {
+              const point = map.lngLatToContainer([entry.lng, entry.lat])
+              options.selectHospital(entry.members[0].id, { y: point.getY() })
+            } else if (camera.getZoom() < MAP_MAX_ZOOM - .001) {
+              animateTo(
+                { lat: entry.lat, lng: entry.lng },
+                Math.min(MAP_MAX_ZOOM, camera.getZoom() + clusterZoomStep(entry.members)),
+              )
+            } else {
               const point = map.lngLatToContainer([entry.lng, entry.lat])
               options.cluster(entry.members, entry.key, point.getX(), point.getY())
             }
@@ -120,9 +160,11 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
         }
         node.exit?.kill(); node.exit = undefined
         node.element.inert = !nodesOn
-        node.element.setAttribute('aria-label', entry.members.length === 1 ? entry.members[0].name : `${entry.members.length} 家医院，${level >= MAP_MAX_ZOOM ? '查看医院' : '点击放大'}`)
+        node.element.setAttribute('aria-label', entry.members.length === 1
+          ? `${entry.members[0].name} · ${entry.members[0].leads} 条线索`
+          : `${entry.members.length} 家医院，${camera.getZoom() >= MAP_MAX_ZOOM - .001 ? '查看医院' : '点击放大'}`)
         if (nodesOn) node.marker.show()
-        gsap.to(node.element.firstElementChild, { autoAlpha: 1, scale: 1, duration: reduced() ? 0 : .32, overwrite: true })
+        gsap.to(node.element.firstElementChild, { autoAlpha: 1, scale: 1, duration: reduced() ? 0 : .4, overwrite: true })
       }
       for (const [key, node] of liveNodes) {
         if (keys.has(key) || node.exit) continue
@@ -144,7 +186,15 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
       nodesOn = detailed
       container.classList.toggle('tc-mapapp-canvas--nodes', detailed)
       for (const node of liveNodes.values()) { node.element.inert = !detailed; if (detailed) node.marker.show() }
-      if (!detailed) for (const polygon of provinces.values()) polygon.show()
+      if (!detailed) {
+        for (const polygon of provinces.values()) polygon.show()
+        // 全国层不出图钉：手机回到全国就把节点整个拿掉，别留隐藏的 .pin 在 DOM 里。
+        if (size.x < 1000) {
+          for (const [key, node] of liveNodes) { map.remove(node.marker); liveNodes.delete(key) }
+          renderedZoom = undefined
+          renderedSignature = ''
+        }
+      }
       motion.add(() => {
         gsap.to(opacity, { density: detailed ? 0 : 1, nodes: detailed ? 1 : 0, duration: reduced() ? 0 : .28, overwrite: true,
           onUpdate() { densityOpacity(); container.style.setProperty('--tc-nodes-opacity', String(opacity.nodes)) },
@@ -152,8 +202,11 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
         })
       })
     }
-    const level = Math.max(NODE_ZOOM_THRESHOLD, Math.floor(zoom + 1e-7))
-    if (nodesOn && level !== renderedLevel) renderNodes(level)
+    // 合并按真实缩放算，屏幕内的钉子集按中心算；相机补间中先不动，落点后再重排。
+    if (nodesOn && (!cameraTween || renderedZoom === undefined)) {
+      const zoomMoved = Math.abs(zoom - (renderedZoom ?? zoom + 1)) >= .25
+      if (zoomMoved || nodeSignature(zoom) !== renderedSignature) renderNodes(zoom)
+    }
     const atMin = zoom <= minZoom + .001, atMax = zoom >= MAP_MAX_ZOOM - .001
     if (atMin !== previousMin || atMax !== previousMax) {
       previousMin = atMin; previousMax = atMax
@@ -211,6 +264,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   const resize = new ResizeObserver(() => {
     const wasCountry = camera.getZoom() <= minZoom + .001
     size = new MapPoint(container.clientWidth, container.clientHeight)
+    for (const node of liveNodes.values()) node.element.tabIndex = size.x >= 1000 ? -1 : 0
     setMinZoom(countryFrame().zoom)
     if (wasCountry) country(false)
     else camera.move(center(), camera.getZoom())

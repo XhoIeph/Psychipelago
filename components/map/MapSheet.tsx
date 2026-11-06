@@ -2,6 +2,7 @@
 
 import {
   useCallback,
+  useEffect,
   useId,
   useLayoutEffect,
   useRef,
@@ -41,6 +42,8 @@ type Props = {
   /** 详情层返回目标的名字；列表层不传。 */
   backLabel?: string
   onBack?: () => void
+  /** 搜索框失焦且焦点确实离开底卡时调用；卡内点击不算。 */
+  onDismiss?: () => void
   query: string
   onQueryChange: (value: string) => void
   results: SheetSearchGroup[]
@@ -88,6 +91,7 @@ export function MapSheet({
   onDragChange,
   backLabel,
   onBack,
+  onDismiss,
   query,
   onQueryChange,
   results,
@@ -104,6 +108,8 @@ export function MapSheet({
   const bodyRef = useRef<HTMLDivElement | null>(null)
   const dragRef = useRef<DragState | null>(null)
   const peekRef = useRef(0)
+  // 卡内按下的指针在抬起前不算失焦：点结果行、拖把手时卡片不能先缩回 peek。
+  const pointerInsideRef = useRef(false)
   // 分组保持搜索结果的原顺序，拍平后的下标与 MapApp 的 activeResult 一致。
   const flat = results.flatMap((entry) => entry.items)
   const searching = query.trim().length > 0
@@ -116,6 +122,17 @@ export function MapSheet({
     sheet.style.height = `${height}px`
     onLiveHeight(height)
   }, [onLiveHeight])
+
+  // 指针抬起（不论落在哪）就清掉卡内标记；按下与抬起之间不做 focus 判断。
+  useEffect(() => {
+    const release = () => { pointerInsideRef.current = false }
+    document.addEventListener('pointerup', release, true)
+    document.addEventListener('pointercancel', release, true)
+    return () => {
+      document.removeEventListener('pointerup', release, true)
+      document.removeEventListener('pointercancel', release, true)
+    }
+  }, [])
 
   // 目标档位变了才写高度；拖动过程中由指针事件直接写，不让 React 抢。
   useLayoutEffect(() => {
@@ -234,6 +251,7 @@ export function MapSheet({
       ref={sheetRef}
       className={`sheet is-${level}${isDetail ? ' is-detail' : ''}`}
       aria-labelledby={titleId}
+      onPointerDownCapture={() => { pointerInsideRef.current = true }}
     >
       <div
         ref={grabRef}
@@ -258,6 +276,13 @@ export function MapSheet({
             onFocus={() => {
               // 原型在聚焦时把 peek 抬到 medium，否则结果区只剩几像素。
               if (stop === 'peek') onStopChange('medium')
+            }}
+            onBlur={(event) => {
+              // relatedTarget 还在卡里（点结果行、返回钮、把手）就不算失去焦点。
+              if (pointerInsideRef.current) return
+              const next = event.relatedTarget
+              if (next instanceof Node && sheetRef.current?.contains(next)) return
+              onDismiss?.()
             }}
             onKeyDown={(event) => {
               if (event.key === 'ArrowDown') {

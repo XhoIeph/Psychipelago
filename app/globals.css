@@ -354,6 +354,9 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-pin--selected :is(.tc-pin-body,.tc-cluster-body) { background:#ba631e; box-shadow:0 0 0 5px #ba631e25,0 3px 10px #123c4240; }
 .tc-cluster-body { display:grid; place-items:center; position:relative; width:40px; height:40px; background:#087353; color:#fff; border:3px solid #fff; border-radius:14px 14px 14px 4px; box-shadow:0 3px 10px #123c4240; }
 .tc-cluster-body strong { position:absolute; top:-8px; right:-8px; min-width:20px; height:20px; padding:0 4px; background:#a65c21; color:#fff; border-radius:10px; font-size:11px; line-height:20px; text-align:center; }
+/* 命中区从边框内缘再向外 8px：单钉 45、聚合钉 50，都过 44。 */
+.pin { position:relative; }
+.pin::after { content:""; position:absolute; inset:-8px; border-radius:inherit; }
 
 @media (min-width:1000px) {
   /* 手机底卡在水合完成前也会挂载一帧；桌面上直接不显示。 */
@@ -384,6 +387,10 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
   .tc-mapapp[data-sheet-dragging] .tc-mapapp-canvas .amap-copyright { transition:none; }
   .tc-mapapp-ctl-label { display:none; }
   .tc-map-loading,.tc-mapapp-error { top:140px; right:12px; }
+  /* 手机单钉的十字略小；选中钉用品牌绿环，其余钉退到 42%。 */
+  .tc-hospital-pin .tc-pin-cross { width:19px; height:19px; }
+  .tc-pin--selected :is(.tc-pin-body,.tc-cluster-body) { background:#087353; box-shadow:0 0 0 3px var(--tc-accent),0 3px 10px #123c4240; }
+  .tc-mapapp-canvas--pinned .tc-map-node:not(.tc-pin--selected) { opacity:.42; }
 }
 @media (max-width:700px) {
   :root { --tc-gutter:20px; }
