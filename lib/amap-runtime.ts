@@ -33,6 +33,8 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   ready(): void
   /** 地图空白处被点击；拖动后高德不派发 click，所以这里天然只对应「点了一下」。 */
   onMapClick(): void
+  /** 底卡正停在 large：此时点地图一律只收一档，省界也按「点空白」处理。 */
+  sheetLarge(): boolean
 }) {
   const map = new sdk.Map(container, {
     viewMode: '2D', center: [105, 35.5], zoom: 4, zooms: [2, MAP_MAX_ZOOM],
@@ -382,7 +384,11 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
           fillColor: densityColor(options.stats[adcode]?.reports ?? 0), fillOpacity: .55,
           strokeColor: '#78a88e', strokeWeight: 1.1, zIndex: 20, bubble: false, cursor: 'pointer',
         })
-        polygon.on('click', () => { if (!nodesOn) options.selectProvince(adcode) })
+        polygon.on('click', () => {
+          // 大卡时地图只剩一条缝，省界几乎盖满；这一下是在说「把卡让开」，不是「跳去这个省」。
+          if (options.sheetLarge()) { options.onMapClick(); return }
+          if (!nodesOn) options.selectProvince(adcode)
+        })
         provinces.set(adcode, polygon)
         map.add(polygon)
         if (nodesOn) polygon.hide()

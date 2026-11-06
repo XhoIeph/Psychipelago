@@ -309,6 +309,7 @@ export function MapApp(props: Props) {
           },
           ready: () => { if (!disposed) setMapReady(true) },
           onMapClick: () => mapClickRef.current(),
+          sheetLarge: () => sheetStopRef.current === 'large',
         })
         runtimeRef.current = runtime
         mapRef.current = runtime.camera
