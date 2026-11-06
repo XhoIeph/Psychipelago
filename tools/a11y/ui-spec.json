@@ -370,7 +370,6 @@
         "h": 44
       },
       "at": 375,
-      "skipIfMissing": true,
       "precondition": [
         {
           "action": "click",
