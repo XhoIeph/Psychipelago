@@ -114,7 +114,7 @@
     {
       "id": "type.button",
       "type": "computed",
-      "desc": "常规按钮 14px（机构详情「在地图上定位」；筛选开关已随批 2 删除）",
+      "desc": "常规按钮 14px（机构详情「在地图上定位」；筛选开关已随批 2 删除）。桌面侧栏：汉堡 → 省行。手机端这条 CTA 不展示（实测 0×0），所以只判桌面",
       "selector": ".tc-button",
       "props": {
         "fontSize": "14px"
@@ -143,7 +143,8 @@
           "selector": ".tc-button"
         }
       ],
-      "skipIfMissing": true
+      "skipIfMissing": true,
+      "at": 1440
     },
     {
       "id": "size.sidebar",
@@ -215,7 +216,7 @@
     {
       "id": "copy.no-disease-count",
       "type": "forbidText",
-      "desc": "不按病症统计线索条数（把「有这类线索」读成「这家涉及这个病」）",
+      "desc": "不按病症统计线索条数（把「有这类线索」读成「这家涉及这个病」）（桌面侧栏：汉堡 → 省行）",
       "precondition": [
         {
           "action": "click",
@@ -232,12 +233,40 @@
           "selector": ".tc-detail"
         }
       ],
-      "text": "线索涉及"
+      "text": "线索涉及",
+      "at": 1440
+    },
+    {
+      "id": "copy.no-disease-count-390",
+      "type": "forbidText",
+      "desc": "不按病症统计线索条数（把「有这类线索」读成「这家涉及这个病」）（手机端全国层直接列医院行，点行即进详情，不必先进省）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".grab",
+          "settle": 600
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "settle": 800
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        }
+      ],
+      "text": "线索涉及",
+      "at": 390
     },
     {
       "id": "copy.no-scope-explainer",
       "type": "forbidText",
-      "desc": "不写替数据解释的括注小字",
+      "desc": "不写替数据解释的括注小字（桌面侧栏：汉堡 → 省行）",
       "precondition": [
         {
           "action": "click",
@@ -254,12 +283,40 @@
           "selector": ".tc-detail"
         }
       ],
-      "text": "同一条线索"
+      "text": "同一条线索",
+      "at": 1440
+    },
+    {
+      "id": "copy.no-scope-explainer-390",
+      "type": "forbidText",
+      "desc": "不写替数据解释的括注小字（手机端全国层直接列医院行，点行即进详情，不必先进省）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".grab",
+          "settle": 600
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "settle": 800
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        }
+      ],
+      "text": "同一条线索",
+      "at": 390
     },
     {
       "id": "copy.no-unsourced-service",
       "type": "forbidText",
-      "desc": "不写「创伤服务证据 N 家」——该字段库内全为 unknown，写出来是把没采到的当证据",
+      "desc": "不写「创伤服务证据 N 家」——该字段库内全为 unknown，写出来是把没采到的当证据（桌面侧栏：汉堡 → 省行）",
       "precondition": [
         {
           "action": "click",
@@ -276,7 +333,35 @@
           "selector": ".tc-detail"
         }
       ],
-      "text": "创伤服务证据"
+      "text": "创伤服务证据",
+      "at": 1440
+    },
+    {
+      "id": "copy.no-unsourced-service-390",
+      "type": "forbidText",
+      "desc": "不写「创伤服务证据 N 家」——该字段库内全为 unknown，写出来是把没采到的当证据（手机端全国层直接列医院行，点行即进详情，不必先进省）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".grab",
+          "settle": 600
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "settle": 800
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        }
+      ],
+      "text": "创伤服务证据",
+      "at": 390
     },
     {
       "id": "scroll.no-horizontal",
@@ -342,12 +427,27 @@
     {
       "id": "size-row-375",
       "type": "rect",
-      "desc": "窄屏省行可点高度 ≥44（原侧栏标签）",
-      "selector": ".tc-province-row",
+      "desc": "窄屏省菜单行可点高度 ≥44（原侧栏省行标签；批 6 省份搬进筛选菜单，判菜单行）",
+      "selector": ".fmenu[data-kind=\"province\"] li button",
       "min": {
         "h": 44
       },
-      "at": 375
+      "at": 375,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]",
+          "settle": 600
+        }
+      ]
     },
     {
       "id": "type.input-375",
@@ -380,19 +480,36 @@
     {
       "id": "s5-card-single-entry-375",
       "type": "singleEntry",
-      "desc": "§5：移动端机构行仍是单一入口，不嵌第二个可聚焦元素（卡片已改成行；先进入某省）",
+      "desc": "§5：移动端机构行仍是单一入口，不嵌第二个可聚焦元素。批 6 后先经筛选菜单进北京市，再判省层里的医院行",
       "container": ".tc-hospital-row",
       "at": 375,
       "precondition": [
         {
-          "action": "click",
-          "selector": ".tc-mapapp-burger",
-          "unlessVisible": ".tc-province-row",
-          "mobileSelector": ".grab"
+          "action": "wait",
+          "selector": ".tc-hospital-row"
         },
         {
           "action": "click",
-          "selector": ".tc-province-row"
+          "selector": ".grab",
+          "settle": 600
+        },
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"province\"] li button",
+          "textContains": "北京",
+          "settle": 800
         },
         {
           "action": "wait",
@@ -943,7 +1060,7 @@
     {
       "id": "s5-row-highlight-hospital",
       "type": "computed",
-      "desc": "§1.1：机构行高亮是外扩 8px 的圆角块（左右 -8px + 内补 8px + 8px 圆角），文字仍与标题左对齐",
+      "desc": "§1.1：机构行高亮是外扩 8px 的圆角块（左右 -8px + 内补 8px + 8px 圆角），文字仍与标题左对齐（桌面侧栏：汉堡 → 省行）",
       "selector": ".tc-hospital-row",
       "props": {
         "borderRadius": "8px",
@@ -965,7 +1082,26 @@
           "action": "wait",
           "selector": ".tc-hospital-row"
         }
-      ]
+      ],
+      "at": 1440
+    },
+    {
+      "id": "s5-row-highlight-hospital-390",
+      "type": "computed",
+      "desc": "§1.1：机构行高亮是外扩 8px 的圆角块（左右 -8px + 内补 8px + 8px 圆角），文字仍与标题左对齐（手机端全国层直接列医院行，点行即进详情，不必先进省）",
+      "selector": ".tc-hospital-row",
+      "props": {
+        "borderRadius": "8px",
+        "paddingLeft": "8px",
+        "marginLeft": "-8px"
+      },
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        }
+      ],
+      "at": 390
     },
     {
       "id": "s5-row-highlight-province",
@@ -2709,7 +2845,7 @@
     {
       "id": "a11y.marker-tabindex-390",
       "type": "attr",
-      "desc": "390：进北京省视图后地图标记存在且 tabindex=-1（标记不存在＝没有地图运行时，记不适用，不记假绿）。地图点不动 Tab：图钉在 DOM 里排在底卡前面，进 Tab 序列会让同一目的地在键盘路径上出现两次；键盘走列表行（44px、有焦点环）就到得了每一家，聚合钉的放大要另做底卡按钮，不要靠把图钉塞进 Tab",
+      "desc": "390：进北京省视图后地图标记存在且 tabindex=-1（标记不存在＝没有地图运行时，记不适用，不记假绿）。地图点不动 Tab：图钉在 DOM 里排在底卡前面，进 Tab 序列会让同一目的地在键盘路径上出现两次；键盘走列表行（44px、有焦点环）就到得了每一家，聚合钉的放大要另做底卡按钮，不要靠把图钉塞进 Tab 前置：手机端进省走筛选菜单（搜索框 → 筛选钮 → 省份卡 → 北京），省列表已经不在 .sheet-body 里",
       "selector": ".tc-mapapp-canvas button.tc-map-node",
       "attr": "tabindex",
       "equals": "-1",
@@ -2722,8 +2858,21 @@
         },
         {
           "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "北京"
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"province\"] li button",
+          "textContains": "北京",
+          "settle": 800
         },
         {
           "action": "wait",
@@ -2781,7 +2930,7 @@
       "id": "a11y.escape-province-peek",
       "type": "rect",
       "at": 390,
-      "desc": "A25：省层 medium 按 Esc 落到 peek（170–182）。省层 peek 原来没有出口，Esc 停在这里不动，用户只能去点「返回」",
+      "desc": "A25：省层 medium 按 Esc 落到 peek（170–182）。省层 peek 原来没有出口，Esc 停在这里不动，用户只能去点「返回」 前置：手机端进省走筛选菜单（搜索框 → 筛选钮 → 省份卡 → 北京），省列表已经不在 .sheet-body 里；选完省先点一次筛选钮把面板收掉（A30 选省只收菜单、面板保持展开），Esc 才轮到切换底卡档位",
       "selector": ".sheet",
       "min": {
         "h": 170
@@ -2801,8 +2950,26 @@
         },
         {
           "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "山东"
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"province\"] li button",
+          "textContains": "北京",
+          "settle": 800
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn",
+          "settle": 600
         },
         {
           "action": "key",
@@ -2815,7 +2982,7 @@
       "id": "a11y.escape-province-to-country",
       "type": "rect",
       "at": 390,
-      "desc": "A25：省层 peek 再按 Esc 回全国 medium（420–428）。只判高度会被「省层也是 424」骗过去，配 a11y.escape-province-country-head 判真的回了全国",
+      "desc": "A25：省层 peek 再按 Esc 回全国 medium（420–428）。只判高度会被「省层也是 424」骗过去，配 a11y.escape-province-country-head 判真的回了全国 前置：手机端进省走筛选菜单（搜索框 → 筛选钮 → 省份卡 → 北京），省列表已经不在 .sheet-body 里；选完省先点一次筛选钮把面板收掉（A30 选省只收菜单、面板保持展开），Esc 才轮到切换底卡档位",
       "selector": ".sheet",
       "min": {
         "h": 420
@@ -2835,8 +3002,26 @@
         },
         {
           "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "山东"
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"province\"] li button",
+          "textContains": "北京",
+          "settle": 800
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn",
+          "settle": 600
         },
         {
           "action": "key",
@@ -2854,7 +3039,7 @@
       "id": "a11y.escape-province-country-head",
       "type": "hasText",
       "at": 390,
-      "desc": "A25：两次 Esc 之后标题栏是国家层内容（123 家医院 · 160 条线索），不是还停在省层",
+      "desc": "A25：两次 Esc 之后标题栏是国家层内容（123 家医院 · 160 条线索），不是还停在省层 前置：手机端进省走筛选菜单（搜索框 → 筛选钮 → 省份卡 → 北京），省列表已经不在 .sheet-body 里；选完省先点一次筛选钮把面板收掉（A30 选省只收菜单、面板保持展开），Esc 才轮到切换底卡档位",
       "selector": ".sheet-head",
       "text": "123 家医院",
       "precondition": [
@@ -2869,8 +3054,26 @@
         },
         {
           "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "山东"
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"province\"] li button",
+          "textContains": "北京",
+          "settle": 800
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn",
+          "settle": 600
         },
         {
           "action": "key",
@@ -3268,10 +3471,10 @@
       "id": "filter.provmenu-scrolls",
       "type": "cssProp",
       "at": 390,
-      "selector": ".fmenu[data-kind=\"province\"]",
+      "selector": ".fmenu[data-kind=\"province\"] ul",
       "prop": "overflowY",
       "expect": "auto",
-      "desc": "A35：只有省菜单可滚（实测 scrollHeight 1548 / clientHeight 232），与病症菜单合起来判「只有一个滚动条」",
+      "desc": "A35：只有省菜单可滚 —— 滚动节点是菜单里层的 ul（实测 scrollHeight 1540 / clientHeight 232、overflow-y:auto），.fmenu 外框本身是 visible。判外框会永远绿，所以落到 ul 上；与 filter.dismenu-no-scroll 合起来判「只有一个滚动条」",
       "precondition": [
         {
           "action": "click",
@@ -3399,10 +3602,10 @@
       "id": "filter.dismenu-no-scroll",
       "type": "cssProp",
       "at": 390,
-      "selector": ".fmenu[data-kind=\"disorder\"]",
+      "selector": ".fmenu[data-kind=\"disorder\"] ul",
       "prop": "overflowY",
       "expect": "visible",
-      "desc": "A35：病症菜单不滚（实测内容高 140），滚动条只留在省菜单",
+      "desc": "A35：病症菜单不滚（实测内容高 140），滚动条只留在省菜单。同样落在里层 ul 上，和外框的 visible 区分开",
       "precondition": [
         {
           "action": "click",
@@ -3879,7 +4082,7 @@
       "id": "a11y.mapclick-large-collapses",
       "type": "rect",
       "at": 390,
-      "desc": "A29：详情层 large（736）点地图收到 424。736 时可见地图只有 y<108，y≥108 属卡片，不作为地图点击用例。 736 时地图只剩 108px 一条缝，那一下是在说「把卡让开」，不是在选省",
+      "desc": "A29：详情层 large（736）点地图收到 424。736 时可见地图只有 y<108，y≥108 属卡片，不作为地图点击用例。 736 时地图只剩 108px 一条缝，那一下是在说「把卡让开」，不是在选省 前置：手机端进省走筛选菜单（搜索框 → 筛选钮 → 省份卡 → 北京），省列表已经不在 .sheet-body 里",
       "selector": ".sheet",
       "min": {
         "h": 420
@@ -3899,8 +4102,21 @@
         },
         {
           "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "山东"
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"province\"] li button",
+          "textContains": "北京",
+          "settle": 800
         },
         {
           "action": "click",
@@ -3927,7 +4143,7 @@
       "id": "a11y.mapclick-large-keeps-detail",
       "type": "computed",
       "at": 390,
-      "desc": "A29：收档之后仍在医院详情层（搜索行仍然隐藏），不是被这一下顶回了省层或全国层。736 时可见地图只有 y<108，y≥108 属卡片，不作为地图点击用例。",
+      "desc": "A29：收档之后仍在医院详情层（搜索行仍然隐藏），不是被这一下顶回了省层或全国层。736 时可见地图只有 y<108，y≥108 属卡片，不作为地图点击用例。 前置：手机端进省走筛选菜单（搜索框 → 筛选钮 → 省份卡 → 北京），省列表已经不在 .sheet-body 里",
       "selector": ".searchrow",
       "props": {
         "display": "none"
@@ -3944,8 +4160,21 @@
         },
         {
           "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "山东"
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"province\"] li button",
+          "textContains": "北京",
+          "settle": 800
         },
         {
           "action": "click",
@@ -4007,7 +4236,7 @@
       "id": "a11y.mapclick-large-collapses-mid",
       "type": "rect",
       "at": 390,
-      "desc": "A29：详情层 large（736）点地图收到 424。736 时可见地图只有 y<108，y≥108 属卡片，不作为地图点击用例。 736 时地图只剩 108px 一条缝，那一下是在说「把卡让开」，不是在选省",
+      "desc": "A29：详情层 large（736）点地图收到 424。736 时可见地图只有 y<108，y≥108 属卡片，不作为地图点击用例。 736 时地图只剩 108px 一条缝，那一下是在说「把卡让开」，不是在选省 前置：手机端进省走筛选菜单（搜索框 → 筛选钮 → 省份卡 → 北京），省列表已经不在 .sheet-body 里",
       "selector": ".sheet",
       "min": {
         "h": 420
@@ -4027,8 +4256,21 @@
         },
         {
           "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "山东"
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"province\"] li button",
+          "textContains": "北京",
+          "settle": 800
         },
         {
           "action": "click",
@@ -4055,7 +4297,7 @@
       "id": "a11y.mapclick-large-collapses-near",
       "type": "rect",
       "at": 390,
-      "desc": "A29：详情层 large（736）点地图收到 424。736 时可见地图只有 y<108，y≥108 属卡片，不作为地图点击用例。 736 时地图只剩 108px 一条缝，那一下是在说「把卡让开」，不是在选省",
+      "desc": "A29：详情层 large（736）点地图收到 424。736 时可见地图只有 y<108，y≥108 属卡片，不作为地图点击用例。 736 时地图只剩 108px 一条缝，那一下是在说「把卡让开」，不是在选省 前置：手机端进省走筛选菜单（搜索框 → 筛选钮 → 省份卡 → 北京），省列表已经不在 .sheet-body 里",
       "selector": ".sheet",
       "min": {
         "h": 420
@@ -4075,8 +4317,21 @@
         },
         {
           "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "山东"
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"province\"] li button",
+          "textContains": "北京",
+          "settle": 800
         },
         {
           "action": "click",
