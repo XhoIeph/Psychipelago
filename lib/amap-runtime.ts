@@ -21,6 +21,8 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   selected(): string | null
   /** 当前层级的省份 adcode；省内只画这个省的钉，全国层不画钉。 */
   province(): string | null
+  /** 当前筛选命中的医院；null 表示没有筛选。省内图钉与头部「N 家医院」取同一份集合。 */
+  activeIds(): Set<string> | null
   /** fromPin 表示由地图图钉触发：手机端只让位、不移动镜头。 */
   selectHospital(id: string, fromPin?: { y: number }): void
   selectProvince(adcode: string): void
@@ -99,9 +101,12 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
     const origin = project(camera.getCenter(), zoom).subtract(size.divideBy(2))
     renderedZoom = zoom
     renderedSignature = nodeSignature(zoom)
-    // 进了某个省就只铺这个省的医院；全国层本来就不画钉。
+    // 进了某个省就只铺这个省的医院；全国层本来就不画钉。筛选中时与命中集合取交集，
+    // 头部「N 家医院」为 0 就一枚钉也没有。
     const scope = options.province()
-    const source = scope ? options.hospitals.filter(hospital => hospital.adcode === scope) : options.hospitals
+    const active = options.activeIds()
+    const source = (scope ? options.hospitals.filter(hospital => hospital.adcode === scope) : options.hospitals)
+      .filter(hospital => !active || active.has(hospital.id))
     const layout = mapNodeLayout(source, hospital => project(hospital, zoom).subtract(origin))
       .filter(entry => {
         const point = project({ lat: entry.lat, lng: entry.lng }, zoom).subtract(origin)
@@ -342,6 +347,9 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
     setFilterHits(adcodes: string[] | null) {
       filterHits = adcodes && adcodes.length ? new Set(adcodes) : null
       drawFilter()
+      // 钉跟筛选走：命中集合变了就重排，别等下一次相机移动。
+      renderedSignature = ''
+      update()
     },
     province(adcode: string, inset: number) {
       const bounds = provinces.get(adcode)?.getBounds()

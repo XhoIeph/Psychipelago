@@ -120,6 +120,7 @@ export function MapApp(props: Props) {
   selectedRef.current = selectedHospitalId
   const provinceRef = useRef<string | null>(null)
   provinceRef.current = selectedProvinceAdcode
+  const activeIdsRef = useRef<Set<string> | null>(null)
 
   // 手机端的抽屉由底卡取代；桌面关闭侧栏只需要收起停靠状态。
   const closeDrawer = () => setSidebarOpen(false)
@@ -298,6 +299,7 @@ export function MapApp(props: Props) {
           hospitals: propsRef.current.mapHospitals, stats: propsRef.current.provinceStats,
           inset: () => dockRef.current.inset, selected: () => selectedRef.current,
           province: () => provinceRef.current,
+          activeIds: () => activeIdsRef.current,
           selectHospital, selectProvince, interruptDock: () => cancelDockCameraRef.current?.(),
           limits: (atMin, atMax) => setLimits(previous => previous.atMin === atMin && previous.atMax === atMax ? previous : { atMin, atMax }),
           closeCluster: () => setCluster(null),
@@ -374,6 +376,7 @@ export function MapApp(props: Props) {
     }
     return ids
   }, [disorderGroups, selectedDisorders.length, selectedSet])
+  activeIdsRef.current = activeHospitalIds
   const activeDisorderIds = useMemo(() => {
     if (selectedDisorders.length === 0) return null
     const ids = new Set<string>()

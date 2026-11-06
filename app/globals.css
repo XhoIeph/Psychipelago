@@ -358,7 +358,7 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .sheet .empty .btn.acc { background:#dff0e7; color:var(--tc-accent-strong); }
 .sheet .empty .btn:hover { filter:brightness(.97); }
 /* 空态正文已经把话说全，卡头的返回行与层级名不再重复。 */
-.sheet.is-empty .head-back,.sheet.is-empty .head-title { display:none; }
+.sheet.is-empty .head-title { display:none; }
 
 /* 筛选压层：由 runtime 画在地图容器里，盖住底图、只让命中的省透出来。 */
 .tc-map-geo { position:absolute; inset:0; z-index:4; width:100%; height:100%; pointer-events:none; }
@@ -423,6 +423,8 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
   .tc-mapapp[data-sheet-dragging] .tc-mapapp-canvas .amap-logo,
   .tc-mapapp[data-sheet-dragging] .tc-mapapp-canvas .amap-copyright { transition:none; }
   .tc-mapapp-ctl-label { display:none; }
+  /* 手机空态只留两段文字；「补充一条线索」目前只在桌面出现。 */
+  .sheet .empty .btn { display:none; }
   .tc-map-loading,.tc-mapapp-error { top:140px; right:12px; }
   /* 手机单钉的十字略小；选中钉用品牌绿环，其余钉退到 42%。 */
   .tc-hospital-pin .tc-pin-cross { width:19px; height:19px; }
