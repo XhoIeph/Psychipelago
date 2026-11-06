@@ -308,6 +308,7 @@ export function MapApp(props: Props) {
             setCluster({ members, key, x: Math.max(dockRef.current.inset + 16, Math.min(size.x - 296, x - 140)), y: Math.max(84, Math.min(size.y - 320, y - 40)) })
           },
           ready: () => { if (!disposed) setMapReady(true) },
+          onMapClick: () => mapClickRef.current(),
         })
         runtimeRef.current = runtime
         mapRef.current = runtime.camera
@@ -822,6 +823,16 @@ export function MapApp(props: Props) {
   const applySheetStop = useCallback((next: SheetStop) => {
     setSheetStop(detailSheet && next === 'peek' ? 'medium' : next)
   }, [detailSheet])
+
+  // 736 时地图只剩 108px，点它得有点回应，否则「底卡非模态、地图始终可用」不成立：
+  // 只从 large 收一档到 medium，medium / peek 不动，详情层也只收档不退层。
+  const sheetStopRef = useRef<SheetStop>('peek')
+  sheetStopRef.current = sheetStop
+  const mapClickRef = useRef(() => {})
+  mapClickRef.current = () => {
+    if (desktopRef.current || sheetStopRef.current !== 'large') return
+    applySheetStop('medium')
+  }
 
   // 换层级时换档：进省看列表用 medium，进详情看内容用 large；搜索不动档位。
   const previousSheetLevelRef = useRef<SheetLevel>('country')

@@ -31,6 +31,8 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   cluster(members: MapHospital[], key: string, x: number, y: number): void
   closeCluster(): void
   ready(): void
+  /** 地图空白处被点击；拖动后高德不派发 click，所以这里天然只对应「点了一下」。 */
+  onMapClick(): void
 }) {
   const map = new sdk.Map(container, {
     viewMode: '2D', center: [105, 35.5], zoom: 4, zooms: [2, MAP_MAX_ZOOM],
@@ -327,6 +329,12 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   const pointer = attachMapPointer(camera)
   map.on('zoomchange', update)
   map.on('complete', options.ready)
+  map.on('click', (event) => {
+    // 图钉是我们盖在地图上的 DOM；点它时别把点击再当成「点空白」处理一遍。
+    const target = event.originEvent?.target as HTMLElement | null | undefined
+    if (target?.closest?.('.tc-map-node')) return
+    options.onMapClick()
+  })
   const resize = new ResizeObserver(() => {
     const wasCountry = camera.getZoom() <= minZoom + .001
     size = new MapPoint(container.clientWidth, container.clientHeight)
