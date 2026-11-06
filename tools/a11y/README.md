@@ -5,9 +5,9 @@
 | 文件 | 原件位置 | 快照 sha256（前 16 位） | 字节 |
 | --- | --- | --- | --- |
 | `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `7892d4cacd7e374e` | 57716 |
-| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `6d7e8ad9641871cc` | 129818 |
+| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `a96f99159119d69c` | 130831 |
 
-`ui-spec.json` 是从 `docs/` 原件的逐字节拷贝，只改名不改内容；`spec.cjs` 同样逐字节拷贝（skill 目录那份也已同步成这一版）。换行统一成 LF 后再算 sha 与字节数（工作流里打印的也是这个）；这一版原件与快照同为 LF，两个文件逐字节相同。快照这一版：**184 条断言**（其中 1 个 id `copy.no-verify-disclaimer` 重复，唯一 id 183 个；另有 28 条退役，见 `retired`），按视口生效 1440 = 110 条、390 = 74 条、375 = 15 条、320 = 9 条（`at` 与无 `at` 的并集，与 `spec.cjs` 的门控一致）。第 6 批（`5d13382`）上的四档实测：**1440×900 = 110 通过 / 0 失败 / 0 不适用**、**390×844 = 73 / 0 / 1**、375×812 = 14 / 0 / 1、320×568 = 8 / 0 / 1（三档「不适用」都是 `s5-disabled-opacity`：本页没有禁用态的地图控件）。报告在 `.botharness/mobile-v3-accept/a11y-reports/`（`b6-final` 含 390 与 1440，`b6-narrow2` 含 375 与 320）。
+`ui-spec.json` 是从 `docs/` 原件的逐字节拷贝，只改名不改内容；`spec.cjs` 同样逐字节拷贝（skill 目录那份也已同步成这一版）。换行统一成 LF 后再算 sha 与字节数（工作流里打印的也是这个）；这一版原件与快照同为 LF，两个文件逐字节相同。快照这一版：**185 条断言**（其中 1 个 id `copy.no-verify-disclaimer` 重复，唯一 id 184 个；另有 28 条退役，见 `retired`），按视口生效 1440 = 110 条、390 = 75 条、375 = 15 条、320 = 9 条（`at` 与无 `at` 的并集，与 `spec.cjs` 的门控一致）。Kiwi 追加的 390 正向隐藏断言 `mobile.cta-hidden-390` 也已进来：手机详情里 `.tc-hospital-actions`（「在地图上定位」容器）在 DOM 但 `display: none`，判 display 而不是只看 Tab 序列。第 6 批（`5d13382`）上的四档实测（含该新条）：**1440×900 = 110 通过 / 0 失败 / 0 不适用**、**390×844 = 74 / 0 / 1**、375×812 = 14 / 0 / 1、320×568 = 8 / 0 / 1（三档「不适用」都是 `s5-disabled-opacity`：本页没有禁用态的地图控件）。报告在 `.botharness/mobile-v3-accept/a11y-reports/`（`cta-390` 与 `cta-1440` 是这版 spec 的 390/1440 两档，`b6-narrow2` 含 375 与 320）。
 
 第 6 批把省列表从 `.sheet-body` 挪进筛选菜单、全国层直接列医院行，所以这一版顺手改了入口相关的前置：手机端进省走「搜索框 → 筛选钮 → 省份卡 → 菜单里点省名」，进医院详情走「保险起见先抬卡到 medium，再点全国列表的医院行」（peek 档 `.sheet-body` 只有 24px 且在视口外，行根本点不到）。原来两个视口共用一条的四条文案/尺寸断言（`copy.no-disease-count`、`copy.no-scope-explainer`、`copy.no-unsourced-service`、`s5-row-highlight-hospital`）拆成 `at:1440` 原样加 `at:390` 手机版；`type.button` 只留桌面 —— 手机端机构详情里这个 CTA 是渲染的但盒子 0×0，没有可量的东西。省菜单的滚动节点是里层 `ul`（外框 `.fmenu` 是 `overflow: visible`，判外框会永远绿），`filter.provmenu-scrolls` 与 `filter.dismenu-no-scroll` 都落在 `ul` 上。375 的 `size-row-375` 也随之改判菜单行。
 

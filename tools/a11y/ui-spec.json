@@ -4079,6 +4079,36 @@
       ]
     },
     {
+      "id": "mobile.cta-hidden-390",
+      "type": "computed",
+      "desc": "手机详情里的「在地图上定位」不出现：容器 .tc-hospital-actions 在 DOM 里但 display:none，盒子 0×0 也就点不到、进不了 Tab；桌面才保留这个入口（app/globals.css 的 .sheet .tc-hospital-actions）。判 display 而不是只看 Tab 序列，是因为改成 visibility:hidden 或删掉规则后盒子塌掉，单看 Tab 仍会漏过去",
+      "selector": ".sheet .tc-hospital-actions",
+      "props": {
+        "display": "none"
+      },
+      "at": 390,
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".grab",
+          "settle": 600
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "settle": 800
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-detail"
+        }
+      ]
+    },
+    {
       "id": "a11y.mapclick-large-collapses",
       "type": "rect",
       "at": 390,
