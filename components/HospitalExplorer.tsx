@@ -46,6 +46,8 @@ type Props = {
   showFilteredNote?: boolean
   /** 筛选后一个省都不剩时的清空入口。 */
   onClearFilter?: () => void
+  /** sheet：手机底卡里的空态用无边框排版，桌面仍是 .tc-empty。 */
+  sheetEmpty?: boolean
 }
 
 export function HospitalExplorer({
@@ -64,6 +66,7 @@ export function HospitalExplorer({
   hideFilterPanel = false,
   showFilteredNote = false,
   onClearFilter,
+  sheetEmpty = false,
 }: Props) {
   const selectedSet = useMemo(() => new Set(selectedDisorders), [selectedDisorders])
   // 选完病症仍然是省份列表，只是收窄到有命中线索的省；多选取并集。
@@ -184,12 +187,21 @@ export function HospitalExplorer({
           </div>
         ) : rows(searchList)
       ) : matched && provinceRows.length === 0 ? (
-        <div className="tc-empty">
-          <h3>这次筛选没有匹配的医院</h3>
-          <div className="tc-empty-acts">
-            <button type="button" className="tc-button tc-button--active" onClick={onClearFilter}>清除病症筛选</button>
+        sheetEmpty ? (
+          <div className="empty">
+            <h3>这次筛选没有匹配的医院</h3>
+            <div className="acts">
+              <button type="button" className="btn acc" onClick={onClearFilter}>清除病症筛选</button>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="tc-empty">
+            <h3>这次筛选没有匹配的医院</h3>
+            <div className="tc-empty-acts">
+              <button type="button" className="tc-button tc-button--active" onClick={onClearFilter}>清除病症筛选</button>
+            </div>
+          </div>
+        )
       ) : (
         <ul className="tc-province-list">
           {provinceRows.map((row) => (

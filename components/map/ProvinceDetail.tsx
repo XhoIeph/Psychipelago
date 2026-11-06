@@ -14,6 +14,7 @@ export function ProvinceDetail({
   hideCount = false,
   filteredEmpty = false,
   onClearFilter,
+  variant = 'sidebar',
 }: {
   provinceName: string
   stat: MapProvinceStat | undefined
@@ -26,6 +27,8 @@ export function ProvinceDetail({
   /** 该省本来有医院，只是被病症筛选筛掉了：和「没有收录」用不同的话。 */
   filteredEmpty?: boolean
   onClearFilter?: () => void
+  /** sheet：手机底卡里的空态用无边框排版；桌面侧栏仍是 .tc-empty。 */
+  variant?: 'sidebar' | 'sheet'
 }) {
   // 筛选把列表筛空时，省本身的收录数还在，不能据此当成「有数据」。
   const hasData = !filteredEmpty && ((stat?.reports ?? 0) > 0 || hospitals.length > 0)
@@ -69,6 +72,25 @@ export function ProvinceDetail({
             </section>
           )}
         </>
+      ) : variant === 'sheet' ? (
+        <div className="empty">
+          {filteredEmpty ? (
+            <>
+              <h3>这次筛选没有匹配的医院</h3>
+              <div className="acts">
+                <button type="button" className="btn acc" onClick={onClearFilter}>清除病症筛选</button>
+              </div>
+            </>
+          ) : (
+            <>
+              <h3>{provinceName}还没有收录医院</h3>
+              <p>空着说明还没采到线索，不代表当地没有。</p>
+              <div className="acts">
+                <button type="button" className="btn acc" aria-disabled="true">补充一条线索</button>
+              </div>
+            </>
+          )}
+        </div>
       ) : (
         <div className="tc-empty">
           {filteredEmpty ? (

@@ -649,6 +649,7 @@ export function MapApp(props: Props) {
       hideCount={mobile}
       filteredEmpty={mobile && selectedDisorders.length > 0 && provinceHasRecords && provinceHospitals.length === 0}
       onClearFilter={clearDisorderFilter}
+      variant={mobile ? 'sheet' : 'sidebar'}
     />
   ) : null
 
@@ -714,6 +715,7 @@ export function MapApp(props: Props) {
         hideFilterPanel
         showFilteredNote
         onClearFilter={clearDisorderFilter}
+        sheetEmpty
       />
     </Suspense>
   )
@@ -757,6 +759,8 @@ export function MapApp(props: Props) {
       ))}
     </>
   ) : null
+  // 省层正文是空态时，卡头的返回行和层级名会把同一件事说三遍，藏起来只留计数。
+  const sheetEmpty = sheetLevel === 'province' && provinceHospitals.length === 0
 
   const sheetViewport = viewportHeight || 844
   const sheetHeights = useMemo<SheetHeights>(() => ({
@@ -849,7 +853,7 @@ export function MapApp(props: Props) {
     applySheetStop('peek')
   }
 
-  // Escape：先清搜索词，再收筛选面板，再把大卡收到中档，最后退回上一层。
+  // Escape 的优先级：清搜索词 → 关筛选面板 → 详情退一层（大卡先落到中档）→ 列表收一档。
   useEffect(() => {
     if (isDesktop) return
     const onKeyDown = (event: KeyboardEvent) => {
@@ -865,17 +869,19 @@ export function MapApp(props: Props) {
         setFilterOpen(false)
         return
       }
-      if (sheetStop === 'large') {
-        applySheetStop('medium')
+      if (detailSheet) {
+        if (sheetStop === 'large') applySheetStop('medium')
+        else if (selectedDoctor) backToHospital()
+        else if (selectedHospital) backToProvince(selectedHospital.adcode)
         return
       }
-      if (selectedDoctor) backToHospital()
-      else if (selectedHospital) backToProvince(selectedHospital.adcode)
-      else if (selectedProvince) backToCountry()
+      // 列表层一次收一档；全国 peek 无处可收，就停在这里。
+      if (sheetStop === 'large') applySheetStop('medium')
+      else if (sheetStop === 'medium') applySheetStop('peek')
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [applySheetStop, backToCountry, backToHospital, backToProvince, filterOpen, isDesktop, query, selectedDoctor, selectedHospital, selectedProvince, sheetStop])
+  }, [applySheetStop, backToHospital, backToProvince, detailSheet, filterOpen, isDesktop, query, selectedDoctor, selectedHospital, sheetStop])
 
   return (
     <div ref={shellRef} className="tc-mapapp">
@@ -1012,6 +1018,7 @@ export function MapApp(props: Props) {
           onDragChange={handleSheetDragChange}
           backLabel={sheetBackLabel}
           onBack={sheetBack}
+          hideHead={sheetEmpty}
           onDismiss={dismissSearchSheet}
           query={query}
           onQueryChange={(value) => {

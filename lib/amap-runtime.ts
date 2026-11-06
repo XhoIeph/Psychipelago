@@ -115,8 +115,9 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
           const single = entry.members.length === 1
           const element = document.createElement('button')
           element.type = 'button'
-          // 桌面沿用画布容器搬运焦点；手机上图钉本身要能被 Tab 到。
-          element.tabIndex = size.x >= 1000 ? -1 : 0
+          // 手机端图钉不进 Tab 序列，键盘路径走底卡列表：图钉在 DOM 顺序里排在底卡前面，
+          // 同一家医院会在 Tab 顺序里出现两次；列表行本身 44px 带焦点环，已经是完整的键盘路径。
+          element.tabIndex = -1
           element.className = `tc-map-node ${single ? 'tc-hospital-pin' : 'tc-cluster-pin'}`
           element.dataset.nodeKey = entry.key
           element.dataset.nodeInstance = String(++instance)
@@ -324,7 +325,6 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   const resize = new ResizeObserver(() => {
     const wasCountry = camera.getZoom() <= minZoom + .001
     size = new MapPoint(container.clientWidth, container.clientHeight)
-    for (const node of liveNodes.values()) node.element.tabIndex = size.x >= 1000 ? -1 : 0
     setMinZoom(countryFrame().zoom)
     if (wasCountry) country(false)
     else camera.move(center(), camera.getZoom())

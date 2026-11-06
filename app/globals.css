@@ -349,6 +349,16 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .fp-row[aria-checked="true"] .tick { opacity:1; }
 .list-note { margin:0; padding:12px 0 2px; color:var(--tc-text-faint); font-size:12.5px; line-height:1.6; }
 .tc-empty-acts { display:flex; gap:8px; justify-content:center; margin-top:12px; }
+/* 手机空态：底卡里不用桌面那张虚线卡，标题 + 一句说明 + 一个按钮。 */
+.sheet .empty { padding:22px 0 8px; }
+.sheet .empty h3 { margin:0; color:var(--tc-text); font-size:16px; font-weight:650; line-height:1.5; }
+.sheet .empty p { margin:8px 0 0; color:var(--tc-text-muted); font-size:13.5px; line-height:1.7; }
+.sheet .empty .acts { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+.sheet .empty .btn { display:inline-flex; align-items:center; height:40px; padding:0 14px; border:0; border-radius:10px; background:var(--tc-surface-muted); color:var(--tc-text); font-size:13.5px; font-weight:600; }
+.sheet .empty .btn.acc { background:#dff0e7; color:var(--tc-accent-strong); }
+.sheet .empty .btn:hover { filter:brightness(.97); }
+/* 空态正文已经把话说全，卡头的返回行与层级名不再重复。 */
+.sheet.is-empty .head-back,.sheet.is-empty .head-title { display:none; }
 
 /* 筛选压层：由 runtime 画在地图容器里，盖住底图、只让命中的省透出来。 */
 .tc-map-geo { position:absolute; inset:0; z-index:4; width:100%; height:100%; pointer-events:none; }

@@ -48,6 +48,8 @@ type Props = {
   /** 详情层返回目标的名字；列表层不传。 */
   backLabel?: string
   onBack?: () => void
+  /** 空态正文会把层级名再说一遍：这时卡头只留计数，藏掉返回行与标题。 */
+  hideHead?: boolean
   /** 搜索框失焦且焦点确实离开底卡时调用；卡内点击不算。 */
   onDismiss?: () => void
   query: string
@@ -105,6 +107,7 @@ export function MapSheet({
   onDragChange,
   backLabel,
   onBack,
+  hideHead = false,
   onDismiss,
   query,
   onQueryChange,
@@ -200,8 +203,14 @@ export function MapSheet({
     if (body) body.scrollTop = 0
   }, [level, title])
 
-  // 换层级后，之前的「聚焦抬起」不再作数。
+  // 换层级后，之前的「聚焦抬起」不再作数。搜索只是给当前层叠了一层结果，
+  // country ↔ search 来回切换时不能把聚焦抬起来的这一档弄丢，否则清空搜索再失焦就缩不回 peek。
+  const previousLevelRef = useRef<SheetLevel>(level)
   useLayoutEffect(() => {
+    const previous = previousLevelRef.current
+    previousLevelRef.current = level
+    if (previous === level) return
+    if (previous === 'search' || level === 'search') return
     focusRaisedRef.current = false
   }, [level])
 
@@ -300,7 +309,7 @@ export function MapSheet({
   return (
     <section
       ref={sheetRef}
-      className={`sheet is-${level}${isDetail ? ' is-detail' : ''}${filterActive ? ' is-filtering' : ''}`}
+      className={`sheet is-${level}${isDetail ? ' is-detail' : ''}${filterActive ? ' is-filtering' : ''}${hideHead ? ' is-empty' : ''}`}
       aria-labelledby={titleId}
       onPointerDownCapture={() => { pointerInsideRef.current = true }}
     >
@@ -404,7 +413,17 @@ export function MapSheet({
         <h2 id={titleId} className={`head-title head-title--${level}`}>{title}</h2>
         {meta ? <div className="head-meta">{meta}</div> : null}
       </header>
-      <div className="sheet-body" ref={bodyRef}>
+      <div
+        className="sheet-body"
+        ref={bodyRef}
+        onFocusCapture={(event) => {
+          // 键盘 Tab 进正文（省份行、医院行）时把手抬到 medium；鼠标点不算，
+          // 否则在 peek 下点不到的东西正好被一层「点了才抬」盖住。
+          if (stop !== 'peek') return
+          const target = event.target
+          if (target instanceof HTMLElement && target.matches(':focus-visible')) onStopChange('medium')
+        }}
+      >
         {filters.length > 0 && onToggleFilter && (
           <div
             id={`${titleId}-filters`}
