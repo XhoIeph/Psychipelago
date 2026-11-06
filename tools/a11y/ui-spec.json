@@ -363,13 +363,20 @@
     {
       "id": "size.filter-375",
       "type": "rect",
-      "desc": "筛选入口 ≥48px（窄屏同样）",
-      "selector": ".tc-filter-toggle",
+      "desc": "筛选入口 ≥48×44（窄屏同样；聚焦搜索框后展开才可见）",
+      "selector": ".fbtn",
       "min": {
-        "h": 48
+        "w": 48,
+        "h": 44
       },
       "at": 375,
-      "skipIfMissing": true
+      "skipIfMissing": true,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        }
+      ]
     },
     {
       "id": "s5-card-single-entry-375",
@@ -447,16 +454,6 @@
       "at": 1440
     },
     {
-      "id": "s5-tab-min-height-999",
-      "type": "rect",
-      "desc": "§5：侧栏标签 min-height 44px（≤999px 抽屉态同样成立）",
-      "selector": ".tc-sidebar-tab",
-      "min": {
-        "h": 44
-      },
-      "at": 999
-    },
-    {
       "id": "s5-tab-selected-one",
       "type": "count",
       "desc": "§5：侧栏标签选中态由 aria-selected 表达，且有且仅有一个选中项",
@@ -516,35 +513,6 @@
       "desc": "§6：≥1000px 侧栏为常驻 dock（JS 状态与 CSS 一致，不带抽屉关闭类）",
       "selector": ".tc-sidebar.tc-sidebar--closed",
       "at": 1440
-    },
-    {
-      "id": "s6-drawer-closed-999",
-      "type": "mustExist",
-      "desc": "§6：≤999px 侧栏为抽屉，默认收起（tc-sidebar--closed 与 CSS 同步）",
-      "selector": ".tc-sidebar.tc-sidebar--closed",
-      "at": 999
-    },
-    {
-      "id": "s6-drawer-top-104",
-      "type": "cssProp",
-      "desc": "§6：抽屉顶部留 104px",
-      "selector": ".tc-sidebar",
-      "prop": "top",
-      "expect": "104px",
-      "at": 999
-    },
-    {
-      "id": "s6-drawer-width-999",
-      "type": "rect",
-      "desc": "§6：抽屉宽 min(440px,100vw)，999px 视口下取 440px",
-      "selector": ".tc-sidebar",
-      "min": {
-        "w": 440
-      },
-      "max": {
-        "w": 440
-      },
-      "at": 999
     },
     {
       "id": "s6-z-map",
@@ -3604,6 +3572,22 @@
     {
       "id": "s6-gutter-320",
       "why": "侧栏 body 在窄屏不渲染：`.tc-sidebar-body` 只有桌面侧栏才有，窄屏的间距由 `size.sheet-375` 与 `s6-sheet-searchrow-54` 接住"
+    },
+    {
+      "id": "s5-tab-min-height-999",
+      "why": "侧栏标签只在桌面渲染（`MapApp.tsx:1007` 是 `{isDesktop && <Sidebar …/>}`），≤999px 没有这个元素；994–999 那一档从来不在 CI 矩阵里，也永远不会跑。桌面同一控件的高度由 `size.tab`（1440）覆盖"
+    },
+    {
+      "id": "s6-drawer-closed-999",
+      "why": "抽屉已由手机底卡取代：≤999px 不渲染 `.tc-sidebar`，`.tc-sidebar--closed` 也不存在。手机侧「不是弹层」的语义由 `a11y.sheet-not-modal`、`a11y.mapapp-not-dialog` 与 `mobile.sheet-raises` 接住"
+    },
+    {
+      "id": "s6-drawer-top-104",
+      "why": "抽屉顶部 104px 是手机专属规则，v3 之后窄屏没有 `.tc-sidebar` 可量；底卡的可视带与让位由 `a11y.mapclick-large-keeps-detail`、`mobile.sheet-raises` 这组覆盖。改到 1440 会拿桌面侧栏（top:0）去判手机规则，等于把断言改成另一件事"
+    },
+    {
+      "id": "s6-drawer-width-999",
+      "why": "抽屉宽 440 是手机专属规则，窄屏不再有抽屉；桌面侧栏宽度由 `size.sidebar`（380px）覆盖，底卡宽度由 `size.sheet-375` 覆盖"
     }
   ]
 }
