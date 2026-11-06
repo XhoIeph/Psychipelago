@@ -102,17 +102,6 @@
       "at": 1440
     },
     {
-      "id": "type.brand-narrow",
-      "type": "computed",
-      "desc": "≤999px 侧栏品牌 23px / 750",
-      "selector": ".tc-sidebar .tc-brand-wordmark",
-      "props": {
-        "fontSize": "23px",
-        "fontWeight": "750"
-      },
-      "at": 375
-    },
-    {
       "id": "type.input",
       "type": "computed",
       "desc": "输入 16px（页面唯一的文本输入是顶部搜索框）",
@@ -135,7 +124,7 @@
           "action": "click",
           "selector": ".tc-mapapp-burger",
           "unlessVisible": ".tc-province-row",
-          "mobileSelector": ".tc-mobile-browse"
+          "mobileSelector": ".grab"
         },
         {
           "action": "click",
@@ -232,7 +221,7 @@
           "action": "click",
           "selector": ".tc-mapapp-burger",
           "unlessVisible": ".tc-province-row",
-          "mobileSelector": ".tc-mobile-browse"
+          "mobileSelector": ".grab"
         },
         {
           "action": "click",
@@ -254,7 +243,7 @@
           "action": "click",
           "selector": ".tc-mapapp-burger",
           "unlessVisible": ".tc-province-row",
-          "mobileSelector": ".tc-mobile-browse"
+          "mobileSelector": ".grab"
         },
         {
           "action": "click",
@@ -276,7 +265,7 @@
           "action": "click",
           "selector": ".tc-mapapp-burger",
           "unlessVisible": ".tc-province-row",
-          "mobileSelector": ".tc-mobile-browse"
+          "mobileSelector": ".grab"
         },
         {
           "action": "click",
@@ -296,21 +285,10 @@
       "at": 375
     },
     {
-      "id": "type.brand-320",
-      "type": "computed",
-      "desc": "≤360px 品牌 20px / 750",
-      "selector": ".tc-sidebar .tc-brand-wordmark",
-      "props": {
-        "fontSize": "20px",
-        "fontWeight": "750"
-      },
-      "at": 320
-    },
-    {
-      "id": "size.drawer-375",
+      "id": "size.sheet-375",
       "type": "rect",
-      "desc": "≤999px 抽屉宽 = min(440,100vw)，375px 下铺满",
-      "selector": ".tc-sidebar",
+      "desc": "≤999px 底卡铺满屏宽（375px 下宽 = 375）",
+      "selector": ".sheet",
       "min": {
         "w": 375
       },
@@ -362,10 +340,10 @@
       "skipIfMissing": true
     },
     {
-      "id": "size.tab-375",
+      "id": "size-row-375",
       "type": "rect",
-      "desc": "侧栏标签 min-height 44（窄屏同样）",
-      "selector": ".tc-sidebar-tab",
+      "desc": "窄屏省行可点高度 ≥44（原侧栏标签）",
+      "selector": ".tc-province-row",
       "min": {
         "h": 44
       },
@@ -375,7 +353,7 @@
       "id": "type.input-375",
       "type": "computed",
       "desc": "窄屏搜索框字号（页面上唯一的文本输入）",
-      "selector": ".tc-mapapp-search input",
+      "selector": ".sheet .searchrow input",
       "props": {
         "fontSize": "16px"
       },
@@ -404,7 +382,7 @@
           "action": "click",
           "selector": ".tc-mapapp-burger",
           "unlessVisible": ".tc-province-row",
-          "mobileSelector": ".tc-mobile-browse"
+          "mobileSelector": ".grab"
         },
         {
           "action": "click",
@@ -527,22 +505,10 @@
     },
     {
       "id": "s6-backdrop-none-1440",
-      "type": "computed",
-      "desc": "§6：≥1000px 为桌面 dock，无遮罩层",
-      "selector": ".tc-mapapp-backdrop",
-      "props": {
-        "display": "none"
-      },
-      "at": 1440
-    },
-    {
-      "id": "s6-backdrop-block-999",
-      "type": "cssProp",
-      "desc": "§6：≤999px 抽屉态出现遮罩层",
-      "selector": ".tc-mapapp-backdrop",
-      "prop": "display",
-      "expect": "block",
-      "at": 999
+      "type": "mustNotExist",
+      "desc": "§6：≥1000px 为桌面 dock，没有遮罩层（元素不应存在。旧表写成 computed display:none，但 runner 只取样可见元素，渲染成隐藏也会被判「没有可见元素」，这条在旧表里就一直红）",
+      "at": 1440,
+      "selector": ".tc-mapapp-backdrop"
     },
     {
       "id": "s6-dock-sync-1440",
@@ -581,29 +547,6 @@
       "at": 999
     },
     {
-      "id": "s6-drawer-width-320",
-      "type": "rect",
-      "desc": "§6：抽屉宽 min(440px,100vw)，320px 视口下取满宽 320px",
-      "selector": ".tc-sidebar",
-      "min": {
-        "w": 320
-      },
-      "max": {
-        "w": 320
-      },
-      "at": 320
-    },
-    {
-      "id": "s6-card-padding-320",
-      "type": "computed",
-      "desc": "§6：≤360px 卡片内边距收窄至 16px",
-      "selector": ".tc-hospital-card",
-      "props": {
-        "padding": "16px"
-      },
-      "at": 320
-    },
-    {
       "id": "s6-z-map",
       "type": "computed",
       "desc": "§6：图层 map = 1",
@@ -622,22 +565,14 @@
       }
     },
     {
-      "id": "s6-z-backdrop",
-      "type": "computed",
-      "desc": "§6：图层 backdrop（抽屉遮罩）= 1050",
-      "selector": ".tc-mapapp-backdrop",
-      "props": {
-        "zIndex": "1050"
-      }
-    },
-    {
       "id": "s6-z-sidebar",
       "type": "computed",
-      "desc": "§6：图层 sidebar = 1100",
+      "desc": "§6：图层 sidebar = 1100（桌面侧栏；手机端没有侧栏，由 s6-z-sheet-390 接住）",
       "selector": ".tc-sidebar",
       "props": {
         "zIndex": "1100"
-      }
+      },
+      "at": 1440
     },
     {
       "id": "s6-z-topbar",
@@ -649,30 +584,10 @@
       }
     },
     {
-      "id": "s6-gutter-375",
-      "type": "computed",
-      "desc": "§6：≤700px 侧栏 gutter 收窄到 20px（.tc-sidebar-body 左右内边距）",
-      "selector": ".tc-sidebar-body",
-      "props": {
-        "padding": "8px 20px 24px"
-      },
-      "at": 375
-    },
-    {
-      "id": "s6-gutter-320",
-      "type": "computed",
-      "desc": "§6：≤360px 侧栏 gutter 收窄到 16px（.tc-sidebar-body 左右内边距）",
-      "selector": ".tc-sidebar-body",
-      "props": {
-        "padding": "8px 16px 24px"
-      },
-      "at": 320
-    },
-    {
-      "id": "s6-mobile-browse-54",
+      "id": "s6-sheet-searchrow-54",
       "type": "rect",
-      "desc": "§6：手机底部浏览条最小高 54px",
-      "selector": ".tc-mobile-browse",
+      "desc": "§6：底卡内搜索行最小高 54px（原底部浏览条）",
+      "selector": ".sheet .searchrow",
       "min": {
         "h": 54
       },
@@ -1073,7 +988,7 @@
           "action": "click",
           "selector": ".tc-mapapp-burger",
           "unlessVisible": ".tc-province-row",
-          "mobileSelector": ".tc-mobile-browse"
+          "mobileSelector": ".grab"
         },
         {
           "action": "click",
@@ -2574,7 +2489,7 @@
     {
       "id": "mobile.burger-hidden",
       "type": "computed",
-      "desc": "§6 手机端不设汉堡：侧栏由底部条打开，汉堡 display:none（DOM 保留，桌面仍用）",
+      "desc": "§6 手机端不设汉堡：省列表在底卡里，汉堡 display:none（DOM 保留，桌面仍用）",
       "selector": ".tc-mapapp-burger",
       "props": {
         "display": "none"
@@ -2603,86 +2518,88 @@
       "absentOk": true
     },
     {
-      "id": "mobile.about-right-of-search",
-      "type": "layoutRel",
-      "desc": "§6 顶栏顺序：关于项目在搜索框右侧（右上角），间距 ≥8px",
-      "a": "button.tc-mapapp-about",
-      "b": ".tc-mapapp-search",
-      "relation": "rightOf",
-      "gap": 8,
-      "at": 390
+      "id": "mobile.about-icon-48",
+      "type": "rect",
+      "desc": "§6 手机关于入口 48×48（顶栏搜索框已删除，入口独立在右上角）",
+      "at": 390,
+      "selector": ".tc-about-icon",
+      "min": {
+        "w": 48,
+        "h": 48
+      }
     },
     {
-      "id": "mobile.about-above-canvas",
+      "id": "mobile.about-above-sheet",
       "type": "layoutRel",
-      "desc": "§6 关于项目 在画布上方，不压地图",
-      "a": "button.tc-mapapp-about",
-      "b": ".tc-mapapp-canvas",
+      "desc": "§6 关于入口在底卡上方 ≥8px，不被卡片压住",
+      "a": ".tc-about-icon",
+      "b": ".sheet",
       "relation": "above",
       "gap": 8,
       "at": 390
     },
     {
-      "id": "mobile.canvas-below-topbar",
-      "type": "layoutRel",
-      "desc": "§6 画布顶边在顶栏下方 ≥8px，内蒙古与黑龙江北缘不被浮层挡住",
-      "a": ".tc-mapapp-canvas",
-      "b": ".tc-mapapp-topbar",
-      "relation": "below",
-      "gap": 8,
-      "at": 390
+      "id": "mobile.map-fullbleed",
+      "type": "rect",
+      "desc": "§6 手机地图整屏：地图壳铺满视口（390×844）且从 0,0 起，底卡浮在它上面，不再挤压地图；画布本身的 rect 会被高德自己的平移矩阵带偏（实测 top -11 / -27），所以位移只对壳取值",
+      "at": 390,
+      "selector": ".tc-mapapp",
+      "min": {
+        "w": 390,
+        "h": 844,
+        "x": 0,
+        "y": 0
+      }
     },
     {
-      "id": "mobile.canvas-above-browse",
-      "type": "layoutRel",
-      "desc": "§6 画布底边在底部浏览条上方 ≥8px，海南与广东南缘不被浮层挡住",
-      "a": ".tc-mapapp-canvas",
-      "b": ".tc-mobile-browse",
-      "relation": "above",
-      "gap": 8,
-      "at": 390
-    },
-    {
-      "id": "mobile.sidebar-opens",
-      "type": "mustExist",
-      "desc": "§6 底部条能打开侧栏（删汉堡后唯一入口）",
-      "selector": ".tc-sidebar:not(.tc-sidebar--closed)",
+      "id": "mobile.sheet-raises",
+      "type": "rect",
+      "desc": "§6 点把手把底卡抬到 medium：高度 424±4，省行进入可点区域",
+      "selector": ".sheet",
       "precondition": [
         {
           "action": "click",
-          "selector": ".tc-mobile-browse"
+          "selector": ".grab"
         },
         {
-          "action": "wait",
-          "selector": ".tc-sidebar-close"
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 450
         }
       ],
-      "at": 390
+      "at": 390,
+      "min": {
+        "h": 420
+      },
+      "max": {
+        "h": 428
+      }
     },
     {
-      "id": "mobile.sidebar-closes",
-      "type": "mustExist",
-      "desc": "§6 侧栏自己的关闭键能收起，收起后底部条回来",
-      "selector": ".tc-sidebar.tc-sidebar--closed",
+      "id": "mobile.sheet-down-to-peek",
+      "type": "rect",
+      "desc": "§6 键盘 ↓ 从 medium 降回 peek：高度 ≤200（手指不用拖，键盘也能退）",
+      "selector": ".sheet",
       "precondition": [
         {
           "action": "click",
-          "selector": ".tc-mobile-browse"
+          "selector": ".grab"
         },
         {
-          "action": "wait",
-          "selector": ".tc-sidebar-close"
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 450
         },
         {
-          "action": "click",
-          "selector": ".tc-sidebar-close"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-mobile-browse"
+          "action": "key",
+          "value": "ArrowDown",
+          "afterMs": 450
         }
       ],
-      "at": 390
+      "at": 390,
+      "max": {
+        "h": 200
+      }
     },
     {
       "id": "a11y.marker-tabindex-1440",
@@ -2712,104 +2629,9 @@
     {
       "id": "a11y.mapapp-not-dialog",
       "type": "mustNotExist",
-      "desc": "整页根节点不是对话框（真正在遮的是侧栏抽屉）",
+      "desc": "整页根节点不是对话框（v3 起手机端没有模态层）",
       "selector": ".tc-mapapp[role=\"dialog\"]",
-      "at": 390,
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-mobile-browse",
-          "unlessVisible": ".tc-province-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-sidebar-close"
-        }
-      ]
-    },
-    {
-      "id": "a11y.sidebar-is-dialog",
-      "type": "attr",
-      "desc": "手机抽屉打开时侧栏面板自己是 dialog",
-      "selector": ".tc-sidebar",
-      "attr": "role",
-      "equals": "dialog",
-      "at": 390,
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-mobile-browse",
-          "unlessVisible": ".tc-province-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-sidebar-close"
-        }
-      ]
-    },
-    {
-      "id": "a11y.sidebar-is-modal",
-      "type": "attr",
-      "desc": "抽屉模态，背后的地图对读屏和 Tab 都不可达",
-      "selector": ".tc-sidebar",
-      "attr": "aria-modal",
-      "equals": "true",
-      "at": 390,
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-mobile-browse",
-          "unlessVisible": ".tc-province-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-sidebar-close"
-        }
-      ]
-    },
-    {
-      "id": "a11y.escape-returns-focus",
-      "type": "focusOn",
-      "desc": "390：Escape 关抽屉后，关闭的同轮次焦点就回到手机底部条入口（判据是「第一次读 activeElement 就是入口」，不写毫秒阈值）",
-      "selector": ".tc-mobile-browse",
-      "at": 390,
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-mobile-browse",
-          "unlessVisible": ".tc-province-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-sidebar-close"
-        },
-        {
-          "action": "key",
-          "value": "Escape"
-        }
-      ]
-    },
-    {
-      "id": "a11y.close-during-anim-focus",
-      "type": "focusOn",
-      "desc": "390：抽屉入场过渡还在走的时候（class 已翻成打开、透明度刚起步）用 DOM 派发点关闭，关闭的同轮次焦点回入口",
-      "selector": ".tc-mobile-browse",
-      "at": 390,
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-mobile-browse",
-          "unlessVisible": ".tc-province-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-sidebar:not(.tc-sidebar--closed)"
-        },
-        {
-          "action": "clickjs",
-          "selector": ".tc-sidebar-close"
-        }
-      ]
+      "at": 390
     },
     {
       "id": "a11y.hospital-back-focus",
@@ -2849,36 +2671,6 @@
       ]
     },
     {
-      "id": "a11y.focus-restore-not-hidden",
-      "type": "focusLog",
-      "desc": "390：点关闭键收抽屉，焦点回到入口的那一刻，入口不能在 aria-hidden=\"true\" 的子树里；关闭前焦点先钉在关闭键上，否则 focus() 是空操作、断言什么都没证明",
-      "selector": "button.tc-mobile-browse",
-      "at": 390,
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-mobile-browse",
-          "unlessVisible": ".tc-province-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-sidebar-close"
-        },
-        {
-          "action": "focus",
-          "selector": ".tc-sidebar-close"
-        },
-        {
-          "action": "expectFocus",
-          "selector": ".tc-sidebar-close"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-sidebar-close"
-        }
-      ]
-    },
-    {
       "id": "desktop.scale-present",
       "type": "rect",
       "desc": "1440：比例尺控件必须真的渲染出来且可见——否则「该出现却没渲染」会随上一条放宽而无人看管（CI 里 AMap 起不来时记不适用）",
@@ -2891,54 +2683,73 @@
       "at": 1440
     },
     {
-      "id": "a11y.close-returns-focus",
+      "id": "a11y.sheet-not-modal",
+      "type": "mustNotExist",
+      "desc": "手机底卡是非模态面板：不带 role=dialog / aria-modal，背后地图对读屏和 Tab 始终可达",
+      "selector": ".sheet[role=\"dialog\"], .sheet[aria-modal=\"true\"]",
+      "at": 390
+    },
+    {
+      "id": "a11y.sheet-grab-keeps-focus",
       "type": "focusOn",
-      "desc": "390：点关闭键关抽屉后，同轮次焦点回入口——判据是关闭后第一次读 activeElement 就是入口，不写毫秒",
-      "selector": ".tc-mobile-browse",
+      "desc": "390：焦点在把手上按 ↑ 抬档后，焦点仍在把手（抬档不重建节点、不把焦点丢回 body）",
+      "selector": ".grab",
       "at": 390,
       "precondition": [
         {
-          "action": "click",
-          "selector": ".tc-mobile-browse",
-          "unlessVisible": ".tc-province-row"
+          "action": "focus",
+          "selector": ".grab"
         },
         {
-          "action": "wait",
-          "selector": ".tc-sidebar-close"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-sidebar-close"
+          "action": "key",
+          "value": "ArrowUp"
         }
       ]
     },
     {
-      "id": "a11y.tab-stays-within-sidebar",
-      "type": "tabStaysWithin",
-      "desc": "390：抽屉打开时连按 40 次 Tab，焦点不越出侧栏（模态焦点陷阱）",
-      "selector": ".tc-sidebar",
-      "presses": 40,
+      "id": "a11y.sheet-keyboard-focus-raises",
+      "type": "rect",
       "at": 390,
+      "desc": "A23：peek 档焦点经 Tab 进 .sheet-body 里的可聚焦元素时，底卡抬到 medium（420–428）。前置从 .grab 起连按三次 Tab（.grab → 搜索框 → 筛选钮 → 正文首行），再要求焦点真的落在 .sheet-body 内——搜索行里的筛选钮 .fbtn 不算进正文（它不在 .sheet-body 里，况且宽度 0 时也在 Tab 序里，这条限定防的是把「搜索框聚焦抬档」或「枚内控件」误当正文入口）。指针点击聚焦不抬档，负向往走查",
+      "selector": ".sheet",
+      "min": {
+        "h": 420
+      },
+      "max": {
+        "h": 428
+      },
       "precondition": [
         {
-          "action": "click",
-          "selector": ".tc-mobile-browse",
-          "unlessVisible": ".tc-province-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-sidebar-close"
-        },
-        {
           "action": "focus",
-          "selector": ".tc-sidebar-close"
+          "selector": ".grab"
+        },
+        {
+          "action": "key",
+          "value": "Tab"
+        },
+        {
+          "action": "key",
+          "value": "Tab"
+        },
+        {
+          "action": "key",
+          "value": "Tab",
+          "afterMs": 450
+        },
+        {
+          "action": "expectfocus",
+          "selector": ".sheet-body :focus"
+        },
+        {
+          "action": "expectfocus",
+          "selector": ".sheet-body :focus-visible"
         }
       ]
     },
     {
       "id": "a11y.marker-tabindex-390",
       "type": "attr",
-      "desc": "390：进北京省视图后地图标记存在且 tabindex=-1（标记不存在＝没有地图运行时，记不适用，不记假绿）",
+      "desc": "390：进北京省视图后地图标记存在且 tabindex=-1（标记不存在＝没有地图运行时，记不适用，不记假绿）。地图点不动 Tab：图钉在 DOM 里排在底卡前面，进 Tab 序列会让同一目的地在键盘路径上出现两次；键盘走列表行（44px、有焦点环）就到得了每一家，聚合钉的放大要另做底卡按钮，不要靠把图钉塞进 Tab",
       "selector": ".tc-mapapp-canvas button.tc-map-node",
       "attr": "tabindex",
       "equals": "-1",
@@ -2947,12 +2758,7 @@
       "precondition": [
         {
           "action": "click",
-          "selector": ".tc-mobile-browse",
-          "unlessVisible": ".tc-province-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-sidebar-close"
+          "selector": ".grab"
         },
         {
           "action": "click",
@@ -2989,6 +2795,716 @@
         }
       ],
       "requireSelector": ".tc-mapapp-canvas button.tc-map-node"
+    },
+    {
+      "id": "mobile.canvas-fills-viewport",
+      "type": "rect",
+      "desc": "§6 手机地图整屏：画布尺寸不小于视口（390×844）。只看尺寸，不看位移——高德给 amap-container 加的是平移矩阵，不是布局偏移",
+      "at": 390,
+      "selector": ".tc-mapapp-canvas",
+      "min": {
+        "w": 390,
+        "h": 844
+      }
+    },
+    {
+      "id": "s6-z-sheet-390",
+      "type": "computed",
+      "desc": "§6：图层 sheet = 1100（手机底卡；数值沿用桌面侧栏的 --tc-z-sidebar，实测 1100）",
+      "at": 390,
+      "selector": ".sheet",
+      "props": {
+        "zIndex": "1100"
+      }
+    },
+    {
+      "id": "a11y.escape-province-peek",
+      "type": "rect",
+      "at": 390,
+      "desc": "A25：省层 medium 按 Esc 落到 peek（170–182）。省层 peek 原来没有出口，Esc 停在这里不动，用户只能去点「返回」",
+      "selector": ".sheet",
+      "min": {
+        "h": 170
+      },
+      "max": {
+        "h": 182
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".grab"
+        },
+        {
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 450
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "山东"
+        },
+        {
+          "action": "key",
+          "value": "Escape",
+          "afterMs": 450
+        }
+      ]
+    },
+    {
+      "id": "a11y.escape-province-to-country",
+      "type": "rect",
+      "at": 390,
+      "desc": "A25：省层 peek 再按 Esc 回全国 medium（420–428）。只判高度会被「省层也是 424」骗过去，配 a11y.escape-province-country-head 判真的回了全国",
+      "selector": ".sheet",
+      "min": {
+        "h": 420
+      },
+      "max": {
+        "h": 428
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".grab"
+        },
+        {
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 450
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "山东"
+        },
+        {
+          "action": "key",
+          "value": "Escape",
+          "afterMs": 450
+        },
+        {
+          "action": "key",
+          "value": "Escape",
+          "afterMs": 450
+        }
+      ]
+    },
+    {
+      "id": "a11y.escape-province-country-head",
+      "type": "hasText",
+      "at": 390,
+      "desc": "A25：两次 Esc 之后标题栏是国家层内容（123 家医院 · 160 条线索），不是还停在省层",
+      "selector": ".sheet-head",
+      "text": "123 家医院",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".grab"
+        },
+        {
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 450
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "山东"
+        },
+        {
+          "action": "key",
+          "value": "Escape",
+          "afterMs": 450
+        },
+        {
+          "action": "key",
+          "value": "Escape",
+          "afterMs": 450
+        }
+      ]
+    },
+    {
+      "id": "a11y.search-clear-returns-focus",
+      "type": "focusOn",
+      "at": 390,
+      "desc": "A26：点搜索框的清除键后焦点回到输入框。清除按钮一卸焦点就掉到 body，之后点地图没有 blur 事件、底卡永远收不回去——这是根因，机器判它",
+      "selector": ".sfield input",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "fill",
+          "selector": ".sfield input",
+          "value": "青岛"
+        },
+        {
+          "action": "click",
+          "selector": ".sclear"
+        }
+      ]
+    },
+    {
+      "id": "a11y.search-clear-collapses",
+      "type": "rect",
+      "at": 390,
+      "desc": "A26：清空后焦点离开，底卡回到 peek（≤200），不常年停在 424。「250ms 内开始回落」是手工项，机器只判终态与 a11y.search-clear-returns-focus 的焦点归还",
+      "selector": ".sheet",
+      "max": {
+        "h": 200
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "fill",
+          "selector": ".sfield input",
+          "value": "青岛"
+        },
+        {
+          "action": "click",
+          "selector": ".sclear"
+        },
+        {
+          "action": "focus",
+          "selector": ".tc-about-icon"
+        },
+        {
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 700
+        }
+      ]
+    },
+    {
+      "id": "a11y.fbtn-focus-expands",
+      "type": "rect",
+      "at": 390,
+      "desc": "A28：从搜索框 Tab 到筛选钮时它是可见的（48×44）。宽度 0、opacity 0 时仍在 Tab 序里，键盘用户会撞到一个看不见的按钮",
+      "selector": ".fbtn",
+      "min": {
+        "w": 48,
+        "h": 44
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "key",
+          "value": "Tab"
+        },
+        {
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 250
+        },
+        {
+          "action": "expectfocus",
+          "selector": ".fbtn"
+        }
+      ]
+    },
+    {
+      "id": "a11y.fbtn-focus-ring",
+      "type": "computed",
+      "at": 390,
+      "desc": "A28：筛选钮拿到焦点后有完整焦点环（2px rgb(25, 59, 56)，外扩 2px），不是只有一点淡淡的描边",
+      "selector": ".fbtn",
+      "props": {
+        "opacity": "1",
+        "outlineWidth": "2px",
+        "outlineColor": "rgb(25, 59, 56)",
+        "outlineOffset": "2px"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "key",
+          "value": "Tab"
+        },
+        {
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 250
+        },
+        {
+          "action": "expectfocus",
+          "selector": ".fbtn"
+        }
+      ]
+    },
+    {
+      "id": "a11y.mapclick-large-collapses",
+      "type": "rect",
+      "at": 390,
+      "desc": "A29：详情层 large（736）点地图收到 424。736 时可见地图只有 y<108，y≥108 属卡片，不作为地图点击用例。 736 时地图只剩 108px 一条缝，那一下是在说「把卡让开」，不是在选省",
+      "selector": ".sheet",
+      "min": {
+        "h": 420
+      },
+      "max": {
+        "h": 428
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".grab"
+        },
+        {
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 450
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "山东"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".head-back"
+        },
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "envGate": "amap"
+        },
+        {
+          "action": "clickat",
+          "x": 20,
+          "y": 20,
+          "expect": ".tc-mapapp-canvas"
+        }
+      ]
+    },
+    {
+      "id": "a11y.mapclick-large-keeps-detail",
+      "type": "computed",
+      "at": 390,
+      "desc": "A29：收档之后仍在医院详情层（搜索行仍然隐藏），不是被这一下顶回了省层或全国层。736 时可见地图只有 y<108，y≥108 属卡片，不作为地图点击用例。",
+      "selector": ".searchrow",
+      "props": {
+        "display": "none"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".grab"
+        },
+        {
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 450
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "山东"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".head-back"
+        },
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "envGate": "amap"
+        },
+        {
+          "action": "clickat",
+          "x": 200,
+          "y": 70,
+          "expect": ".tc-mapapp-canvas"
+        }
+      ]
+    },
+    {
+      "id": "a11y.mapclick-medium-stays",
+      "type": "rect",
+      "at": 390,
+      "desc": "A29 负向：medium（424）时点地图不再往下收档，否则「点地图收一档」会变成连点一路收到 peek",
+      "selector": ".sheet",
+      "min": {
+        "h": 420
+      },
+      "max": {
+        "h": 428
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".grab"
+        },
+        {
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 450
+        },
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "envGate": "amap"
+        },
+        {
+          "action": "clickat",
+          "x": 20,
+          "y": 20,
+          "expect": ".tc-mapapp-canvas"
+        }
+      ]
+    },
+    {
+      "id": "a11y.mapclick-large-collapses-mid",
+      "type": "rect",
+      "at": 390,
+      "desc": "A29：详情层 large（736）点地图收到 424。736 时可见地图只有 y<108，y≥108 属卡片，不作为地图点击用例。 736 时地图只剩 108px 一条缝，那一下是在说「把卡让开」，不是在选省",
+      "selector": ".sheet",
+      "min": {
+        "h": 420
+      },
+      "max": {
+        "h": 428
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".grab"
+        },
+        {
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 450
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "山东"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".head-back"
+        },
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "envGate": "amap"
+        },
+        {
+          "action": "clickat",
+          "x": 200,
+          "y": 70,
+          "expect": ".tc-mapapp-canvas"
+        }
+      ]
+    },
+    {
+      "id": "a11y.mapclick-large-collapses-near",
+      "type": "rect",
+      "at": 390,
+      "desc": "A29：详情层 large（736）点地图收到 424。736 时可见地图只有 y<108，y≥108 属卡片，不作为地图点击用例。 736 时地图只剩 108px 一条缝，那一下是在说「把卡让开」，不是在选省",
+      "selector": ".sheet",
+      "min": {
+        "h": 420
+      },
+      "max": {
+        "h": 428
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".grab"
+        },
+        {
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 450
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "山东"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "wait",
+          "selector": ".head-back"
+        },
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "envGate": "amap"
+        },
+        {
+          "action": "clickat",
+          "x": 60,
+          "y": 50,
+          "expect": ".tc-mapapp-canvas"
+        }
+      ]
+    },
+    {
+      "id": "a11y.empty-province-meta",
+      "type": "hasText",
+      "at": 390,
+      "desc": "A16：空省头部写「0 家医院」，别写成 0 条线索或干脆不写数",
+      "selector": ".sheet-head",
+      "text": "0 家医院",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "fill",
+          "selector": ".sfield input",
+          "value": "天津"
+        },
+        {
+          "action": "click",
+          "selector": ".sr-row",
+          "textContains": "天津市"
+        },
+        {
+          "action": "wait",
+          "selector": ".empty"
+        }
+      ]
+    },
+    {
+      "id": "a11y.empty-province-heading",
+      "type": "hasText",
+      "at": 390,
+      "desc": "A16：空省正文 h3 用手机 sheet 变体「天津市还没有收录医院」，不是桌面那句「该省暂无已收录的线索与医院记录。」",
+      "selector": ".empty",
+      "text": "天津市还没有收录医院",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "fill",
+          "selector": ".sfield input",
+          "value": "天津"
+        },
+        {
+          "action": "click",
+          "selector": ".sr-row",
+          "textContains": "天津市"
+        },
+        {
+          "action": "wait",
+          "selector": ".empty"
+        }
+      ]
+    },
+    {
+      "id": "a11y.empty-province-copy",
+      "type": "hasText",
+      "at": 390,
+      "desc": "A16：空省正文补一句「空着说明还没采到线索，不代表当地没有。」——空态不能读成「这里没有这类人」",
+      "selector": ".empty",
+      "text": "空着说明还没采到线索，不代表当地没有。",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "fill",
+          "selector": ".sfield input",
+          "value": "天津"
+        },
+        {
+          "action": "click",
+          "selector": ".sr-row",
+          "textContains": "天津市"
+        },
+        {
+          "action": "wait",
+          "selector": ".empty"
+        }
+      ]
+    },
+    {
+      "id": "a11y.empty-province-title-hidden",
+      "type": "computed",
+      "at": 390,
+      "desc": "A16：空省的头部标题隐藏，标题位让给返回行与「0 家医院」，避免「天津市」和「返回 全国」挤在一行",
+      "selector": ".head-title",
+      "props": {
+        "display": "none"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "fill",
+          "selector": ".sfield input",
+          "value": "天津"
+        },
+        {
+          "action": "click",
+          "selector": ".sr-row",
+          "textContains": "天津市"
+        },
+        {
+          "action": "wait",
+          "selector": ".empty"
+        }
+      ]
+    },
+    {
+      "id": "a11y.empty-province-back",
+      "type": "rect",
+      "at": 390,
+      "desc": "A16：空省仍要能走回全国——「返回 全国」可见且够大（≥100×30），不能只剩一句文案",
+      "selector": ".head-back",
+      "min": {
+        "w": 100,
+        "h": 30
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "fill",
+          "selector": ".sfield input",
+          "value": "天津"
+        },
+        {
+          "action": "click",
+          "selector": ".sr-row",
+          "textContains": "天津市"
+        },
+        {
+          "action": "wait",
+          "selector": ".empty"
+        }
+      ]
+    },
+    {
+      "id": "a11y.empty-province-cta-hidden",
+      "type": "computed",
+      "at": 390,
+      "desc": "A16：空省不放新增按钮。手机上「补充一条线索」只靠 CSS 隐藏（5.1 决定按钮只留桌面），所以判 display 而不是 elementFromPoint 不存在",
+      "selector": ".empty .btn",
+      "props": {
+        "display": "none"
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "fill",
+          "selector": ".sfield input",
+          "value": "天津"
+        },
+        {
+          "action": "click",
+          "selector": ".sr-row",
+          "textContains": "天津市"
+        },
+        {
+          "action": "wait",
+          "selector": ".empty"
+        }
+      ]
+    },
+    {
+      "id": "a11y.mapclick-large-keeps-country",
+      "type": "hasText",
+      "at": 390,
+      "desc": "A29：country 层 large（736）点地图收到 424 之后标题还是「123 家医院 · 160 条线索」。省层 medium 也是 424，没有这条，「点一下导航进省」会和「收一档」一起假绿",
+      "selector": ".sheet-head",
+      "text": "123 家医院",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".grab"
+        },
+        {
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 450
+        },
+        {
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 450
+        },
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "envGate": "amap"
+        },
+        {
+          "action": "clickat",
+          "x": 200,
+          "y": 70,
+          "expect": ".tc-mapapp-canvas"
+        }
+      ]
+    },
+    {
+      "id": "a11y.mapclick-medium-keeps-country",
+      "type": "hasText",
+      "at": 390,
+      "desc": "A29 负向的同款兜底：medium 点地图之后标题仍是国家层，不是被这一下顺手点进了某个省",
+      "selector": ".sheet-head",
+      "text": "123 家医院",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".grab"
+        },
+        {
+          "action": "key",
+          "value": "Shift",
+          "afterMs": 450
+        },
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "envGate": "amap"
+        },
+        {
+          "action": "clickat",
+          "x": 20,
+          "y": 20,
+          "expect": ".tc-mapapp-canvas"
+        }
+      ]
     }
   ],
   "appliesTo": [
@@ -3027,6 +3543,67 @@
     {
       "id": "s5-burger-48-375",
       "reason": "手机端 2026-11-03 起不显示汉堡（侧栏由底部浏览条打开），48px 入口由 s6-mobile-browse-54 覆盖；桌面汉堡仍由 s5 相关断言管"
+    },
+    {
+      "id": "type.brand-narrow",
+      "reason": "2026-11-06 手机端 v3 底卡改版：手机端不再有抽屉头与品牌字标；桌面品牌仍由 1440 档断言覆盖"
+    },
+    {
+      "id": "s6-gutter-375",
+      "reason": "2026-11-06 手机端 v3 底卡改版：.tc-sidebar-body 随抽屉删除；底卡内边距按 DESIGN 逐元素给（搜索行 0 12px 10px、行内 16px），没有单列一条通用断言 —— 需要的话请设计侧补一条"
+    },
+    {
+      "id": "a11y.sidebar-is-dialog",
+      "reason": "2026-11-06 手机端 v3 底卡改版：手机抽屉删除，底卡是非模态面板；替代 a11y.sheet-not-modal"
+    },
+    {
+      "id": "a11y.sidebar-is-modal",
+      "reason": "2026-11-06 手机端 v3 底卡改版：同上，且底卡本来就不该 aria-modal；替代 a11y.sheet-not-modal"
+    },
+    {
+      "id": "a11y.escape-returns-focus",
+      "reason": "2026-11-06 手机端 v3 底卡改版：没有可关闭的浮层，Escape 不再有语义；等价关切「操作后焦点不丢」由 a11y.sheet-grab-keeps-focus 接",
+      "why": "旧断言关心的是「关闭弹层后把焦点还给触发元素」。抽屉改为非模态底卡后没有可关闭的弹层，这条语义不再存在；Escape 本身没有退役，它变成逐层收档/退层，由 A25（a11y.escape-province-peek / -to-country）覆盖；键盘路径另由 A23、A28 覆盖。保留本条只为历史对齐。"
+    },
+    {
+      "id": "a11y.close-during-anim-focus",
+      "reason": "2026-11-06 手机端 v3 底卡改版：关闭动效随抽屉一起删除；替代 a11y.sheet-grab-keeps-focus"
+    },
+    {
+      "id": "a11y.focus-restore-not-hidden",
+      "reason": "2026-11-06 手机端 v3 底卡改版：没有会收起的层，焦点不需要「回填」；替代 a11y.sheet-grab-keeps-focus"
+    },
+    {
+      "id": "a11y.close-returns-focus",
+      "reason": "2026-11-06 手机端 v3 底卡改版：同上；替代 a11y.sheet-grab-keeps-focus"
+    },
+    {
+      "id": "a11y.tab-stays-within-sidebar",
+      "reason": "2026-11-06 手机端 v3 底卡改版：底卡非模态，不应存在焦点陷阱；「背后地图不被屏蔽」由 a11y.sheet-not-modal 断言"
+    },
+    {
+      "id": "s6-z-backdrop",
+      "why": "遮罩元素 tc-mapapp-backdrop 已不在产品里：桌面侧栏是推挤布局、不带遮罩，手机端没有模态层。它测的层序由 layer.ctl-sidebar（ctl 800 < sidebar 1100，at 1440）与 s6-z-sheet-390（手机底卡 1100）接住；「挡不挡」由 a11y.sheet-not-modal（底卡不带 role=dialog / aria-modal）与 a11y.mapapp-not-dialog（整页不是对话框）接住——地图与底卡都可点。手机筛选压层 .veil 只做视觉压层（pointer-events:none），不参与 z-index 排序，也不承担遮挡"
+    },
+    {
+      "id": "s6-backdrop-block-999",
+      "why": "手机抽屉态（≤999px）的遮罩层随抽屉一起删除：v3 底卡是非模态面板（a11y.sheet-not-modal），背后地图始终可达；「挡不挡」由 a11y.sheet-not-modal / a11y.mapapp-not-dialog 接住，抽屉换档行为由 mobile.sheet-raises / mobile.sheet-down-to-peek 接住。.veil 只做视觉压层、不承担遮挡"
+    },
+    {
+      "id": "type.brand-320",
+      "why": "窄屏没有品牌字标可量：`.tc-brand-wordmark` 只存在于桌面侧栏（`MapApp.tsx:991` 只在 isDesktop 渲染 Sidebar），手机底卡没有品牌位；≤360px 的字号档因此没有作用对象，桌面档由 `type.brand` 覆盖"
+    },
+    {
+      "id": "s6-drawer-width-320",
+      "why": "抽屉已由手机底卡取代：`.tc-sidebar` 在窄屏不渲染，抽屉宽度这条没有作用对象；底卡窄屏宽度由 `size.sheet-375` 接住"
+    },
+    {
+      "id": "s6-card-padding-320",
+      "why": "卡片 `.tc-hospital-card` 已不存在（机构行是整行 button `.tc-hospital-row`），内边距这条没有作用对象"
+    },
+    {
+      "id": "s6-gutter-320",
+      "why": "侧栏 body 在窄屏不渲染：`.tc-sidebar-body` 只有桌面侧栏才有，窄屏的间距由 `size.sheet-375` 与 `s6-sheet-searchrow-54` 接住"
     }
   ]
 }

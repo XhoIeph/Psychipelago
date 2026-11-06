@@ -719,14 +719,14 @@ async function runSpecial(page, checks) {
 
 // 断言的「前置状态」：写在断言文件的 precondition 里，只允许三种动作。
 // 直接操作页面（不是参数化的全局开关），这样同一份文件就能说清「这条要在什么状态下量」。
-const PRECONDITION_ACTIONS = new Set(['fill', 'click', 'clickjs', 'wait', 'select', 'key', 'press', 'focus', 'expectfocus']);
+const PRECONDITION_ACTIONS = new Set(['fill', 'click', 'clickjs', 'clickat', 'wait', 'select', 'key', 'press', 'focus', 'expectfocus']);
 
 async function applyPrecondition(page, steps) {
   const memo = {};
   for (const step of steps) {
     const action = String((step && step.action) || '').toLowerCase();
     if (!PRECONDITION_ACTIONS.has(action)) {
-      return { ok: false, note: `前置动作不认识：${action || '(空)'}，只支持 fill / click / wait / select / key（或 press）/ focus / expectFocus`, memo };
+      return { ok: false, note: `前置动作不认识：${action || '(空)'}，只支持 fill / click / clickjs / clickat / wait / select / key（或 press）/ focus / expectFocus`, memo };
     }
     // key / press 没有选择器：直接往当前焦点元素敲键（Escape 关抽屉、Tab 走位这类）。
     // press 是 key 的别名，两个名字都收：断言作者按日常说法写的也能跑。
@@ -734,6 +734,51 @@ async function applyPrecondition(page, steps) {
       if (!step.value) return { ok: false, note: `前置动作 ${action} 缺 value（例如 "Escape"）`, memo };
       await page.keyboard.press(String(step.value));
       if (step.afterMs) await page.waitForTimeout(Number(step.afterMs));
+      continue;
+    }
+    // clickat：按坐标点一下。高德只认真实指针序列，el.click() 派发的合成 click 它不接，
+    // 地图手势（点空白收档、拖动）只能靠这条前置。坐标有两种给法：
+    //   { x, y }                  绝对坐标，写死取景
+    //   { selector, dx, dy }      从元素 rect 推，换视口/换取景不用改数（推荐）
+    // expect 给一个选择器时，先校验这一点上确实是它：落在图钉、底卡或按钮上的「空白点」
+    // 是坐标漂移不是断言失败，要当场报出来，别默默点下去还给出结论。
+    if (action === 'clickat') {
+      let px, py;
+      if (step.selector) {
+        const box = await page.locator(step.selector).first().boundingBox();
+        if (!box) return { ok: false, note: `clickat 目标没有布局盒：${step.selector}`, memo };
+        px = Math.round(box.x + Number(step.dx || 0));
+        py = Math.round(box.y + Number(step.dy || 0));
+      } else {
+        if (typeof step.x !== 'number' || typeof step.y !== 'number') {
+          return { ok: false, note: 'clickat 需要 x/y，或 selector + dx/dy', memo };
+        }
+        px = Math.round(step.x);
+        py = Math.round(step.y);
+      }
+      const hit = await page.evaluate(([x, y]) => {
+        const el = document.elementFromPoint(x, y);
+        if (!el) return null;
+        const chain = [];
+        let n = el;
+        while (n && n.nodeType === 1 && chain.length < 6) {
+          chain.push('.' + String(n.className || n.tagName).split(/\s+/).filter(Boolean).join('.'));
+          n = n.parentElement;
+        }
+        return chain.join(' < ');
+      }, [px, py]).catch(() => null);
+      if (step.expect) {
+        const matches = await page.evaluate(([x, y, q]) => {
+          const el = document.elementFromPoint(x, y);
+          return Boolean(el && (el.matches(q) || el.closest(q)));
+        }, [px, py, step.expect]).catch(() => false);
+        if (!matches) {
+          return { ok: false, note: `clickat(${px},${py}) 命中的不是 ${step.expect}：${hit || '(空)'}`, memo };
+        }
+      }
+      await page.mouse.click(px, py);
+      // 点完要等：底卡收档是 340ms 的 height 过渡，立刻量会量到动画中间值（736 未收）。
+      await page.waitForTimeout(Number(step.afterMs || step.settle || 350));
       continue;
     }
     if (!step.selector && !step.text) return { ok: false, note: `前置动作 ${action} 缺 selector（或 text）`, memo };
