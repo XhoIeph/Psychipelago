@@ -5,9 +5,11 @@
 | 文件 | 原件位置 | 快照 sha256（前 16 位） | 字节 |
 | --- | --- | --- | --- |
 | `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `7892d4cacd7e374e` | 57716 |
-| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `4b074a31ab78add8` | 98769 |
+| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `0b0fd2949c7e469a` | 121262 |
 
-`ui-spec.json` 是从 `docs/` 原件的逐字节拷贝，只改名不改内容；`spec.cjs` 同样逐字节拷贝（skill 目录那份也已同步成这一版）。换行统一成 LF 后再算 sha 与字节数（工作流里打印的也是这个）；这一版原件与快照同为 LF，两个文件逐字节相同。快照这一版：**153 条断言**（其中 1 个 id `copy.no-verify-disclaimer` 重复，唯一 id 152 个；另有 28 条退役，见 `retired`），按视口生效 1440 = 110 条、390 = 48 条、375 = 20 条、320 = 14 条（`at` 与无 `at` 的并集，与 `spec.cjs` 的门控一致）。四档红数这一版不再给：筛选面板外观被小雨打回、结构正在重做（A30 已重写两轮、A35 未定稿），桌面那批 `filter.*` 断言随时会跟着选择器搬家，跑出来的数不构成基线，等第 6 批与 A35 落定后整轮重跑。
+`ui-spec.json` 是从 `docs/` 原件的逐字节拷贝，只改名不改内容；`spec.cjs` 同样逐字节拷贝（skill 目录那份也已同步成这一版）。换行统一成 LF 后再算 sha 与字节数（工作流里打印的也是这个）；这一版原件与快照同为 LF，两个文件逐字节相同。快照这一版：**180 条断言**（其中 1 个 id `copy.no-verify-disclaimer` 重复，唯一 id 179 个；另有 28 条退役，见 `retired`），按视口生效 1440 = 110 条、390 = 75 条、375 = 20 条、320 = 14 条（`at` 与无 `at` 的并集，与 `spec.cjs` 的门控一致）。四档红数这一版不给：第 6 批还没交（A30/A33/A34 未动手），新写的 27 条 `filter.*` 在旧界面上必然红，跑出来的数不构成基线，等这批齐了整轮重跑。第 5.2 版（`5964fcb`）上先跑过一次确认这组能被 runner 执行：390 档 47 通过 / 22 失败 / 1 不适，失败全是前置 `wait .fcard` 超时（旧界面没有两张卡），不是规则写错。后来补的三条单病名边界和一条零病症边界共用两段前置：冒烟是 47 通过 / 27 失败 / 1 不适，27 条一样卡在 `wait .fcard`。
+
+这一版的 A30/A35 断言（27 条，`at: 390`）按 HANDOFF 的终版判据与实测写，选择器约定：面板根 `.fpanel`、两张卡 `.fcard[data-kind="province"|"disorder"]`、卡面文字 `.fcard-label`、菜单 `.fmenu[data-kind=…]` + 展开态 `.open`、省菜单行 `.fmenu[data-kind="province"] li`（**35 行**：首行「全部省份」+ 34 个省级区划，geo 里无名字的要素已滤掉）、病症勾选 `.fmenu[data-kind="disorder"] [role="checkbox"]`（3 个）。高度用区间：面板 69±4（只露卡）/ 301±6（省菜单）/ 209±4（病症菜单）；开省菜单底卡抬到 736、开病症菜单留在 424。行为上：选省份后菜单收起，**勾病症菜单保持展开**（多选），多个病名按标签定义顺序用「、」连接 —— 卡面（`filter.label-joined-order`）与头部 meta 前缀（`filter.meta-joined-order`）各判一条，两处都按 `TAGS` 的定义顺序，防「卡面对、meta 反」。同一个拼接函数的两个边界也落进机器判：单病名时 `filter.meta-single-sep` 要求名字后面是空格加「·」、`filter.meta-single-no-joiner` 与 `filter.card-single-no-joiner` 要求 meta 和卡面都不许留顿号；只选省份时 `filter.meta-province-only` 要求 meta 里不出现省名（完全不带前缀）。A30 里还留在手工走查的两条：点同一省 / 点「全部省份」回全国、头部 meta 到底带不带病名前缀 —— 前者要串多层状态，后者要看整条 meta 的排布，写成机器判断容易假绿。
 
 这一版还清掉了最后 4 条 `at:999` 的断言（`s5-tab-min-height-999`、`s6-drawer-closed-999`、`s6-drawer-top-104`、`s6-drawer-width-999`）：v3 之后 ≤999px 不渲染 `.tc-sidebar`，而 999 宽度又不在矩阵里，它们从来不会执行。改成 1440 会变成拿桌面侧栏去判手机规则，等于把断言换成另一件事，所以退役并在 `retired.why` 里写明各自被哪条接住。
 

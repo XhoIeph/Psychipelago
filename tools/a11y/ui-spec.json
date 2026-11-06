@@ -3003,6 +3003,879 @@
       ]
     },
     {
+      "id": "filter.cards-two",
+      "type": "count",
+      "at": 390,
+      "selector": ".fcard",
+      "expect": 2,
+      "desc": "A30：展开后筛选面板里只有两张卡（省份、病症），不出现省份列表或病症列表",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        }
+      ]
+    },
+    {
+      "id": "filter.card-size",
+      "type": "rect",
+      "at": 390,
+      "selector": ".fcard",
+      "min": {
+        "w": 165,
+        "h": 48
+      },
+      "max": {
+        "w": 185,
+        "h": 56
+      },
+      "desc": "A30：卡 175×52，给 ±7 容差（字体加载会差 1–2px）",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        }
+      ]
+    },
+    {
+      "id": "filter.cards-row",
+      "type": "layoutRel",
+      "at": 390,
+      "a": ".fcard[data-kind=\"province\"]",
+      "b": ".fcard[data-kind=\"disorder\"]",
+      "relation": "leftOf",
+      "gap": 8,
+      "desc": "A30：两张卡并排，省份在左、病症在右，左右间距 8px",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        }
+      ]
+    },
+    {
+      "id": "filter.panel-h-cards",
+      "type": "rect",
+      "at": 390,
+      "selector": ".fpanel",
+      "min": {
+        "h": 65
+      },
+      "max": {
+        "h": 73
+      },
+      "desc": "A35：只露两张卡时面板高 69±4",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        }
+      ]
+    },
+    {
+      "id": "filter.provmenu-open",
+      "type": "count",
+      "at": 390,
+      "selector": ".fmenu[data-kind=\"province\"].open",
+      "expect": 1,
+      "desc": "A30：点省份卡才展开省菜单",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"province\"].open"
+        }
+      ]
+    },
+    {
+      "id": "filter.provmenu-h",
+      "type": "rect",
+      "at": 390,
+      "selector": ".fpanel",
+      "min": {
+        "h": 295
+      },
+      "max": {
+        "h": 307
+      },
+      "desc": "A35：省菜单展开时面板高 301±6",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"province\"].open"
+        }
+      ]
+    },
+    {
+      "id": "filter.provmenu-raises-sheet",
+      "type": "rect",
+      "at": 390,
+      "selector": ".sheet",
+      "min": {
+        "h": 733
+      },
+      "max": {
+        "h": 739
+      },
+      "desc": "A30：开省菜单时底卡抬到 large 736（菜单要够高才放得下 35 行）",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"province\"].open"
+        }
+      ]
+    },
+    {
+      "id": "filter.provmenu-rows",
+      "type": "count",
+      "at": 390,
+      "selector": ".fmenu[data-kind=\"province\"] li",
+      "expect": 35,
+      "desc": "A30：省菜单 35 行 —— 「全部省份」+ 34 个省级区划（geo 里南海诸岛那类无名字要素已滤掉）",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"province\"].open"
+        }
+      ]
+    },
+    {
+      "id": "filter.provmenu-first-all",
+      "type": "hasText",
+      "at": 390,
+      "selector": ".fmenu[data-kind=\"province\"] li:first-child",
+      "text": "全部省份",
+      "desc": "A30：省菜单首行是「全部省份 N」",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"province\"].open"
+        }
+      ]
+    },
+    {
+      "id": "filter.provmenu-scrolls",
+      "type": "cssProp",
+      "at": 390,
+      "selector": ".fmenu[data-kind=\"province\"]",
+      "prop": "overflowY",
+      "expect": "auto",
+      "desc": "A35：只有省菜单可滚（实测 scrollHeight 1548 / clientHeight 232），与病症菜单合起来判「只有一个滚动条」",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"province\"].open"
+        }
+      ]
+    },
+    {
+      "id": "filter.dismenu-h",
+      "type": "rect",
+      "at": 390,
+      "selector": ".fpanel",
+      "min": {
+        "h": 205
+      },
+      "max": {
+        "h": 213
+      },
+      "desc": "A35：病症菜单展开时面板高 209±4",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"disorder\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"disorder\"].open"
+        }
+      ]
+    },
+    {
+      "id": "filter.dismenu-keeps-sheet",
+      "type": "rect",
+      "at": 390,
+      "selector": ".sheet",
+      "min": {
+        "h": 420
+      },
+      "max": {
+        "h": 428
+      },
+      "desc": "A30：开病症菜单不抬卡，仍停 medium 424（三项一屏放得下）",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"disorder\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"disorder\"].open"
+        }
+      ]
+    },
+    {
+      "id": "filter.dismenu-three",
+      "type": "count",
+      "at": 390,
+      "selector": ".fmenu[data-kind=\"disorder\"] [role=\"checkbox\"]",
+      "expect": 3,
+      "desc": "A30：病症菜单三个勾选项",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"disorder\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"disorder\"].open"
+        }
+      ]
+    },
+    {
+      "id": "filter.dismenu-no-scroll",
+      "type": "cssProp",
+      "at": 390,
+      "selector": ".fmenu[data-kind=\"disorder\"]",
+      "prop": "overflowY",
+      "expect": "visible",
+      "desc": "A35：病症菜单不滚（实测内容高 140），滚动条只留在省菜单",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"disorder\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"disorder\"].open"
+        }
+      ]
+    },
+    {
+      "id": "filter.dismenu-stays-open",
+      "type": "count",
+      "at": 390,
+      "selector": ".fmenu[data-kind=\"disorder\"].open",
+      "expect": 1,
+      "desc": "A30：勾一个病症后菜单保持展开 —— 多选要能连着勾两个，收起就断了",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"disorder\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"disorder\"].open"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"disorder\"] [role=\"checkbox\"]",
+          "textContains": "人格障碍"
+        }
+      ]
+    },
+    {
+      "id": "filter.menu-switch-one",
+      "type": "count",
+      "at": 390,
+      "selector": ".fmenu.open",
+      "expect": 1,
+      "desc": "A35：同一时刻最多一个菜单展开（先开省份再开病症，仍只有 1 个）",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"disorder\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"disorder\"].open"
+        }
+      ]
+    },
+    {
+      "id": "filter.menu-switch-closes-prev",
+      "type": "count",
+      "at": 390,
+      "selector": ".fmenu[data-kind=\"province\"].open",
+      "expect": 0,
+      "desc": "A35：开病症菜单时省菜单收起，不是两个一起展开",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"disorder\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"disorder\"].open"
+        }
+      ]
+    },
+    {
+      "id": "filter.card-label-province",
+      "type": "hasText",
+      "at": 390,
+      "selector": ".fcard[data-kind=\"province\"] .fcard-label",
+      "text": "全部省份",
+      "desc": "A35：没选省时省份卡面写当前值「全部省份」",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        }
+      ]
+    },
+    {
+      "id": "filter.card-label-picked",
+      "type": "hasText",
+      "at": 390,
+      "selector": ".fcard[data-kind=\"province\"] .fcard-label",
+      "text": "山东",
+      "desc": "A35：选了省份后卡面换成省名",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"province\"].open"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"province\"] li button",
+          "textContains": "山东"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard[data-kind=\"province\"] .fcard-label"
+        }
+      ]
+    },
+    {
+      "id": "filter.menu-closes-after-pick",
+      "type": "count",
+      "at": 390,
+      "selector": ".fmenu.open",
+      "expect": 0,
+      "desc": "A30：选完省份菜单收起、面板保持展开",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"province\"].open"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"province\"] li button",
+          "textContains": "山东"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard[data-kind=\"province\"] .fcard-label"
+        }
+      ]
+    },
+    {
+      "id": "filter.label-joined-order",
+      "type": "hasText",
+      "at": 390,
+      "selector": ".fcard[data-kind=\"disorder\"] .fcard-label",
+      "text": "cptsd、人格障碍",
+      "desc": "A35：多个病名用「、」连接，按标签定义顺序而不是点击顺序 —— 这里先点人格障碍再点 cptsd，卡面仍应是「cptsd、人格障碍」。头部 meta 的前缀由 filter.meta-joined-order 单独判，两条一起卡住「两处用同一个拼接函数」这个约定",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"disorder\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"disorder\"].open"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"disorder\"] [role=\"checkbox\"]",
+          "textContains": "人格障碍"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"disorder\"] [role=\"checkbox\"]",
+          "textContains": "cptsd"
+        }
+      ]
+    },
+    {
+      "id": "filter.meta-joined-order",
+      "type": "hasText",
+      "at": 390,
+      "selector": ".head-meta",
+      "text": "cptsd、人格障碍",
+      "desc": "A35：头部 meta 的病症前缀与卡面同序（先点人格障碍再点 cptsd，前缀仍是「cptsd、人格障碍」）。两处注释都写着走同一个拼接函数，这条防的是它们各拼各的：卡面对了、meta 反了，用户会在两个地方看到两个顺序",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"disorder\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"disorder\"].open"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"disorder\"] [role=\"checkbox\"]",
+          "textContains": "人格障碍"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"disorder\"] [role=\"checkbox\"]",
+          "textContains": "cptsd"
+        }
+      ]
+    },
+    {
+      "id": "filter.meta-single-sep",
+      "type": "hasText",
+      "at": 390,
+      "selector": ".head-meta",
+      "text": "人格障碍 ·",
+      "desc": "A35 边界：只勾一个病名时，meta 里名字与后面那组计数之间是一个空格加一个「·」，不是「人格障碍·」也不是「人格障碍 、」。分隔符少一个空格，读起来就粘成一团",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"disorder\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"disorder\"].open"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"disorder\"] [role=\"checkbox\"]",
+          "textContains": "人格障碍"
+        }
+      ]
+    },
+    {
+      "id": "filter.meta-single-no-joiner",
+      "type": "forbidText",
+      "at": 390,
+      "scope": ".head-meta",
+      "text": "、",
+      "desc": "A35 边界：单个病名后面不许留顿号（「人格障碍、· 89 家医院」）。这是拼数组的写法没收干净，多选时看不出来，单选才会露",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"disorder\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"disorder\"].open"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"disorder\"] [role=\"checkbox\"]",
+          "textContains": "人格障碍"
+        }
+      ]
+    },
+    {
+      "id": "filter.card-single-no-joiner",
+      "type": "forbidText",
+      "at": 390,
+      "scope": ".fcard[data-kind=\"disorder\"]",
+      "text": "、",
+      "desc": "A35 边界：卡面也只勾一个病名时不许留顿号 —— meta 和卡面是同一个拼接函数的两个出口，一处收干净、一处没收，用户会在两个位置看到不同的写法",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"disorder\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"disorder\"].open"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"disorder\"] [role=\"checkbox\"]",
+          "textContains": "人格障碍"
+        }
+      ]
+    },
+    {
+      "id": "filter.meta-province-only",
+      "type": "forbidText",
+      "at": 390,
+      "scope": ".head-meta",
+      "text": "山东",
+      "desc": "A35 边界：只选了省份、一个病症都没勾时，meta 完全不带前缀，直接「5 家医院 · 5 条线索」—— 省名不该被当成病症拼进去",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        },
+        {
+          "action": "click",
+          "selector": ".fcard[data-kind=\"province\"]"
+        },
+        {
+          "action": "wait",
+          "selector": ".fmenu[data-kind=\"province\"].open"
+        },
+        {
+          "action": "click",
+          "selector": ".fmenu[data-kind=\"province\"] li button",
+          "textContains": "山东"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard[data-kind=\"province\"] .fcard-label"
+        }
+      ]
+    },
+    {
+      "id": "filter.no-clear-button",
+      "type": "forbidText",
+      "at": 390,
+      "scope": ".fpanel",
+      "text": "清除",
+      "desc": "A30：不出现「清除」按钮 —— 取消仍是再点同一行 / 选「全部省份」",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sfield input"
+        },
+        {
+          "action": "click",
+          "selector": ".fbtn"
+        },
+        {
+          "action": "wait",
+          "selector": ".fcard"
+        }
+      ]
+    },
+    {
       "id": "a11y.mapclick-large-collapses",
       "type": "rect",
       "at": 390,
