@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Fragment, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { hospitalSearchText, matchesSearch } from '@/lib/search'
 import { aggregateDoctorLeads, splitDoctorNames } from '@/lib/doctor-leads'
@@ -14,7 +14,7 @@ import { sidebarCameraFrame } from '@/lib/map-sidebar'
 import type { Disorder, Doctor, Hospital, Province, Report } from '@/lib/schema'
 import { HospitalExplorer, type DisorderGroup, type ResultFilter } from '@/components/HospitalExplorer'
 import { Sidebar, type SidebarTabId } from './Sidebar'
-import { MapSheet, type SheetLevel } from './MapSheet'
+import { MapSheet, type SheetHeights, type SheetLevel, type SheetStop } from './MapSheet'
 import { HospitalDetail } from './HospitalDetail'
 import { DoctorDetail, type DoctorDisorderStat } from './DoctorDetail'
 import { ProvinceDetail } from './ProvinceDetail'
@@ -84,6 +84,34 @@ export function MapApp(props: Props) {
   const provinceReturnFocusRef = useRef<string | null>(null)
   // 从省详情的医院行进入医院后，返回时把焦点还给那一行。
   const hospitalReturnFocusRef = useRef<string | null>(null)
+  // 底卡的档位：peek 随内容，medium/large 按视口定。高度由 MapSheet 量、MapApp 只算让位。
+  const [sheetStop, setSheetStop] = useState<SheetStop>('peek')
+  const [peekHeight, setPeekHeight] = useState(0)
+  const [viewportHeight, setViewportHeight] = useState(0)
+
+  useEffect(() => {
+    const update = () => setViewportHeight(window.innerHeight)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
+  const handlePeekHeight = useCallback((height: number) => {
+    setPeekHeight((current) => (current === height ? current : height))
+  }, [])
+
+  // 浮动控件（版权、回到全国）贴在卡沿上，拖动时也要跟手。
+  const handleLiveHeight = useCallback((height: number) => {
+    shellRef.current?.style.setProperty('--tc-sheet-live', `${Math.round(height)}px`)
+  }, [])
+
+  // 拖动期间暂停浮动控件的 height 过渡，否则它们会追着卡片跑。
+  const handleSheetDragChange = useCallback((dragging: boolean) => {
+    const shell = shellRef.current
+    if (!shell) return
+    if (dragging) shell.dataset.sheetDragging = 'true'
+    else delete shell.dataset.sheetDragging
+  }, [])
 
   const selectedRef = useRef<string | null>(null)
   selectedRef.current = selectedHospitalId
@@ -665,6 +693,60 @@ export function MapApp(props: Props) {
     </>
   ) : null
 
+  const sheetViewport = viewportHeight || 844
+  const sheetHeights = useMemo<SheetHeights>(() => ({
+    peek: peekHeight || 140,
+    medium: Math.min(424, Math.max(240, sheetViewport - 160)),
+    large: Math.min(736, Math.max(320, sheetViewport - 108)),
+  }), [peekHeight, sheetViewport])
+
+  // 可见带是顶部浮层下沿到卡沿；带中心对准画面中心，卡抬起来地图跟着上移。
+  // 搜索层不改地图画面，锚点按实际所在层级取。
+  const mapViewLevel: 'country' | 'province' = selectedProvinceAdcode ? 'province' : 'country'
+  const sheetShift = useMemo(() => {
+    const bandTop = 98
+    const bandBottom = Math.max(bandTop + 240, sheetViewport - sheetHeights[sheetStop])
+    const band = (bandTop + bandBottom) / 2
+    const anchor = mapViewLevel === 'country' ? 412 : 410
+    return Math.round(Math.max(-320, Math.min(220, band - anchor)))
+  }, [mapViewLevel, sheetHeights, sheetStop, sheetViewport])
+
+  useLayoutEffect(() => {
+    const shell = shellRef.current
+    if (!shell) return
+    if (isDesktop) {
+      shell.style.removeProperty('--tc-map-shift')
+      shell.style.removeProperty('--tc-sheet-live')
+      return
+    }
+    shell.style.setProperty('--tc-map-shift', `${sheetShift}px`)
+    // 首帧底卡的 layout effect 早于 shellRef 挂上，这里补一次实时高度；
+    // 拖动中的逐帧高度仍由 MapSheet 直接写。
+    shell.style.setProperty('--tc-sheet-live', `${sheetHeights[sheetStop]}px`)
+  }, [isDesktop, sheetHeights, sheetShift, sheetStop])
+
+  // 换层级时换档：进省看列表用 medium，进详情看内容用 large；搜索不动档位。
+  const previousSheetLevelRef = useRef<SheetLevel>('country')
+  useEffect(() => {
+    const previous = previousSheetLevelRef.current
+    previousSheetLevelRef.current = sheetLevel
+    if (previous === sheetLevel) return
+    if (sheetLevel === 'province') setSheetStop('medium')
+    else if (sheetLevel === 'hospital' || sheetLevel === 'doctor') setSheetStop('large')
+    else if (sheetLevel === 'country' && previous !== 'search') setSheetStop('medium')
+  }, [sheetLevel])
+
+  const sheetBackLabel = selectedDoctor
+    ? props.mapHospitals.find((item) => item.id === selectedDoctor.hospitalId)?.name
+    : selectedHospital?.province ?? (selectedProvince ? '全国' : undefined)
+  const sheetBack = selectedDoctor
+    ? backToHospital
+    : selectedHospital
+      ? () => backToProvince(selectedHospital.adcode)
+      : selectedProvince
+        ? backToCountry
+        : undefined
+
   return (
     <div ref={shellRef} className="tc-mapapp">
       <div ref={containerRef} className="tc-mapapp-canvas" role="application" aria-label="全国就诊资源与线索地图" />
@@ -791,6 +873,14 @@ export function MapApp(props: Props) {
           level={sheetLevel}
           title={sheetTitle}
           meta={sheetMeta}
+          stop={sheetStop}
+          heights={sheetHeights}
+          onStopChange={setSheetStop}
+          onPeekHeight={handlePeekHeight}
+          onLiveHeight={handleLiveHeight}
+          onDragChange={handleSheetDragChange}
+          backLabel={sheetBackLabel}
+          onBack={sheetBack}
           query={query}
           onQueryChange={(value) => {
             setQuery(value)
