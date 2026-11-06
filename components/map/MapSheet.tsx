@@ -11,7 +11,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from 'react'
-import { Check, ChevronLeft, Search, SlidersHorizontal, X } from 'lucide-react'
+import { Check, ChevronDown, ChevronLeft, Search, SlidersHorizontal, X } from 'lucide-react'
 import type { SearchResult, SheetSearchGroup } from './types'
 
 /** 底卡标题的字号档位：全国与搜索结果最小，医院/省份次之，医生名最大。 */
@@ -24,6 +24,9 @@ export type SheetHeights = Record<SheetStop, number>
 
 /** 筛选面板的一行：病症名与命中的医院数。 */
 export type SheetFilter = { id: string; label: string; count: number }
+
+/** 筛选面板左栏：省份单选，0 家医院的省也列出来，选进去看空态。 */
+export type SheetProvince = { adcode: string; name: string; count: number }
 
 const STOP_ORDER: SheetStop[] = ['peek', 'medium', 'large']
 // peek = 把手 + 搜索行 + 头部 + 这条余量，层级换字号或藏起搜索行都要重量。
@@ -48,10 +51,10 @@ type Props = {
   /** 详情层返回目标的名字；列表层不传。 */
   backLabel?: string
   onBack?: () => void
-  /** 空态正文会把层级名再说一遍：这时卡头只留计数，藏掉返回行与标题。 */
+  /** 空态正文会把层级名再说一遍：这时卡头只留计数，藏掉标题，返回行照旧。 */
   hideHead?: boolean
-  /** 搜索框失焦且焦点确实离开底卡时调用；卡内点击不算。 */
-  onDismiss?: () => void
+  /** 搜索框失焦且焦点确实离开底卡时调用；卡内点击不算。返回是否真的收档。 */
+  onDismiss?: () => boolean
   query: string
   onQueryChange: (value: string) => void
   results: SheetSearchGroup[]
@@ -62,6 +65,14 @@ type Props = {
   filters?: SheetFilter[]
   selectedFilters?: string[]
   onToggleFilter?: (id: string) => void
+  /** 清空病症筛选，保留当前省份。 */
+  onClearFilters?: () => void
+  /** 面板左栏的省份单选；计数为 0 也列出来。 */
+  provinces?: SheetProvince[]
+  selectedProvince?: string | null
+  onSelectProvince?: (adcode: string) => void
+  /** 「全部省份」：回到全国，已选病症保留。 */
+  onSelectCountry?: () => void
   filterOpen?: boolean
   onFilterOpenChange?: (open: boolean) => void
   children: ReactNode
@@ -118,6 +129,10 @@ export function MapSheet({
   filters = [],
   selectedFilters = [],
   onToggleFilter,
+  provinces = [],
+  selectedProvince = null,
+  onSelectProvince,
+  onSelectCountry,
   filterOpen = false,
   onFilterOpenChange,
   children,
@@ -136,6 +151,14 @@ export function MapSheet({
   // 只收回「因为聚焦才抬起来」的那一档；用户自己拖上来的卡不动。
   const focusRaisedRef = useRef(false)
   const [inputFocused, setInputFocused] = useState(false)
+  // 鼠标按下筛钮时输入框先失焦；只靠 inputFocused 收起会把按钮在 mouseup 前缩掉，
+  // 浏览器认定落点已经变了，click 根本不会派发。指针停在搜索行里就先保持展开。
+  const [rowPointerInside, setRowPointerInside] = useState(false)
+  // 两张筛选卡各自的下拉菜单；同一时刻只开一张。
+  const [openMenu, setOpenMenu] = useState<'province' | 'tags' | null>(null)
+  // 只有「开省份菜单」把卡抬到 large 才在关菜单时缩回 medium；
+  // 用户自己拖上来的 large 不动。
+  const menuRaisedRef = useRef(false)
   // 分组保持搜索结果的原顺序，拍平后的下标与 MapApp 的 activeResult 一致。
   const flat = results.flatMap((entry) => entry.items)
   const searching = query.trim().length > 0
@@ -150,7 +173,34 @@ export function MapSheet({
   const filterLabel = filterCount === 0
     ? '按病症筛选'
     : `${filters.filter((item) => selectedFilters.includes(item.id)).map((item) => item.label).join('、')}，点击展开筛选`
-  const eng = filterActive || filterOpen || inputFocused || searching
+  // 「全部省份」的计数跟着病症筛选走：与地图高亮、正文省行数是同一份命中集合。
+  const provinceTotal = provinces.filter((province) => province.count > 0).length
+  const eng = filterActive || filterOpen || inputFocused || rowPointerInside || searching
+  // 卡面只写当前值：省份显示省名，病症把选中的几项用顿号连起来。
+  const provinceLabel = selectedProvince
+    ? (provinces.find((province) => province.adcode === selectedProvince)?.name ?? '全部省份')
+    : '全部省份'
+  const diseaseLabel = filterCount === 0
+    ? '全部病症'
+    : filters.filter((item) => selectedFilters.includes(item.id)).map((item) => item.label).join('、')
+
+  // 开一张卡先把另一个收掉；开省份菜单要 large，因为 232 的名单位放进 medium 只剩一条缝。
+  const toggleMenu = (menu: 'province' | 'tags') => {
+    const next = openMenu === menu ? null : menu
+    setOpenMenu(next)
+    if (next === 'province' && effectiveStop !== 'large') {
+      menuRaisedRef.current = true
+      onStopChange('large')
+    } else if (!next && menuRaisedRef.current) {
+      menuRaisedRef.current = false
+      onStopChange('medium')
+    }
+  }
+
+  // 面板收起时两边的菜单一起收；收起面板本身不再动档位（由 fbtn 那边处理）。
+  useLayoutEffect(() => {
+    if (!filterOpen) setOpenMenu(null)
+  }, [filterOpen])
 
   const writeHeight = useCallback((height: number) => {
     const sheet = sheetRef.current
@@ -325,7 +375,12 @@ export function MapSheet({
       >
         <i aria-hidden="true" />
       </div>
-      <div className={eng ? 'searchrow is-eng' : 'searchrow'} ref={searchRowRef}>
+      <div
+        className={eng ? 'searchrow is-eng' : 'searchrow'}
+        ref={searchRowRef}
+        onPointerDownCapture={() => setRowPointerInside(true)}
+        onPointerLeave={() => setRowPointerInside(false)}
+      >
         <div className="sfield">
           <Search className="sq" size={17} aria-hidden="true" />
           <input
@@ -350,9 +405,10 @@ export function MapSheet({
               const next = event.relatedTarget
               if (next instanceof Node && sheetRef.current?.contains(next)) return
               // 只收回因聚焦抬起来的那一档。
+              // 有关键词/筛选时 onDismiss 会拒绝收档，这时保留标记，
+              // 等条件消失后（比如点清除钮）下一次失焦仍能收回。
               if (!focusRaisedRef.current) return
-              focusRaisedRef.current = false
-              onDismiss?.()
+              if (onDismiss?.()) focusRaisedRef.current = false
             }}
             onKeyDown={(event) => {
               if (event.key === 'ArrowDown') {
@@ -397,7 +453,10 @@ export function MapSheet({
             aria-controls={`${titleId}-filters`}
             onClick={() => {
               const next = !filterOpen
+              // 面板两百多像素高：peek 时先抬到 medium，收起时从 large 回到 medium。
+              // 用户自己拖到的高档位不动，别在收起时把他按回 peek。
               if (next && stop === 'peek') onStopChange('medium')
+              else if (!next && stop === 'large') onStopChange('medium')
               onFilterOpenChange(next)
             }}
           >
@@ -406,6 +465,118 @@ export function MapSheet({
           </button>
         )}
       </div>
+      {filters.length > 0 && onToggleFilter && (
+        // 面板是卡的 flex 子项，不放进滚动正文：翻列表时它不该跟着走，
+        // 但展开时标题和列表要一起被推下去。
+        <div className="fpanel-host">
+          <div
+            id={`${titleId}-filters`}
+            className={filterOpen ? 'fpanel is-open' : 'fpanel'}
+            aria-label="筛选"
+          >
+            <div className="fp-inner">
+              <div className="fcards">
+                <button
+                  type="button"
+                  className="fcard"
+                  data-kind="province"
+                  aria-expanded={openMenu === 'province'}
+                  aria-controls={`${titleId}-prov`}
+                  onClick={() => toggleMenu('province')}
+                >
+                  <span className="fcard-kind">省份</span>
+                  <span className="fcard-label">{provinceLabel}</span>
+                  <ChevronDown className="fcard-chev" size={16} aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  className="fcard"
+                  data-kind="disorder"
+                  aria-expanded={openMenu === 'tags'}
+                  aria-controls={`${titleId}-tags`}
+                  onClick={() => toggleMenu('tags')}
+                >
+                  <span className="fcard-kind">病症</span>
+                  <span className="fcard-label">{diseaseLabel}</span>
+                  <ChevronDown className="fcard-chev" size={16} aria-hidden="true" />
+                </button>
+              </div>
+              <div
+                id={`${titleId}-prov`}
+                data-kind="province"
+                className={openMenu === 'province' ? 'fmenu fmenu-prov open' : 'fmenu fmenu-prov'}
+                aria-hidden={openMenu !== 'province'}
+              >
+                <ul className="fp-list">
+                  <li>
+                    <button
+                      type="button"
+                      className="fp-row"
+                      aria-pressed={!selectedProvince}
+                      aria-label={`全部省份，${provinceTotal} 个省有医院`}
+                      onClick={() => {
+                        onSelectCountry?.()
+                        setOpenMenu(null)
+                        if (menuRaisedRef.current) {
+                          menuRaisedRef.current = false
+                          onStopChange('medium')
+                        }
+                      }}
+                    >
+                      <span className="name">全部省份</span>
+                      <span className="n">{provinceTotal}</span>
+                    </button>
+                  </li>
+                  {provinces.map((province) => (
+                    <li key={province.adcode}>
+                      <button
+                        type="button"
+                        className="fp-row"
+                        aria-pressed={selectedProvince === province.adcode}
+                        aria-label={`${province.name}，${province.count} 家医院`}
+                        onClick={() => {
+                          onSelectProvince?.(province.adcode)
+                          setOpenMenu(null)
+                          if (menuRaisedRef.current) {
+                            menuRaisedRef.current = false
+                            onStopChange('medium')
+                          }
+                        }}
+                      >
+                        <span className="name">{province.name}</span>
+                        <span className="n">{province.count}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div
+                id={`${titleId}-tags`}
+                data-kind="disorder"
+                className={openMenu === 'tags' ? 'fmenu fmenu-tags open' : 'fmenu fmenu-tags'}
+                aria-hidden={openMenu !== 'tags'}
+              >
+                <ul className="fp-list">
+                  {filters.map((item) => (
+                    <li key={item.id}>
+                      <button
+                        type="button"
+                        className="fp-row"
+                        role="checkbox"
+                        aria-checked={selectedFilters.includes(item.id)}
+                        onClick={() => onToggleFilter(item.id)}
+                      >
+                        <span className="name">{item.label}</span>
+                        <span className="box" aria-hidden="true"><Check size={12} /></span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <header className="sheet-head" ref={headRef} {...dragProps}>
         {backLabel && onBack && (
           <div className="head-back">
@@ -429,33 +600,6 @@ export function MapSheet({
           if (target instanceof HTMLElement && target.matches(':focus-visible')) onStopChange('medium')
         }}
       >
-        {filters.length > 0 && onToggleFilter && (
-          <div
-            id={`${titleId}-filters`}
-            className={filterOpen ? 'fpanel is-open' : 'fpanel'}
-            aria-label="按病症筛选"
-            aria-hidden={!filterOpen}
-          >
-            <div className="fp-inner">
-              <ul>
-                {filters.map((item) => (
-                  <li key={item.id}>
-                    <button
-                      type="button"
-                      className="fp-row"
-                      role="checkbox"
-                      aria-checked={selectedFilters.includes(item.id)}
-                      onClick={() => onToggleFilter(item.id)}
-                    >
-                      <span>{item.label}</span>
-                      <Check className="tick" size={16} aria-hidden="true" />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
         {searching ? (
           results.length > 0 ? (
             <div className="sheet-search">

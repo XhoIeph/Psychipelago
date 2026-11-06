@@ -10,8 +10,13 @@ import { attachMapPointer } from './map-pointer'
 
 const colors = ['#ffffff', '#b9e6c8', '#7dd3a4', '#4dbb83', '#2f9e68', '#147a52']
 const densityColor = (count: number) => colors[count <= 0 ? 0 : count <= 2 ? 1 : count <= 4 ? 2 : count <= 7 ? 3 : count <= 10 ? 4 : 5]
-type Geometry = { features: { properties: { adcode: string | number }; geometry: { coordinates: CoordinateTree } }[] }
+type Geometry = { features: { properties: { adcode: string | number; name?: string }; geometry: { type?: string; coordinates: CoordinateTree } }[] }
 type LiveNode = { marker: AMap.Marker; element: HTMLButtonElement; members: string[]; exit?: gsap.core.Tween }
+/** 省面可能是 MultiPolygon：每个多边形单独建实例，飞地与岛屿才不会连成一整块。 */
+type ProvinceEntry = {
+  shapes: AMap.Polygon[]
+  bounds: { southWest: GeoPoint; northEast: GeoPoint; center: GeoPoint }
+}
 
 // The SDK owns geographic rendering; React owns the surrounding application and selection.
 export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, options: {
@@ -47,8 +52,9 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   let disposed = false
   let cameraTween: gsap.core.Tween | undefined
   const liveNodes = new Map<string, LiveNode>()
-  const provinces = new Map<string, AMap.Polygon>()
+  const provinces = new Map<string, ProvinceEntry>()
   let nodesOn = false
+  let lastScope: string | null = null
   let renderedZoom: number | undefined
   let renderedSignature = ''
   /** 画面中心平移后同一缩放的合并结果不变，但哪些钉在屏幕内会变，靠这个签重排。 */
@@ -100,7 +106,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
     const step = Math.max(1.2, Math.log2(NODE_SPACING / Math.max(nearest, 1)) + .12)
     return Math.min(1.8, step)
   }
-  function renderNodes(zoom: number) {
+  function renderNodes(zoom: number, animateEntry: boolean) {
     // 只画屏幕内的钉：省内缩放时，其它省份的医院不该在 DOM 里挂着。
     const origin = project(camera.getCenter(), zoom).subtract(size.divideBy(2))
     renderedZoom = zoom
@@ -118,8 +124,9 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
       })
     const keys = new Set(layout.map(entry => entry.key))
     motion.add(() => {
-      for (const entry of layout) {
+      layout.forEach((entry, order) => {
         let node = liveNodes.get(entry.key)
+        const created = !node
         if (!node) {
           const single = entry.members.length === 1
           const element = document.createElement('button')
@@ -166,7 +173,9 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
           map.add(marker)
           node = { marker, element, members: entry.members.map(member => member.id) }
           liveNodes.set(entry.key, node)
-          gsap.set(body, { autoAlpha: 0, scale: .92 })
+          // 新钉自己入场：换层级或拆聚合时从 .8 弹回 1，纯平移补进来的直接显示。
+          if (animateEntry) gsap.set(body, { autoAlpha: 0, scale: .8 })
+          else gsap.set(body, { autoAlpha: 1, scale: 1 })
         }
         node.exit?.kill(); node.exit = undefined
         node.element.inert = !nodesOn
@@ -174,8 +183,17 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
           ? `${entry.members[0].name} · ${entry.members[0].leads} 条线索`
           : `${entry.members.length} 家医院，${camera.getZoom() >= MAP_MAX_ZOOM - .001 ? '查看医院' : '点击放大'}`)
         if (nodesOn) node.marker.show()
-        gsap.to(node.element.firstElementChild, { autoAlpha: 1, scale: 1, duration: reduced() ? 0 : .4, overwrite: true })
-      }
+        if (created) {
+          if (animateEntry) {
+            gsap.to(node.element.firstElementChild, {
+              autoAlpha: 1, scale: 1, duration: reduced() ? 0 : .38,
+              delay: reduced() ? 0 : Math.min(order, 7) * .032, overwrite: true,
+            })
+          } else {
+            gsap.set(node.element.firstElementChild, { autoAlpha: 1, scale: 1 })
+          }
+        }
+      })
       for (const [key, node] of liveNodes) {
         if (keys.has(key) || node.exit) continue
         node.element.inert = true
@@ -186,66 +204,30 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
     syncSelection()
   }
   const opacity = { density: 1, nodes: 0 }
-  function densityOpacity() {
-    for (const [adcode, polygon] of provinces) polygon.setOptions({ fillOpacity: opacity.density * (options.stats[adcode]?.reports ? .55 : 0), strokeOpacity: opacity.density })
-  }
-
-  // 筛选联动：AMap 的省面只当密度底色，压层与命中省另画一层 SVG，
-  // 这样「盖住底图、只留几个省提亮」不用逐面改 Polygon，也不会跟密度动画打架。
-  const SVG_NS = 'http://www.w3.org/2000/svg'
-  const geoLayer = document.createElementNS(SVG_NS, 'svg')
-  geoLayer.setAttribute('class', 'tc-map-geo geo')
-  geoLayer.setAttribute('aria-hidden', 'true')
-  const veil = document.createElementNS(SVG_NS, 'rect')
-  veil.setAttribute('class', 'veil')
-  veil.setAttribute('width', '100%')
-  veil.setAttribute('height', '100%')
-  geoLayer.append(veil)
-  const hitsLayer = document.createElementNS(SVG_NS, 'g')
-  hitsLayer.setAttribute('class', 'hits')
-  geoLayer.append(hitsLayer)
-  container.append(geoLayer)
-  const provinceRings = new Map<string, number[][][][]>()
-  const hitPaths = new Map<string, SVGPathElement>()
   let filterHits: Set<string> | null = null
+  const densityStroke = '#78a88e'
 
-  function drawFilter() {
-    const active = !!filterHits && filterHits.size > 0 && !nodesOn
-    geoLayer.classList.toggle('is-on', active)
-    if (!active) {
-      for (const path of hitPaths.values()) path.remove()
-      hitPaths.clear()
-      return
-    }
-    const zoom = camera.getZoom()
-    const origin = project(camera.getCenter(), zoom).subtract(size.divideBy(2))
-    for (const adcode of filterHits!) {
-      const rings = provinceRings.get(adcode)
-      if (!rings) continue
-      let d = ''
-      for (const polygon of rings) {
-        for (const ring of polygon) {
-          for (let index = 0; index < ring.length; index++) {
-            const point = project({ lng: ring[index][0], lat: ring[index][1] }, zoom).subtract(origin)
-            d += `${index === 0 ? 'M' : 'L'}${point.x.toFixed(1)} ${point.y.toFixed(1)}`
-          }
-          d += 'Z'
-        }
-      }
-      let path = hitPaths.get(adcode)
-      if (!path) {
-        path = document.createElementNS(SVG_NS, 'path')
-        path.setAttribute('class', 'hit')
-        hitsLayer.append(path)
-        hitPaths.set(adcode, path)
-      }
-      path.setAttribute('d', d)
-    }
-    for (const [adcode, path] of hitPaths) {
-      if (filterHits!.has(adcode)) continue
-      path.remove()
-      hitPaths.delete(adcode)
-    }
+  /**
+   * 这一省此刻的填充样式：密度态、命中态、未命中态都从这里出。
+   * 进省/回全国的淡出系数（opacity.density）对三种状态一起生效，
+   * 否则筛选色不跟地图一起退场，会和图钉层打架。
+   */
+  function paintProvince(adcode: string) {
+    const entry = provinces.get(adcode)
+    if (!entry) return
+    const reports = options.stats[adcode]?.reports ?? 0
+    const hit = filterHits ? filterHits.has(adcode) : null
+    const style = hit === true
+      ? { fillColor: '#087f7b', fillOpacity: .26, strokeColor: 'rgba(8,127,123,.5)', strokeWeight: 1, strokeOpacity: 1 }
+      : hit === false
+        ? { fillColor: densityColor(reports), fillOpacity: .04, strokeColor: densityStroke, strokeWeight: 1.1, strokeOpacity: .25 }
+        : { fillColor: densityColor(reports), fillOpacity: reports > 0 ? .55 : 0, strokeColor: densityStroke, strokeWeight: 1.1, strokeOpacity: 1 }
+    style.fillOpacity *= opacity.density
+    style.strokeOpacity *= opacity.density
+    for (const shape of entry.shapes) shape.setOptions(style)
+  }
+  function paintProvinces() {
+    for (const adcode of provinces.keys()) paintProvince(adcode)
   }
 
   function update() {
@@ -256,7 +238,9 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
       container.classList.toggle('tc-mapapp-canvas--nodes', detailed)
       for (const node of liveNodes.values()) { node.element.inert = !detailed; if (detailed) node.marker.show() }
       if (!detailed) {
-        for (const polygon of provinces.values()) polygon.show()
+        for (const entry of provinces.values()) for (const shape of entry.shapes) shape.show()
+        // 省面被 hide() 时 setOptions 不重绘，回全国要按当前状态重描一遍。
+        paintProvinces()
         // 全国层不出图钉：手机回到全国就把节点整个拿掉，别留隐藏的 .pin 在 DOM 里。
         if (size.x < 1000) {
           for (const [key, node] of liveNodes) { map.remove(node.marker); liveNodes.delete(key) }
@@ -266,18 +250,29 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
       }
       motion.add(() => {
         gsap.to(opacity, { density: detailed ? 0 : 1, nodes: detailed ? 1 : 0, duration: reduced() ? 0 : .28, overwrite: true,
-          onUpdate() { densityOpacity(); container.style.setProperty('--tc-nodes-opacity', String(opacity.nodes)) },
-          onComplete() { if (nodesOn) { for (const polygon of provinces.values()) polygon.hide() } else { for (const node of liveNodes.values()) node.marker.hide() } },
+          onUpdate() { paintProvinces(); container.style.setProperty('--tc-nodes-opacity', String(opacity.nodes)) },
+          onComplete() {
+            if (nodesOn) {
+              for (const entry of provinces.values()) for (const shape of entry.shapes) shape.hide()
+            } else {
+              for (const node of liveNodes.values()) node.marker.hide()
+            }
+          },
         })
       })
     }
     // 合并按真实缩放算，屏幕内的钉子集按中心算；相机补间中先不动，落点后再重排。
     if (nodesOn && (!cameraTween || renderedZoom === undefined)) {
       const zoomMoved = Math.abs(zoom - (renderedZoom ?? zoom + 1)) >= .25
-      if (zoomMoved || nodeSignature(zoom) !== renderedSignature) renderNodes(zoom)
+      if (zoomMoved || nodeSignature(zoom) !== renderedSignature) {
+        // 只有换层级或缩放把钉层重建时才播入场；纯平移补进来的钉子直接显示，避免拖动时乱闪。
+        const nextScope = options.province() ?? null
+        const entry = lastScope !== nextScope || zoomMoved || renderedZoom === undefined
+        lastScope = nextScope
+        renderNodes(zoom, entry)
+      }
     }
     const atMin = zoom <= minZoom + .001, atMax = zoom >= MAP_MAX_ZOOM - .001
-    drawFilter()
     if (atMin !== previousMin || atMax !== previousMax) {
       previousMin = atMin; previousMax = atMax
       options.limits(atMin, atMax)
@@ -353,21 +348,20 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
     camera, syncSelection, cancelWheel: wheel.cancel, interrupt, isNavigating: () => !!cameraTween,
     setMinZoom,
     moveTo, country,
-    /** 手机筛选联动：传命中省 adcode，其余被压层盖住；null 取消。 */
+    /** 手机筛选联动：传命中省 adcode，逐个省面改样式；null 恢复密度色。 */
     setFilterHits(adcodes: string[] | null) {
       filterHits = adcodes && adcodes.length ? new Set(adcodes) : null
-      drawFilter()
+      paintProvinces()
       // 钉跟筛选走：命中集合变了就重排，别等下一次相机移动。
       renderedSignature = ''
       update()
     },
     province(adcode: string, inset: number) {
-      const bounds = provinces.get(adcode)?.getBounds()
-      if (!bounds) return
-      const sw = bounds.getSouthWest(), ne = bounds.getNorthEast()
-      const frame = fitMapBounds([{ lat: sw.getLat(), lng: sw.getLng() }, { lat: ne.getLat(), lng: ne.getLng() }], size, 0, size.x >= 1000 ? [84, 70, 20, 20] : [12, 12, 12, 12])
-      const midpoint = bounds.getCenter()
-      moveTo({ lat: midpoint.getLat(), lng: midpoint.getLng() }, Math.max(NODE_ZOOM_THRESHOLD, frame.zoom), inset)
+      const entry = provinces.get(adcode)
+      if (!entry) return
+      const { southWest, northEast, center } = entry.bounds
+      const frame = fitMapBounds([{ lat: southWest.lat, lng: southWest.lng }, { lat: northEast.lat, lng: northEast.lng }], size, 0, size.x >= 1000 ? [84, 70, 20, 20] : [12, 12, 12, 12])
+      moveTo({ lat: center.lat, lng: center.lng }, Math.max(NODE_ZOOM_THRESHOLD, frame.zoom), inset)
     },
     async loadDensity() {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/geo/china-provinces.json`)
@@ -377,23 +371,47 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
       for (const feature of geo.features) {
         const adcode = String(feature.properties.adcode)
         if (adcode.endsWith('_JD')) continue
-        const rings = gcjCoordinateTree(feature.geometry.coordinates) as number[][][][]
-        provinceRings.set(adcode, rings)
-        const polygon = new sdk.Polygon()
-        polygon.setOptions({ path: rings as AMap.LngLatLike[][][],
-          fillColor: densityColor(options.stats[adcode]?.reports ?? 0), fillOpacity: .55,
-          strokeColor: '#78a88e', strokeWeight: 1.1, zIndex: 20, bubble: false, cursor: 'pointer',
+        // MultiPolygon 的每个多边形单独建实例：大陆、岛屿、飞地各自成面，洞跟着自己的外环走。
+        const coordinates = feature.geometry.type === 'MultiPolygon'
+          ? (feature.geometry.coordinates as unknown as CoordinateTree[])
+          : [feature.geometry.coordinates]
+        const shapes: AMap.Polygon[] = []
+        let minLng = Number.POSITIVE_INFINITY, minLat = Number.POSITIVE_INFINITY
+        let maxLng = Number.NEGATIVE_INFINITY, maxLat = Number.NEGATIVE_INFINITY
+        for (const polygon of coordinates) {
+          // 洞是外环之后的独立环：整棵环树交给 SDK，河北才不会把北京天津盖掉。
+          const rings = gcjCoordinateTree(polygon) as number[][][]
+          for (const ring of rings) {
+            for (const [lng, lat] of ring) {
+              minLng = Math.min(minLng, lng); maxLng = Math.max(maxLng, lng)
+              minLat = Math.min(minLat, lat); maxLat = Math.max(maxLat, lat)
+            }
+          }
+          const shape = new sdk.Polygon()
+          shape.setOptions({ path: rings as unknown as AMap.LngLatLike[][][],
+            fillColor: densityColor(options.stats[adcode]?.reports ?? 0), fillOpacity: 0,
+            strokeColor: densityStroke, strokeWeight: 1.1, zIndex: 20, bubble: false, cursor: 'pointer',
+          })
+          shape.on('click', () => {
+            // 大卡时地图只剩一条缝，省界几乎盖满；这一下是在说「把卡让开」，不是「跳去这个省」。
+            if (options.sheetLarge()) { options.onMapClick(); return }
+            if (!nodesOn) options.selectProvince(adcode)
+          })
+          shapes.push(shape)
+          map.add(shape)
+          if (nodesOn) shape.hide()
+        }
+        if (shapes.length === 0) continue
+        provinces.set(adcode, {
+          shapes,
+          bounds: {
+            southWest: { lng: minLng, lat: minLat },
+            northEast: { lng: maxLng, lat: maxLat },
+            center: { lng: (minLng + maxLng) / 2, lat: (minLat + maxLat) / 2 },
+          },
         })
-        polygon.on('click', () => {
-          // 大卡时地图只剩一条缝，省界几乎盖满；这一下是在说「把卡让开」，不是「跳去这个省」。
-          if (options.sheetLarge()) { options.onMapClick(); return }
-          if (!nodesOn) options.selectProvince(adcode)
-        })
-        provinces.set(adcode, polygon)
-        map.add(polygon)
-        if (nodesOn) polygon.hide()
       }
-      densityOpacity()
+      paintProvinces()
     },
     destroy() {
       disposed = true; cameraTween?.kill(); resize.disconnect(); pointer.dispose(); wheel.dispose(); motion.revert()
@@ -402,7 +420,6 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
       container.removeEventListener('keydown', onInput, true)
       container.removeEventListener('scroll', pinToOrigin)
       container.removeEventListener('focusin', pinToOrigin)
-      geoLayer.remove()
       map.destroy()
     },
   }

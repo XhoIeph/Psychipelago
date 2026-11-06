@@ -1,7 +1,7 @@
 'use client'
 
 import { ArrowLeft, MapPin } from 'lucide-react'
-import { hospitalRowMeta } from '@/lib/hospital-row'
+import { hospitalBrowseMeta, hospitalRowMeta } from '@/lib/hospital-row'
 import type { MapHospital, MapProvinceStat } from './types'
 
 export function ProvinceDetail({
@@ -15,6 +15,7 @@ export function ProvinceDetail({
   filteredEmpty = false,
   onClearFilter,
   variant = 'sidebar',
+  stats,
 }: {
   provinceName: string
   stat: MapProvinceStat | undefined
@@ -29,6 +30,8 @@ export function ProvinceDetail({
   onClearFilter?: () => void
   /** sheet：手机底卡里的空态用无边框排版；桌面侧栏仍是 .tc-empty。 */
   variant?: 'sidebar' | 'sheet'
+  /** sheet 里的行改报「N 类病症 · M 条线索」，省名由卡头标题负责。 */
+  stats?: Record<string, { categories: number; leads: number }>
 }) {
   // 筛选把列表筛空时，省本身的收录数还在，不能据此当成「有数据」。
   const hasData = !filteredEmpty && ((stat?.reports ?? 0) > 0 || hospitals.length > 0)
@@ -64,7 +67,11 @@ export function ProvinceDetail({
                       onClick={() => onSelectHospital(hospital.id)}
                     >
                       <span className="tc-hospital-row-name">{hospital.name}</span>
-                      <span className="tc-hospital-row-meta">{hospitalRowMeta(hospital.city, hospital.leads)}</span>
+                      <span className="tc-hospital-row-meta">
+                        {stats
+                          ? hospitalBrowseMeta(null, stats[hospital.id]?.categories ?? 0, stats[hospital.id]?.leads ?? hospital.leads)
+                          : hospitalRowMeta(hospital.city, hospital.leads)}
+                      </span>
                     </button>
                   </li>
                 ))}

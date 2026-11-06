@@ -273,7 +273,15 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-sidebar .tc-hospital-card-footer { display:block; text-align:left; }
 .tc-sidebar-close { width:44px; height:44px; border:0; border-radius:50%; display:grid; place-items:center; background:var(--tc-surface-muted); color:var(--tc-text-muted); flex-shrink:0; }
 .tc-project-corner { position:relative; z-index:var(--tc-z-ctl); margin-left:auto; flex-shrink:0; }
-.tc-project-card { position:absolute; right:0; top:calc(100% + 8px); width:min(320px,calc(100vw - 40px)); padding:24px; background:#fff; border:1px solid var(--tc-border); border-radius:16px; box-shadow:0 12px 36px #193b3824; font-size:14px; }
+.tc-project-card { position:absolute; right:0; top:calc(100% + 8px); width:min(320px,calc(100vw - 40px)); padding:24px; background:#fff; border:1px solid var(--tc-border); border-radius:16px; box-shadow:0 12px 36px #193b3824; font-size:14px; transform-origin:top right; animation:tc-card-in 320ms cubic-bezier(.22,1,.36,1); }
+.tc-project-card.is-closing { animation:tc-card-out 130ms ease forwards; }
+@keyframes tc-card-in {
+  0% { opacity:0; transform:scale(.94) translateY(-6px); }
+  55% { opacity:1; transform:scale(1.015) translateY(0); }
+  100% { opacity:1; transform:scale(1) translateY(0); }
+}
+@keyframes tc-card-out { to { opacity:0; transform:scale(.98) translateY(-4px); } }
+@keyframes tc-card-fade { from { opacity:0; } to { opacity:1; } }
 .tc-project-card p { margin:16px 0; }
 .tc-project-card .tc-linklike { min-height:44px; }
 /* 手机顶栏的关于入口：图标直链 /about/；桌面仍用上面的按钮与卡片。 */
@@ -339,16 +347,49 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .fbtn[aria-expanded="true"] { background:#c9e4d7; box-shadow:inset 0 0 0 1px #087f7b38; }
 .fbtn .cnt { display:none; font-size:11px; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; }
 .fbtn.has .cnt { display:block; }
-/* 面板在正文顶部展开；0fr → 1fr 的过渡比 max-height 更贴内容。 */
-.fpanel { display:grid; grid-template-rows:0fr; visibility:hidden; transition:grid-template-rows .2s ease,visibility .2s; }
+/* 筛选面板挂在搜索行与标题之间，是卡自己的 flex 子项：翻正文时它不动，展开时把标题和列表一起推下去。 */
+.fpanel-host { flex:none; }
+.fpanel { display:grid; grid-template-rows:0fr; visibility:hidden; transition:grid-template-rows .22s var(--tc-ease-sheet, cubic-bezier(.32,.72,0,1)),visibility .22s; }
 .fpanel.is-open { grid-template-rows:1fr; visibility:visible; }
-.fp-inner { overflow:hidden; border-bottom:1px solid var(--tc-border); }
-.fpanel ul { margin:0; padding:0 0 6px; list-style:none; }
-.fp-row { display:flex; align-items:center; justify-content:space-between; gap:8px; width:calc(100% + 16px); height:44px; margin:0 -8px; padding:0 8px; border:0; border-radius:8px; background:transparent; color:var(--tc-text); font-size:14px; text-align:left; }
+.fp-inner { overflow:hidden; border-bottom:1px solid var(--tc-border); padding:9px 16px 8px; }
+.fpanel ul { margin:0; padding:0; list-style:none; }
+/* 两张卡：一张选省份、一张选病症，卡面只写当前值，点开才是菜单。 */
+.fcards { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px; }
+.fcard { position:relative; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:1px; width:100%; height:52px; padding:0 26px 0 11px; border:1px solid rgba(8,127,123,.16); border-radius:12px; background:#dff0e7; color:var(--tc-text); text-align:left; transition:background-color .16s ease,border-color .16s ease; }
+.fcard:hover { background:#d5eade; }
+.fcard[aria-expanded="true"] { background:#c9e4d7; border-color:rgba(8,127,123,.42); }
+.fcard-kind { color:var(--tc-text-faint); font-size:11.5px; line-height:1.2; }
+.fcard-label { max-width:100%; overflow:hidden; color:var(--tc-accent-strong); font-size:14px; font-weight:650; line-height:1.3; text-overflow:ellipsis; white-space:nowrap; }
+.fcard-chev { position:absolute; top:50%; right:9px; transform:translateY(-50%); color:var(--tc-accent-strong); transition:transform .2s cubic-bezier(.32,.72,0,1); }
+.fcard[aria-expanded="true"] .fcard-chev { transform:translateY(-50%) rotate(180deg); }
+/* 菜单从卡片下面长出来，靠行高动画：0fr 收起时标题和列表原地不动，展开时只推菜单。 */
+.fmenu { display:grid; grid-template-rows:0fr; visibility:hidden; transition:grid-template-rows .2s cubic-bezier(.32,.72,0,1),visibility .2s; }
+.fmenu.open { grid-template-rows:1fr; visibility:visible; }
+/* 0fr 只把行高收到 0，grid 项的 min-content 默认仍会把它撑开：显式松开。
+   省份菜单自己滚（36 行装不下），病症只有三行、不滚：并排两个滚动条是最难看的部分。 */
+.fmenu > ul { min-height:0; }
+.fmenu-prov > ul { overflow:hidden; }
+.fmenu-prov.open > ul { max-height:232px; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; }
+.fmenu-prov ul::-webkit-scrollbar { width:6px; }
+.fmenu-prov ul::-webkit-scrollbar-thumb { border-radius:3px; background:rgba(25,59,56,.15); }
+.fmenu-tags.open > ul { padding:4px 0; }
+/* 病症只有三行，行高给到 48：菜单总高约 160，面板落在 230 那条线上。 */
+/* 三行 44 + 上下 4 = 140，与原型一致；病症菜单是选择器，行高跟省名单持平。 */
+.fmenu-tags .fp-row { height:44px; }
+.fp-row { display:flex; align-items:center; gap:8px; width:100%; height:44px; padding:0 8px; border:0; border-radius:8px; background:transparent; color:var(--tc-text); font-size:14.5px; text-align:left; transition:background .16s ease; }
 .fp-row:hover { background:var(--tc-surface-muted); }
-.fp-row[aria-checked="true"] { background:var(--tc-accent-soft); }
-.fp-row .tick { flex:none; color:var(--tc-accent-strong); opacity:0; }
-.fp-row[aria-checked="true"] .tick { opacity:1; }
+.fp-row .name { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.fp-row .n { flex:none; color:var(--tc-text-faint); font-size:12px; font-variant-numeric:tabular-nums; }
+/* 省份单选：选中的是「去哪儿看」，用底色和强调色说明。 */
+.fp-row[aria-pressed="true"] { background:var(--tc-accent-soft); }
+.fp-row[aria-pressed="true"] .name { color:var(--tc-accent-strong); font-weight:600; }
+.fp-row[aria-pressed="true"] .n { color:var(--tc-accent-strong); font-weight:600; }
+/* 病症多选：右边一个真正的方框，不靠整行浅绿让人猜。 */
+.fp-row .box { display:grid; place-items:center; flex:none; width:20px; height:20px; border:1.5px solid var(--tc-border-strong, #c6d4cf); border-radius:6.5px; transition:background .16s ease,border-color .16s ease; }
+.fp-row .box svg { opacity:0; stroke:#fff; stroke-width:2.6; transition:opacity .12s ease; }
+.fp-row[aria-checked="true"] .box { border-color:var(--tc-accent); background:var(--tc-accent); }
+.fp-row[aria-checked="true"] .box svg { opacity:1; }
+.fp-row[aria-checked="true"] .name { color:var(--tc-accent-strong); font-weight:600; }
 .list-note { margin:0; padding:12px 0 2px; color:var(--tc-text-faint); font-size:12.5px; line-height:1.6; }
 .tc-empty-acts { display:flex; gap:8px; justify-content:center; margin-top:12px; }
 /* 手机空态：底卡里不用桌面那张虚线卡，标题 + 一句说明 + 一个按钮。 */
@@ -362,11 +403,7 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 /* 空态正文已经把话说全，卡头的返回行与层级名不再重复。 */
 .sheet.is-empty .head-title { display:none; }
 
-/* 筛选压层：由 runtime 画在地图容器里，盖住底图、只让命中的省透出来。 */
-.tc-map-geo { position:absolute; inset:0; z-index:4; width:100%; height:100%; pointer-events:none; }
-.tc-map-geo .veil { fill:rgba(244,247,246,.66); opacity:0; transition:opacity .24s ease; }
-.tc-map-geo.is-on .veil { opacity:1; }
-.tc-map-geo .hit { fill:rgba(8,127,123,.16); stroke:rgba(8,127,123,.4); stroke-width:1; stroke-linejoin:round; }
+/* 筛选色直接画在省面多边形上；SVG 覆盖层已删，拖动与缩放都由 SDK 重绘。 */
 
 /* Controls respond without changing SDK-owned geographic transforms. */
 :is(.tc-button,.tc-mapapp-ctl,.tc-mapapp-burger,.tc-sidebar-close,.tc-sidebar-tab,.tc-filter-toggle,.tc-mapapp-result,.tc-card-action,.tc-nav a,.tc-about-icon,.tc-search-clear,.tc-linklike,.back-btn) { transition:background-color .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease; }
@@ -388,9 +425,11 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-map-cluster-list .tc-linklike { min-height:44px; }
 .tc-pin-body { display:grid; place-items:center; width:34px; height:34px; background:#087353; color:#fff; border:2.5px solid #fff; border-radius:13px 13px 13px 4px; box-shadow:0 3px 10px #123c4240; transition:background .16s; }
 .tc-pin-cross { display:block; width:24px; height:24px; }
-.tc-hospital-pin:hover .tc-pin-body { background:#095b44; }
+.tc-hospital-pin:not(.tc-pin--selected):hover .tc-pin-body { background:#095b44; }
 .tc-pin-body,.tc-cluster-body { transform-origin:50% 50%; }
-.tc-pin--selected :is(.tc-pin-body,.tc-cluster-body) { background:#ba631e; box-shadow:0 0 0 5px #ba631e25,0 3px 10px #123c4240; }
+/* 选中的钉两档共用一套：品牌绿底 + 3px 绿环，其余钉退到 42%。 */
+.tc-pin--selected :is(.tc-pin-body,.tc-cluster-body) { background:#087353; box-shadow:0 0 0 3px var(--tc-accent),0 3px 10px #123c4240; }
+.tc-mapapp-canvas--pinned .tc-map-node:not(.tc-pin--selected) { opacity:.42; }
 .tc-cluster-body { display:grid; place-items:center; position:relative; width:40px; height:40px; background:#087353; color:#fff; border:3px solid #fff; border-radius:14px 14px 14px 4px; box-shadow:0 3px 10px #123c4240; }
 .tc-cluster-body strong { position:absolute; top:-8px; right:-8px; min-width:20px; height:20px; padding:0 4px; background:#a65c21; color:#fff; border-radius:10px; font-size:11px; line-height:20px; text-align:center; }
 /* 命中区从边框内缘再向外 8px：单钉 45、聚合钉 50，都过 44。 */
@@ -403,10 +442,12 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 }
 @media (max-width:999px) {
   /* 顶栏只剩关于入口；搜索搬进底卡，汉堡随抽屉一起下线。 */
-  .tc-mapapp-topbar { top:calc(50px + env(safe-area-inset-top,0px)); left:auto; right:12px; width:48px; height:48px; gap:0; transform:none; }
+  .tc-mapapp-topbar { top:calc(12px + env(safe-area-inset-top,0px)); left:auto; right:12px; width:48px; height:48px; gap:0; transform:none; }
   .tc-mapapp-burger,.tc-mapapp-search,.tc-mapapp-about { display:none; }
   .tc-about-icon { display:grid; place-items:center; width:48px; height:48px; border:1px solid var(--tc-border); border-radius:16px; background:#fff; box-shadow:var(--tc-shadow); color:var(--tc-text); }
   .tc-about-icon:hover { background:var(--tc-accent-soft); color:var(--tc-accent-strong); text-decoration:none; }
+  /* 卡从图标正下方展开，右缘与图标对齐；窄屏留 12px 边。 */
+  .tc-project-card { width:min(320px,calc(100vw - 24px)); }
   /* 地图占满整屏；图例、比例尺与缩放按钮让位给底卡，双指缩放仍然可用。 */
   .tc-mapapp-legend { display:none; }
   .tc-mapapp-canvas .amap-scalecontrol { display:none; }
@@ -415,14 +456,16 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
   .tc-mapapp-canvas { transform:translate3d(0,var(--tc-map-shift,0px),0); transition:transform 380ms cubic-bezier(.22,1,.36,1); }
   /* 底卡占住底边：Amap 标识与版权行贴着卡片上沿，跟着实时卡高走。 */
   .tc-mapapp-canvas .amap-logo { bottom:calc(var(--tc-sheet-live,var(--tc-sheet-h)) + 10px) !important; }
-  .tc-mapapp-canvas .amap-copyright { bottom:calc(var(--tc-sheet-live,var(--tc-sheet-h)) + 4px) !important; }
+  .tc-mapapp-canvas .amap-copyright { bottom:calc(var(--tc-sheet-live,var(--tc-sheet-h)) + 10px) !important; }
   /* 卡片抬到 large 时可见地图只剩顶上一窄条，版权行正好横在中间；它是 auto 指针事件，
      会把「点地图收一档」这一下吃掉。它没有可点的内容，跟 logo 一样放行。 */
   .tc-mapapp-canvas .amap-copyright { pointer-events:none; }
   /* 它们在会随让位平移的画布里，反向抵消那一段位移，bottom 就只跟卡高有关。 */
   .tc-mapapp-canvas .amap-logo,
   .tc-mapapp-canvas .amap-copyright { transform:translate3d(0,calc(-1 * var(--tc-map-shift,0px)),0); transition:bottom 340ms cubic-bezier(.32,.72,0,1),transform 380ms cubic-bezier(.22,1,.36,1); }
-  .tc-mapapp-actions { right:12px; bottom:calc(var(--tc-sheet-live,var(--tc-sheet-h)) + 12px + env(safe-area-inset-bottom,0px)); transition:bottom 340ms cubic-bezier(.32,.72,0,1); }
+  .tc-mapapp-actions { right:12px; bottom:calc(var(--tc-sheet-live,var(--tc-sheet-h)) + 12px + env(safe-area-inset-bottom,0px)); transition:bottom 340ms cubic-bezier(.32,.72,0,1),opacity 240ms ease,transform 340ms cubic-bezier(.32,.72,0,1); }
+  /* 已经在全国层且没放大时，「回到全国」没有可回的地方：藏起来，也免得大卡时跟关于图标叠在一起。 */
+  .tc-mapapp-actions.is-collapsed { opacity:0; pointer-events:none; transform:translateY(6px); }
   /* 拖动时实时高度逐帧变化，这几处不要跟着补间。 */
   .tc-mapapp[data-sheet-dragging] .tc-mapapp-actions,
   .tc-mapapp[data-sheet-dragging] .tc-mapapp-canvas .amap-logo,
@@ -431,10 +474,10 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
   /* 手机空态只留两段文字；「补充一条线索」目前只在桌面出现。 */
   .sheet .empty .btn { display:none; }
   .tc-map-loading,.tc-mapapp-error { top:140px; right:12px; }
-  /* 手机单钉的十字略小；选中钉用品牌绿环，其余钉退到 42%。 */
+  /* 手机单钉的十字略小；选中态已在上面的共用规则里。 */
   .tc-hospital-pin .tc-pin-cross { width:19px; height:19px; }
-  .tc-pin--selected :is(.tc-pin-body,.tc-cluster-body) { background:#087353; box-shadow:0 0 0 3px var(--tc-accent),0 3px 10px #123c4240; }
-  .tc-mapapp-canvas--pinned .tc-map-node:not(.tc-pin--selected) { opacity:.42; }
+  /* 手机端详情不进地图定位：进详情时地图已经在该省，按钮只是把镜头挪一下。 */
+  .sheet .tc-hospital-actions { display:none; }
 }
 @media (max-width:700px) {
   :root { --tc-gutter:20px; }
@@ -459,5 +502,8 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 }
 @media (prefers-reduced-motion:reduce) {
   *,*::before,*::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+  /* 关于卡降到只淡入：位移动画全关，但不能连出现反馈一起抹掉。 */
+  .tc-project-card { animation:tc-card-fade 160ms ease !important; }
+  .tc-project-card.is-closing { animation:none !important; }
 }
 

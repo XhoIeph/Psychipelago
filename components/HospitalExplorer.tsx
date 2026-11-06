@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import { FilterPanel } from '@/components/FilterPanel'
-import { hospitalRowMeta } from '@/lib/hospital-row'
+import { hospitalBrowseMeta, hospitalRowMeta } from '@/lib/hospital-row'
 import type { Hospital, Province } from '@/lib/schema'
 
 /** 一个病症分组：筛选面板的一行，带上它命中的机构与线索数 */
@@ -48,6 +48,12 @@ type Props = {
   onClearFilter?: () => void
   /** sheet：手机底卡里的空态用无边框排版，桌面仍是 .tc-empty。 */
   sheetEmpty?: boolean
+  /** 手机全国层直接列医院，不再先列省份；桌面侧栏仍按省份分组。 */
+  hospitalList?: boolean
+  /** 每家医院能对上的筛选分组数与线索数：列表排序与第二行文案共用。 */
+  hospitalStats?: Record<string, { categories: number; leads: number }>
+  /** 医院列表上方的排序说明。 */
+  sortNote?: boolean
 }
 
 export function HospitalExplorer({
@@ -67,6 +73,9 @@ export function HospitalExplorer({
   showFilteredNote = false,
   onClearFilter,
   sheetEmpty = false,
+  hospitalList = false,
+  hospitalStats = {},
+  sortNote = false,
 }: Props) {
   const selectedSet = useMemo(() => new Set(selectedDisorders), [selectedDisorders])
   // 选完病症仍然是省份列表，只是收窄到有命中线索的省；多选取并集。
@@ -80,8 +89,22 @@ export function HospitalExplorer({
     return ids
   }, [disorderGroups, selectedDisorders, selectedSet])
 
-  const provinceRows = useMemo(() => {
-    const matchedByProvince = new Map<string, number>()
+  // 手机全国层直接排医院：可确诊病症类别数 → 线索条数 → 名称。
+  // 类别数是分组命中的数量，不是评分；列表上方还要写明排序依据。
+  const hospitalRows = useMemo(() => {
+    const list = matched ? hospitals.filter((hospital) => matched.has(hospital.id)) : hospitals
+    return [...list].sort((a, b) => {
+      const left = hospitalStats[a.id]
+      const right = hospitalStats[b.id]
+      const categories = (right?.categories ?? 0) - (left?.categories ?? 0)
+      if (categories !== 0) return categories
+      const leads = (right?.leads ?? reportCounts[b.id] ?? 0) - (left?.leads ?? reportCounts[a.id] ?? 0)
+      if (leads !== 0) return leads
+      return a.name.localeCompare(b.name, 'zh-Hans-CN')
+    })
+  }, [hospitalStats, hospitals, matched, reportCounts])
+
+  const provinceRows = useMemo(() => {    const matchedByProvince = new Map<string, number>()
     for (const hospital of hospitals) {
       if (matched && !matched.has(hospital.id)) continue
       matchedByProvince.set(hospital.adcode, (matchedByProvince.get(hospital.adcode) ?? 0) + 1)
@@ -186,7 +209,7 @@ export function HospitalExplorer({
             <p>没有符合这个条件的医院记录。</p>
           </div>
         ) : rows(searchList)
-      ) : matched && provinceRows.length === 0 ? (
+      ) : matched && (hospitalList ? hospitalRows.length === 0 : provinceRows.length === 0) ? (
         sheetEmpty ? (
           <div className="empty">
             <h3>这次筛选没有匹配的医院</h3>
@@ -202,6 +225,30 @@ export function HospitalExplorer({
             </div>
           </div>
         )
+      ) : hospitalList ? (
+        <>
+          {sortNote && <p className="list-note">按可确诊病症类别数、线索条数排序。</p>}
+          <ul className="tc-hospital-list">
+            {hospitalRows.map((hospital) => {
+              const stats = hospitalStats[hospital.id]
+              return (
+                <li key={hospital.id}>
+                  <button
+                    type="button"
+                    className="tc-hospital-row"
+                    data-hospital-id={hospital.id}
+                    onClick={() => onSelectHospital?.(hospital.id)}
+                  >
+                    <span className="tc-hospital-row-name">{hospital.name}</span>
+                    <span className="tc-hospital-row-meta">
+                      {hospitalBrowseMeta(hospital.province, stats?.categories ?? 0, stats?.leads ?? reportCounts[hospital.id] ?? 0)}
+                    </span>
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        </>
       ) : (
         <ul className="tc-province-list">
           {provinceRows.map((row) => (
