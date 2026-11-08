@@ -4,16 +4,18 @@
 
 | 文件 | 原件位置 | 快照 sha256（前 16 位） | 字节 |
 | --- | --- | --- | --- |
-| `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `7892d4cacd7e374e` | 57716 |
-| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `7669370b09f75841` | 153906 |
+| `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `a62548969b8b785c` | 60762 |
+| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `f40aa8415c3add09` | 166749 |
 
 `ui-spec.json` 是从 `docs/` 原件的逐字节拷贝，只改名不改内容；`spec.cjs` 同样逐字节拷贝（skill 目录那份也已同步成这一版）。换行统一成 LF 后再算 sha 与字节数（工作流里打印的也是这个）；这一版原件与快照同为 LF，两个文件逐字节相同。
 
-**v3 版（2026-11-07，当前）**：**212 条断言**（其中 1 个 id `copy.no-verify-disclaimer` 重复，唯一 id 211 个；另有 98 条退役），按视口生效 1440 = 134 条、390 = 76 条、375 = 13 条、320 = 10 条。**2026-11-08 的「进详情抬起来」当晚被小雨撤回**（Kiwi 改判：医院/医生详情一律停 medium 424），所以 `v3.m-hospital-medium` 回到在跑状态、`v3.m-hospital-can-peek` 仍按一次 ↓（424 → peek），分流用的 `v3.m-hospital-large-from-list` / `v3.m-hospital-medium-from-pin` 已删除；本表因此与当晚冻结的 `7669370b` 逐字节相同。比参考跑（129+2 / 65+8 / 12+1 / 9+1）多的是：两条图钉前置守卫（`v3.pin-selected-guard` / `-390`，不带 `skipIfMissing`，前置跑不成就算失败而不是静默记不适用），以及四条「返回后焦点别丢」的断言 —— 手机两条判 `.sheet .head-title`（`v3.m-back-focus-title-390` / `-country-390`），桌面两条判被点的那一行（`v3.d-back-focus-row-1440` 判 `button.tc-hospital-row`、`v3.d-back-focus-row-country-1440` 判 `button.tc-province-row`）。落点按布局定：手机回退后列表整页重渲染、落标题才不会把人扔到某一行上；桌面是分栏、行还在列表里，落回触发行才能接着 Tab 往下看（Kiwi 2026-11-07 定的这条口径，见下面 1440 段）。这一版不能手改：由 `assertions/build-spec.cjs` 从 **基线 `11767be` 的 185 条**（kept 115，其中 23 条 repath）+ `v3-checks.cjs` 的 97 条生成，新增退役 71 条。重生成时先把基线取回来、不能带 BOM —— `git show 11767be:tools/a11y/ui-spec.json` 用 PowerShell 的 `Out-File -Encoding utf8` 会写出 BOM，`JSON.parse` 直接失败；用 node 落盘、归 LF 后再跑 `build-spec.cjs`，跑完把 docs 原件拷回本快照。**别用 PowerShell 的 `Get-Content -Raw` + `WriteAllText` 改这几个含中文的文件**：PS 会按 GBK 读入再写回，整份中文被写坏（2026-11-07 踩过一次，靠生成好的 spec 反推恢复，产物逐字节一致）；要改用 edit/write 工具或 node 脚本。
+**v3 版（2026-11-07，当前）**：**228 条断言**（其中 1 个 id `copy.no-verify-disclaimer` 重复，唯一 id 227 个；另有 98 条退役），按视口生效 1440 = 150 条、390 = 76 条、375 = 13 条、320 = 10 条。**2026-11-08 的「进详情抬起来」当晚被小雨撤回**（Kiwi 改判：医院/医生详情一律停 medium 424），所以 `v3.m-hospital-medium` 回到在跑状态、`v3.m-hospital-can-peek` 仍按一次 ↓（424 → peek），分流用的 `v3.m-hospital-large-from-list` / `v3.m-hospital-medium-from-pin` 已删除；本表因此与当晚冻结的 `7669370b` 逐字节相同。比参考跑（129+2 / 65+8 / 12+1 / 9+1）多的是：两条图钉前置守卫（`v3.pin-selected-guard` / `-390`，不带 `skipIfMissing`，前置跑不成就算失败而不是静默记不适用），以及四条「返回后焦点别丢」的断言 —— 手机两条判 `.sheet .head-title`（`v3.m-back-focus-title-390` / `-country-390`），桌面两条判被点的那一行（`v3.d-back-focus-row-1440` 判 `button.tc-hospital-row`、`v3.d-back-focus-row-country-1440` 判 `button.tc-province-row`）。落点按布局定：手机回退后列表整页重渲染、落标题才不会把人扔到某一行上；桌面是分栏、行还在列表里，落回触发行才能接着 Tab 往下看（Kiwi 2026-11-07 定的这条口径，见下面 1440 段）。1440 那 16 条是桌面侧栏把手的（Kiwi 2026-11-08 追加，选择器见下一节）：存在、`role=separator`、命中带 ≥10px、Tab 顺序在页签之前、`End`/`Home`/`Enter` 各判「盒子宽 ±2 + `aria-valuenow` 同步」、刷新后记住 456（键 `tc.sidebar.width`）、顶栏 `transform` 与「侧栏右缘到顶栏左缘 ≥20px」、`.tc-sidebar-body` 在 280/520 不横向溢出。这一版不能手改：由 `assertions/build-spec.cjs` 从 **基线 `11767be` 的 185 条**（kept 115，其中 23 条 repath）+ `v3-checks.cjs` 的 113 条生成，新增退役 71 条。重生成时先把基线取回来、不能带 BOM —— `git show 11767be:tools/a11y/ui-spec.json` 用 PowerShell 的 `Out-File -Encoding utf8` 会写出 BOM，`JSON.parse` 直接失败；用 node 落盘、归 LF 后再跑 `build-spec.cjs`，跑完把 docs 原件拷回本快照。**别用 PowerShell 的 `Get-Content -Raw` + `WriteAllText` 改这几个含中文的文件**：PS 会按 GBK 读入再写回，整份中文被写坏（2026-11-07 踩过一次，靠生成好的 spec 反推恢复，产物逐字节一致）；要改用 edit/write 工具或 node 脚本。
 
 V3-02 那五条（选中钉橙色 / 光圈 / 标签 / 其余钉不压透明度 / 手机同款）的前置必须是「点省 → 点 `.tc-cluster-pin` 展开 → 点 `.tc-hospital-pin` → 等 `.tc-pin--selected`」。聚合钉的类名是 `tc-cluster-pin` 而不是 `tc-cluster`，写成 `.tc-map-node:not(.tc-cluster)` 会抓到聚合钉、点了只展开不选中，五条会一直「前置没跑成」。选中后 canvas 加 `tc-mapapp-canvas--pinned`、标签 `display:block`、其余钉 `opacity: 1`（`v3.css:17` 走 `--tc-nodes-opacity`）。
 
-定稿构建（`out/index.html` 22:13:38，388707 B，含小镜的「返回后焦点落到标题」修复）的四档自检，spec `153906 B / sha256 前 16 7669370b09f75841`：1440×900 = **134 通过 / 0 失败 / 0 不适用**、390×844 = **75 / 0 / 1**（连跑三次都是这个数）、375×812 = **12 / 0 / 1**、320×568 = **9 / 0 / 1**；三处「不适用」都是 `s5-disabled-opacity`（`.tc-map-zoom button[disabled]` 本页没有该状态）。累计 230 通过 / 0 失败 / 3 不适用，分母 134+76+13+10 = 233 闭合。报告在 `.botharness/mobile-v3-accept/a11y-reports/`（`freeze-<视口>` 与 `stab390-<1..3>` 是冻结这版；`deskrow-<视口>`、`final2-<视口>`、`desk-focus-1440` 是前几版）。
+终版构建 `out/index.html` **2026-11-08 22:57:29 / 388707 B / sha256 前 16 `1383CD09566589F1`**。它比 22:23:25 那版多一处源码改动：`components/map/Sidebar.tsx` 把侧栏宽度把手从 `<aside>` 末尾挪到最前（绝对定位、视觉不变），Tab 顺序因此变成「关于 → 把手 → 品牌 → 页签」。这一处必须对上，`tabOrder` 那类断言在旧构建上会假红。门 2 的 17 张是在这版重出的，17/17 几何一致。
+
+断言表登记 **1440 = 150、390 = 76、375 = 13、320 = 10，分母 249**。四档实跑（spec `166749 B / sha256 前 16 f40aa8415c3add09`）：1440×900 = **150 通过 / 0 失败 / 0 不适用**、390×844 = **75 / 0 / 1**、375×812 = **12 / 0 / 1**、320×568 = **9 / 0 / 1**。三个小视口各少 1 条，少的都是 `s5-disabled-opacity`（`.tc-map-zoom button[disabled]` 本页不存在该状态），所以通过数是 150 + 75 + 12 + 9 = **246**，加 3 条不适用正好回到 **249**。写报告时把「登记数」和「实跑通过数」分开写，别混成一个数。报告在 `.botharness/mobile-v3-accept/a11y-reports/`（`anchor-<视口>` 是终版这轮，`sidebar-1440b` 是侧栏断言首跑，`freeze-<视口>` / `stab390-<1..3>` / `final2-<视口>` 是前几版）。
 
 这一版把 `a11y.mapclick-*` 六条链的时序固定下来，判据一字未动：点击前 `wait .amap-layers` 加 `settle: 900`（等相机与切片稳定，否则点击会落空、量到 736），`clickat` 加 `afterMs: 700`（底卡收档过渡 340ms，350ms 的默认等待正好卡在尾巴上，会量到 432 这种中间值）。独立复跑曾在这六条里出过 `432.2>428` 与 `736>428` 两种偶发——都是采样时机、不是实现不稳定，所以固的是等待、不是容差。
 
@@ -29,9 +31,13 @@ V3-02 那五条（选中钉橙色 / 光圈 / 标签 / 其余钉不压透明度 /
 
 这一版还清掉了最后 4 条 `at:999` 的断言（`s5-tab-min-height-999`、`s6-drawer-closed-999`、`s6-drawer-top-104`、`s6-drawer-width-999`）：v3 之后 ≤999px 不渲染 `.tc-sidebar`，而 999 宽度又不在矩阵里，它们从来不会执行。改成 1440 会变成拿桌面侧栏去判手机规则，等于把断言换成另一件事，所以退役并在 `retired.why` 里写明各自被哪条接住。
 
-这一版把移动端抽屉换成非模态底卡（A1–A29），`.tc-mobile-browse` 相关 54 处逐条改过，逐条理由在 `spec-change-table.md`。`spec.cjs` 相对 skill 旧快照只多一个 `clickat` 前置动作（见下）。
+`spec.cjs` 相对 skill 旧快照多了四个前置/断言能力，判据一处没改：`clickat`（点地图，见下）、`reload`（刷新页面，验持久化）、`scrollFit`（容器内不得横向溢出，判 `scrollWidth = clientWidth`）、`tabOrder`（真按 Tab 判两个元素的先后，`first` 必须先于 `second` 到达——不写成「一直按到出现为止」，那样顺序坏了也会绿）。
 
 其中 `mobile.scale-hidden` 带 `absentOk`：元素不存在时记 pass 并标 `absent`。它解决的是 CI runner 起不来 AMap、比例尺控件压根不进 DOM 的误报；配的正向是 `desktop.scale-present`（1440 档要求控件真渲染，带 `skipIfMissing`，CI 里记不适用）。所以 CI 的结果是「通过 / 失败 / 不适用」三态，不适用不等于验过。
+
+**终态（九条可怜独立验收，2026-11-08 23:57，同一对身份）**：门 1 登记 249 / **实跑 246 通过 / 0 失败 / 3 不适用**（`s5-disabled-opacity`），分档 150 / 75 / 12 / 9，与我上面自检逐档一致；门 2 **17/17** 几何一致（m09 记命中范围差异、m06 焦点环按 Kiwi 裁定不判红）；门 3 焦点返回 5/5、换层滑入 8/8、图钉 8 轮不发灰、侧栏与 Tab 往返全过。跑前跑后 `out/index.html` 的 sha 与 spec 的 `f40aa8415c3add09` 逐字相同，没重建。报告在 `.botharness/a11y-v3-independent/final-222957/`，门 1 明细是其中的 `independent-222957/spec-report.md`。
+
+侧栏把手的专用断言是 **16 条**（`v3.sidebar-resize-*`，全部 1440）。九条另自写了三组探针——侧栏换档、页签切换、标签层序——不进门 1 分母，别把「16 条断言 + 3 组探针」写成「19 条断言」。
 
 ## 为什么要快照
 
@@ -92,6 +98,17 @@ node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json --viewpo
 - `expect` 先校验这一点上确实是它（`elementFromPoint` 命中或 `closest`），落在图钉、底卡、版权条上的「空白点」会当场报失败并附命中链，不会静默点下去再给结论。
 - 点完等 `afterMs`，缺省 350ms：底卡收档是 340ms 的 height 过渡，立刻量会量到收档前的 736。
 - 依赖地图的用例在 `clickat` 前加一条 `{ "action": "wait", "selector": ".amap-layers", "envGate": "amap" }`：CI 里没有高德运行时，这条等不到就把整组记不适用，而不是「点了没反应」判红。
+
+## 桌面侧栏把手（1440）
+
+16 条，全部 `at: 1440`，id 前缀 `v3.sidebar-resize-`。把手是 `.tc-sidebar` 的直接子元素：`div.tc-sidebar-resize`，`role="separator"`、`aria-orientation="vertical"`、`aria-label="调整侧栏宽度"`、`tabindex="0"`，`aria-valuenow/min/max` 随宽度实时同步（初值 380 / 280 / 520）。
+
+几条容易写错的地方：
+
+- **Tab 顺序用 `tabOrder` 判**，不是「按到出现为止」。全序列实测：画布 → 收起侧栏 → 搜索 → 关于 → **把手（第 5）** → 品牌 → 页签 → 病症 → 省行。Kiwi 的脚本去重把序列提前截断，一度误报「把手排在省行之后」，重跑全序列才确认。
+- **每个键位拆两条**：一条判 `.tc-sidebar` 的实际盒子宽（`End` 518–522、`Home` 278–282、`Enter` 378–382），一条判 `aria-valuenow`。只判 aria 会漏掉「值和盒子不同步」这种真 bug。`Enter` 那组前置是 `Home → End → Enter`，验的是「从 520 回 380」，原地不动骗不过去。
+- **持久化必须真刷新**：`Home → 11 次 →`（456）→ `reload` → 判盒子 454–458 与 aria 456，再判顶栏 `transform` 是 `translateX(456px)`、`.tc-sidebar` 右缘到 `.tc-mapapp-topbar` 左缘 ≥20px。`localStorage` 键是 `tc.sidebar.width`，存纯数字字符串。
+- **容器横向溢出用 `scrollFit`**：`.tc-sidebar-body` 在 280 与 520 各一条，实测 279/279、519/519。
 
 ## 覆盖边界
 
