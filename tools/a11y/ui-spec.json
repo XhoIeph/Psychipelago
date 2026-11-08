@@ -5103,6 +5103,683 @@
           "afterMs": 700
         }
       ]
+    },
+    {
+      "id": "v3.sidebar-resize-handle-1440",
+      "type": "mustExist",
+      "desc": "侧栏把手存在（1440）：.tc-sidebar-resize 必须渲染出来",
+      "selector": ".tc-sidebar-resize",
+      "at": 1440
+    },
+    {
+      "id": "v3.sidebar-resize-role-1440",
+      "type": "attr",
+      "desc": "侧栏把手语义（1440）：role=\"separator\"，键盘/读屏把它当分隔条",
+      "selector": ".tc-sidebar-resize",
+      "attr": "role",
+      "equals": "separator",
+      "at": 1440
+    },
+    {
+      "id": "v3.sidebar-resize-tab-order-1440",
+      "type": "tabOrder",
+      "desc": "把手在页签之前到达（1440）：从页面顶部按 Tab，.tc-sidebar-resize 必须先于第一个 .tc-sidebar-tab；不写成「一直 Tab 到出现为止」，那样顺序坏了也会绿",
+      "first": ".tc-sidebar-resize",
+      "second": ".tc-sidebar-tab",
+      "presses": 60,
+      "at": 1440
+    },
+    {
+      "id": "v3.sidebar-resize-hitband-1440",
+      "type": "rect",
+      "desc": "侧栏把手命中带（1440）：宽 ≥10px，高覆盖侧栏（≥400）",
+      "selector": ".tc-sidebar-resize",
+      "min": {
+        "w": 10,
+        "h": 400
+      },
+      "at": 1440
+    },
+    {
+      "id": "v3.sidebar-resize-end-box-1440",
+      "type": "rect",
+      "desc": "End 键把侧栏拉到上限 520（±2）：判的是 .tc-sidebar 实际盒子宽度，不是 aria 值",
+      "selector": ".tc-sidebar",
+      "min": {
+        "w": 518
+      },
+      "max": {
+        "w": 522
+      },
+      "precondition": [
+        {
+          "action": "focus",
+          "selector": ".tc-sidebar-resize"
+        },
+        {
+          "action": "key",
+          "value": "End",
+          "afterMs": 500
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.sidebar-resize-end-value-1440",
+      "type": "attr",
+      "desc": "End 键后 aria-valuenow 同步为 520：值与盒子必须一致（盒子在 end-box 里单独判）",
+      "selector": ".tc-sidebar-resize",
+      "attr": "aria-valuenow",
+      "equals": "520",
+      "precondition": [
+        {
+          "action": "focus",
+          "selector": ".tc-sidebar-resize"
+        },
+        {
+          "action": "key",
+          "value": "End",
+          "afterMs": 500
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.sidebar-resize-home-box-1440",
+      "type": "rect",
+      "desc": "Home 键把侧栏收到下限 280（±2）：判 .tc-sidebar 实际盒子宽度",
+      "selector": ".tc-sidebar",
+      "min": {
+        "w": 278
+      },
+      "max": {
+        "w": 282
+      },
+      "precondition": [
+        {
+          "action": "focus",
+          "selector": ".tc-sidebar-resize"
+        },
+        {
+          "action": "key",
+          "value": "Home",
+          "afterMs": 500
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.sidebar-resize-home-value-1440",
+      "type": "attr",
+      "desc": "Home 键后 aria-valuenow 同步为 280",
+      "selector": ".tc-sidebar-resize",
+      "attr": "aria-valuenow",
+      "equals": "280",
+      "precondition": [
+        {
+          "action": "focus",
+          "selector": ".tc-sidebar-resize"
+        },
+        {
+          "action": "key",
+          "value": "Home",
+          "afterMs": 500
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.sidebar-resize-reset-box-1440",
+      "type": "rect",
+      "desc": "Enter 从下限 280 复位到默认 380（±2）：证明是「回默认」而不是原地不动",
+      "selector": ".tc-sidebar",
+      "min": {
+        "w": 378
+      },
+      "max": {
+        "w": 382
+      },
+      "precondition": [
+        {
+          "action": "focus",
+          "selector": ".tc-sidebar-resize"
+        },
+        {
+          "action": "key",
+          "value": "Home",
+          "afterMs": 500
+        },
+        {
+          "action": "key",
+          "value": "End",
+          "afterMs": 500
+        },
+        {
+          "action": "key",
+          "value": "Enter",
+          "afterMs": 500
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.sidebar-resize-reset-value-1440",
+      "type": "attr",
+      "desc": "Enter 复位后 aria-valuenow 回到 380",
+      "selector": ".tc-sidebar-resize",
+      "attr": "aria-valuenow",
+      "equals": "380",
+      "precondition": [
+        {
+          "action": "focus",
+          "selector": ".tc-sidebar-resize"
+        },
+        {
+          "action": "key",
+          "value": "Home",
+          "afterMs": 500
+        },
+        {
+          "action": "key",
+          "value": "End",
+          "afterMs": 500
+        },
+        {
+          "action": "key",
+          "value": "Enter",
+          "afterMs": 500
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.sidebar-resize-fit-280-1440",
+      "type": "scrollFit",
+      "desc": "边界：侧栏收到 280 时栏内不得横向溢出（.tc-sidebar-body scrollWidth = clientWidth）",
+      "selector": ".tc-sidebar-body",
+      "precondition": [
+        {
+          "action": "focus",
+          "selector": ".tc-sidebar-resize"
+        },
+        {
+          "action": "key",
+          "value": "Home",
+          "afterMs": 500
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.sidebar-resize-fit-520-1440",
+      "type": "scrollFit",
+      "desc": "边界：侧栏拉到 520 时栏内不得横向溢出（.tc-sidebar-body scrollWidth = clientWidth）",
+      "selector": ".tc-sidebar-body",
+      "precondition": [
+        {
+          "action": "focus",
+          "selector": ".tc-sidebar-resize"
+        },
+        {
+          "action": "key",
+          "value": "End",
+          "afterMs": 500
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.sidebar-resize-persist-box-1440",
+      "type": "rect",
+      "desc": "记得住：Home 后按 11 次 → 的 456（±2）在刷新后仍生效（判 .tc-sidebar 盒子）",
+      "selector": ".tc-sidebar",
+      "min": {
+        "w": 454
+      },
+      "max": {
+        "w": 458
+      },
+      "precondition": [
+        {
+          "action": "focus",
+          "selector": ".tc-sidebar-resize"
+        },
+        {
+          "action": "key",
+          "value": "Home",
+          "afterMs": 500
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "reload",
+          "afterMs": 2200
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.sidebar-resize-persist-value-1440",
+      "type": "attr",
+      "desc": "刷新后把手的 aria-valuenow 也是 456，与盒子一致",
+      "selector": ".tc-sidebar-resize",
+      "attr": "aria-valuenow",
+      "equals": "456",
+      "precondition": [
+        {
+          "action": "focus",
+          "selector": ".tc-sidebar-resize"
+        },
+        {
+          "action": "key",
+          "value": "Home",
+          "afterMs": 500
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "reload",
+          "afterMs": 2200
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.sidebar-resize-topbar-gap-1440",
+      "type": "layoutRel",
+      "desc": "顶栏跟着侧栏走：.tc-mapapp-topbar 左缘在侧栏右缘之外 ≥20px（456 + 20 = 476）",
+      "a": ".tc-sidebar",
+      "b": ".tc-mapapp-topbar",
+      "relation": "leftOf",
+      "gap": 20,
+      "precondition": [
+        {
+          "action": "focus",
+          "selector": ".tc-sidebar-resize"
+        },
+        {
+          "action": "key",
+          "value": "Home",
+          "afterMs": 500
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "reload",
+          "afterMs": 2200
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.sidebar-resize-topbar-offset-1440",
+      "type": "cssProp",
+      "desc": "顶栏位移等于侧栏宽度：transform 为 translateX(456px)（即左缘 = 宽度 + 20，±2）",
+      "selector": ".tc-mapapp-topbar",
+      "prop": "transform",
+      "expect": "matrix(1, 0, 0, 1, 456",
+      "contains": true,
+      "precondition": [
+        {
+          "action": "focus",
+          "selector": ".tc-sidebar-resize"
+        },
+        {
+          "action": "key",
+          "value": "Home",
+          "afterMs": 500
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "key",
+          "value": "ArrowRight",
+          "afterMs": 90
+        },
+        {
+          "action": "reload",
+          "afterMs": 2200
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.m-detail-to-detail-keeps-stop",
+      "type": "rect",
+      "desc": "V3-11 医院↔医生详情互跳保持当前档：列表进医院停 424 → 把手 ArrowUp 抬到 736（链中量一次）→ 点医生姓名仍 732–740 → 返回医院仍 732–740（不回 medium）",
+      "selector": ".sheet.is-hospital",
+      "min": {
+        "h": 732
+      },
+      "max": {
+        "h": 740
+      },
+      "at": 390,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 450
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-province-row",
+          "textContains": "北京"
+        },
+        {
+          "action": "wait",
+          "selector": ".sheet .tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-hospital-row",
+          "textContains": "回龙观"
+        },
+        {
+          "action": "wait",
+          "selector": ".sheet .tc-report"
+        },
+        {
+          "action": "assertrect",
+          "selector": ".sheet",
+          "min": {
+            "h": 420
+          },
+          "max": {
+            "h": 428
+          },
+          "label": "进医院详情（应停 424）"
+        },
+        {
+          "action": "focus",
+          "selector": ".sheet .grab"
+        },
+        {
+          "action": "key",
+          "value": "ArrowUp",
+          "afterMs": 500
+        },
+        {
+          "action": "assertrect",
+          "selector": ".sheet",
+          "min": {
+            "h": 732
+          },
+          "max": {
+            "h": 740
+          },
+          "label": "把手 ArrowUp 抬档后（点医生之前）"
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-doctor-link"
+        },
+        {
+          "action": "wait",
+          "selector": ".sheet .tc-doctor-detail"
+        },
+        {
+          "action": "assertrect",
+          "selector": ".sheet",
+          "min": {
+            "h": 732
+          },
+          "max": {
+            "h": 740
+          },
+          "label": "进医生详情"
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .head-back .back-btn"
+        },
+        {
+          "action": "wait",
+          "selector": ".sheet .tc-doctor-link"
+        },
+        {
+          "action": "assertrect",
+          "selector": ".sheet",
+          "min": {
+            "h": 732
+          },
+          "max": {
+            "h": 740
+          },
+          "label": "返回医院详情"
+        }
+      ]
+    },
+    {
+      "id": "v3.d-filter-paints-provinces-1440",
+      "type": "polygonPaint",
+      "phase": "paint",
+      "at": 1440,
+      "selector": "button.tc-disorder-chip[data-disorder=\"cptsd\"]",
+      "hitMin": 100,
+      "missMin": 100,
+      "headerIncludes": [
+        "32 家医院",
+        "32 条线索"
+      ],
+      "desc": "V3-12 桌面勾「cptsd」后地图命中省画成 #087f7b/.26、未命中省压到 ≤.05，头部同步 32 家医院 · 32 条线索"
+    },
+    {
+      "id": "v3.d-filter-clear-restores-density-1440",
+      "type": "polygonPaint",
+      "phase": "clear",
+      "at": 1440,
+      "selector": "button.tc-disorder-chip[data-disorder=\"cptsd\"]",
+      "paintedMin": 100,
+      "distinctColorsMin": 3,
+      "desc": "V3-12 取消勾选后省面回到按密度着色（透明度 ≥.5、多色阶、近零透明只留给 0 报告省），不留 #087f7b/.26"
     }
   ],
   "appliesTo": [

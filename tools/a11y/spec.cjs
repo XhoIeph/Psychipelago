@@ -434,6 +434,22 @@ function runChecks(checks) {
       r.note = `文档横向溢出 ${over}px`;
       out.push(r); continue;
     }
+    if (c.type === 'scrollFit') {
+      // 容器内不得横向溢出：scrollWidth 必须等于 clientWidth（差 1px 内算取整误差）。
+      const el = [...document.querySelectorAll(c.selector)].find(e => {
+        const rc = e.getBoundingClientRect();
+        return rc.width > 0 && rc.height > 0;
+      });
+      if (!el) {
+        r.pass = c.skipIfMissing ? null : false;
+        r.note = (c.skipIfMissing ? '本页没有该组件，断言不适用：' : '选择器没有可见元素：') + c.selector;
+        out.push(r); continue;
+      }
+      const over = el.scrollWidth - el.clientWidth;
+      r.pass = over <= 1;
+      r.note = `${c.selector} 横向溢出 ${over}px（scrollWidth ${el.scrollWidth} / clientWidth ${el.clientWidth}）`;
+      out.push(r); continue;
+    }
 
     r.pass = null;
     r.note = '未知 check 类型：' + c.type;
@@ -474,11 +490,111 @@ function shadowUses(color, shadow) {
   return new RegExp(`rgba?\\(\\s*${t[0]}\\s*,\\s*${t[1]}\\s*,\\s*${t[2]}\\b`, 'i').test(shadow);
 }
 
+// 省面高亮采集：挂 AMap.Polygon.setOptions，按下开/关各收一轮，最后还原原型。
+// 只记录 fillColor / fillOpacity —— 这两个值就是「命中省画成什么、未命中省压到多淡」。
+async function collectPolygonPaint(page, chipSel) {
+  return page.evaluate(async (chipSel) => {
+    const chip0 = document.querySelector(chipSel);
+    if (!chip0) return { missing: true };
+    if (!window.AMap || !window.AMap.Polygon || !window.AMap.Polygon.prototype.setOptions) {
+      return { noAmap: true };
+    }
+    const proto = window.AMap.Polygon.prototype;
+    const orig = proto.setOptions;
+    const tap = [];
+    proto.setOptions = function (opts) {
+      if (opts && (opts.fillColor || opts.fillOpacity != null)) {
+        tap.push({
+          fillColor: opts.fillColor ? String(opts.fillColor).toLowerCase() : null,
+          fillOpacity: opts.fillOpacity == null ? null : Number(opts.fillOpacity),
+        });
+      }
+      return orig.apply(this, arguments);
+    };
+    const headerText = () => (document.querySelector('.tc-sidebar') ? document.querySelector('.tc-sidebar').textContent : '').replace(/\s+/g, ' ').trim();
+    // 等这一轮上色停下来：tap 连续 240ms 不增长即认为画完（有上限，避免过渡卡住把整轮拖死）。
+    const settle = async (limitMs) => {
+      const t0 = Date.now();
+      let last = -1;
+      while (Date.now() - t0 < limitMs) {
+        await new Promise((r) => setTimeout(r, 120));
+        if (tap.length === last && tap.length > 0) return true;
+        last = tap.length;
+      }
+      return false;
+    };
+    const press = async (want) => {
+      const chip = document.querySelector(chipSel);
+      const isOn = chip.getAttribute('aria-pressed') === 'true';
+      if (isOn !== want) chip.click();
+      tap.length = 0;
+      const settled = await settle(4000);
+      await new Promise((r) => setTimeout(r, 200));
+      return {
+        pressed: document.querySelector(chipSel).getAttribute('aria-pressed'),
+        settled,
+        calls: tap.slice(),
+        header: headerText(),
+      };
+    };
+    const on = await press(true);
+    const off = await press(false);
+    proto.setOptions = orig;
+    return { on, off };
+  }, chipSel);
+}
+
 async function runSpecial(page, checks) {
   const out = [];
   for (const c of checks) {
     const r = { id: c.id || c.type, type: c.type, desc: c.desc || '', pass: null, note: '', evidence: [] };
     try {
+      // 省面高亮：phase=paint 判「勾选后命中省画成 #087f7b/.26、其余压到 ≤.05」，
+      // phase=clear 判「取消勾选后回到按密度着色（≥.5、多种颜色）、不留 #087f7b」。
+      if (c.type === 'polygonPaint') {
+        const chipSel = String(c.selector || 'button.tc-disorder-chip[data-disorder="cptsd"]');
+        const data = await collectPolygonPaint(page, chipSel);
+        if (data.missing) { r.pass = null; r.note = '本页没有病症开关，断言不适用：' + chipSel; out.push(r); continue; }
+        if (data.noAmap) { r.pass = null; r.note = '地图运行时未就绪（window.AMap 缺失），断言不适用'; out.push(r); continue; }
+        const phase = c.phase === 'clear' ? 'clear' : 'paint';
+        const snap = phase === 'clear' ? data.off : data.on;
+        const wantPressed = phase === 'clear' ? 'false' : 'true';
+        const calls = snap.calls || [];
+        const ok = [];
+        const bad = [];
+        const near = (a, b) => a != null && Math.abs(a - b) <= 0.005;
+        if (phase === 'paint') {
+          const hit = calls.filter((t) => t.fillColor === '#087f7b' && near(t.fillOpacity, 0.26));
+          const rest = calls.filter((t) => !(t.fillColor === '#087f7b' && near(t.fillOpacity, 0.26)));
+          const bleed = rest.filter((t) => t.fillOpacity == null || t.fillOpacity > 0.05);
+          const hitMin = Number(c.hitMin || 100);
+          const missMin = Number(c.missMin || 100);
+          (hit.length >= hitMin ? ok : bad).push(`命中省上色 ${hit.length} 次（需 ≥${hitMin}，fillColor #087f7b / .26）`);
+          (rest.length >= missMin ? ok : bad).push(`未命中省上色 ${rest.length} 次（需 ≥${missMin}）`);
+          (bleed.length === 0 ? ok : bad).push(`未命中省透明度全部 ≤.05（越界 ${bleed.length} 次）`);
+          for (const t of (c.headerIncludes || [])) {
+            (snap.header.includes(String(t)) ? ok : bad).push(`头部含「${t}」`);
+          }
+        } else {
+          const painted = calls.filter((t) => t.fillOpacity != null && t.fillOpacity >= 0.5);
+          const zero = calls.filter((t) => t.fillOpacity != null && t.fillOpacity <= 0.05);
+          const zeroAllowed = zero.filter((t) => t.fillColor === '#ffffff').length;
+          const paintedMin = Number(c.paintedMin || 100);
+          const colors = new Set(painted.map((t) => t.fillColor));
+          const stillHit = calls.filter((t) => t.fillColor === '#087f7b' && near(t.fillOpacity, 0.26));
+          (painted.length >= paintedMin ? ok : bad).push(`恢复密度着色 ${painted.length} 次（需 ≥${paintedMin}，透明度 ≥.5）`);
+          (colors.size >= Number(c.distinctColorsMin || 3) ? ok : bad).push(`密度色阶 ${colors.size} 种（需 ≥${Number(c.distinctColorsMin || 3)}）`);
+          (zero.length === zeroAllowed ? ok : bad).push(`近零透明仅留给 0 报告省（白底 ${zeroAllowed} 次，其余 ${zero.length - zeroAllowed} 次）`);
+          (stillHit.length === 0 ? ok : bad).push(`不再有 #087f7b/.26 残留（${stillHit.length} 次）`);
+        }
+        (snap.pressed === wantPressed ? ok : bad).push(`aria-pressed=${snap.pressed}（需 ${wantPressed}）`);
+        (snap.settled ? ok : bad).push('上色在 4s 内收敛');
+        r.evidence = [...ok.map((x) => '✓ ' + x), ...bad.map((x) => '❌ ' + x)];
+        r.pass = bad.length === 0;
+        r.note = `${phase}：采集 ${calls.length} 次 setOptions`;
+        out.push(r);
+        continue;
+      }
       // 焦点陷阱：连按 Tab，焦点不许离开容器。抽屉、对话框这类「打开后接管焦点」的浮层用它。
       if (c.type === 'tabStaysWithin') {
         const within = String(c.selector);
@@ -502,6 +618,43 @@ async function runSpecial(page, checks) {
           ? `${presses} 次 Tab 都留在 ${within} 内`
           : `第 ${escapedAt} 次 Tab 落到 ${outside}，已离开 ${within}`;
         r.evidence = [{ presses, escapedAt }];
+        out.push(r); continue;
+      }
+      // Tab 顺序：从页面顶部连按 Tab，first 必须在 second 之前到达。
+      // 不写成「一直按到出现为止」——那把顺序改坏了也照样绿。
+      if (c.type === 'tabOrder') {
+        const first = String(c.first);
+        const second = String(c.second);
+        const presses = Number(c.presses || 60);
+        let idxFirst = -1;
+        let idxSecond = -1;
+        const seen = [];
+        await page.evaluate(() => {
+          const a = document.activeElement;
+          if (a && a.blur) a.blur();
+        }).catch(() => {});
+        for (let i = 1; i <= presses && (idxFirst < 0 || idxSecond < 0); i += 1) {
+          await page.keyboard.press('Tab');
+          const hit = await page.evaluate(({ f, g }) => {
+            const a = document.activeElement;
+            if (!a || a === document.body) return null;
+            const name = a.tagName.toLowerCase() + (typeof a.className === 'string' && a.className ? '.' + a.className.split(/\s+/)[0] : '');
+            return { isFirst: a.matches(f), isSecond: a.matches(g), name };
+          }, { f: first, g: second }).catch(() => null);
+          if (!hit) continue;
+          seen.push(hit.name);
+          if (hit.isFirst && idxFirst < 0) idxFirst = i;
+          if (hit.isSecond && idxSecond < 0) idxSecond = i;
+        }
+        r.pass = idxFirst > 0 && idxSecond > 0 && idxFirst < idxSecond;
+        r.note = idxFirst < 0
+          ? `按 Tab ${presses} 次没有到达 ${first}`
+          : idxSecond < 0
+            ? `按 Tab ${presses} 次没有到达 ${second}（${first} 在第 ${idxFirst} 次）`
+            : idxFirst < idxSecond
+              ? `${first} 在第 ${idxFirst} 次 Tab 到达，早于 ${second}（第 ${idxSecond} 次）`
+              : `${first} 在第 ${idxFirst} 次才到，晚于 ${second}（第 ${idxSecond} 次）`;
+        r.evidence = seen.slice(0, 12);
         out.push(r); continue;
       }
       if (c.type === 'focusRing') {
@@ -717,16 +870,16 @@ async function runSpecial(page, checks) {
   return out;
 }
 
-// 断言的「前置状态」：写在断言文件的 precondition 里，只允许三种动作。
+// 断言的「前置状态」：写在断言文件的 precondition 里，只允许这里的几种动作。
 // 直接操作页面（不是参数化的全局开关），这样同一份文件就能说清「这条要在什么状态下量」。
-const PRECONDITION_ACTIONS = new Set(['fill', 'click', 'clickjs', 'clickat', 'wait', 'select', 'key', 'press', 'focus', 'expectfocus']);
+const PRECONDITION_ACTIONS = new Set(['fill', 'click', 'clickjs', 'clickat', 'wait', 'select', 'key', 'press', 'focus', 'expectfocus', 'reload', 'assertrect']);
 
 async function applyPrecondition(page, steps) {
   const memo = {};
   for (const step of steps) {
     const action = String((step && step.action) || '').toLowerCase();
     if (!PRECONDITION_ACTIONS.has(action)) {
-      return { ok: false, note: `前置动作不认识：${action || '(空)'}，只支持 fill / click / clickjs / clickat / wait / select / key（或 press）/ focus / expectFocus`, memo };
+      return { ok: false, note: `前置动作不认识：${action || '(空)'}，只支持 fill / click / clickjs / clickat / wait / select / key（或 press）/ focus / expectFocus / reload / assertRect`, memo };
     }
     // key / press 没有选择器：直接往当前焦点元素敲键（Escape 关抽屉、Tab 走位这类）。
     // press 是 key 的别名，两个名字都收：断言作者按日常说法写的也能跑。
@@ -779,6 +932,36 @@ async function applyPrecondition(page, steps) {
       await page.mouse.click(px, py);
       // 点完要等：底卡收档是 340ms 的 height 过渡，立刻量会量到动画中间值（736 未收）。
       await page.waitForTimeout(Number(step.afterMs || step.settle || 350));
+      continue;
+    }
+    if (action === 'assertrect') {
+      // 链中几何断言：某一步做完立刻量一次。失败即前置失败，note 带实测值，
+      // 这样「抬档没生效、后来被别的路径凑到目标高度」不会算绿。
+      // stepSelector 在后面才声明，这里按同一条口径自己算一次（窄屏才用 mobileSelector）。
+      const rectWidth = page.viewportSize()?.width ?? 0
+      const rectSel = rectWidth > 0 && rectWidth < 1000 && step.mobileSelector ? step.mobileSelector : step.selector
+      const got = await page.evaluate((s) => {
+        const els = [...document.querySelectorAll(s)].filter((e) => {
+          const r = e.getBoundingClientRect()
+          return r.width > 0 && r.height > 0
+        })
+        return els.length ? els[0].getBoundingClientRect().height : null
+      }, rectSel).catch(() => null)
+      if (got == null) return { ok: false, note: `assertRect 找不到可见元素：${rectSel}`, memo }
+      const lo = step.min && step.min.h
+      const hi = step.max && step.max.h
+      const label = step.label || rectSel
+      ;(memo.__rects || (memo.__rects = [])).push(`${label} ${got.toFixed(1)}px`)
+      if ((lo != null && got + 0.5 < lo) || (hi != null && got - 0.5 > hi)) {
+        const range = `${lo == null ? '−∞' : lo}–${hi == null ? '+∞' : hi}`
+        return { ok: false, note: `${label}：高度 ${got.toFixed(1)} 不在 ${range}`, memo }
+      }
+      continue
+    }
+    if (action === 'reload') {
+      // 刷新后 localStorage 仍在同一个浏览器上下文里，才验得出「记得住」。
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 45000 });
+      await page.waitForTimeout(Number(step.afterMs || step.settle || 2000));
       continue;
     }
     if (!step.selector && !step.text) return { ok: false, note: `前置动作 ${action} 缺 selector（或 text）`, memo };
@@ -918,7 +1101,7 @@ async function applyPrecondition(page, steps) {
     const applicable = CHECKS.filter(c => c.at == null || !vp.width || Math.abs(c.at - vp.width) < 1);
     // page.evaluate 只能跑"读当前状态"的断言。焦点环要真按 Tab，reduced-motion 要
     // 模拟媒体特性——这两类在 Node 侧做，页面上下文做不了。
-    const SPECIAL = new Set(['focusRing', 'focusBorder', 'focusNoColor', 'media', 'tabStaysWithin']);
+    const SPECIAL = new Set(['focusRing', 'focusBorder', 'focusNoColor', 'media', 'tabStaysWithin', 'tabOrder', 'polygonPaint']);
 
     // 按 precondition 分组：不同前置状态必须各用一张干净页面，否则前一组点开的
     // 面板会串到下一组（比如筛选态漏进首屏断言）。
@@ -1005,6 +1188,8 @@ async function applyPrecondition(page, steps) {
       const special = group.filter(c => SPECIAL.has(c.type));
       const got = [...await page.evaluate(runChecks, simple), ...await runSpecial(page, special)];
       got.forEach((r, j) => { results[idx[j]] = r; });
+      const rectLog = (pre.memo && pre.memo.__rects) || [];
+      if (rectLog.length) got.forEach((r) => { if (r) r.evidence = [...(r.evidence || []), ...rectLog]; });
     }
 
     report.viewports.push({
