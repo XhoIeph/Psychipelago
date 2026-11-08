@@ -285,16 +285,22 @@ function runChecks(checks) {
 
     // 属性文案：placeholder / aria-label 这类不进 textContent 的文字，只能用属性查。
     if (c.type === 'attr') {
-      const els = [...document.querySelectorAll(c.selector)].filter(e => {
+      // 属性断言的价值在属性本身：html[data-theme]、aria-* 这类承载元素常常没有盒子，
+      // 按可见性过滤会直接判失败。默认仍要求可见（挡住 display:none 的假绿），
+      // 只对显式声明 allowHidden 的条目退到全部匹配。
+      const allEls = [...document.querySelectorAll(c.selector)];
+      const visibleEls = allEls.filter(e => {
         const rc = e.getBoundingClientRect();
         return rc.width > 0 && rc.height > 0;
       });
+      const els = visibleEls.length ? visibleEls : (c.allowHidden ? allEls : []);
       const flat = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
       if (!els.length) {
         r.pass = c.skipIfMissing ? null : false;
         r.note = (c.skipIfMissing ? '本页没有该组件，断言不适用：' : '选择器没有可见元素：') + c.selector;
         out.push(r); continue;
       }
+      if (!visibleEls.length) r.evidence.push('元素无盒子（allowHidden），属性仍可读');
       const actual = flat(els[0].getAttribute(c.attr));
       const miss = [];
       if (c.contains && !actual.includes(c.contains)) miss.push(`应含「${c.contains}」`);
@@ -595,6 +601,57 @@ async function runSpecial(page, checks) {
         out.push(r);
         continue;
       }
+      // 地图可拖：拖动前后读容器上的 AMap 实例取中心，判纬度/经度「明显变化」。角度按视口定，
+      // 只要求超过下限（实测 390 竖拖 200px，纬度 37.8 → 17.5），不写死具体值。
+      if (c.type === 'mapPan') {
+        const sel = String(c.selector || '.amap-container')
+        const read = () => page.evaluate((s) => {
+          const el = document.querySelector(s)
+          const map = el && (el.amap || el.__amap || el._amap)
+          if (!map || typeof map.getCenter !== 'function') return null
+          const p = map.getCenter()
+          return { lat: p.getLat(), lng: p.getLng(), zoom: map.getZoom() }
+        }, sel)
+        const before = await read()
+        if (!before) { r.pass = null; r.note = '地图运行时未就绪（容器上取不到 AMap 实例），断言不适用'; out.push(r); continue }
+        const box = await page.locator(sel).first().boundingBox().catch(() => null)
+        if (!box) { r.pass = false; r.note = '地图容器没有盒子：' + sel; out.push(r); continue }
+        const dx = Number(c.dx || 0)
+        const dy = Number(c.dy || 0)
+        const fx = c.from && c.from.x != null ? c.from.x : 0.5
+        const fy = c.from && c.from.y != null ? c.from.y : 0.3
+        const sx = box.x + box.width * fx
+        const sy = box.y + box.height * fy
+        const n = Math.max(4, Number(c.steps || 16))
+        await page.mouse.move(sx, sy)
+        await page.mouse.down()
+        for (let i = 1; i <= n; i += 1) {
+          await page.mouse.move(sx + (dx * i) / n, sy + (dy * i) / n)
+          await page.waitForTimeout(16)
+        }
+        await page.mouse.up()
+        await page.waitForTimeout(Number(c.settle || 900))
+        const after = await read()
+        if (!after) { r.pass = false; r.note = '拖动后再读不到地图实例'; out.push(r); continue }
+        const dLat = Math.abs(after.lat - before.lat)
+        const dLng = Math.abs(after.lng - before.lng)
+        const minLat = Number(c.minLat || 0)
+        const minLng = Number(c.minLng || 0)
+        const ok = []
+        const bad = []
+        if (minLat) (dLat >= minLat ? ok : bad).push(`纬度变化 ${dLat.toFixed(2)}°（需 ≥${minLat}°）`)
+        if (minLng) (dLng >= minLng ? ok : bad).push(`经度变化 ${dLng.toFixed(2)}°（需 ≥${minLng}°）`)
+        r.pass = bad.length === 0 && ok.length > 0
+        r.evidence = [
+          ...ok.map((x) => '✓ ' + x),
+          ...bad.map((x) => '❌ ' + x),
+          `中心 ${before.lat.toFixed(2)},${before.lng.toFixed(2)} → ${after.lat.toFixed(2)},${after.lng.toFixed(2)}`,
+          `zoom ${before.zoom}`,
+        ]
+        r.note = `拖动 ${dx},${dy}px`
+        out.push(r)
+        continue
+      }
       // 焦点陷阱：连按 Tab，焦点不许离开容器。抽屉、对话框这类「打开后接管焦点」的浮层用它。
       if (c.type === 'tabStaysWithin') {
         const within = String(c.selector);
@@ -872,14 +929,14 @@ async function runSpecial(page, checks) {
 
 // 断言的「前置状态」：写在断言文件的 precondition 里，只允许这里的几种动作。
 // 直接操作页面（不是参数化的全局开关），这样同一份文件就能说清「这条要在什么状态下量」。
-const PRECONDITION_ACTIONS = new Set(['fill', 'click', 'clickjs', 'clickat', 'wait', 'select', 'key', 'press', 'focus', 'expectfocus', 'reload', 'assertrect']);
+const PRECONDITION_ACTIONS = new Set(['fill', 'click', 'clickjs', 'clickat', 'wait', 'select', 'key', 'press', 'focus', 'expectfocus', 'reload', 'assertrect', 'drag']);
 
 async function applyPrecondition(page, steps) {
   const memo = {};
   for (const step of steps) {
     const action = String((step && step.action) || '').toLowerCase();
     if (!PRECONDITION_ACTIONS.has(action)) {
-      return { ok: false, note: `前置动作不认识：${action || '(空)'}，只支持 fill / click / clickjs / clickat / wait / select / key（或 press）/ focus / expectFocus / reload / assertRect`, memo };
+      return { ok: false, note: `前置动作不认识：${action || '(空)'}，只支持 fill / click / clickjs / clickat / wait / select / key（或 press）/ focus / expectFocus / reload / assertRect / drag`, memo };
     }
     // key / press 没有选择器：直接往当前焦点元素敲键（Escape 关抽屉、Tab 走位这类）。
     // press 是 key 的别名，两个名字都收：断言作者按日常说法写的也能跑。
@@ -956,6 +1013,29 @@ async function applyPrecondition(page, steps) {
         const range = `${lo == null ? '−∞' : lo}–${hi == null ? '+∞' : hi}`
         return { ok: false, note: `${label}：高度 ${got.toFixed(1)} 不在 ${range}`, memo }
       }
+      continue
+    }
+    if (action === 'drag') {
+      // 地图与底卡都靠指针事件拖动：先按住元素上一点，再分步移动，最后抬起。
+      const sel = step.selector || '.amap-container'
+      const el = page.locator(sel).first()
+      const box = await el.boundingBox().catch(() => null)
+      if (!box) return { ok: false, note: `drag 找不到可见元素：${sel}`, memo }
+      const fx = step.from && step.from.x != null ? step.from.x : 0.5
+      const fy = step.from && step.from.y != null ? step.from.y : 0.5
+      const sx = box.x + box.width * fx
+      const sy = box.y + box.height * fy
+      const dx = Number(step.dx || 0)
+      const dy = Number(step.dy || 0)
+      const n = Math.max(4, Number(step.steps || 14))
+      await page.mouse.move(sx, sy)
+      await page.mouse.down()
+      for (let i = 1; i <= n; i += 1) {
+        await page.mouse.move(sx + (dx * i) / n, sy + (dy * i) / n)
+        await page.waitForTimeout(Number(step.stepMs || 16))
+      }
+      await page.mouse.up()
+      await page.waitForTimeout(Number(step.afterMs || 800))
       continue
     }
     if (action === 'reload') {
@@ -1101,7 +1181,7 @@ async function applyPrecondition(page, steps) {
     const applicable = CHECKS.filter(c => c.at == null || !vp.width || Math.abs(c.at - vp.width) < 1);
     // page.evaluate 只能跑"读当前状态"的断言。焦点环要真按 Tab，reduced-motion 要
     // 模拟媒体特性——这两类在 Node 侧做，页面上下文做不了。
-    const SPECIAL = new Set(['focusRing', 'focusBorder', 'focusNoColor', 'media', 'tabStaysWithin', 'tabOrder', 'polygonPaint']);
+    const SPECIAL = new Set(['focusRing', 'focusBorder', 'focusNoColor', 'media', 'tabStaysWithin', 'tabOrder', 'polygonPaint', 'mapPan']);
 
     // 按 precondition 分组：不同前置状态必须各用一张干净页面，否则前一组点开的
     // 面板会串到下一组（比如筛选态漏进首屏断言）。
@@ -1122,6 +1202,13 @@ async function applyPrecondition(page, steps) {
         try {
           await page.goto(URL_ARG, { waitUntil: 'domcontentloaded', timeout: 45000 });
           await page.waitForTimeout(1800);
+          // 持久化类断言（前置里有 reload）必须从干净存储起跑：同一 context 里上一组
+          // 切过的主题/拖过的宽度会留到下一组，起始态不对就会把「记得住」判成假红。
+          if (steps.some((st) => st && st.action === 'reload')) {
+            await page.evaluate(() => { try { localStorage.clear(); } catch {} });
+            await page.reload({ waitUntil: 'domcontentloaded', timeout: 45000 });
+            await page.waitForTimeout(2000);
+          }
         } catch (e) {
           navError = String(e.message || e).slice(0, 300);
         }

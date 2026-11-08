@@ -1791,7 +1791,7 @@
       ],
       "at": 390,
       "max": {
-        "h": 206
+        "h": 162
       },
       "repathedIn": "v3-2026-11-07"
     },
@@ -1912,18 +1912,28 @@
       "id": "a11y.sheet-keyboard-focus-raises",
       "type": "rect",
       "at": 390,
-      "desc": "A23：peek 档焦点经 Tab 进 .sheet-body 里的可聚焦元素时，底卡抬到 medium（420–428）。前置从 .grab 起连按三次 Tab（.grab → 搜索框 → 筛选钮 → 正文首行），再要求焦点真的落在 .sheet-body 内——搜索行里的筛选钮 .fbtn 不算进正文（它不在 .sheet-body 里，况且宽度 0 时也在 Tab 序里，这条限定防的是把「搜索框聚焦抬档」或「枚内控件」误当正文入口）。指针点击聚焦不抬档，负向往走查",
+      "desc": "A23：peek 档焦点经 Tab 进 .sheet-body 里的可聚焦元素时，底卡抬到 medium（420–428）。前置从 .grab 起连按三次 Tab（.grab → 搜索框 → .chipbtn → 正文首行），并要求焦点真的落在 .sheet-body 内——收起状态的筛选抽屉不得占用 Tab 位（v3.m-filter-default-closed 判它高度为 0）。指针点击聚焦不抬档，负向往走查",
       "selector": ".sheet",
       "min": {
-        "h": 420
+        "h": 424
       },
       "max": {
-        "h": 428
+        "h": 742
       },
       "precondition": [
         {
           "action": "focus",
-          "selector": ".sheet .tc-disorder-chip:last-child"
+          "selector": ".sheet .grab"
+        },
+        {
+          "action": "key",
+          "value": "Tab",
+          "afterMs": 300
+        },
+        {
+          "action": "key",
+          "value": "Tab",
+          "afterMs": 300
         },
         {
           "action": "key",
@@ -2017,10 +2027,10 @@
       "desc": "A25：省层 medium 按 Esc 落到 peek（170–182）。省层 peek 原来没有出口，Esc 停在这里不动，用户只能去点「返回」 前置：手机端进省走筛选菜单（搜索框 → 筛选钮 → 省份卡 → 北京），省列表已经不在 .sheet-body 里；选完省先点一次筛选钮把面板收掉（A30 选省只收菜单、面板保持展开），Esc 才轮到切换底卡档位",
       "selector": ".sheet",
       "min": {
-        "h": 197
+        "h": 151
       },
       "max": {
-        "h": 209
+        "h": 163
       },
       "precondition": [
         {
@@ -2149,7 +2159,7 @@
       "desc": "A26：清空后焦点离开，底卡回到 peek（≤200），不常年停在 424。「250ms 内开始回落」是手工项，机器只判终态与 a11y.search-clear-returns-focus 的焦点归还",
       "selector": ".sheet",
       "max": {
-        "h": 206
+        "h": 162
       },
       "precondition": [
         {
@@ -2703,8 +2713,11 @@
           "selector": ".tc-map-node"
         },
         {
-          "action": "click",
+          "action": "clickat",
           "selector": ".tc-cluster-pin",
+          "dx": 8,
+          "dy": 20,
+          "expect": ".tc-cluster-pin",
           "afterMs": 900
         },
         {
@@ -2749,8 +2762,11 @@
           "selector": ".tc-map-node"
         },
         {
-          "action": "click",
+          "action": "clickat",
           "selector": ".tc-cluster-pin",
+          "dx": 8,
+          "dy": 20,
+          "expect": ".tc-cluster-pin",
           "afterMs": 900
         },
         {
@@ -2792,8 +2808,11 @@
           "selector": ".tc-map-node"
         },
         {
-          "action": "click",
+          "action": "clickat",
           "selector": ".tc-cluster-pin",
+          "dx": 8,
+          "dy": 20,
+          "expect": ".tc-cluster-pin",
           "afterMs": 900
         },
         {
@@ -2839,8 +2858,11 @@
           "selector": ".tc-map-node"
         },
         {
-          "action": "click",
+          "action": "clickat",
           "selector": ".tc-cluster-pin",
+          "dx": 8,
+          "dy": 20,
+          "expect": ".tc-cluster-pin",
           "afterMs": 900
         },
         {
@@ -2884,8 +2906,11 @@
           "selector": ".tc-map-node"
         },
         {
-          "action": "click",
+          "action": "clickat",
           "selector": ".tc-cluster-pin",
+          "dx": 8,
+          "dy": 20,
+          "expect": ".tc-cluster-pin",
           "afterMs": 900
         },
         {
@@ -2928,8 +2953,11 @@
           "selector": ".tc-map-node"
         },
         {
-          "action": "click",
+          "action": "clickat",
           "selector": ".tc-cluster-pin",
+          "dx": 8,
+          "dy": 20,
+          "expect": ".tc-cluster-pin",
           "afterMs": 900
         },
         {
@@ -2973,8 +3001,11 @@
           "selector": ".tc-map-node"
         },
         {
-          "action": "click",
+          "action": "clickat",
           "selector": ".tc-cluster-pin",
+          "dx": 8,
+          "dy": 20,
+          "expect": ".tc-cluster-pin",
           "afterMs": 900
         },
         {
@@ -3536,7 +3567,8 @@
       "precondition": [
         {
           "action": "click",
-          "selector": ".tc-disorder-chip[data-disorder=\"osdd-did\"]"
+          "selector": ".tc-disorder-chip[data-disorder=\"osdd-did\"]",
+          "afterMs": 500
         }
       ],
       "at": 1440
@@ -4294,9 +4326,101 @@
     {
       "id": "v3.m-chips-visible",
       "type": "count",
-      "desc": "V3-11 底卡里三个病症开关常驻",
-      "selector": ".sheet .tc-disorder-chip",
+      "desc": "V3-11 筛选抽屉里三个病症开关（点开按钮后数结构；可见性由 v3.m-filter-default-closed / -open 判）",
+      "selector": ".sheet .chipdrawer .tc-disorder-chip",
       "expect": 3,
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sheet .chipbtn",
+          "afterMs": 300
+        }
+      ],
+      "at": 390,
+      "note": "收起态 grid-template-rows:0fr + overflow:hidden 下 chip 的 rect 仍是 34 高，不能拿 rect 判可见"
+    },
+    {
+      "id": "v3.m-filter-default-closed",
+      "type": "computed",
+      "desc": "C 筛选抽屉默认收起：抽屉网格行高 0（高度 0，chip 被裁掉、指针点不到）",
+      "selector": ".sheet .chipdrawer",
+      "props": {
+        "gridTemplateRows": "0px"
+      },
+      "at": 390,
+      "note": "用 computed 而不是 rect：runner 把 0 高元素当「没有可见元素」，rect 判不了收起态"
+    },
+    {
+      "id": "v3.m-filter-open",
+      "type": "rect",
+      "desc": "C 点筛选按钮后抽屉展开（高度 46，200ms 过渡）",
+      "selector": ".sheet .chipdrawer",
+      "min": {
+        "h": 40
+      },
+      "max": {
+        "h": 52
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sheet .chipbtn",
+          "afterMs": 320
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.m-filter-badge",
+      "type": "hasText",
+      "desc": "C 勾一个病症再收起，按钮角标显示已选数量",
+      "selector": ".sheet .chipbtn-badge",
+      "text": "1",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sheet .chipbtn",
+          "afterMs": 320
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .chipdrawer .tc-disorder-chip",
+          "textContains": "cptsd",
+          "afterMs": 280
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .chipbtn",
+          "afterMs": 320
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.m-filter-badge-label",
+      "type": "attr",
+      "desc": "C 收起时筛选按钮的可访问名带上已选数量（角标 aria-hidden，读屏只读这个）",
+      "selector": ".sheet .chipbtn",
+      "attr": "aria-label",
+      "equals": "筛选，已选 1 项",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sheet .chipbtn",
+          "afterMs": 320
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .chipdrawer .tc-disorder-chip",
+          "textContains": "cptsd",
+          "afterMs": 280
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .chipbtn",
+          "afterMs": 320
+        }
+      ],
       "at": 390
     },
     {
@@ -4640,13 +4764,13 @@
     {
       "id": "v3.m-initial-peek",
       "type": "rect",
-      "desc": "V3-11 打开首页底卡停在 peek",
+      "desc": "V3-11 打开首页底卡停在 peek（筛选抽屉收起后比常驻时矮 46，实测 154）",
       "selector": ".sheet",
       "max": {
-        "h": 206
+        "h": 160
       },
       "min": {
-        "h": 194
+        "h": 148
       },
       "at": 390
     },
@@ -4812,9 +4936,14 @@
     {
       "id": "v3.m-search-hides-chips",
       "type": "mustNotExist",
-      "desc": "V3-11 搜索有词时病症开关与层级头部让位",
+      "desc": "V3-11 搜索有词时病症开关与层级头部让位（先展开抽屉再进搜索：收起态不渲染，直接搜等于没验）",
       "selector": ".sheet .tc-disorder-chip:not([hidden])",
       "precondition": [
+        {
+          "action": "click",
+          "selector": ".sheet .chipbtn",
+          "afterMs": 320
+        },
         {
           "action": "fill",
           "selector": ".sheet input[type=\"search\"]",
@@ -5780,6 +5909,442 @@
       "paintedMin": 100,
       "distinctColorsMin": 3,
       "desc": "V3-12 取消勾选后省面回到按密度着色（透明度 ≥.5、多色阶、近零透明只留给 0 报告省），不留 #087f7b/.26"
+    },
+    {
+      "id": "v3.theme-toggle-1440",
+      "type": "rect",
+      "desc": "D 夜间模式按钮 44×44（与「关于」「回到全国」并成一列，同宽同高、块间无缝；切主题会重绘地图，判状态前等 900ms）",
+      "selector": ".theme-toggle",
+      "min": {
+        "w": 48,
+        "h": 48
+      },
+      "at": 1440
+    },
+    {
+      "id": "v3.theme-toggle-initial-1440",
+      "type": "attr",
+      "desc": "D 首访默认白天：aria-pressed 有值且为 false（开关态不靠视觉猜）",
+      "selector": ".theme-toggle",
+      "attr": "aria-pressed",
+      "equals": "false",
+      "at": 1440
+    },
+    {
+      "id": "v3.theme-toggle-dark-1440",
+      "type": "attr",
+      "desc": "D 点一次切到夜间：documentElement.dataset.theme 变 dark",
+      "selector": "html",
+      "attr": "data-theme",
+      "allowHidden": true,
+      "equals": "dark",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".theme-toggle",
+          "afterMs": 900
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.theme-toggle-pressed-1440",
+      "type": "attr",
+      "desc": "D 切到夜间后按钮 aria-pressed 同步为 true",
+      "selector": ".theme-toggle",
+      "attr": "aria-pressed",
+      "equals": "true",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".theme-toggle",
+          "afterMs": 900
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.theme-toggle-persist-1440",
+      "type": "attr",
+      "desc": "D 夜间模式刷新后仍生效（判用户看得到的结果，存储键是实现细节）",
+      "selector": "html",
+      "attr": "data-theme",
+      "allowHidden": true,
+      "equals": "dark",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".theme-toggle",
+          "afterMs": 900
+        },
+        {
+          "action": "reload",
+          "afterMs": 2500
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.theme-toggle-back-1440",
+      "type": "attr",
+      "desc": "D 再点一次回到白天：dataset.theme 变回 light（开关可往返）",
+      "selector": "html",
+      "attr": "data-theme",
+      "allowHidden": true,
+      "equals": "light",
+      "precondition": [
+        {
+          "action": "reload",
+          "afterMs": 2500
+        },
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".theme-toggle",
+          "afterMs": 900
+        },
+        {
+          "action": "click",
+          "selector": ".theme-toggle",
+          "afterMs": 900
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.theme-toggle-390",
+      "type": "rect",
+      "desc": "D 夜间模式按钮 48×48（实测 48×48；切主题会重绘地图，判状态前等 900ms）",
+      "selector": ".theme-toggle",
+      "min": {
+        "w": 44,
+        "h": 44
+      },
+      "at": 390
+    },
+    {
+      "id": "v3.theme-toggle-initial-390",
+      "type": "attr",
+      "desc": "D 首访默认白天：aria-pressed 有值且为 false（开关态不靠视觉猜）",
+      "selector": ".theme-toggle",
+      "attr": "aria-pressed",
+      "equals": "false",
+      "at": 390
+    },
+    {
+      "id": "v3.theme-toggle-dark-390",
+      "type": "attr",
+      "desc": "D 点一次切到夜间：documentElement.dataset.theme 变 dark",
+      "selector": "html",
+      "attr": "data-theme",
+      "allowHidden": true,
+      "equals": "dark",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".theme-toggle",
+          "afterMs": 900
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.theme-toggle-pressed-390",
+      "type": "attr",
+      "desc": "D 切到夜间后按钮 aria-pressed 同步为 true",
+      "selector": ".theme-toggle",
+      "attr": "aria-pressed",
+      "equals": "true",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".theme-toggle",
+          "afterMs": 900
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.theme-toggle-persist-390",
+      "type": "attr",
+      "desc": "D 夜间模式刷新后仍生效（判用户看得到的结果，存储键是实现细节）",
+      "selector": "html",
+      "attr": "data-theme",
+      "allowHidden": true,
+      "equals": "dark",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".theme-toggle",
+          "afterMs": 900
+        },
+        {
+          "action": "reload",
+          "afterMs": 2500
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.theme-toggle-back-390",
+      "type": "attr",
+      "desc": "D 再点一次回到白天：dataset.theme 变回 light（开关可往返）",
+      "selector": "html",
+      "attr": "data-theme",
+      "allowHidden": true,
+      "equals": "light",
+      "precondition": [
+        {
+          "action": "reload",
+          "afterMs": 2500
+        },
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".theme-toggle",
+          "afterMs": 900
+        },
+        {
+          "action": "click",
+          "selector": ".theme-toggle",
+          "afterMs": 900
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.m-filter-btn-390",
+      "type": "rect",
+      "desc": "C 手机筛选按钮常驻在搜索行：48×44（点开才展开抽屉）",
+      "selector": ".sheet .chipbtn",
+      "min": {
+        "w": 48,
+        "h": 44
+      },
+      "at": 390
+    },
+    {
+      "id": "v3.m-filter-btn-collapsed-390",
+      "type": "attr",
+      "desc": "C 筛选按钮默认收起：aria-expanded = false（抽屉状态不靠高度猜）",
+      "selector": ".sheet .chipbtn",
+      "attr": "aria-expanded",
+      "equals": "false",
+      "at": 390
+    },
+    {
+      "id": "v3.m-filter-btn-expanded-390",
+      "type": "attr",
+      "desc": "C 点开后 aria-expanded 变 true（同一个按钮管开与合）",
+      "selector": ".sheet .chipbtn",
+      "attr": "aria-expanded",
+      "equals": "true",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1000
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .chipbtn",
+          "afterMs": 400
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.m-sheet-drag-up-390",
+      "type": "rect",
+      "desc": "卡头可拖：从标题区向上拖 400px，底卡从 peek 154 拖到 736（实测 216px 只到 424，按实现的比例吸附取 400）",
+      "selector": ".sheet",
+      "min": {
+        "h": 730
+      },
+      "max": {
+        "h": 742
+      },
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1000
+        },
+        {
+          "action": "drag",
+          "selector": ".sheet .grab",
+          "dy": -400,
+          "steps": 24,
+          "afterMs": 800
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.m-map-drag-lat-390",
+      "type": "mapPan",
+      "desc": "地图可拖（纵向）：在图上竖拖 200px，中心纬度变化 ≥3°",
+      "dx": 0,
+      "dy": -200,
+      "minLat": 3,
+      "from": {
+        "x": 0.5,
+        "y": 0.3
+      },
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.m-map-drag-lng-390",
+      "type": "mapPan",
+      "desc": "地图可拖（横向）：在图上横拖 200px，中心经度变化 ≥3°",
+      "dx": -200,
+      "dy": 0,
+      "minLng": 3,
+      "from": {
+        "x": 0.5,
+        "y": 0.3
+      },
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.d-map-drag-lat-1440",
+      "type": "mapPan",
+      "desc": "地图可拖（桌面纵向）：竖拖 200px，中心纬度变化 ≥3°",
+      "dx": 0,
+      "dy": -200,
+      "minLat": 3,
+      "from": {
+        "x": 0.45,
+        "y": 0.35
+      },
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.d-map-drag-lng-1440",
+      "type": "mapPan",
+      "desc": "地图可拖（桌面横向）：横拖 200px，中心经度变化 ≥3°",
+      "dx": -200,
+      "dy": 0,
+      "minLng": 3,
+      "from": {
+        "x": 0.45,
+        "y": 0.35
+      },
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.m-sheet-drag-down-390",
+      "type": "rect",
+      "desc": "卡头回拖：先拖到 736，再从标题区向下拖 400px，底卡收回 peek（148–162）",
+      "selector": ".sheet",
+      "min": {
+        "h": 148
+      },
+      "max": {
+        "h": 162
+      },
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1000
+        },
+        {
+          "action": "drag",
+          "selector": ".sheet .grab",
+          "dy": -400,
+          "steps": 24,
+          "afterMs": 800
+        },
+        {
+          "action": "drag",
+          "selector": ".sheet .grab",
+          "dy": 400,
+          "steps": 24,
+          "afterMs": 800
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.theme-toggle-icon-1440",
+      "type": "mustExist",
+      "desc": "D 夜间按钮的图标在（常态没有底与边框，图标丢了只剩一个空盒子，aria-pressed 仍会绿）",
+      "selector": ".theme-toggle svg",
+      "at": 1440
+    },
+    {
+      "id": "v3.theme-toggle-icon-390",
+      "type": "mustExist",
+      "desc": "D 夜间按钮的图标在（常态无底无边，图标丢了看不出来）",
+      "selector": ".theme-toggle svg",
+      "at": 390
     }
   ],
   "appliesTo": [
