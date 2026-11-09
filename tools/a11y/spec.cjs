@@ -1456,13 +1456,20 @@ async function applyPrecondition(page, steps) {
           await page.waitForTimeout(50);
         }
       }
+      // 同一断言在桌面与手机可能指向不同元素（都可见，但不是一个）。窄屏且显式写了
+      // mobileSelector 就用它，不写仍用 selector——与前置动作的取法保持一致。
+      const vpWidth = page.viewportSize()?.width ?? 0;
+      const forViewport = (c) => (vpWidth > 0 && vpWidth < 1000 && c.mobileSelector
+        ? Object.assign({}, c, { selector: c.mobileSelector })
+        : c);
       const simple = group
         .filter(c => !SPECIAL.has(c.type))
+        .map(forViewport)
         // textEquals / focusOn 要把前置记下的文本带进页面里比对。
         .map(c => (c.type === 'textEquals' || c.type === 'focusOn' || c.type === 'numberEquals'
           ? Object.assign({}, c, { memoValue: c.from && pre.memo ? pre.memo[c.from] : null })
           : c));
-      const special = group.filter(c => SPECIAL.has(c.type));
+      const special = group.filter(c => SPECIAL.has(c.type)).map(forViewport);
       const got = [...await page.evaluate(runChecks, simple), ...await runSpecial(page, special)];
       got.forEach((r, j) => { results[idx[j]] = r; });
       const rectLog = (pre.memo && pre.memo.__rects) || [];

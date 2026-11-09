@@ -73,6 +73,8 @@ V3-02 那五条（选中钉橙色 / 光圈 / 标签 / 其余钉不压透明度 /
 - **卡头字号**：`type.lead-doctor` 桌面 17px / 650（卡身改版放大），手机 16px 无对应断言。
 - **医生页顺序**：`head → 医生线索列表 → 元信息（门诊 / 所在医院 / 备注）→ 评价节 → 线索原文节`；末节是原文（`v3.doctor-leads-section-last-1440`），评价节是倒数第二节（`v3.doctor-eval-section-before-leads-1440`）。
 - **踩过的坑**：`v3.d-doctor-leads-match-labels-1440` 的前置还在等医院页 `.tc-report`（改版后没有），改成等 `.tc-doctor-card` 再点医生链接；`v3.quote-clamp-two-lines-1440` 的退役登记漏过一次，表里还在跑、首轮 1440 报 2 红，补齐后复跑全绿。**改表后先单跑改动的那几条，再跑整档**，比整档跑完再查快得多。
+- **`mobileSelector` 现在也管断言评估**：以前只有前置动作按视口换选择器，`type.input` 这类检查在手机上测的仍是桌面那支（元素 hidden，量到了也没意义）。现在窄屏（<1000）先把 `selector` 换成 `mobileSelector` 再进页面求值，所有检查类型一并生效。`type.input` 已补 `mobileSelector: ".sfield input"`，写在基线 `base185.json`，下次重生成进表，本轮已交付快照不动。
+  验证办法（不碰快照）：造一条 `selector` 故意写成不存在元素、`mobileSelector` 写真实手机元素的检查——390 通过、1440 报「选择器没有可见元素」，即证明分流只在窄屏发生。
 
 
 ## 为什么要快照
