@@ -25,6 +25,7 @@
  *   前置的 click 若用 text 定位，会依次按 button / tab / link 找同名元素（侧栏栏目是 role=tab）。
  *   textEquals    {selector, from:"doctor"}      // 与前置 remember 记下的文本逐字相等（验证「照录」这类承诺）
  *   numberEquals  {selector, pattern, from|expectSelector}  // 两边各抽一个数再比（同类数据在两处必须一致）
+ *   sumEquals     {selector, pattern, sumSelector, sumPattern}  // 头部总数 = 若干可见行之和（空集合判不适用）
  *   count         {selector, expect:1}          // 元素个数（h1 唯一）
  *   uniqueText    {selector}                    // 命中的可见元素文本两两不同（查搜索结果里重复的行）
  *   focusOn       {selector, text}
@@ -383,6 +384,63 @@ function runChecks(checks) {
       continue;
     }
 
+    // 一整块里的多处数字之和，必须等于这一块头部写着的总数。
+    // 用来拦「头部说 30 条线索、下面几行加起来只有 25」这种同屏打架。
+    // 只对当前可见的行取数：隐藏副本（另一档布局里留着的同样几行）不算。
+    // 没有可见行时记「不适用」，避免 0 = 0 的假绿。
+    if (c.type === 'sumEquals') {
+      const flat = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
+      const vis = (el) => {
+        const rc = el.getBoundingClientRect();
+        return rc.width > 0 && rc.height > 0;
+      };
+      const num = (text, pat) => {
+        const raw = String(text == null ? '' : text);
+        if (!pat) {
+          const m = raw.match(/-?\d+(?:\.\d+)?/);
+          return m ? Number(m[0]) : null;
+        }
+        const m = new RegExp(String(pat)).exec(raw);
+        if (!m) return null;
+        const v = m[1] != null ? m[1] : m[0];
+        const n = Number(v);
+        return Number.isFinite(n) ? n : null;
+      };
+      const head = [...document.querySelectorAll(String(c.selector))].filter(vis)[0] || null;
+      if (!head) {
+        r.pass = false;
+        r.note = '选择器没有可见元素：' + c.selector;
+        out.push(r);
+        continue;
+      }
+      const rows = [...document.querySelectorAll(String(c.sumSelector))].filter(vis);
+      if (rows.length < (c.minRows == null ? 1 : c.minRows)) {
+        r.pass = null;
+        r.note = '没有可求和的可见行（' + rows.length + ' 行），断言不适用：' + c.sumSelector;
+        out.push(r);
+        continue;
+      }
+      const total = num(flat(head.textContent), c.pattern);
+      let sum = 0;
+      let unparsed = 0;
+      const detail = [];
+      for (const el of rows) {
+        const v = num(flat(el.textContent), c.sumPattern || c.pattern);
+        if (v == null) { unparsed += 1; detail.push('?'); continue; }
+        sum += v;
+        detail.push(String(v));
+      }
+      r.pass = total != null && unparsed === 0 && total === sum;
+      r.note = r.pass
+        ? '头部 ' + total + ' = ' + rows.length + ' 行之和 ' + sum
+        : '头部「' + flat(head.textContent).slice(0, 50) + '」→ ' + total
+          + '，' + rows.length + ' 行之和 ' + sum + '（' + detail.join(' + ') + '）'
+          + (unparsed ? '，其中 ' + unparsed + ' 行没抽出数字' : '');
+      if (!r.pass) r.evidence.push('求和行：' + rows.length + ' 可见');
+      out.push(r);
+      continue;
+    }
+
     if (c.type === 'uniqueText') {
       const flat = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
       const seen = new Map();
@@ -705,6 +763,82 @@ async function runSpecial(page, checks) {
           `zoom ${before.zoom}`,
         ]
         r.note = `拖动 ${dx},${dy}px`
+        out.push(r)
+        continue
+      }
+      // 排版一致：两处元素的读取与逐项比较都放在一次 page.evaluate 里完成。
+      // 一次往返避免两次读之间发生导航把执行上下文打掉；页面侧比较也避开 Node 侧的临时变量。
+      if (c.type === 'styleMatch') {
+        const payload = {
+          qa: String(c.selector),
+          qb: String(c.against || '.tc-quote'),
+          st: Array.isArray(c.styles) ? c.styles : ['fontSize', 'lineHeight', 'color', 'whiteSpace'],
+          rt: Array.isArray(c.rect) ? c.rect : ['left', 'width'],
+          tol: Number(c.tolerance == null ? 1 : c.tolerance),
+        }
+        const comparator = ({ qa, qb, st, rt, tol }) => {
+          const grab = (q) => {
+            const visible = Array.from(document.querySelectorAll(q)).filter((el) => {
+              const box = el.getBoundingClientRect()
+              const cs = getComputedStyle(el)
+              return box.width > 0 && box.height > 0 && cs.display !== 'none' && cs.visibility !== 'hidden'
+            })
+            const el = visible[0]
+            if (!el) return null
+            const cs = getComputedStyle(el)
+            const box = el.getBoundingClientRect()
+            return { el, cs, box, count: visible.length }
+          }
+          const A = grab(qa)
+          const B = grab(qb)
+          if (!A) return { missing: 'a' }
+          if (!B) return { missing: 'b' }
+          const ok = []
+          const bad = []
+          st.forEach((k) => {
+            const av = A.cs[k]
+            const bv = B.cs[k]
+            ;(av === bv ? ok : bad).push(k + ' ' + av + '（对照 ' + bv + '）')
+          })
+          rt.forEach((k) => {
+            const av = Math.round(A.box[k] * 100) / 100
+            const bv = Math.round(B.box[k] * 100) / 100
+            const diff = Math.round(Math.abs(av - bv) * 100) / 100
+            ;(diff <= tol ? ok : bad).push(k + ' ' + av + 'px（对照 ' + bv + 'px，差 ' + diff + '）')
+          })
+          return { ok, bad, aCount: A.count, bCount: B.count }
+        }
+        let snap = null
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          try {
+            snap = await page.evaluate(comparator, payload)
+          } catch (e) {
+            snap = null
+          }
+          if (snap && !snap.missing) break
+          await page.waitForTimeout(500)
+        }
+        if (!snap) {
+          r.pass = false
+          r.note = '读取失败（页面可能仍在导航）：' + payload.qa
+          out.push(r)
+          continue
+        }
+        if (snap.missing === 'a') {
+          r.pass = false
+          r.note = '没有可见元素：' + payload.qa
+          out.push(r)
+          continue
+        }
+        if (snap.missing === 'b') {
+          r.pass = false
+          r.note = '对照元素没有可见元素：' + payload.qb
+          out.push(r)
+          continue
+        }
+        r.pass = snap.bad.length === 0
+        r.evidence = [...snap.ok.map((x) => '✓ ' + x), ...snap.bad.map((x) => '❌ ' + x)]
+        r.note = '对照 ' + payload.qb + '（各 ' + snap.aCount + '/' + snap.bCount + ' 个可见匹配）'
         out.push(r)
         continue
       }
@@ -1237,7 +1371,7 @@ async function applyPrecondition(page, steps) {
     const applicable = CHECKS.filter(c => c.at == null || !vp.width || Math.abs(c.at - vp.width) < 1);
     // page.evaluate 只能跑"读当前状态"的断言。焦点环要真按 Tab，reduced-motion 要
     // 模拟媒体特性——这两类在 Node 侧做，页面上下文做不了。
-    const SPECIAL = new Set(['focusRing', 'focusBorder', 'focusNoColor', 'media', 'tabStaysWithin', 'tabOrder', 'polygonPaint', 'mapPan']);
+    const SPECIAL = new Set(['focusRing', 'focusBorder', 'focusNoColor', 'media', 'tabStaysWithin', 'tabOrder', 'polygonPaint', 'mapPan', 'styleMatch']);
 
     // 按 precondition 分组：不同前置状态必须各用一张干净页面，否则前一组点开的
     // 面板会串到下一组（比如筛选态漏进首屏断言）。

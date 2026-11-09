@@ -875,45 +875,6 @@
       "at": 1440
     },
     {
-      "id": "doctor.profile-only-with-record",
-      "type": "mustNotExist",
-      "desc": "doctors.json 没有同院同名记录时不渲染档案区块（不放空壳）",
-      "selector": ".tc-doctor-detail .tc-doctor-profile",
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-mapapp-burger",
-          "unlessVisible": ".tc-province-row",
-          "mobileSelector": ".tc-mobile-browse"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-province-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-detail"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-doctor-link"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-doctor-link"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-doctor-detail .tc-detail-title"
-        }
-      ],
-      "at": 1440
-    },
-    {
       "id": "copy.no-browse-back",
       "type": "forbidText",
       "desc": "医生详情返回键写「返回 机构名」，不是「返回浏览」",
@@ -1368,86 +1329,6 @@
       "at": 1440
     },
     {
-      "id": "doctor.rating-row",
-      "type": "hasText",
-      "desc": "§1.1：线索原文之后有「评价」行",
-      "selector": ".tc-doctor-meta--rating",
-      "text": "评价",
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-mapapp-burger",
-          "unlessVisible": ".tc-province-row",
-          "mobileSelector": ".tc-mobile-browse"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-province-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-lead-doctor"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-doctor-link"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-doctor-detail .tc-detail-title"
-        }
-      ],
-      "at": 1440
-    },
-    {
-      "id": "doctor.rating-empty",
-      "type": "hasText",
-      "desc": "§1.1：没有评价内容时写「无」，不隐藏",
-      "selector": ".tc-doctor-meta--rating",
-      "text": "无",
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-mapapp-burger",
-          "unlessVisible": ".tc-province-row",
-          "mobileSelector": ".tc-mobile-browse"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-province-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-lead-doctor"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-doctor-link"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-doctor-detail .tc-detail-title"
-        }
-      ],
-      "at": 1440
-    },
-    {
       "id": "copy.project-no-close",
       "type": "forbidText",
       "desc": "§1.1：关于项目卡片不设「关闭」按钮",
@@ -1574,19 +1455,20 @@
     {
       "id": "doctor.clinic-empty",
       "type": "hasText",
-      "desc": "§1.1：门诊暂无数据时写「无」，不隐藏这一行",
+      "desc": "§1.1：门诊暂无数据时写「无」，不隐藏这一行（样本：于宏华，科室为空）",
       "selector": ".tc-doctor-meta--clinic",
       "text": "无",
       "precondition": [
         {
-          "action": "click",
-          "selector": ".tc-mapapp-burger",
-          "unlessVisible": ".tc-province-row",
-          "mobileSelector": ".tc-mobile-browse"
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
         },
         {
           "action": "click",
-          "selector": ".tc-province-row"
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
         },
         {
           "action": "wait",
@@ -1594,19 +1476,23 @@
         },
         {
           "action": "click",
-          "selector": ".tc-hospital-row"
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1200
         },
         {
           "action": "wait",
-          "selector": ".tc-lead-doctor"
-        },
-        {
-          "action": "click",
           "selector": ".tc-doctor-link"
         },
         {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "textContains": "于宏华",
+          "afterMs": 1200
+        },
+        {
           "action": "wait",
-          "selector": ".tc-doctor-detail .tc-detail-title"
+          "selector": ".tc-doctor-detail"
         }
       ],
       "at": 1440
@@ -2099,9 +1985,9 @@
       "id": "a11y.escape-province-country-head",
       "type": "hasText",
       "at": 390,
-      "desc": "A25：两次 Esc 之后标题栏是国家层内容（123 家医院 · 160 条线索），不是还停在省层 前置：手机端进省走筛选菜单（搜索框 → 筛选钮 → 省份卡 → 北京），省列表已经不在 .sheet-body 里；选完省先点一次筛选钮把面板收掉（A30 选省只收菜单、面板保持展开），Esc 才轮到切换底卡档位",
+      "desc": "A25：两次 Esc 之后标题栏回到国家层——卡头写「全国」，不是还停在省层的省名。省层的头是省简称（北京/山东），所以判「全国」两个字就足以分开层级，不跟随时会变的医院计数走。前置：手机端进省走筛选菜单（搜索框 → 筛选钮 → 省份卡 → 北京），选完省先点一次筛选钮把面板收掉（A30 选省只收菜单、面板保持展开），Esc 才轮到切换底卡档位",
       "selector": ".sheet-head",
-      "text": "123 家医院",
+      "text": "全国",
       "precondition": [
         {
           "action": "click",
@@ -2627,9 +2513,9 @@
       "id": "a11y.mapclick-large-keeps-country",
       "type": "hasText",
       "at": 390,
-      "desc": "A29：country 层 large（736）点地图收到 424 之后标题还是「123 家医院 · 160 条线索」。省层 medium 也是 424，没有这条，「点一下导航进省」会和「收一档」一起假绿",
+      "desc": "A29：country 层 large（736）点地图收到 424 之后卡头仍是「全国」。省层 medium 也是 424，没有这条，「点一下导航进省」会和「收一档」一起假绿",
       "selector": ".sheet-head",
-      "text": "123 家医院",
+      "text": "全国",
       "precondition": [
         {
           "action": "click",
@@ -2664,9 +2550,9 @@
       "id": "a11y.mapclick-medium-keeps-country",
       "type": "hasText",
       "at": 390,
-      "desc": "A29 负向的同款兜底：medium 点地图之后标题仍是国家层，不是被这一下顺手点进了某个省",
+      "desc": "A29 负向的同款兜底：medium 点地图之后卡头仍是「全国」，不是被这一下顺手点进了某个省",
       "selector": ".sheet-head",
-      "text": "123 家医院",
+      "text": "全国",
       "precondition": [
         {
           "action": "click",
@@ -2738,7 +2624,7 @@
     {
       "id": "v3.pin-selected-guard-390",
       "type": "mustExist",
-      "desc": "V3-02 前置守卫（手机）：点省 → 展开聚合钉 → 点单钉后必须留下选中钉（不带 skipIfMissing，前置没跑成就判红）",
+      "desc": "V3-02 前置守卫（手机）：进山西 → 点该省唯一的医院钉后必须留下选中钉（不带 skipIfMissing，前置没跑成就判红）。2026-11-09 青岛拆院后山东变 2 家，全库只有山西这 1 家；钉中心未被右上角按钮列遮挡，直接点中心",
       "selector": ".tc-pin--selected",
       "precondition": [
         {
@@ -2754,28 +2640,17 @@
         {
           "action": "click",
           "selector": ".sheet .tc-province-row",
-          "textContains": "山东",
-          "afterMs": 900
+          "textContains": "山西",
+          "afterMs": 1200
         },
         {
           "action": "wait",
-          "selector": ".tc-map-node"
-        },
-        {
-          "action": "clickat",
-          "selector": ".tc-cluster-pin",
-          "dx": 8,
-          "dy": 20,
-          "expect": ".tc-cluster-pin",
-          "afterMs": 900
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-pin"
+          "selector": ".tc-map-node.tc-hospital-pin"
         },
         {
           "action": "click",
-          "selector": ".tc-map-node.tc-hospital-pin"
+          "selector": ".tc-map-node.tc-hospital-pin",
+          "afterMs": 900
         },
         {
           "action": "wait",
@@ -2979,12 +2854,17 @@
     {
       "id": "v3.pin-selected-orange-390",
       "type": "computed",
-      "desc": "V3-02 手机选中图钉同样是橙色",
+      "desc": "V3-02 手机选中图钉同样是橙色（样本省山西，该省只有 1 家医院、画单钉）",
       "selector": ".tc-pin--selected :is(.tc-pin-body,.tc-cluster-body)",
       "props": {
         "backgroundColor": "rgb(186, 99, 30)"
       },
       "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "envGate": "amap"
+        },
         {
           "action": "click",
           "selector": ".sheet .grab",
@@ -2993,28 +2873,17 @@
         {
           "action": "click",
           "selector": ".sheet .tc-province-row",
-          "textContains": "山东",
-          "afterMs": 900
+          "textContains": "山西",
+          "afterMs": 1200
         },
         {
           "action": "wait",
-          "selector": ".tc-map-node"
-        },
-        {
-          "action": "clickat",
-          "selector": ".tc-cluster-pin",
-          "dx": 8,
-          "dy": 20,
-          "expect": ".tc-cluster-pin",
-          "afterMs": 900
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-pin"
+          "selector": ".tc-map-node.tc-hospital-pin"
         },
         {
           "action": "click",
-          "selector": ".tc-map-node.tc-hospital-pin"
+          "selector": ".tc-map-node.tc-hospital-pin",
+          "afterMs": 900
         },
         {
           "action": "wait",
@@ -3459,9 +3328,9 @@
     {
       "id": "v3.hospital-meta-address",
       "type": "hasText",
-      "desc": "V3-04 医院头部第二行写城市 · 地址 · N 条线索",
+      "desc": "V3-04 医院头部第二行写城市 · 地址；医院名与地址都在，条数不写死（条数由 v3.d-hospital-leads-match-list-1440 用列表行与详情头两侧自证，数据一变不再假红）",
       "selector": ".tc-level-head--hospital .tc-level-meta",
-      "text": "北京市 · 南店路7号 · 4 条线索",
+      "text": "北京市 · 南店路7号",
       "precondition": [
         {
           "action": "click",
@@ -3592,10 +3461,14 @@
     {
       "id": "v3.chip-union",
       "type": "hasText",
-      "desc": "V3-06 多选取并集：cptsd + 人格障碍 → 106 家医院 · 124 条线索",
+      "desc": "V3-06 多选取并集：cptsd + 人格障碍 → 111 家医院 · 223 条线索（2026-11-09 数据 22:53:19 / 构建 22:58:23 界面实测，只算挂上机构的）",
       "selector": ".tc-level-head--country .tc-level-meta",
-      "text": "106 家医院 · 124 条线索",
+      "text": "111 家医院 · 223 条线索",
       "precondition": [
+        {
+          "action": "reload",
+          "afterMs": 2400
+        },
         {
           "action": "click",
           "selector": ".tc-disorder-chip[data-disorder=\"cptsd\"]"
@@ -3714,14 +3587,20 @@
     {
       "id": "v3.doctor-separator",
       "type": "hasText",
-      "desc": "V3-07 医生名之间保留顿号",
+      "desc": "V3-07 医生名之间保留顿号（样本：山西医科大学第一医院 解放路院区的线索，全库唯一并列两位医生的线索）",
       "selector": ".tc-lead-doctor",
-      "text": "潘伟刚、梁红",
+      "text": "曹晓华、王祎坤",
       "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
         {
           "action": "click",
           "selector": ".tc-province-row",
-          "textContains": "北京"
+          "textContains": "山西",
+          "afterMs": 1200
         },
         {
           "action": "wait",
@@ -3730,7 +3609,7 @@
         {
           "action": "click",
           "selector": ".tc-hospital-row",
-          "textContains": "回龙观"
+          "afterMs": 1400
         },
         {
           "action": "wait",
@@ -3949,7 +3828,7 @@
     {
       "id": "v3.doctor-clinic",
       "type": "hasText",
-      "desc": "V3-08 门诊行保留，空值写「无」",
+      "desc": "V3-08 门诊行保留，空值写「无」（样本：于宏华，科室为空）",
       "selector": ".tc-doctor-meta--clinic",
       "text": "门诊无",
       "precondition": [
@@ -3974,7 +3853,7 @@
         {
           "action": "click",
           "selector": ".tc-doctor-link",
-          "textContains": "梁红"
+          "textContains": "于宏华"
         },
         {
           "action": "wait",
@@ -3986,7 +3865,7 @@
     {
       "id": "v3.doctor-note",
       "type": "hasText",
-      "desc": "V3-08 备注行保留，空值写「无」",
+      "desc": "V3-08 备注行保留，空值写「无」（样本：刘华清，备注与评价字段在数据里都是空）",
       "selector": ".tc-doctor-meta--note",
       "text": "备注无",
       "precondition": [
@@ -4011,83 +3890,7 @@
         {
           "action": "click",
           "selector": ".tc-doctor-link",
-          "textContains": "梁红"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-doctor-detail"
-        }
-      ],
-      "at": 1440
-    },
-    {
-      "id": "v3.doctor-rating",
-      "type": "hasText",
-      "desc": "V3-08 评价行保留在原文之后",
-      "selector": ".tc-doctor-meta--rating",
-      "text": "评价无",
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "北京"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row",
-          "textContains": "回龙观"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-doctor-link"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-doctor-link",
-          "textContains": "梁红"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-doctor-detail"
-        }
-      ],
-      "at": 1440
-    },
-    {
-      "id": "v3.doctor-rating-after-leads",
-      "type": "layoutRel",
-      "desc": "V3-08 评价在线索原文之后",
-      "a": ".tc-doctor-detail .tc-detail-section",
-      "b": ".tc-doctor-meta--rating",
-      "relation": "above",
-      "gap": 0,
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "北京"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row",
-          "textContains": "回龙观"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-doctor-link"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-doctor-link",
-          "textContains": "梁红"
+          "textContains": "刘华清"
         },
         {
           "action": "wait",
@@ -4099,7 +3902,7 @@
     {
       "id": "v3.doctor-empty-faint",
       "type": "computed",
-      "desc": "V3-08 空值「无」浅色 400",
+      "desc": "V3-08 空值「无」浅色 400（样本：刘华清）",
       "selector": ".tc-doctor-meta-value.is-empty",
       "props": {
         "color": "rgb(96, 117, 111)",
@@ -4127,7 +3930,7 @@
         {
           "action": "click",
           "selector": ".tc-doctor-link",
-          "textContains": "梁红"
+          "textContains": "刘华清"
         },
         {
           "action": "wait",
@@ -4639,9 +4442,9 @@
     {
       "id": "v3.m-hospital-meta",
       "type": "hasText",
-      "desc": "V3-11 医院头部写地址与线索数",
+      "desc": "V3-11 手机档医院头部写地址；条数由 v3.m-hospital-leads-match-list-390 两侧自证",
       "selector": ".sheet .head-meta",
-      "text": "南店路7号 · 4 条线索",
+      "text": "南店路7号",
       "precondition": [
         {
           "action": "click",
@@ -5895,10 +5698,10 @@
       "hitMin": 100,
       "missMin": 100,
       "headerIncludes": [
-        "32 家医院",
-        "32 条线索"
+        "35 家医院",
+        "55 条线索"
       ],
-      "desc": "V3-12 桌面勾「cptsd」后地图命中省画成 #087f7b/.26、未命中省压到 ≤.05，头部同步 32 家医院 · 32 条线索"
+      "desc": "V3-12 桌面勾「cptsd」后地图命中省画成 #087f7b/.26、未命中省压到 ≤.05，头部同步 35 家医院 · 55 条线索（2026-11-09 构建 21:37:26 实测）"
     },
     {
       "id": "v3.d-filter-clear-restores-density-1440",
@@ -6438,6 +6241,693 @@
         }
       ],
       "at": 1440
+    },
+    {
+      "id": "v3.d-search-row-count-matches-detail-1440",
+      "type": "numberEquals",
+      "desc": "筛 cptsd 搜「回龙观」：结果行说「线索 N 条」，点进去详情也得说 N 条线索。两个数分别取自两个节点（记忆的是点击前的结果行、比对的是详情头部），不是同一节点读两次",
+      "selector": ".tc-level-head--hospital .tc-level-meta",
+      "pattern": "(\\d+)\\s*条线索",
+      "from": "searchRowLeads",
+      "expectPattern": "线索\\s*(\\d+)\\s*条",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-chip",
+          "settle": 1000
+        },
+        {
+          "action": "fill",
+          "selector": "input[type=\"search\"]",
+          "value": "回龙观",
+          "settle": 1500
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-result"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-result",
+          "textContains": "回龙观医院",
+          "remember": "searchRowLeads",
+          "settle": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-level-head--hospital .tc-level-meta"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.d-search-zero-hit-empty-1440",
+      "type": "mustNotExist",
+      "desc": "K3：筛选 cptsd 时搜「盛京」（中国医科大学附属盛京医院南湖院区，只有 osdd/did 线索）→ 一条结果都不出现。同一家医院不筛时是会出来的（v3.d-search-unfiltered-matches-detail-1440 的反向对照）；若日后这家医院有了 cptsd 线索，换一家无 cptsd 线索的医院名，判据不变",
+      "selector": ".tc-mapapp-result",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-chip",
+          "settle": 1000
+        },
+        {
+          "action": "fill",
+          "selector": "input[type=\"search\"]",
+          "value": "盛京",
+          "settle": 1800
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.d-search-empty-filtered-copy-1440",
+      "type": "hasText",
+      "desc": "K3：筛选态搜不到东西时的空态文案必须是「当前筛选下没有匹配结果，试试取消病症筛选。」——不能只判「结果为空」，否则文案退回通用那句也照样绿",
+      "selector": ".tc-mapapp-no-results",
+      "text": "当前筛选下没有匹配结果，试试取消病症筛选。",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-chip",
+          "settle": 1000
+        },
+        {
+          "action": "fill",
+          "selector": "input[type=\"search\"]",
+          "value": "盛京",
+          "settle": 1800
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-no-results"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.d-search-empty-default-copy-1440",
+      "type": "hasText",
+      "desc": "没筛时搜不到东西仍是原来那句，别被筛选态的文案覆盖",
+      "selector": ".tc-mapapp-no-results",
+      "text": "没有找到匹配结果，试试省份、医院或医生名称。",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "fill",
+          "selector": "input[type=\"search\"]",
+          "value": "zzzz",
+          "settle": 1600
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-no-results"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.d-search-unfiltered-matches-detail-1440",
+      "type": "numberEquals",
+      "desc": "不筛时搜「安定」要出现，且行上 N 与详情 N 相等——与第 1 条用同一家医院做正反对照，选择器写歪时两条会一起红",
+      "selector": ".tc-level-head--hospital .tc-level-meta",
+      "pattern": "(\\d+)\\s*条线索",
+      "from": "searchRowAll",
+      "expectPattern": "线索\\s*(\\d+)\\s*条",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "fill",
+          "selector": "input[type=\"search\"]",
+          "value": "安定",
+          "settle": 1500
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-result"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-result",
+          "textContains": "安定医院",
+          "remember": "searchRowAll",
+          "settle": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-level-head--hospital .tc-level-meta"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.m-scale-entry-rect-390",
+      "type": "rect",
+      "desc": "右上角量表入口 44×44，和关于、夜间同宽同列；入口丢了这一列就断成两截",
+      "selector": ".tc-scale-icon",
+      "min": {
+        "w": 44,
+        "h": 44
+      },
+      "max": {
+        "w": 56,
+        "h": 56
+      },
+      "at": 390
+    },
+    {
+      "id": "v3.m-scale-entry-collapsed-390",
+      "type": "attr",
+      "desc": "量表入口默认收起；展开态在点开之后的那条里判",
+      "selector": ".tc-scale-icon",
+      "attr": "aria-expanded",
+      "equals": "false",
+      "at": 390
+    },
+    {
+      "id": "v3.m-scale-card-opens-390",
+      "type": "rect",
+      "desc": "点量表入口是弹卡、不是跳页；卡宽与关于卡同档（320 上下）",
+      "selector": "#tc-scale-card",
+      "min": {
+        "w": 280,
+        "h": 80
+      },
+      "max": {
+        "w": 344,
+        "h": 320
+      },
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1400
+        },
+        {
+          "action": "click",
+          "selector": ".tc-scale-icon",
+          "afterMs": 900
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.m-scale-card-expanded-390",
+      "type": "attr",
+      "desc": "卡开着时入口要报展开态，读屏用户才知道自己点了什么",
+      "selector": ".tc-scale-icon",
+      "attr": "aria-expanded",
+      "equals": "true",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1400
+        },
+        {
+          "action": "click",
+          "selector": ".tc-scale-icon",
+          "afterMs": 900
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.m-scale-card-esc-closes-390",
+      "type": "mustNotExist",
+      "desc": "Esc 关量表卡；关不掉就挡着地图和底卡",
+      "selector": "#tc-scale-card",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1400
+        },
+        {
+          "action": "click",
+          "selector": ".tc-scale-icon",
+          "afterMs": 900
+        },
+        {
+          "action": "key",
+          "value": "Escape",
+          "afterMs": 700
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.m-scale-card-esc-focus-390",
+      "type": "focusOn",
+      "desc": "Esc 关掉后焦点回到量表入口，不是掉到 body——键盘用户要能接着往下走",
+      "selector": ".tc-scale-icon",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1400
+        },
+        {
+          "action": "click",
+          "selector": ".tc-scale-icon",
+          "afterMs": 900
+        },
+        {
+          "action": "key",
+          "value": "Escape",
+          "afterMs": 700
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.m-scale-card-exclusive-390",
+      "type": "mustNotExist",
+      "desc": "同时只开一张卡：点「关于」时量表卡要让位，不能两张叠着",
+      "selector": "#tc-scale-card",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1400
+        },
+        {
+          "action": "click",
+          "selector": ".tc-scale-icon",
+          "afterMs": 900
+        },
+        {
+          "action": "click",
+          "selector": ".tc-about-icon",
+          "afterMs": 900
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.d-scale-entry-rect-1440",
+      "type": "rect",
+      "desc": "桌面量表入口与「关于项目」并排同高（46 高），不是一行小字",
+      "selector": ".tc-mapapp-scale-link",
+      "min": {
+        "w": 44,
+        "h": 40
+      },
+      "max": {
+        "w": 120,
+        "h": 56
+      },
+      "at": 1440
+    },
+    {
+      "id": "v3.d-scale-card-opens-1440",
+      "type": "rect",
+      "desc": "桌面点量表入口弹卡，卡在顶栏下方、宽 320 档",
+      "selector": "#tc-scale-card",
+      "min": {
+        "w": 280,
+        "h": 80
+      },
+      "max": {
+        "w": 344,
+        "h": 320
+      },
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-scale-link",
+          "afterMs": 900
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.d-hospital-leads-match-list-1440",
+      "type": "numberEquals",
+      "desc": "V3-04 医院来的那一条：列表行写「北京市 · N 条线索」，点进去详情头部也写同一个 N。两侧各取一次（行文本在点击前记下，详情头在点击后读），不写死数字",
+      "selector": ".tc-level-head--hospital .tc-level-meta",
+      "pattern": "(\\d+)\\s*条线索",
+      "from": "listRowLeads",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观",
+          "remember": "listRowLeads",
+          "settle": 1200
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-report"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.m-hospital-leads-match-list-390",
+      "type": "numberEquals",
+      "desc": "V3-11 手机档同一条：底卡里省份行的医院行写「北京市 · N 条线索」，进详情后底卡头也写同一个 N",
+      "selector": ".sheet .head-meta",
+      "pattern": "(\\d+)\\s*条线索",
+      "from": "listRowLeadsM",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 450
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-province-row",
+          "textContains": "北京"
+        },
+        {
+          "action": "wait",
+          "selector": ".sheet .tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-hospital-row",
+          "textContains": "回龙观",
+          "remember": "listRowLeadsM",
+          "settle": 1200
+        },
+        {
+          "action": "wait",
+          "selector": ".sheet .tc-report"
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.d-province-leads-sum-1440",
+      "type": "sumEquals",
+      "desc": "省级视图一致性：省头「N 条线索」= 该省各医院行「N 条线索」之和。只对当前可见的行取数（隐藏副本不算）；一家医院都没有的省判不适用，不出现 0 = 0 的假绿。",
+      "selector": ".tc-level-head--province .tc-level-meta",
+      "pattern": "(\\d+)\\s*条线索",
+      "sumSelector": ".tc-hospital-row .tc-hospital-row-meta",
+      "sumPattern": "(\\d+)\\s*条线索",
+      "at": 1440,
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "afterMs": 1500
+        }
+      ]
+    },
+    {
+      "id": "v3.quote-clamp-two-lines-1440",
+      "type": "rect",
+      "desc": "线索原文默认封顶 2 行（2 × 26.25px = 52.5px）——3 行时代一条线索占掉小半屏；展开由「展开原文」按钮接管，本版不是 details",
+      "selector": ".tc-detail-section > .tc-report:nth-of-type(1) .tc-quote",
+      "min": {
+        "h": 45
+      },
+      "max": {
+        "h": 58
+      },
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观",
+          "settle": 1200
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-report"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.doctor-meta-rows-1440",
+      "at": 1440,
+      "type": "count",
+      "selector": ".tc-doctor-meta-list > *",
+      "expect": 3,
+      "desc": "医生页元信息列固定三行（门诊 / 所在医院 / 备注）；评价 2026-11-09 改成独立区块，不再占行",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "afterMs": 1200
+        }
+      ]
+    },
+    {
+      "id": "v3.doctor-eval-section-last-1440",
+      "at": 1440,
+      "type": "hasText",
+      "selector": ".tc-detail > .tc-detail-section:last-child > h3",
+      "text": "评价",
+      "desc": "2026-11-09 改版：评价从元信息行改为独立区块，位置在「医生线索」之后、是 .tc-detail 的最后一个子元素（样本：马弘）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "北京大学第六医院",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "textContains": "马弘",
+          "afterMs": 1200
+        }
+      ]
+    },
+    {
+      "id": "v3.doctor-eval-typography-1440",
+      "at": 1440,
+      "type": "styleMatch",
+      "selector": ".tc-detail > .tc-detail-section:last-child .tc-quote",
+      "against": ".tc-detail > .tc-detail-section:first-of-type .tc-quote",
+      "styles": [
+        "fontSize",
+        "lineHeight",
+        "color",
+        "whiteSpace"
+      ],
+      "rect": [
+        "left",
+        "width"
+      ],
+      "tolerance": 1,
+      "desc": "评价正文沿用线索原文的排版（逐项与同页 .tc-quote 比，不写死数值）（样本：马弘）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "北京大学第六医院",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "textContains": "马弘",
+          "afterMs": 1200
+        }
+      ]
+    },
+    {
+      "id": "v3.doctor-eval-empty-copy-1440",
+      "at": 1440,
+      "type": "hasText",
+      "selector": ".tc-detail > .tc-detail-section:last-child .tc-quote",
+      "text": "无",
+      "desc": "空评价的医生仍渲染评价节，正文写「无」，排版不降级（样本：刘华清）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "textContains": "刘华清",
+          "afterMs": 1200
+        }
+      ]
+    },
+    {
+      "id": "v3.d-doctor-eval-empty-not-card-1440",
+      "at": 1440,
+      "type": "computed",
+      "selector": ".tc-detail-section.tc-doctor-rating > .tc-doctor-rating-empty",
+      "props": {
+        "borderTopWidth": "0px",
+        "borderLeftWidth": "0px",
+        "backgroundColor": "rgba(0, 0, 0, 0)"
+      },
+      "desc": "空评价不套卡片：正文那行「无」没有边框、没有底色（样本：刘华清）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "textContains": "刘华清",
+          "afterMs": 1200
+        }
+      ]
+    },
+    {
+      "id": "v3.d-doctor-eval-empty-align-1440",
+      "at": 1440,
+      "type": "styleMatch",
+      "selector": ".tc-detail-section.tc-doctor-rating > .tc-doctor-rating-empty",
+      "against": ".tc-detail-section.tc-doctor-rating > h3",
+      "rect": [
+        "left"
+      ],
+      "tolerance": 1,
+      "desc": "空评价那行「无」与本节标题左缘对齐（差 ≤1px），只比左缘、不比字号（样本：刘华清）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "textContains": "刘华清",
+          "afterMs": 1200
+        }
+      ],
+      "styles": []
     }
   ],
   "appliesTo": [
@@ -6589,6 +7079,11 @@
       "retiredIn": "v3-2026-11-07"
     },
     {
+      "id": "doctor.profile-only-with-record",
+      "why": "随档案块整块删除（2026-11-09，含「最后核对」行）；医生页不再有档案占位块",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
       "id": "filter.single-entry",
       "why": "v3 删除了 .tc-filter-toggle：桌面折叠筛选改为常驻病症开关（V3-06）",
       "retiredIn": "v3-2026-11-07"
@@ -6696,6 +7191,16 @@
     {
       "id": "type.doctor-meta-value",
       "why": "V3-08 字段值改 15px / 500，见 v3.doctor-empty-faint",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "doctor.rating-row",
+      "why": "评价行移入独立节、按是否与线索原文重复条件渲染；行数契约由 v3.doctor-meta-rows-1440 接住",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "doctor.rating-empty",
+      "why": "评价改为独立节，空值文案由 v3.doctor-eval-empty-copy-1440 承接",
       "retiredIn": "v3-2026-11-07"
     },
     {
@@ -6906,6 +7411,21 @@
     {
       "id": "a11y.empty-province-title-hidden",
       "why": "V3-11 返回移到右侧后不再与标题挤在一行，空省显示标题，见 v3.m-empty-province-title",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.doctor-rating",
+      "why": "评价改为独立节，空值文案由 v3.doctor-eval-empty-copy-1440 承接",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.doctor-leads-section-last",
+      "why": "评价节排在「医生线索」之后，「末节是线索」已不成立，改由 v3.doctor-eval-section-last-1440 判",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.doctor-eval-absent-echo-1440",
+      "why": "2026-11-09 22:28:44 起评价节一律渲染（回声医生也有评价节），旧判「回声不渲染」方向反了，退役",
       "retiredIn": "v3-2026-11-07"
     }
   ]
