@@ -3,7 +3,7 @@ import { readFileSync, readdirSync, existsSync, mkdtempSync, mkdirSync, writeFil
 import { resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import test from 'node:test'
-import { cleanEvaluation, reportsFromDocument, reportsWithLocations, doctorsWithLocations, SOURCE_CAPTURE, SOURCE_TITLE, SOURCE_URL } from '../scripts/import-kdocs.ts'
+import { evaluationComments, reportsFromDocument, reportsWithLocations, doctorsWithLocations, SOURCE_CAPTURE, SOURCE_TITLE, SOURCE_URL } from '../scripts/import-kdocs.ts'
 import { doctorsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import { LOCATION_EVIDENCE } from '../scripts/lib/amap.ts'
 import { hospitalsFromRun } from '../scripts/geocode-hospitals.ts'
@@ -35,11 +35,11 @@ test('三张工作表与每一行有内容的记录都进了库', () => {
     index + 1,
     reports.filter((report) => report.id.includes(`-s${index + 1}-`)).length,
   ]))
-  // 同一行里拆出的多段发言会合并成一条；跨行、跨表一律不合并，
-  // 所以每表条数等于「有内容的行数」减去行内合并掉的那几条。
-  assert.deepEqual(perSheet, { 1: 55, 2: 51, 3: 167 })
-  assert.equal(reports.length, 273)
-  assert.equal(reportsFromDocument(document).length, 273)
+  // 线索单位是「一条发言」：备注单独一条，评价里每位署名的用户各一条；
+  // 无名分的多行仍在同一格里属同一条长评。跨行、跨表一律不合并。
+  assert.deepEqual(perSheet, { 1: 90, 2: 63, 3: 174 })
+  assert.equal(reports.length, 327)
+  assert.equal(reportsFromDocument(document).length, 327)
   // 合并必须可重放：同一份文档跑两遍得到同一组 id，定位表与断言样本才不会抖。
   assert.deepEqual(reportsFromDocument(document).map((report) => report.id), reports.map((report) => report.id))
   assert.deepEqual(reports, expected)
@@ -115,10 +115,10 @@ test('工作表按病症分组，其他字段保持未知而不是编造', () =>
     group,
     reports.filter((report) => report.disorders.join('/') === group).length,
   ]))
-  // 同一段话被两张表各收一遍时会合成一条、带上一张表之外的病症，只剩单一病症的条数因此减少。
-  assert.deepEqual(byDisorder, { cptsd: 51, 'osdd/did': 49, pd: 167 })
-  assert.equal(reports.filter((report) => report.disorders.includes('cptsd')).length, 55)
-  assert.equal(reports.filter((report) => report.disorders.includes('pd')).length, 172)
+  // 一条线索最多只带一个病症组合，跨表同引文合并会带上另一张表的病症标签。
+  assert.deepEqual(byDisorder, { cptsd: 84, 'osdd/did': 59, pd: 174 })
+  assert.equal(reports.filter((report) => report.disorders.includes('cptsd')).length, 90)
+  assert.equal(reports.filter((report) => report.disorders.includes('pd')).length, 183)
   for (const report of reports) {
     assert.equal(report.stage, 'unknown')
     assert.equal(report.published_at, undefined)
@@ -176,29 +176,29 @@ test('医生档案只由表格里的诊室、备注、评价生成，且都能�
   assert.equal(doctors.filter((doctor) => doctor.evaluation).length, 59)
   assert.equal(doctors.filter((doctor) => doctor.note).length, 62)
   // 评价是不是某条线索原文的复制：前端只拿到 200 字预览，比对会漏判，所以判定放在数据层。
-  // 有评价的 59 位里 39 位评价够长（≥20 字），最长连续共享片段都达到评价长度的 70% 以上。
+  // 有评价的 59 位里 40 位评价够长（≥20 字），最长连续共享片段都达到评价长度的 70% 以上。
   const longEvaluation = doctors.filter((doctor) => (doctor.evaluation ?? '').replace(/\s+/gu, '').length >= 20)
-  assert.equal(longEvaluation.length, 39)
-  assert.equal(longEvaluation.filter((doctor) => doctor.evaluation_echoes_report === true).length, 39)
+  assert.equal(longEvaluation.length, 40)
+  assert.equal(longEvaluation.filter((doctor) => doctor.evaluation_echoes_report === true).length, 40)
   assert.equal(longEvaluation.filter((doctor) => doctor.evaluation_echoes_report !== true).length, 0)
   // 太短的评价不参与判定，也就不写这个键：整段都在原文里也只是短语撞车，不该吞掉真实评价
   const shortEvaluation = doctors.filter((doctor) => doctor.evaluation && doctor.evaluation.replace(/\s+/gu, '').length < 20)
-  assert.equal(shortEvaluation.length, 20)
+  assert.equal(shortEvaluation.length, 19)
   assert.ok(shortEvaluation.every((doctor) => doctor.evaluation_echoes_report === undefined))
   // 无姓名的行仍然是医院线索，只是不进医生档案（人格障碍表多数行本就没写诊室）
   const noName = reports.filter((report) => !report.doctor_name_raw)
-  assert.equal(noName.length, 7)
+  assert.equal(noName.length, 9)
   assert.ok(noName.every((report) => report.hospital_name_raw && report.hospital_region))
   assert.ok(noName.every((report) => report.evidence_quote.length > 0))
-  // 同一行里没有姓名的多段发言也合并成一条，否则一个人的一次经历会被数成三条线索
+  // 回龙观 24 条：13 行，其中 3 行没有姓名；没有姓名的行里同一位用户的发言仍各成一条
   const huilongguan = reports.filter((report) => report.hospital_name_raw === '北京回龙观医院')
-  assert.equal(huilongguan.length, 13)
-  assert.equal(huilongguan.filter((report) => !report.doctor_name_raw).length, 1)
-  // 合并过的线索记下合并前的发言条数，单条不写 1
+  assert.equal(huilongguan.length, 24)
+  assert.equal(huilongguan.filter((report) => !report.doctor_name_raw).length, 3)
+  // 合并过的线索记下合并前的发言条数，单条不写 1：只剩「两张表抄了同一句话」这一类
   const merged = reports.filter((report) => report.parts_count)
-  assert.equal(merged.length, 39)
+  assert.equal(merged.length, 11)
   assert.ok(merged.every((report) => report.parts_count >= 2))
-  assert.equal(merged.reduce((total, report) => total + report.parts_count, 0), 122)
+  assert.equal(merged.reduce((total, report) => total + report.parts_count, 0), 22)
   // 合并后正文里不该留下同一句重复两遍
   for (const report of merged) {
     const lines = (report.evidence_full_text ?? report.evidence_quote).split('\n').map((line) => line.trim()).filter(Boolean)
@@ -207,6 +207,9 @@ test('医生档案只由表格里的诊室、备注、评价生成，且都能�
   // 评价里点到别的医生，不改变这一行属于谁：梁红那行就是梁红，潘伟刚只在自己那行出现一次。
   // 曾经按人工表把这行补成「潘伟刚、梁红」，结果同一个人在医院页并排两张卡。
   assert.equal(reports.find((report) => report.id === 'kdocs-cp3b7toqal3j-s1-r4').doctor_name_raw, '梁红')
+  // 梁红那一行有四位用户各说一段，加上备注共五条线索
+  const liang = reports.filter((report) => /-s1-r4(?:-p\d+)?$/u.test(report.id))
+  assert.deepEqual(liang.map((report) => report.id.slice(-6)), ['-s1-r4', '-r4-p2', '-r4-p3', '-r4-p4', '-r4-p5'])
   assert.equal(reports.filter((report) => (report.doctor_name_raw ?? '').split('、').includes('潘伟刚')).length, 1)
   const pan = doctors.find((doctor) => doctor.name === '潘伟刚')
   assert.ok(pan)

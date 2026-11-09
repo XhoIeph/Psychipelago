@@ -52,41 +52,93 @@ function clip(text: string, limit: number): string {
   return `${text.slice(0, limit - 1).trimEnd()}…`
 }
 
-/** 一句话里出现这些字，说明是发言而不是昵称。 */
-const SPEECH_SIGNAL = /[有没会在要需想觉看挂诊治药医院反馈评情问好差推荐建议]/u
-
-/** 纯状态附注（「（特需）」「（退休）」）：属于这一行，但不是一条发言。 */
-function isAnnotationOnly(line: string): boolean {
-  return /^（[^）]{1,20}）$/u.test(line)
+/** 一行开头的「昵称:」：署名。剥掉名字，只留正文。 */
+function splitSpeaker(line: string): { speaker: string; rest: string } | null {
+  const match = line.match(/^([^\s：:][^：:]{0,23})\s*[：:]\s*(.*)$/u)
+  if (!match) return null
+  const speaker = match[1].trim()
+  if (!speaker || LABEL_PREFIX.test(speaker)) return null
+  // 带句读的不是昵称，是正文里的一句话
+  if (/[。！？；，、!?]/u.test(speaker)) return null
+  return { speaker, rest: match[2].trim() }
 }
 
-/** 评价格里的引用符号、日期戳、残留署名：切段前先剔掉，免得它们各占一条线索。 */
-function isNoise(line: string): boolean {
-  if (!/[\u4e00-\u9fff]/u.test(line) && !/\p{Script=Latin}/u.test(line)) return true
-  if (/^[^\s：:]{1,20}[：:]\s*$/u.test(line)) return true
-  return line.length <= 12 && !SPEECH_SIGNAL.test(line)
+/**
+ * 长句末尾又跟了一句「。昵称: 正文」：同一个人写完后别人接着在同一段里回复。
+ * 表格里常见这种挤在一起的写法，靠它才能把两个人的话分开。
+ */
+function splitTrailingSpeaker(line: string): { head: string; speaker: string; rest: string } | null {
+  const match = line.match(/^([\s\S]*?[。！？!?…」】）)])\s*([^\s：:，。！？]{1,16})\s*[：:]\s*([\s\S]*)$/u)
+  if (!match) return null
+  const speaker = match[2].trim()
+  if (!speaker || LABEL_PREFIX.test(speaker)) return null
+  return { head: match[1].trim(), speaker, rest: match[3].trim() }
 }
 
-/** 去掉评价单元格里的署名行、论坛引用树前缀与包裹引号，不保留任何作者标识。 */
-export function cleanEvaluation(raw: string): string {
-  const lines = raw.replace(/\r\n?/gu, '\n').split('\n')
-  const kept: string[] = []
-  for (const source of lines) {
-    let line = source.trim().replace(/^"+(.*?)"+$/u, '$1').trim()
-    // 论坛引用树：└ [09-18] [建设全国就诊地图] 昵称: 回复 对象 : 正文
-    line = line.replace(/^└\s*(?:\[[^\]]*\]\s*)*(?:[^\s：:]{1,20})\s*[：:]\s*回复\s*(?:[^：:\n]{1,20})\s*[:：]\s*/u, '').trim()
-    if (!line) continue
-    // 独占一行的署名：匿名：/ momo：/ Kennie:
-    if (/^[^\s：:，。！？]{1,20}\s*[：:]$/u.test(line)) continue
-    const leading = line.match(/^([^\s：:，。！？]{1,20})\s*[：:]\s*(.+)$/u)
-    if (leading && !LABEL_PREFIX.test(leading[1])) line = leading[2].trim()
-    kept.push(line)
+/** 去掉包裹引号、引用树前缀与多余空行；不保留任何作者标识。 */
+function cleanCommentText(text: string): string {
+  return text
+    .replace(/\r\n?/gu, '\n')
+    .split('\n')
+    .map(source => source.trim()
+      .replace(/^"+(.*?)"+$/u, '$1')
+      // 论坛引用树：└ [09-18] [建设全国就诊地图] 昵称: 回复 对象 : 正文
+      .replace(/^└\s*(?:\[[^\]]*\]\s*)*(?:[^\s：:]{1,20})\s*[：:]\s*回复\s*(?:[^：:\n]{1,20})\s*[:：]\s*/u, '')
+      .trim())
+    .filter(Boolean)
+    .join('\n')
+    .replace(/\n{3,}/gu, '\n\n')
+    .trim()
+}
+
+/**
+ * 按署名把一格评价切成一条条发言。
+ *
+ * 表格里一格常挤着好几个人：cptsd 第 4 行（梁红）里有劳拉、可颂可颂🥐、小红薯674205EE、神盾局星际巡察员，
+ * 第 6 行（王晓莹）里有五个人。并成一条会让读者以为是一个人的完整经历，也看不出是几条评价。
+ *
+ * 同一署名在同一格里的多段合成一条（同一个人分几次补充自己的经历）。
+ * 署名本身只用于切分，不入库；公开数据不保留作者标识。
+ */
+export function evaluationComments(raw: string): string[] {
+  const lines = raw.replace(/\r\n?/gu, '\n').split('\n').map(line => line.trim()).filter(Boolean)
+  if (!lines.length) return []
+  const marked = lines.some(line => splitSpeaker(line))
+  // 没有署名的一格就是一条，保持原样（多行仍属同一条长评）
+  if (!marked) return [cleanCommentText(lines.join('\n'))].filter(Boolean)
+
+  type Block = { speaker: string | null; lines: string[] }
+  const blocks: Block[] = []
+  let current: Block | null = null
+  const blockFor = (speaker: string | null): Block => {
+    if (speaker) {
+      // 同一署名再次出现时并回他那一块，读者看到的是一位用户的一条评价
+      const same = blocks.find(block => block.speaker === speaker)
+      if (same) return same
+    }
+    const block: Block = { speaker, lines: [] }
+    blocks.push(block)
+    return block
   }
-  // 首行是裸昵称（工作室名、ID）时丢弃：真句子会含动词或医学名词。
-  if (kept.length > 1 && kept[0].length <= 12 && !SPEECH_SIGNAL.test(kept[0])) {
-    kept.shift()
+  for (const line of lines) {
+    const head = splitSpeaker(line)
+    if (head) {
+      current = blockFor(head.speaker)
+      if (head.rest) current.lines.push(head.rest)
+      continue
+    }
+    const tail: { head: string; speaker: string; rest: string } | null = current ? splitTrailingSpeaker(line) : null
+    if (tail) {
+      // 「……避雷。可颂可颂🥐: 补充：……」：前一句归上一位，后一句换人
+      if (current) current.lines.push(tail.head)
+      current = blockFor(tail.speaker)
+      if (tail.rest) current.lines.push(tail.rest)
+      continue
+    }
+    if (!current) current = blockFor(null)
+    current.lines.push(line)
   }
-  return kept.join('\n').replace(/\n{3,}/gu, '\n\n').trim()
+  return blocks.map(block => cleanCommentText(block.lines.join('\n'))).filter(Boolean)
 }
 
 function splitName(cell: string): { name: string; annotations: string[] } {
@@ -112,10 +164,10 @@ export type SourceRow = {
   label: string
   /** 姓名格里的状态附注（「（特需）」「（退休）」），单独存放，切段时挂到同一行的发言上 */
   annotation: string
-  /** 备注 */
+  /** 备注：官方简介、挂号方式这类对整行的说明，不是某一位用户的发言 */
   note: string
-  /** 剥离署名后的评价正文 */
-  evaluation: string
+  /** 评价按署名切出来的发言，一条一位用户（同一位用户的多段已并成一条） */
+  comments: string[]
   disorders: Report['disorders']
 }
 
@@ -180,7 +232,7 @@ export function sourceRows(document: SourceDocument): SourceRow[] {
         label: isPerson ? '' : name,
         annotation,
         note: (cells[4] ?? '').trim(),
-        evaluation: cleanEvaluation(cells[5] ?? ''),
+        comments: evaluationComments(cells[5] ?? ''),
         disorders: SHEET_DISORDERS[sheet.name] ?? ['other'],
       })
     }
@@ -189,45 +241,37 @@ export function sourceRows(document: SourceDocument): SourceRow[] {
 }
 
 /**
- * 源表把同一位医生的多条发言挤在同一格、用换行分开：有的是需求方自己的经历，
- * 有的是不同署名的人对同一行的补充。并成一条会把几个人的独立发言摊成一段长文，
- * 所以每个非空行单独成线索。首行沿用单元格的 id，其余加 -p2、-p3，仍能回指同一行。
+ * 一行里的线索：备注一条，评价里每一位用户各一条。
+ *
+ * 备注是官方简介、挂号方式这类对整行的说明，没有具体发言人，单独成条；
+ * 评价里一格常挤着好几个人（cptsd 第 4 行有四位，第 6 行有五位），
+ * 并成一条会让读者以为这是一个人的完整经历，也数不出到底有几个人反馈过。
  *
  * 附注与引用符号不是发言：「（特需）」「（退休）」是姓名格里的状态，
  * 「└」「09-16」是引用树和日期戳，「朱鸿儒 课题组」是姓名格的团队名。
- * 它们挂到相邻的那一条发言上，既不丢原文，也不各自占一条内容单薄的线索。
+ * 它们挂在第一条线索前，既不丢原文，也不各自占一条内容单薄的线索。
  */
-function rowSegments(row: SourceRow): string[] {
-  // 姓名格里的团队名与状态附注（「黄佳团队（住院）」「（特需）」）属于这一行，
-  // 但不是一条发言：挂在紧随其后的那条发言上，既不丢原文，也不各自占一条线索。
+function rowLeads(row: SourceRow): string[] {
   const subject = [row.label, row.annotation].filter(Boolean).join('')
-  const lines = [row.note, row.evaluation].filter(Boolean).join('\n')
-    .split('\n').map(line => line.trim()).filter(Boolean)
-  const segments: string[] = []
-  let pending = subject
-  for (const line of lines) {
-    if (isNoise(line)) {
-      // 引用符号、日期戳、残留署名不是发言：并到相邻那段，不单独成条。
-      if (segments.length) segments[segments.length - 1] = `${segments[segments.length - 1]} ${line}`
-      else pending = pending ? `${pending} ${line}` : line
-      continue
-    }
-    segments.push(pending ? `${pending} ${line}` : line)
-    pending = ''
-  }
-  if (!segments.length) {
+  const leads: string[] = []
+  const note = row.note.trim()
+  if (note) leads.push(note)
+  leads.push(...row.comments)
+  if (!leads.length) {
     // 没有备注和评价时，行本身（机构、诊室、姓名）就是可核对的原文。
     const fallback = [row.hospital, row.department, row.doctor].filter(Boolean).join(' · ')
-    if (fallback) segments.push(pending ? `${pending} ${fallback}` : fallback)
-    else if (pending) segments.push(pending)
+    if (fallback) leads.push(fallback)
+    else if (subject) leads.push(subject)
+    return leads
   }
-  return segments
+  if (subject) leads[0] = `${subject} ${leads[0]}`
+  return leads
 }
 
 export function reportsFromDocument(document: SourceDocument): Report[] {
   const items: Report[] = []
   for (const row of sourceRows(document)) {
-    rowSegments(row).forEach((segment, index) => {
+    rowLeads(row).forEach((segment, index) => {
       const quote = clip(segment, 200)
       items.push({
         id: index === 0 ? row.reportId : `${row.reportId}-p${index + 1}`,
@@ -260,60 +304,11 @@ export function reportsFromDocument(document: SourceDocument): Report[] {
       })
     })
   }
-  return mergeDuplicateQuotes(mergeSegmentsByDoctor(items))
+  return mergeDuplicateQuotes(items)
 }
 
 /** 病症标签的展示顺序：合并后取并集时按源文档的排列（cptsd → osdd/did → 人格障碍）。 */
 const DISORDER_ORDER: Report['disorders'] = ['cptsd', 'bpd', 'osdd', 'did', 'ptsd', 'pd', 'other']
-
-/**
- * 同一行拆出来的若干段合成一条线索。
- *
- * 拆段解决的是「一条线索里塞了十几个人的话」，但医院页随即排出同一医生的十几张卡，
- * 读者看到的是同一个名字重复十几次。合并后 id 用第一段的 id，原文按出现顺序用换行连接，
- * 不改写、不加分隔符；段数记在 parts_count，病症取各段并集。
- *
- * 合并只在这一行内部进行，不跨行、不跨表。表格里同一位医生常在两三张表各有一行，
- * 那是不同人分别写的不同经历，行有各自的诊室与出处；按姓名跨行合并会把 A 行的评价挂到
- * B 行的诊室下面——读者点开就会看到不属于这个诊室的发言。内容真的一字不差时，
- * 交给 mergeDuplicateQuotes 处理，那里会保留两边的姓名与病症。
- */
-function mergeSegmentsByDoctor(reports: Report[]): Report[] {
-  const merged: Report[] = []
-  const byKey = new Map<string, Report>()
-  for (const report of reports) {
-    const key = report.id.replace(/-p\d+$/u, '')
-    const target = byKey.get(key)
-    if (!target) {
-      byKey.set(key, report)
-      merged.push(report)
-      continue
-    }
-    const existing = (target.evidence_full_text ?? target.evidence_quote).split('\n').map(line => line.trim()).filter(Boolean)
-    const incoming = (report.evidence_full_text ?? report.evidence_quote).split('\n').map(line => line.trim()).filter(Boolean)
-    // 同一段话在两张表里各抄了一遍（例如 cptsd 与人格障碍同时收录同一句评价）时只留一份：
-    // 合并成一张卡之后，重复的句子会在正文里挨着出现两次，读者看到的就是没去干净。
-    const text = [...existing, ...incoming.filter(line => !existing.includes(line))].join('\n')
-    const quote = clip(text, 200)
-    target.evidence_quote = quote
-    if (text.length > quote.length) target.evidence_full_text = clip(text, 2000)
-    else delete target.evidence_full_text
-    // 合并进来的每一行都要出现在出处里：卡片正文含另一行的原话时，只标第一行的位置等于谎报来源，
-    // 读者照着「cptsd 第10行」回去核对，会发现那段话根本不在那一行。
-    const positions = new Set([
-      ...(target.evidence_context?.index_in_capture ?? '').split('、'),
-      report.evidence_context?.index_in_capture ?? '',
-    ].map(position => position.trim()).filter(Boolean))
-    if (target.evidence_context) {
-      target.evidence_context = { ...target.evidence_context, index_in_capture: [...positions].join('、') }
-    }
-    target.parts_count = (target.parts_count ?? 1) + (report.parts_count ?? 1)
-    target.disorders = DISORDER_ORDER.filter(id => target.disorders.includes(id) || report.disorders.includes(id))
-    const topics = [...(target.source_topics ?? []), ...(report.source_topics ?? [])]
-    if (topics.length) target.source_topics = [...new Set(topics)]
-  }
-  return merged
-}
 
 /**
  * 同一家医院里两位医生共用同一段评价时只留一条。
@@ -427,10 +422,11 @@ export function doctorsFromDocument(document: SourceDocument, reports: Report[])
     const group = groups.get(key) ?? { hospitalId, name: row.doctor, department: '', notes: [], evaluations: [] }
     if (!group.department && row.department) group.department = row.department
     if (row.note && !group.notes.includes(row.note)) group.notes.push(row.note)
-    // 评价按来源逐条留：同一位医生在两三张表各有一行时，每行是独立的一条，
-    // 拼成一个长字符串就没法数条数，也回不到各自出处。
-    if (row.evaluation && !group.evaluations.some(item => item.text === row.evaluation)) {
-      group.evaluations.push({ text: row.evaluation, source: `${row.sheet} · 第${row.row}行` })
+    // 评价按来源逐条留：同一格里本来就有好几位用户各说一段，逐条记下才能数条数、回到各自出处。
+    // 拼成一个长字符串会让「几条评价」无从回答，也把几个人的话糊成一个人的经历。
+    for (const comment of row.comments) {
+      if (group.evaluations.some(item => item.text === comment)) continue
+      group.evaluations.push({ text: comment, source: `${row.sheet} · 第${row.row}行` })
     }
     groups.set(key, group)
   }
