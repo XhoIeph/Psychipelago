@@ -1,96 +1,384 @@
+/**
+ * 主线来源转写：KDocs 电子表格（工作表逐行，一名医生一行）。
+ * 地区与医院名以合并单元格的形式只在段首填写，其余行留空继承，因此必须先向下填充。
+ */
 import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 import { existsSync } from 'node:fs'
-import type { Report } from '../lib/schema.ts'
-import { reportsFileSchema } from '../lib/schema.ts'
+import { createHash } from 'node:crypto'
+import type { Doctor, Report } from '../lib/schema.ts'
+import { doctorsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import { CURATED_FILES, readJson, writeJson } from './lib/paths.ts'
 import { LOCATION_EVIDENCE, linkLocationReports } from './lib/amap.ts'
 import type { LocationRun } from './lib/amap.ts'
 
-export const SOURCE_URL = 'https://www.kdocs.cn/l/crOlzFWeu2GY'
-export const SOURCE_CAPTURE = 'data/evidence/kdocs/2026-10-27/document.json'
+export const SOURCE_URL = 'https://www.kdocs.cn/l/cp3b7ToQAl3J'
+export const SOURCE_TITLE = '副本就诊地图10.25repo添加中'
+export const SOURCE_CAPTURE = 'data/evidence/kdocs/2026-11-09/document.json'
 
+export type SourceSheet = { index: number; name: string; rows: number; cols: number; values: string[][] }
 export type SourceDocument = {
   title: string
   url: string
   captured_at: string
-  document_updated_at: string | null
-  displayed_word_count: number
-  page_count: number
+  /** 表格自身的最后修改时间；重抓时与 captured_at 一起写入，便于判断快照是否落后于线上 */
+  document_updated_at?: string
+  office_type: string
   reading_method: string
-  pages: Array<{ page: number; lines: string[] }>
+  sheets: SourceSheet[]
+}
+
+const SHEET_DISORDERS: Record<string, Report['disorders']> = {
+  cptsd: ['cptsd'],
+  'osdd-did': ['osdd', 'did'],
+  人格障碍: ['pd'],
+}
+
+/** 姓名格里的状态附注（触发风险、目前已离职等），与姓名分开保存。 */
+const NAME_ANNOTATION = /[（(]([^）)]*)[）)]/gu
+
+/** 科室、团队、专病门诊等非个人条目，不能当成医生。 */
+const NON_PERSON = /团队|课题组|专家会诊|专病门诊|会诊$|门诊$/u
+
+/** 句子级说明（科室介绍）会被当成线索正文，而不是医生姓名。 */
+const SENTENCE = /[。；，、]/u
+
+/** 「诊断：」「费用：」之类的正文前缀不是署名，剥署名时必须跳过。 */
+const LABEL_PREFIX = /^(?:诊断|结论|结果|费用|价格|挂号|注意|补充|更新|回复|地址|电话|时间|门诊|备注|提示)$/u
+
+/**
+ * 姓名格只写了其中一位医生、评价里明确点了另一位医生的行。
+ * 键是「s表号-rExcel行号」，值是这一行线索应记的全部医生姓名，按原表顺序。
+ * 只影响线索的 doctor_name_raw；医生档案仍由姓名格决定，避免把别人的评价挂到被提到的人身上。
+ */
+export const DOCTOR_NAME_FIXES: Record<string, string[]> = {
+  // 姓名格写「梁红（触发风险）」，同一格评价里「换潘伟刚医生也不要挂梁红医生」点出潘伟刚。
+  's1-r4': ['潘伟刚', '梁红'],
+}
+
+function clip(text: string, limit: number): string {
+  if (text.length <= limit) return text
+  return `${text.slice(0, limit - 1).trimEnd()}…`
+}
+
+/** 一句话里出现这些字，说明是发言而不是昵称。 */
+const SPEECH_SIGNAL = /[有没会在要需想觉看挂诊治药医院反馈评情问好差推荐建议]/u
+
+/** 纯状态附注（「（特需）」「（退休）」）：属于这一行，但不是一条发言。 */
+function isAnnotationOnly(line: string): boolean {
+  return /^（[^）]{1,20}）$/u.test(line)
+}
+
+/** 评价格里的引用符号、日期戳、残留署名：切段前先剔掉，免得它们各占一条线索。 */
+function isNoise(line: string): boolean {
+  if (!/[\u4e00-\u9fff]/u.test(line) && !/\p{Script=Latin}/u.test(line)) return true
+  if (/^[^\s：:]{1,20}[：:]\s*$/u.test(line)) return true
+  return line.length <= 12 && !SPEECH_SIGNAL.test(line)
+}
+
+/** 去掉评价单元格里的署名行、论坛引用树前缀与包裹引号，不保留任何作者标识。 */
+export function cleanEvaluation(raw: string): string {
+  const lines = raw.replace(/\r\n?/gu, '\n').split('\n')
+  const kept: string[] = []
+  for (const source of lines) {
+    let line = source.trim().replace(/^"+(.*?)"+$/u, '$1').trim()
+    // 论坛引用树：└ [09-18] [建设全国就诊地图] 昵称: 回复 对象 : 正文
+    line = line.replace(/^└\s*(?:\[[^\]]*\]\s*)*(?:[^\s：:]{1,20})\s*[：:]\s*回复\s*(?:[^：:\n]{1,20})\s*[:：]\s*/u, '').trim()
+    if (!line) continue
+    // 独占一行的署名：匿名：/ momo：/ Kennie:
+    if (/^[^\s：:，。！？]{1,20}\s*[：:]$/u.test(line)) continue
+    const leading = line.match(/^([^\s：:，。！？]{1,20})\s*[：:]\s*(.+)$/u)
+    if (leading && !LABEL_PREFIX.test(leading[1])) line = leading[2].trim()
+    kept.push(line)
+  }
+  // 首行是裸昵称（工作室名、ID）时丢弃：真句子会含动词或医学名词。
+  if (kept.length > 1 && kept[0].length <= 12 && !SPEECH_SIGNAL.test(kept[0])) {
+    kept.shift()
+  }
+  return kept.join('\n').replace(/\n{3,}/gu, '\n\n').trim()
+}
+
+function splitName(cell: string): { name: string; annotations: string[] } {
+  const annotations = [...cell.matchAll(NAME_ANNOTATION)].map(match => match[1].trim()).filter(Boolean)
+  const name = cell.replace(NAME_ANNOTATION, '').replace(/\s+/gu, ' ').trim()
+    .replace(/\s*等$/u, '').replace(/医生$/u, '').trim()
+  return { name, annotations }
+}
+
+export type SourceRow = {
+  reportId: string
+  sheet: string
+  /** Excel 行号（1 起，含表头） */
+  row: number
+  region: string
+  hospital: string
+  department: string
+  /** 姓名格里的个人姓名，非个人条目为空 */
+  doctor: string
+  /** 这条线索应记的全部医生姓名：默认就是姓名格里的人，人工修正行会补上被评价点到的人 */
+  doctors: string[]
+  /** 姓名格里不是个人的内容（团队、专家会诊、科室介绍），保留为原文 */
+  label: string
+  /** 姓名格里的状态附注（「（特需）」「（退休）」），单独存放，切段时挂到同一行的发言上 */
+  annotation: string
+  /** 备注 */
+  note: string
+  /** 剥离署名后的评价正文 */
+  evaluation: string
+  disorders: Report['disorders']
+}
+
+/**
+ * 把合并单元格留空的地区与医院名向下填充，并逐行分出姓名、备注与评价。
+ * 报告与医生档案都由这一层推导，保证两者对同一张表的理解一致。
+ */
+export function sourceRows(document: SourceDocument): SourceRow[] {
+  const rows: SourceRow[] = []
+  for (const sheet of document.sheets) {
+    let region = ''
+    let hospital = ''
+    for (let index = 1; index < sheet.values.length; index++) {
+      const cells = sheet.values[index].map(cell => (cell ?? '').trim())
+      if (!cells.some(Boolean)) continue
+      if (cells[0]) region = cells[0]
+      if (cells[1]) hospital = cells[1]
+      const department = cells[2] ?? ''
+      const nameCell = cells[3] ?? ''
+      const { name, annotations } = splitName(nameCell)
+      const isPerson = !!name && name.length <= 24 && !SENTENCE.test(name) &&
+        !NON_PERSON.test(name) && name !== department
+      const annotation = annotations.length ? `（${annotations.join('，')}）` : ''
+      const reportId = `kdocs-cp3b7toqal3j-s${sheet.index + 1}-r${index + 1}`
+      const fixed = DOCTOR_NAME_FIXES[`s${sheet.index + 1}-r${index + 1}`]
+      rows.push({
+        reportId,
+        sheet: sheet.name,
+        row: index + 1,
+        region,
+        hospital,
+        department,
+        doctor: isPerson ? name : '',
+        doctors: fixed ?? (isPerson ? [name] : []),
+        // 团队、专家会诊、科室介绍不是医生，但姓名格里是原文，要留在这一行的线索里。
+        label: isPerson ? '' : name,
+        annotation,
+        note: (cells[4] ?? '').trim(),
+        evaluation: cleanEvaluation(cells[5] ?? ''),
+        disorders: SHEET_DISORDERS[sheet.name] ?? ['other'],
+      })
+    }
+  }
+  return rows
+}
+
+/**
+ * 源表把同一位医生的多条发言挤在同一格、用换行分开：有的是需求方自己的经历，
+ * 有的是不同署名的人对同一行的补充。并成一条会把几个人的独立发言摊成一段长文，
+ * 所以每个非空行单独成线索。首行沿用单元格的 id，其余加 -p2、-p3，仍能回指同一行。
+ *
+ * 附注与引用符号不是发言：「（特需）」「（退休）」是姓名格里的状态，
+ * 「└」「09-16」是引用树和日期戳，「朱鸿儒 课题组」是姓名格的团队名。
+ * 它们挂到相邻的那一条发言上，既不丢原文，也不各自占一条内容单薄的线索。
+ */
+function rowSegments(row: SourceRow): string[] {
+  // 姓名格里的团队名与状态附注（「黄佳团队（住院）」「（特需）」）属于这一行，
+  // 但不是一条发言：挂在紧随其后的那条发言上，既不丢原文，也不各自占一条线索。
+  const subject = [row.label, row.annotation].filter(Boolean).join('')
+  const lines = [row.note, row.evaluation].filter(Boolean).join('\n')
+    .split('\n').map(line => line.trim()).filter(Boolean)
+  const segments: string[] = []
+  let pending = subject
+  for (const line of lines) {
+    if (isNoise(line)) {
+      // 引用符号、日期戳、残留署名不是发言：并到相邻那段，不单独成条。
+      if (segments.length) segments[segments.length - 1] = `${segments[segments.length - 1]} ${line}`
+      else pending = pending ? `${pending} ${line}` : line
+      continue
+    }
+    segments.push(pending ? `${pending} ${line}` : line)
+    pending = ''
+  }
+  if (!segments.length) {
+    // 没有备注和评价时，行本身（机构、诊室、姓名）就是可核对的原文。
+    const fallback = [row.hospital, row.department, row.doctor].filter(Boolean).join(' · ')
+    if (fallback) segments.push(pending ? `${pending} ${fallback}` : fallback)
+    else if (pending) segments.push(pending)
+  }
+  return segments
 }
 
 export function reportsFromDocument(document: SourceDocument): Report[] {
-  const reports: Report[] = []
-  let section = ''
-  let region: string | undefined
-  const sections = new Set(['cptsd：', 'osdd/did：', '人格障碍：'])
-  const regions: Record<string, string> = { 港: '香港', 澳: '澳门', 台: '台湾' }
-
-  for (const page of document.pages) {
-    for (let index = 0; index < page.lines.length; index++) {
-      const line = page.lines[index]
-      if (sections.has(line)) {
-        section = line.slice(0, -1)
-        region = undefined
-        continue
-      }
-      if (regions[line]) {
-        region = regions[line]
-        continue
-      }
-      if (!section || !line.includes('：') || line.startsWith('（')) continue
-
-      const separator = line.indexOf('：')
-      const hospitalName = line.slice(0, separator)
-      const doctorNames = line.slice(separator + 1)
-        .replace(/（[^）]*）/gu, '')
-        .split(/[、，,]/u)
-        .map((name) => name.trim().replace(/等$/u, '').replace(/医生$/u, ''))
-        .filter((name) => name && !/门诊|会诊|团队|课题组/u.test(name))
-      const followingNote = page.lines[index + 1]?.startsWith('（') ? page.lines[index + 1] : undefined
-      const quote = followingNote ? `${line}\n${followingNote}` : line
-      // University names can contain a province unrelated to the hospital's location.
-      const explicitRegion = hospitalName.match(/^(河南省|陕西省|山东省|甘肃省|辽宁省|黑龙江省|新疆维吾尔自治区|广东省|浙江省|贵州省|四川省|海南省|河北省|内蒙古自治区|宁夏回族自治区|江西省|西藏自治区|上海市|重庆市)/u)?.[0]
-      const hospitalRegion = region ?? explicitRegion
-      const disorders: Report['disorders'] = section === 'cptsd'
-        ? ['cptsd']
-        : section === 'osdd/did'
-          ? ['osdd', 'did']
-          : section === '人格障碍'
-            ? ['pd']
-            : ['other']
-
-      reports.push({
-        id: `kdocs-crolzfweu2gy-p${page.page}-l${index + 1}`,
+  const items: Report[] = []
+  for (const row of sourceRows(document)) {
+    rowSegments(row).forEach((segment, index) => {
+      const quote = clip(segment, 200)
+      items.push({
+        id: index === 0 ? row.reportId : `${row.reportId}-p${index + 1}`,
         platform: 'web',
         source_channel: 'browser_session',
         source_url: document.url,
-        source_post_id: 'crOlzFWeu2GY',
+        source_post_id: 'cp3b7ToQAl3J',
         published_at_precision: 'unknown',
-        ...(hospitalRegion ? { hospital_region: hospitalRegion } : {}),
-        hospital_name_raw: hospitalName,
-        ...(doctorNames.length ? { doctor_name_raw: doctorNames.join('、') } : {}),
-        disorders,
-        ...(section === '人格障碍' ? { source_topics: ['人格障碍'] } : {}),
+        ...(row.region ? { hospital_region: row.region } : {}),
+        hospital_name_raw: row.hospital,
+        ...(row.department ? { department: row.department } : {}),
+        ...(row.doctors.length ? { doctor_name_raw: row.doctors.join('、') } : {}),
+        disorders: row.disorders,
+        ...(row.sheet === '人格障碍' ? { source_topics: ['人格障碍'] } : {}),
         stage: 'unknown',
         experience: null,
         evidence_quote: quote,
+        // 只有这一行比 200 字长时才单独存全文；与引文相同就不写，免得「展开原文」点了没变化。
+        ...(segment.length > quote.length ? { evidence_full_text: clip(segment, 2000) } : {}),
         evidence_context: {
           note_title: document.title,
-          index_in_capture: `第${page.page}页 · ${section} · 第${index + 1}${followingNote ? `–${index + 2}` : ''}段`,
+          index_in_capture: `${row.sheet} · 第${row.row}行`,
           capture_scope: SOURCE_CAPTURE,
         },
         evidence_source: 'article',
         verification: { level: 'unverified' },
-        extraction: { tool: 'kdocs-browser-transcription', captured_at: document.captured_at },
+        extraction: { tool: 'kdocs-sheet-transcription', captured_at: document.captured_at.slice(0, 10) },
         flags: { contains_minor: false, contains_selfharm_detail: false, sensitive: false },
         status: 'published',
       })
-    }
+    })
   }
-  return reports
+  return mergeDuplicateQuotes(mergeSegmentsByDoctor(items))
+}
+
+/** 病症标签的展示顺序：合并后取并集时按源文档的排列（cptsd → osdd/did → 人格障碍）。 */
+const DISORDER_ORDER: Report['disorders'] = ['cptsd', 'bpd', 'osdd', 'did', 'ptsd', 'pd', 'other']
+
+/**
+ * 同一位医生的若干条发言合成一条线索；没有医生姓名的段按原始行合并。
+ *
+ * 拆段解决的是「一条线索里塞了十几个人的话」，但医院页随即排出同一医生的十几张卡，
+ * 读者看到的是同一个名字重复十几次。合并后 id 用第一段的 id，原文按出现顺序用换行连接，
+ * 不改写、不加分隔符；段数记在 parts_count，病症取各段并集。
+ *
+ * 姓名格是科室或团队时也照同样道理合并：一行里同一个人的一次就诊经历被拆成三段，
+ * 界面上会写成三条线索，等于把一个证人算成三个。合并按原始行 id 归属，不跨行。
+ */
+function mergeSegmentsByDoctor(reports: Report[]): Report[] {
+  const merged: Report[] = []
+  const byKey = new Map<string, Report>()
+  for (const report of reports) {
+    const doctor = report.doctor_name_raw
+    const row = `${report.hospital_name_raw}\u0000${report.hospital_region ?? ''}`
+    // 有医生名按医生合并；姓名格不是个人时按原始行合并，绝不跨行。
+    const key = doctor ? `${row}\u0000${doctor}` : `${row}\u0000row:${report.id.replace(/-p\d+$/u, '')}`
+    const target = byKey.get(key)
+    if (!target) {
+      byKey.set(key, report)
+      merged.push(report)
+      continue
+    }
+    const existing = (target.evidence_full_text ?? target.evidence_quote).split('\n').map(line => line.trim()).filter(Boolean)
+    const incoming = (report.evidence_full_text ?? report.evidence_quote).split('\n').map(line => line.trim()).filter(Boolean)
+    // 同一段话在两张表里各抄了一遍（例如 cptsd 与人格障碍同时收录同一句评价）时只留一份：
+    // 合并成一张卡之后，重复的句子会在正文里挨着出现两次，读者看到的就是没去干净。
+    const text = [...existing, ...incoming.filter(line => !existing.includes(line))].join('\n')
+    const quote = clip(text, 200)
+    target.evidence_quote = quote
+    if (text.length > quote.length) target.evidence_full_text = clip(text, 2000)
+    else delete target.evidence_full_text
+    target.parts_count = (target.parts_count ?? 1) + (report.parts_count ?? 1)
+    target.disorders = DISORDER_ORDER.filter(id => target.disorders.includes(id) || report.disorders.includes(id))
+    const topics = [...(target.source_topics ?? []), ...(report.source_topics ?? [])]
+    if (topics.length) target.source_topics = [...new Set(topics)]
+  }
+  return merged
+}
+
+/**
+ * 同一家医院里两位医生共用同一段评价时只留一条。
+ *
+ * 表格里出现「同一个人写下一句『有反馈书面得到多重人格障碍诊断』，同时挂给同一科室的两位医生」，
+ * 拆段与按医生合并都拦不住它：合并后医院页会并排出现两张一字不差的卡。
+ * 姓名栏按原表顺序写成「曹晓华、王祎坤」，界面本来就按分隔符拆成两个医生按钮，
+ * 两位医生都还点得进去，只是不再重复同一段文字。
+ */
+function mergeDuplicateQuotes(reports: Report[]): Report[] {
+  const normalize = (text: string) => text.replace(/\s+/gu, '')
+  const merged: Report[] = []
+  const byQuote = new Map<string, Report>()
+  for (const report of reports) {
+    const key = `${report.hospital_name_raw}\u0000${report.hospital_region ?? ''}\u0000${normalize(report.evidence_quote)}\u0000${normalize(report.evidence_full_text ?? '')}`
+    const target = byQuote.get(key)
+    if (!target) {
+      byQuote.set(key, report)
+      merged.push(report)
+      continue
+    }
+    const names = [target.doctor_name_raw, report.doctor_name_raw].filter((name): name is string => Boolean(name))
+    if (names.length) target.doctor_name_raw = [...new Set(names.flatMap((name) => name.split('、')))].join('、')
+    target.disorders = DISORDER_ORDER.filter(id => target.disorders.includes(id) || report.disorders.includes(id))
+    target.parts_count = (target.parts_count ?? 1) + (report.parts_count ?? 1)
+    const topics = [...(target.source_topics ?? []), ...(report.source_topics ?? [])]
+    if (topics.length) target.source_topics = [...new Set(topics)]
+  }
+  return merged
+}
+
+/**
+ * 医生档案只承载与个人绑定的字段：诊室取首次出现的非空值，备注与评价按线索合并。
+ * 同一医生可能出现在多张表里且备注、评价各不相同，因此合并而不是覆盖。
+ * 表里没写的字段一律留空，界面按「无」呈现；不写「未录入」这类录入过程用语。
+ * 人工补上的姓名叫（DOCTOR_NAME_FIXES）只进线索，不在这里新建档案：
+ * 被提到的人不该继承别人那一行的评价。
+ */
+export function doctorsFromDocument(document: SourceDocument, reports: Report[]): Doctor[] {
+  const hospitalOf = new Map(reports.map(report => [report.id, report.hospital_id]))
+  // 跨表合并会把后面那行的线索并进前一行，后一行的 id 就不再出现在 reports 里。
+  // 那一行的医生仍然存在（他确实在这家机构出诊），所以按机构名与地区兜底找同一家机构。
+  const hospitalByName = new Map<string, string>()
+  for (const report of reports) {
+    if (!report.hospital_id) continue
+    const key = `${report.hospital_name_raw}\u0000${report.hospital_region ?? ''}`
+    if (!hospitalByName.has(key)) hospitalByName.set(key, report.hospital_id)
+  }
+  const groups = new Map<string, { hospitalId: string; name: string; department: string; notes: string[]; evaluations: string[] }>()
+  for (const row of sourceRows(document)) {
+    const hospitalId = hospitalOf.get(row.reportId) ?? hospitalByName.get(`${row.hospital}\u0000${row.region}`)
+    if (!row.doctor || !hospitalId) continue
+    const key = `${hospitalId}\u0000${row.doctor}`
+    const group = groups.get(key) ?? { hospitalId, name: row.doctor, department: '', notes: [], evaluations: [] }
+    if (!group.department && row.department) group.department = row.department
+    if (row.note && !group.notes.includes(row.note)) group.notes.push(row.note)
+    if (row.evaluation && !group.evaluations.includes(row.evaluation)) group.evaluations.push(row.evaluation)
+    groups.set(key, group)
+  }
+  return [...groups.values()].map(group => ({
+    id: `kdocs-doctor-${createHash('sha1').update(`${group.hospitalId}\u0000${group.name}`).digest('hex').slice(0, 12)}`,
+    name: group.name,
+    hospital_id: group.hospitalId,
+    department: group.department,
+    // 职称表里没有，留空让界面走「无」，不写占位词
+    title: '',
+    credentials: [],
+    profile_urls: [],
+    specialties: [],
+    official_sources: [],
+    ...(group.notes.length ? { note: group.notes.join('\n') } : {}),
+    ...(group.evaluations.length ? { evaluation: group.evaluations.join('\n\n') } : {}),
+  }))
+}
+
+/**
+ * 挂不上机构的线索标成 unlinked：原文照留，但不算已发布。
+ * 全国头行、省份合计、医院页都只数 published，三处才会落到同一个数字；
+ * 同时写明为什么挂不上，后续补定位时不至于从头再查一遍。
+ */
+export function markUnlinked(reports: Report[], run: LocationRun): Report[] {
+  return reports.map(report => {
+    if (report.hospital_id) return report
+    const result = run.results.find(item => item.name === report.hospital_name_raw)
+    return {
+      ...report,
+      status: 'unlinked' as const,
+      unlinked_reason: result ? `机构未定位：${result.reason}` : '机构未定位：定位依据里没有这家机构',
+    }
+  })
 }
 
 export function reportsWithLocations(document: SourceDocument): Report[] {
@@ -98,19 +386,27 @@ export function reportsWithLocations(document: SourceDocument): Report[] {
   if (!existsSync(LOCATION_EVIDENCE)) return reports
   const run = readJson<LocationRun>(LOCATION_EVIDENCE)
   if (run.source_url !== SOURCE_URL) throw new Error('定位依据必须对应当前主线来源')
-  return linkLocationReports(reports, run)
+  return markUnlinked(linkLocationReports(reports, run), run)
+}
+
+export function doctorsWithLocations(document: SourceDocument, reports: Report[]): Doctor[] {
+  return doctorsFromDocument(document, reports)
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const document = readJson<SourceDocument>(resolve(SOURCE_CAPTURE))
-  if (document.url !== SOURCE_URL || document.pages.length !== document.page_count) {
-    throw new Error('来源链接或分页数量不符')
+  if (document.url !== SOURCE_URL || document.sheets.length === 0 || document.sheets.some(sheet => sheet.values.length < 2)) {
+    throw new Error('来源链接或工作表结构不符')
   }
-  const output = reportsFileSchema.parse({
+  const items = reportsWithLocations(document)
+  const updatedAt = document.captured_at.slice(0, 10)
+  const reportFile = reportsFileSchema.parse({ schema_version: '1.0.0', updated_at: updatedAt, items })
+  const doctorFile = doctorsFileSchema.parse({
     schema_version: '1.0.0',
-    updated_at: document.captured_at,
-    items: reportsWithLocations(document),
+    updated_at: updatedAt,
+    items: doctorsWithLocations(document, items),
   })
-  writeJson(CURATED_FILES.reports, output)
-  console.log(`✓ 新源文本入库：${document.page_count} 页，${output.items.length} 条机构名单，保留 ${output.items.filter(report => report.hospital_id).length} 条定位关联`)
+  writeJson(CURATED_FILES.reports, reportFile)
+  writeJson(CURATED_FILES.doctors, doctorFile)
+  console.log(`✓ 新源表格入库：${document.sheets.length} 张工作表，${reportFile.items.length} 条线索，${doctorFile.items.length} 位医生，保留 ${items.filter(report => report.hospital_id).length} 条定位关联`)
 }

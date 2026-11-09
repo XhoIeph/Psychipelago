@@ -1,0 +1,4637 @@
+{
+  "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
+  "generated_at": "2026-11-09T11:54:52.918Z",
+  "requests": 11,
+  "requests_total": 11,
+  "results": [
+    {
+      "name": "北京回龙观医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r2",
+        "kdocs-cp3b7toqal3j-s1-r3",
+        "kdocs-cp3b7toqal3j-s1-r4",
+        "kdocs-cp3b7toqal3j-s1-r5",
+        "kdocs-cp3b7toqal3j-s1-r6",
+        "kdocs-cp3b7toqal3j-s1-r7",
+        "kdocs-cp3b7toqal3j-s2-r2",
+        "kdocs-cp3b7toqal3j-s2-r3",
+        "kdocs-cp3b7toqal3j-s3-r2",
+        "kdocs-cp3b7toqal3j-s3-r3",
+        "kdocs-cp3b7toqal3j-s3-r9",
+        "kdocs-cp3b7toqal3j-s3-r10",
+        "kdocs-cp3b7toqal3j-s3-r11"
+      ],
+      "region": "北京",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B000A0989A",
+          "name": "首都医科大学附属北京回龙观医院",
+          "address": "南店路7号",
+          "location": "116.329899,40.066758",
+          "pname": "北京市",
+          "cityname": "北京市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B000A0989A",
+        "name": "首都医科大学附属北京回龙观医院",
+        "address": "南店路7号",
+        "location": "116.329899,40.066758",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "首都医科大学附属北京回龙观医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "北京大学第六医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r8",
+        "kdocs-cp3b7toqal3j-s1-r9",
+        "kdocs-cp3b7toqal3j-s2-r6",
+        "kdocs-cp3b7toqal3j-s3-r5",
+        "kdocs-cp3b7toqal3j-s3-r6",
+        "kdocs-cp3b7toqal3j-s3-r7",
+        "kdocs-cp3b7toqal3j-s3-r8"
+      ],
+      "region": "北京",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B000A2EF2C",
+          "name": "北京大学第六医院海淀院区",
+          "address": "花园北路51号",
+          "location": "116.357522,39.982328",
+          "pname": "北京市",
+          "cityname": "北京市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B000A2EF2C",
+        "name": "北京大学第六医院海淀院区",
+        "address": "花园北路51号",
+        "location": "116.357522,39.982328",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "北京大学第六医院海淀院区",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "北大国际医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r10"
+      ],
+      "region": "北京",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B000A9Q0A3",
+          "name": "北京大学国际医院",
+          "address": "中关村生命科学园生命园路1号",
+          "location": "116.263513,40.101167",
+          "pname": "北京市",
+          "cityname": "北京市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B000A9Q0A3",
+        "name": "北京大学国际医院",
+        "address": "中关村生命科学园生命园路1号",
+        "location": "116.263513,40.101167",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "北京大学国际医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "河南省郑州大学第一附属医院东区",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r11"
+      ],
+      "region": "河南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFF90QNJ",
+          "name": "郑州大学第一附属医院(东院区)",
+          "address": "龙湖中环路1号(郑大一附院东区地铁站A口步行150米)",
+          "location": "113.762848,34.797874",
+          "pname": "河南省",
+          "cityname": "郑州市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFF90QNJ",
+        "name": "郑州大学第一附属医院(东院区)",
+        "address": "龙湖中环路1号(郑大一附院东区地铁站A口步行150米)",
+        "location": "113.762848,34.797874",
+        "pname": "河南省",
+        "cityname": "郑州市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "郑州大学第一附属医院(东院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "河南省精神卫生中心/新乡医学院第二附属医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r12"
+      ],
+      "region": "河南",
+      "matched_name": "河南省精神卫生中心/新乡医学院第二附属医院",
+      "status": "not_found",
+      "reason": "高德候选尚未匹配到机构名称",
+      "candidates": []
+    },
+    {
+      "name": "河北唐山华北理工大学附属医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r13"
+      ],
+      "region": "河北",
+      "matched_name": "河北唐山华北理工大学附属医院",
+      "status": "not_found",
+      "reason": "高德候选尚未匹配到机构名称",
+      "candidates": []
+    },
+    {
+      "name": "陕西省宝鸡市康复医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r14"
+      ],
+      "region": "陕西",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B03950291N",
+          "name": "宝鸡市康复医院",
+          "address": "群众路241号",
+          "location": "107.156063,34.387560",
+          "pname": "陕西省",
+          "cityname": "宝鸡市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B03950291N",
+        "name": "宝鸡市康复医院",
+        "address": "群众路241号",
+        "location": "107.156063,34.387560",
+        "pname": "陕西省",
+        "cityname": "宝鸡市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "宝鸡市康复医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "青岛精神卫生中心（市北院区）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r15"
+      ],
+      "region": "山东",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B02140828V",
+          "name": "青岛市精神卫生中心",
+          "address": "南京路299号",
+          "location": "120.385539,36.102571",
+          "pname": "山东省",
+          "cityname": "青岛市",
+          "adcode": "",
+          "typecode": "090210|090100"
+        }
+      ],
+      "chosen": {
+        "id": "B02140828V",
+        "name": "青岛市精神卫生中心",
+        "address": "南京路299号",
+        "location": "120.385539,36.102571",
+        "pname": "山东省",
+        "cityname": "青岛市",
+        "adcode": "",
+        "typecode": "090210|090100"
+      },
+      "matched_name": "青岛市精神卫生中心",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "兰州大学第二医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r16"
+      ],
+      "region": "甘肃",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFHX8HR2",
+          "name": "兰州大学第二医院本部生殖医学中心",
+          "address": "萃英门82-176号附近",
+          "location": "103.811915,36.060375",
+          "pname": "甘肃省",
+          "cityname": "兰州市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFHX8HR2",
+        "name": "兰州大学第二医院本部生殖医学中心",
+        "address": "萃英门82-176号附近",
+        "location": "103.811915,36.060375",
+        "pname": "甘肃省",
+        "cityname": "兰州市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "兰州大学第二医院本部生殖医学中心",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "银川市第一人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r17",
+        "kdocs-cp3b7toqal3j-s3-r36"
+      ],
+      "region": "宁夏",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B03B700EE3",
+          "name": "银川市第一人民医院",
+          "address": "利群西街40号",
+          "location": "106.273037,38.461558",
+          "pname": "宁夏回族自治区",
+          "cityname": "银川市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B03B700EE3",
+        "name": "银川市第一人民医院",
+        "address": "利群西街40号",
+        "location": "106.273037,38.461558",
+        "pname": "宁夏回族自治区",
+        "cityname": "银川市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "银川市第一人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "喀什地区第一人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r18"
+      ],
+      "region": "新疆",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B03E6002Z0",
+          "name": "喀什地区第一人民医院(总院区)",
+          "address": "机场路66号",
+          "location": "75.994321,39.483367",
+          "pname": "新疆维吾尔自治区",
+          "cityname": "喀什地区",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B03E6002Z0",
+        "name": "喀什地区第一人民医院(总院区)",
+        "address": "机场路66号",
+        "location": "75.994321,39.483367",
+        "pname": "新疆维吾尔自治区",
+        "cityname": "喀什地区",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "喀什地区第一人民医院(总院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "新疆医科大学第一附属医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r19",
+        "kdocs-cp3b7toqal3j-s3-r45"
+      ],
+      "region": "新疆",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B03DF060QX",
+          "name": "新疆医科大学第一附属医院",
+          "address": "鲤鱼山路137号",
+          "location": "87.581824,43.837665",
+          "pname": "新疆维吾尔自治区",
+          "cityname": "乌鲁木齐市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B03DF060QX",
+        "name": "新疆医科大学第一附属医院",
+        "address": "鲤鱼山路137号",
+        "location": "87.581824,43.837665",
+        "pname": "新疆维吾尔自治区",
+        "cityname": "乌鲁木齐市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "新疆医科大学第一附属医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "新疆维吾尔自治区人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r20",
+        "kdocs-cp3b7toqal3j-s1-r21",
+        "kdocs-cp3b7toqal3j-s3-r47"
+      ],
+      "region": "新疆",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B03DF04GDA",
+          "name": "新疆维吾尔自治区人民医院",
+          "address": "天池路91号",
+          "location": "87.613961,43.783896",
+          "pname": "新疆维吾尔自治区",
+          "cityname": "乌鲁木齐市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B03DF04GDA",
+        "name": "新疆维吾尔自治区人民医院",
+        "address": "天池路91号",
+        "location": "87.613961,43.783896",
+        "pname": "新疆维吾尔自治区",
+        "cityname": "乌鲁木齐市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "新疆维吾尔自治区人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "上海市同济大学附属同济医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r22",
+        "kdocs-cp3b7toqal3j-s1-r23"
+      ],
+      "region": "上海",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00155KAOC",
+          "name": "同济大学附属同济医院",
+          "address": "新村路389号",
+          "location": "121.431316,31.266805",
+          "pname": "上海市",
+          "cityname": "上海市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B00155KAOC",
+        "name": "同济大学附属同济医院",
+        "address": "新村路389号",
+        "location": "121.431316,31.266805",
+        "pname": "上海市",
+        "cityname": "上海市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "同济大学附属同济医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "上海新华医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r24"
+      ],
+      "region": "上海",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00155KEIX",
+          "name": "上海交通大学医学院附属新华医院",
+          "address": "控江路1665号(江浦路地铁站2号口步行120米)",
+          "location": "121.517681,31.273130",
+          "pname": "上海市",
+          "cityname": "上海市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B00155KEIX",
+        "name": "上海交通大学医学院附属新华医院",
+        "address": "控江路1665号(江浦路地铁站2号口步行120米)",
+        "location": "121.517681,31.273130",
+        "pname": "上海市",
+        "cityname": "上海市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "上海交通大学医学院附属新华医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "上海市精神卫生中心",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r25",
+        "kdocs-cp3b7toqal3j-s1-r26",
+        "kdocs-cp3b7toqal3j-s1-r27",
+        "kdocs-cp3b7toqal3j-s2-r25",
+        "kdocs-cp3b7toqal3j-s2-r26",
+        "kdocs-cp3b7toqal3j-s2-r27",
+        "kdocs-cp3b7toqal3j-s2-r28",
+        "kdocs-cp3b7toqal3j-s3-r49",
+        "kdocs-cp3b7toqal3j-s3-r51",
+        "kdocs-cp3b7toqal3j-s3-r52",
+        "kdocs-cp3b7toqal3j-s3-r53",
+        "kdocs-cp3b7toqal3j-s3-r54",
+        "kdocs-cp3b7toqal3j-s3-r55",
+        "kdocs-cp3b7toqal3j-s3-r56"
+      ],
+      "region": "上海",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFGZNGK5",
+          "name": "上海市精神卫生中心",
+          "address": "沪闵公路与瓶北路交叉口西北120米",
+          "location": "121.405865,31.055542",
+          "pname": "上海市",
+          "cityname": "上海市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFGZNGK5",
+        "name": "上海市精神卫生中心",
+        "address": "沪闵公路与瓶北路交叉口西北120米",
+        "location": "121.405865,31.055542",
+        "pname": "上海市",
+        "cityname": "上海市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "上海市精神卫生中心",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "上海和睦家医院（私立，普通门诊就诊费用500-1600，心理咨询2400-2520每45分钟）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r28",
+        "kdocs-cp3b7toqal3j-s1-r29"
+      ],
+      "region": "上海",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFLCH87I",
+          "name": "上海和睦家医院(长宁院区)",
+          "address": "平塘路699号",
+          "location": "121.364921,31.206590",
+          "pname": "上海市",
+          "cityname": "上海市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFLCH87I",
+        "name": "上海和睦家医院(长宁院区)",
+        "address": "平塘路699号",
+        "location": "121.364921,31.206590",
+        "pname": "上海市",
+        "cityname": "上海市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "上海和睦家医院(长宁院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "广州医科大学附属脑科医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r30",
+        "kdocs-cp3b7toqal3j-s1-r31",
+        "kdocs-cp3b7toqal3j-s1-r32",
+        "kdocs-cp3b7toqal3j-s1-r33",
+        "kdocs-cp3b7toqal3j-s1-r34",
+        "kdocs-cp3b7toqal3j-s1-r35",
+        "kdocs-cp3b7toqal3j-s2-r31",
+        "kdocs-cp3b7toqal3j-s2-r32"
+      ],
+      "region": "广东",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00140HU1B",
+          "name": "广州医科大学附属脑科医院(芳村总院)",
+          "address": "明心路36号",
+          "location": "113.240369,23.098548",
+          "pname": "广东省",
+          "cityname": "广州市",
+          "adcode": "",
+          "typecode": "090208"
+        }
+      ],
+      "chosen": {
+        "id": "B00140HU1B",
+        "name": "广州医科大学附属脑科医院(芳村总院)",
+        "address": "明心路36号",
+        "location": "113.240369,23.098548",
+        "pname": "广东省",
+        "cityname": "广州市",
+        "adcode": "",
+        "typecode": "090208"
+      },
+      "matched_name": "广州医科大学附属脑科医院(芳村总院)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "广东省人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r36",
+        "kdocs-cp3b7toqal3j-s2-r33"
+      ],
+      "region": "广东",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00140UERJ",
+          "name": "广东省人民医院",
+          "address": "中山二路106号",
+          "location": "113.287272,23.125087",
+          "pname": "广东省",
+          "cityname": "广州市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B00140UERJ",
+        "name": "广东省人民医院",
+        "address": "中山二路106号",
+        "location": "113.287272,23.125087",
+        "pname": "广东省",
+        "cityname": "广州市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "广东省人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "深圳精神卫生中心/康宁医院（坪山院区）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r37",
+        "kdocs-cp3b7toqal3j-s1-r38"
+      ],
+      "region": "广东",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFKC2IK8",
+          "name": "深圳市康宁医院(坪山院区)",
+          "address": "碧岭街道汤坑社区振碧路77号",
+          "location": "114.304368,22.661791",
+          "pname": "广东省",
+          "cityname": "深圳市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFKC2IK8",
+        "name": "深圳市康宁医院(坪山院区)",
+        "address": "碧岭街道汤坑社区振碧路77号",
+        "location": "114.304368,22.661791",
+        "pname": "广东省",
+        "cityname": "深圳市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "深圳市康宁医院(坪山院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "厦门仙岳医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r39"
+      ],
+      "region": "福建",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B025003YIH",
+          "name": "厦门市仙岳医院",
+          "address": "仙岳路399号",
+          "location": "118.111082,24.495411",
+          "pname": "福建省",
+          "cityname": "厦门市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B025003YIH",
+        "name": "厦门市仙岳医院",
+        "address": "仙岳路399号",
+        "location": "118.111082,24.495411",
+        "pname": "福建省",
+        "cityname": "厦门市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "厦门市仙岳医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "厦门弘爱医院（私立）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r40"
+      ],
+      "region": "福建",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFHIJDBC",
+          "name": "厦门弘爱医院",
+          "address": "仙岳路3777号",
+          "location": "118.171482,24.506175",
+          "pname": "福建省",
+          "cityname": "厦门市",
+          "adcode": "",
+          "typecode": "090101|090200"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFHIJDBC",
+        "name": "厦门弘爱医院",
+        "address": "仙岳路3777号",
+        "location": "118.171482,24.506175",
+        "pname": "福建省",
+        "cityname": "厦门市",
+        "adcode": "",
+        "typecode": "090101|090200"
+      },
+      "matched_name": "厦门弘爱医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "福州第四医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r41"
+      ],
+      "region": "福建",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B024F05EJN",
+          "name": "福州市第二总医院神经精神病防治院福州院区",
+          "address": "南二环451号",
+          "location": "119.289736,26.025720",
+          "pname": "福建省",
+          "cityname": "福州市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B024F05EJN",
+        "name": "福州市第二总医院神经精神病防治院福州院区",
+        "address": "南二环451号",
+        "location": "119.289736,26.025720",
+        "pname": "福建省",
+        "cityname": "福州市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "福州市第二总医院神经精神病防治院福州院区",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "广西南宁第五医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r42"
+      ],
+      "region": "广西",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0303054BL",
+          "name": "南宁市第五人民医院",
+          "address": "邕武路7号",
+          "location": "108.337334,22.858434",
+          "pname": "广西壮族自治区",
+          "cityname": "南宁市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B0303054BL",
+        "name": "南宁市第五人民医院",
+        "address": "邕武路7号",
+        "location": "108.337334,22.858434",
+        "pname": "广西壮族自治区",
+        "cityname": "南宁市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "南宁市第五人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "武汉市精神卫生中心（二七院区）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r43",
+        "kdocs-cp3b7toqal3j-s1-r44",
+        "kdocs-cp3b7toqal3j-s1-r45",
+        "kdocs-cp3b7toqal3j-s1-r46"
+      ],
+      "region": "湖北",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFF49IMU",
+          "name": "武汉市精神卫生中心二七院区",
+          "address": "工农兵路89号",
+          "location": "114.308964,30.624863",
+          "pname": "湖北省",
+          "cityname": "武汉市",
+          "adcode": "",
+          "typecode": "090200"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFF49IMU",
+        "name": "武汉市精神卫生中心二七院区",
+        "address": "工农兵路89号",
+        "location": "114.308964,30.624863",
+        "pname": "湖北省",
+        "cityname": "武汉市",
+        "adcode": "",
+        "typecode": "090200"
+      },
+      "matched_name": "武汉市精神卫生中心二七院区",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "浙江省立同德医院（翠苑院区）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r47"
+      ],
+      "region": "浙江",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B023B0BY5O",
+          "name": "浙江省立同德医院翠苑院区",
+          "address": "古翠路234号",
+          "location": "120.120497,30.284147",
+          "pname": "浙江省",
+          "cityname": "杭州市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B023B0BY5O",
+        "name": "浙江省立同德医院翠苑院区",
+        "address": "古翠路234号",
+        "location": "120.120497,30.284147",
+        "pname": "浙江省",
+        "cityname": "杭州市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "浙江省立同德医院翠苑院区",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "南京脑科医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r48",
+        "kdocs-cp3b7toqal3j-s3-r86",
+        "kdocs-cp3b7toqal3j-s3-r87"
+      ],
+      "region": "江苏",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00190B8C9",
+          "name": "南京脑科医院",
+          "address": "广州路264号",
+          "location": "118.768416,32.050252",
+          "pname": "江苏省",
+          "cityname": "南京市",
+          "adcode": "",
+          "typecode": "090208"
+        }
+      ],
+      "chosen": {
+        "id": "B00190B8C9",
+        "name": "南京脑科医院",
+        "address": "广州路264号",
+        "location": "118.768416,32.050252",
+        "pname": "江苏省",
+        "cityname": "南京市",
+        "adcode": "",
+        "typecode": "090208"
+      },
+      "matched_name": "南京脑科医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "南京 泰康仙林鼓楼医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r49"
+      ],
+      "region": "江苏",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFI2EN48",
+          "name": "泰康仙林鼓楼医院",
+          "address": "仙林街道灵山北路188号",
+          "location": "118.936142,32.094878",
+          "pname": "江苏省",
+          "cityname": "南京市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFI2EN48",
+        "name": "泰康仙林鼓楼医院",
+        "address": "仙林街道灵山北路188号",
+        "location": "118.936142,32.094878",
+        "pname": "江苏省",
+        "cityname": "南京市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "泰康仙林鼓楼医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "四川大学华西医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r50",
+        "kdocs-cp3b7toqal3j-s2-r37",
+        "kdocs-cp3b7toqal3j-s2-r38",
+        "kdocs-cp3b7toqal3j-s3-r119",
+        "kdocs-cp3b7toqal3j-s3-r120"
+      ],
+      "region": "四川",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B001C05YG2",
+          "name": "四川大学华西医院院本部",
+          "address": "国学巷37号",
+          "location": "104.060517,30.641485",
+          "pname": "四川省",
+          "cityname": "成都市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B001C05YG2",
+        "name": "四川大学华西医院院本部",
+        "address": "国学巷37号",
+        "location": "104.060517,30.641485",
+        "pname": "四川省",
+        "cityname": "成都市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "四川大学华西医院院本部",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "四川省精神医学中心",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r51",
+        "kdocs-cp3b7toqal3j-s2-r42"
+      ],
+      "region": "四川",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFJAYKFH",
+          "name": "四川省精神医学中心(四川省人民医院温江院区)",
+          "address": "芙蓉大道二段33号",
+          "location": "103.898369,30.713407",
+          "pname": "四川省",
+          "cityname": "成都市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFJAYKFH",
+        "name": "四川省精神医学中心(四川省人民医院温江院区)",
+        "address": "芙蓉大道二段33号",
+        "location": "103.898369,30.713407",
+        "pname": "四川省",
+        "cityname": "成都市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "四川省精神医学中心(四川省人民医院温江院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "重庆精神卫生中心",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r52"
+      ],
+      "region": "四川",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00170BECF",
+          "name": "重庆市精神卫生中心",
+          "address": "金紫山102号",
+          "location": "106.530579,29.593684",
+          "pname": "重庆市",
+          "cityname": "重庆市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B00170BECF",
+        "name": "重庆市精神卫生中心",
+        "address": "金紫山102号",
+        "location": "106.530579,29.593684",
+        "pname": "重庆市",
+        "cityname": "重庆市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "重庆市精神卫生中心",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "贵州省贵阳正宇铁路医院（私立）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r53"
+      ],
+      "region": "贵州",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0353007B8",
+          "name": "贵阳正宇铁路医院",
+          "address": "四通街8号(贵阳火车站地铁站B口步行280米)",
+          "location": "106.705352,26.555707",
+          "pname": "贵州省",
+          "cityname": "贵阳市",
+          "adcode": "",
+          "typecode": "090000"
+        }
+      ],
+      "chosen": {
+        "id": "B0353007B8",
+        "name": "贵阳正宇铁路医院",
+        "address": "四通街8号(贵阳火车站地铁站B口步行280米)",
+        "location": "106.705352,26.555707",
+        "pname": "贵州省",
+        "cityname": "贵阳市",
+        "adcode": "",
+        "typecode": "090000"
+      },
+      "matched_name": "贵阳正宇铁路医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "贵州医科大学附属医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r54"
+      ],
+      "region": "贵州",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFG7AA3A",
+          "name": "贵州医科大学附属医院",
+          "address": "北京路16号(贵医地铁站A口步行110米)",
+          "location": "106.713506,26.594299",
+          "pname": "贵州省",
+          "cityname": "贵阳市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFG7AA3A",
+        "name": "贵州医科大学附属医院",
+        "address": "北京路16号(贵医地铁站A口步行110米)",
+        "location": "106.713506,26.594299",
+        "pname": "贵州省",
+        "cityname": "贵阳市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "贵州医科大学附属医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "昆明医科大学第一附属医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r55"
+      ],
+      "region": "云南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B036702A3E",
+          "name": "昆明医科大学第一附属医院(西昌路院区)",
+          "address": "西昌路295号",
+          "location": "102.693049,25.042449",
+          "pname": "云南省",
+          "cityname": "昆明市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B036702A3E",
+        "name": "昆明医科大学第一附属医院(西昌路院区)",
+        "address": "西昌路295号",
+        "location": "102.693049,25.042449",
+        "pname": "云南省",
+        "cityname": "昆明市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "昆明医科大学第一附属医院(西昌路院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "拉萨市人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s1-r56",
+        "kdocs-cp3b7toqal3j-s3-r151"
+      ],
+      "region": "西藏",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B037B00887",
+          "name": "拉萨市人民医院主院区",
+          "address": "北京中路1号",
+          "location": "91.142123,29.652731",
+          "pname": "西藏自治区",
+          "cityname": "拉萨市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B037B00887",
+        "name": "拉萨市人民医院主院区",
+        "address": "北京中路1号",
+        "location": "91.142123,29.652731",
+        "pname": "西藏自治区",
+        "cityname": "拉萨市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "拉萨市人民医院主院区",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "北京安定医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r5"
+      ],
+      "region": "北京",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B000A80ZRG",
+          "name": "首都医科大学附属北京安定医院",
+          "address": "安康胡同5号",
+          "location": "116.376791,39.952767",
+          "pname": "北京市",
+          "cityname": "北京市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B000A80ZRG",
+        "name": "首都医科大学附属北京安定医院",
+        "address": "安康胡同5号",
+        "location": "116.376791,39.952767",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "首都医科大学附属北京安定医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "郑大一附院东区",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r7"
+      ],
+      "region": "河南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFF90QNJ",
+          "name": "郑州大学第一附属医院(东院区)",
+          "address": "龙湖中环路1号(郑大一附院东区地铁站A口步行150米)",
+          "location": "113.762848,34.797874",
+          "pname": "河南省",
+          "cityname": "郑州市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFF90QNJ",
+        "name": "郑州大学第一附属医院(东院区)",
+        "address": "龙湖中环路1号(郑大一附院东区地铁站A口步行150米)",
+        "location": "113.762848,34.797874",
+        "pname": "河南省",
+        "cityname": "郑州市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "郑州大学第一附属医院(东院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "山西医科大学第一附属医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r8"
+      ],
+      "region": "山西",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B015F0038D",
+          "name": "山西医科大学第一医院(解放路院区)",
+          "address": "解放南路85号",
+          "location": "112.555397,37.853330",
+          "pname": "山西省",
+          "cityname": "太原市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B015F0038D",
+        "name": "山西医科大学第一医院(解放路院区)",
+        "address": "解放南路85号",
+        "location": "112.555397,37.853330",
+        "pname": "山西省",
+        "cityname": "太原市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "山西医科大学第一医院(解放路院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "陕西省西安市西京医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r10"
+      ],
+      "region": "陕西",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B001D0208C",
+          "name": "西京医院",
+          "address": "长乐西路129号",
+          "location": "108.988276,34.270598",
+          "pname": "陕西省",
+          "cityname": "西安市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B001D0208C",
+        "name": "西京医院",
+        "address": "长乐西路129号",
+        "location": "108.988276,34.270598",
+        "pname": "陕西省",
+        "cityname": "西安市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "西京医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "辽宁省肿瘤医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r11"
+      ],
+      "region": "辽宁",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B001802FB0",
+          "name": "辽宁省肿瘤医院",
+          "address": "万泉街道小河沿路44号",
+          "location": "123.472866,41.794073",
+          "pname": "辽宁省",
+          "cityname": "沈阳市",
+          "adcode": "",
+          "typecode": "090207"
+        }
+      ],
+      "chosen": {
+        "id": "B001802FB0",
+        "name": "辽宁省肿瘤医院",
+        "address": "万泉街道小河沿路44号",
+        "location": "123.472866,41.794073",
+        "pname": "辽宁省",
+        "cityname": "沈阳市",
+        "adcode": "",
+        "typecode": "090207"
+      },
+      "matched_name": "辽宁省肿瘤医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "辽宁省中国医科大学附属盛京医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r12",
+        "kdocs-cp3b7toqal3j-s2-r13"
+      ],
+      "region": "辽宁",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00180AHOX",
+          "name": "中国医科大学附属盛京医院南湖院区",
+          "address": "三好街36号",
+          "location": "123.426265,41.773101",
+          "pname": "辽宁省",
+          "cityname": "沈阳市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B00180AHOX",
+        "name": "中国医科大学附属盛京医院南湖院区",
+        "address": "三好街36号",
+        "location": "123.426265,41.773101",
+        "pname": "辽宁省",
+        "cityname": "沈阳市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "中国医科大学附属盛京医院南湖院区",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "大连市第七人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r14",
+        "kdocs-cp3b7toqal3j-s2-r15"
+      ],
+      "region": "辽宁",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B019B01AD1",
+          "name": "大连市第七人民医院",
+          "address": "凌水路189号",
+          "location": "121.522685,38.876208",
+          "pname": "辽宁省",
+          "cityname": "大连市",
+          "adcode": "",
+          "typecode": "090200"
+        }
+      ],
+      "chosen": {
+        "id": "B019B01AD1",
+        "name": "大连市第七人民医院",
+        "address": "凌水路189号",
+        "location": "121.522685,38.876208",
+        "pname": "辽宁省",
+        "cityname": "大连市",
+        "adcode": "",
+        "typecode": "090200"
+      },
+      "matched_name": "大连市第七人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "齐齐哈尔市精神卫生中心",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r16"
+      ],
+      "region": "黑龙江",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B01C402231",
+          "name": "齐齐哈尔市精神卫生中心",
+          "address": "林化路28号",
+          "location": "123.926096,47.352192",
+          "pname": "黑龙江省",
+          "cityname": "齐齐哈尔市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B01C402231",
+        "name": "齐齐哈尔市精神卫生中心",
+        "address": "林化路28号",
+        "location": "123.926096,47.352192",
+        "pname": "黑龙江省",
+        "cityname": "齐齐哈尔市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "齐齐哈尔市精神卫生中心",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "黑龙江省大庆市第三医院精神科",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r17"
+      ],
+      "region": "黑龙江",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B01CB00XZT",
+          "name": "大庆市第三医院",
+          "address": "让杜路192号",
+          "location": "124.856651,46.674593",
+          "pname": "黑龙江省",
+          "cityname": "大庆市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B01CB00XZT",
+        "name": "大庆市第三医院",
+        "address": "让杜路192号",
+        "location": "124.856651,46.674593",
+        "pname": "黑龙江省",
+        "cityname": "大庆市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "大庆市第三医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "甘肃省第二人民医院（西北民族大学附属医院）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r18"
+      ],
+      "region": "甘肃",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B03A30APUL",
+          "name": "甘肃省第二人民医院",
+          "address": "和政西街1号",
+          "location": "103.837623,36.040614",
+          "pname": "甘肃省",
+          "cityname": "兰州市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B03A30APUL",
+        "name": "甘肃省第二人民医院",
+        "address": "和政西街1号",
+        "location": "103.837623,36.040614",
+        "pname": "甘肃省",
+        "cityname": "兰州市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "甘肃省第二人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "甘肃 兰州大学第二医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r19"
+      ],
+      "region": "甘肃",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFHX8HR2",
+          "name": "兰州大学第二医院本部生殖医学中心",
+          "address": "萃英门82-176号附近",
+          "location": "103.811915,36.060375",
+          "pname": "甘肃省",
+          "cityname": "兰州市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFHX8HR2",
+        "name": "兰州大学第二医院本部生殖医学中心",
+        "address": "萃英门82-176号附近",
+        "location": "103.811915,36.060375",
+        "pname": "甘肃省",
+        "cityname": "兰州市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "兰州大学第二医院本部生殖医学中心",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "青岛市精神卫生中心（第七人民医院）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r20",
+        "kdocs-cp3b7toqal3j-s2-r21",
+        "kdocs-cp3b7toqal3j-s2-r22"
+      ],
+      "region": "山东",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B02140828V",
+          "name": "青岛市精神卫生中心",
+          "address": "南京路299号",
+          "location": "120.385539,36.102571",
+          "pname": "山东省",
+          "cityname": "青岛市",
+          "adcode": "",
+          "typecode": "090210|090100"
+        }
+      ],
+      "chosen": {
+        "id": "B02140828V",
+        "name": "青岛市精神卫生中心",
+        "address": "南京路299号",
+        "location": "120.385539,36.102571",
+        "pname": "山东省",
+        "cityname": "青岛市",
+        "adcode": "",
+        "typecode": "090210|090100"
+      },
+      "matched_name": "青岛市精神卫生中心",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "中山大学第八附属医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r29"
+      ],
+      "region": "广东",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFHGD85N",
+          "name": "中山大学附属第八医院",
+          "address": "深南中路3025号",
+          "location": "114.079554,22.538751",
+          "pname": "广东省",
+          "cityname": "深圳市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFHGD85N",
+        "name": "中山大学附属第八医院",
+        "address": "深南中路3025号",
+        "location": "114.079554,22.538751",
+        "pname": "广东省",
+        "cityname": "深圳市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "中山大学附属第八医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "暨南大学附属第一医院东圃院区（广州华侨医院）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r34"
+      ],
+      "region": "广东",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFGSRR97",
+          "name": "暨南大学附属第一医院(东圃院区)",
+          "address": "车陂北街22-1号附近",
+          "location": "113.400540,23.124984",
+          "pname": "广东省",
+          "cityname": "广州市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFGSRR97",
+        "name": "暨南大学附属第一医院(东圃院区)",
+        "address": "车陂北街22-1号附近",
+        "location": "113.400540,23.124984",
+        "pname": "广东省",
+        "cityname": "广州市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "暨南大学附属第一医院(东圃院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "厦门市仙岳医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r35",
+        "kdocs-cp3b7toqal3j-s2-r36",
+        "kdocs-cp3b7toqal3j-s3-r78",
+        "kdocs-cp3b7toqal3j-s3-r79",
+        "kdocs-cp3b7toqal3j-s3-r80",
+        "kdocs-cp3b7toqal3j-s3-r81",
+        "kdocs-cp3b7toqal3j-s3-r82",
+        "kdocs-cp3b7toqal3j-s3-r83"
+      ],
+      "region": "福建",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B025003YIH",
+          "name": "厦门市仙岳医院",
+          "address": "仙岳路399号",
+          "location": "118.111082,24.495411",
+          "pname": "福建省",
+          "cityname": "厦门市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B025003YIH",
+        "name": "厦门市仙岳医院",
+        "address": "仙岳路399号",
+        "location": "118.111082,24.495411",
+        "pname": "福建省",
+        "cityname": "厦门市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "厦门市仙岳医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "四川省成都第四人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r39"
+      ],
+      "region": "四川",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B001C7V2MO",
+          "name": "成都市第四人民医院营门口院区",
+          "address": "互利西一巷8号",
+          "location": "104.039040,30.691552",
+          "pname": "四川省",
+          "cityname": "成都市",
+          "adcode": "",
+          "typecode": "090101|090210"
+        }
+      ],
+      "chosen": {
+        "id": "B001C7V2MO",
+        "name": "成都市第四人民医院营门口院区",
+        "address": "互利西一巷8号",
+        "location": "104.039040,30.691552",
+        "pname": "四川省",
+        "cityname": "成都市",
+        "adcode": "",
+        "typecode": "090101|090210"
+      },
+      "matched_name": "成都市第四人民医院营门口院区",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "成都军大医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r40"
+      ],
+      "region": "四川",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFFV30J7",
+          "name": "成都军大医院",
+          "address": "玉沙路142号(太升南路地铁站C口步行310米)",
+          "location": "104.079264,30.667022",
+          "pname": "四川省",
+          "cityname": "成都市",
+          "adcode": "",
+          "typecode": "090200|090100"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFFV30J7",
+        "name": "成都军大医院",
+        "address": "玉沙路142号(太升南路地铁站C口步行310米)",
+        "location": "104.079264,30.667022",
+        "pname": "四川省",
+        "cityname": "成都市",
+        "adcode": "",
+        "typecode": "090200|090100"
+      },
+      "matched_name": "成都军大医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "四川省宜宾第四人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r41"
+      ],
+      "region": "四川",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B033F01IKC",
+          "name": "宜宾市第四人民医院",
+          "address": "南岸外江路2号",
+          "location": "104.626216,28.752038",
+          "pname": "四川省",
+          "cityname": "宜宾市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B033F01IKC",
+        "name": "宜宾市第四人民医院",
+        "address": "南岸外江路2号",
+        "location": "104.626216,28.752038",
+        "pname": "四川省",
+        "cityname": "宜宾市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "宜宾市第四人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "重庆精神卫生中心",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r44"
+      ],
+      "region": "重庆",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00170BECF",
+          "name": "重庆市精神卫生中心",
+          "address": "金紫山102号",
+          "location": "106.530579,29.593684",
+          "pname": "重庆市",
+          "cityname": "重庆市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B00170BECF",
+        "name": "重庆市精神卫生中心",
+        "address": "金紫山102号",
+        "location": "106.530579,29.593684",
+        "pname": "重庆市",
+        "cityname": "重庆市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "重庆市精神卫生中心",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "陆军军医大学第二附属医院（新桥医院）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r45"
+      ],
+      "region": "重庆",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B001702698",
+          "name": "陆军军医大学第二附属医院",
+          "address": "新桥正街177号",
+          "location": "106.438430,29.519834",
+          "pname": "重庆市",
+          "cityname": "重庆市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B001702698",
+        "name": "陆军军医大学第二附属医院",
+        "address": "新桥正街177号",
+        "location": "106.438430,29.519834",
+        "pname": "重庆市",
+        "cityname": "重庆市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "陆军军医大学第二附属医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "海南安宁医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r46"
+      ],
+      "region": "海南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B038202B8M",
+          "name": "海南省安宁医院",
+          "address": "南海大道东10号",
+          "location": "110.337253,19.994608",
+          "pname": "海南省",
+          "cityname": "海口市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B038202B8M",
+        "name": "海南省安宁医院",
+        "address": "南海大道东10号",
+        "location": "110.337253,19.994608",
+        "pname": "海南省",
+        "cityname": "海口市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "海南省安宁医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "浙大一附院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r47"
+      ],
+      "region": "浙江",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B023B0929X",
+          "name": "浙江大学医学院附属第一医院(庆春院区)",
+          "address": "庆春路79号",
+          "location": "120.177825,30.255920",
+          "pname": "浙江省",
+          "cityname": "杭州市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B023B0929X",
+        "name": "浙江大学医学院附属第一医院(庆春院区)",
+        "address": "庆春路79号",
+        "location": "120.177825,30.255920",
+        "pname": "浙江省",
+        "cityname": "杭州市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "浙江大学医学院附属第一医院(庆春院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "杭州七院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r48"
+      ],
+      "region": "浙江",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B023B02359",
+          "name": "杭州市第七人民医院",
+          "address": "天目山路305号(古荡新村地铁站D口步行180米)",
+          "location": "120.113505,30.269947",
+          "pname": "浙江省",
+          "cityname": "杭州市",
+          "adcode": "",
+          "typecode": "090210|090101"
+        }
+      ],
+      "chosen": {
+        "id": "B023B02359",
+        "name": "杭州市第七人民医院",
+        "address": "天目山路305号(古荡新村地铁站D口步行180米)",
+        "location": "120.113505,30.269947",
+        "pname": "浙江省",
+        "cityname": "杭州市",
+        "adcode": "",
+        "typecode": "090210|090101"
+      },
+      "matched_name": "杭州市第七人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "苏州广济医院（在吴中人民医院出诊）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r49"
+      ],
+      "region": "江苏",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B020004F0D",
+          "name": "苏州市吴中人民医院",
+          "address": "东吴北路61号(宝带路地铁站11西北口步行130米)",
+          "location": "120.626868,31.268829",
+          "pname": "江苏省",
+          "cityname": "苏州市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B020004F0D",
+        "name": "苏州市吴中人民医院",
+        "address": "东吴北路61号(宝带路地铁站11西北口步行130米)",
+        "location": "120.626868,31.268829",
+        "pname": "江苏省",
+        "cityname": "苏州市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "苏州市吴中人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "无锡市精神卫生中心",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r50",
+        "kdocs-cp3b7toqal3j-s3-r85"
+      ],
+      "region": "江苏",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFH0N5U4",
+          "name": "无锡市精神卫生中心",
+          "address": "钱荣路156号",
+          "location": "120.232563,31.591807",
+          "pname": "江苏省",
+          "cityname": "无锡市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFH0N5U4",
+        "name": "无锡市精神卫生中心",
+        "address": "钱荣路156号",
+        "location": "120.232563,31.591807",
+        "pname": "江苏省",
+        "cityname": "无锡市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "无锡市精神卫生中心",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "江苏徐州东方医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r51"
+      ],
+      "region": "江苏",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B020400B9X",
+          "name": "徐州市东方人民医院",
+          "address": "东甸子城东快速路379号",
+          "location": "117.247913,34.262790",
+          "pname": "江苏省",
+          "cityname": "徐州市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B020400B9X",
+        "name": "徐州市东方人民医院",
+        "address": "东甸子城东快速路379号",
+        "location": "117.247913,34.262790",
+        "pname": "江苏省",
+        "cityname": "徐州市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "徐州市东方人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "贵州省人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r52",
+        "kdocs-cp3b7toqal3j-s3-r98"
+      ],
+      "region": "贵州",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B035300VC0",
+          "name": "贵州省人民医院",
+          "address": "中山东路83号",
+          "location": "106.722864,26.576794",
+          "pname": "贵州省",
+          "cityname": "贵阳市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B035300VC0",
+        "name": "贵州省人民医院",
+        "address": "中山东路83号",
+        "location": "106.722864,26.576794",
+        "pname": "贵州省",
+        "cityname": "贵阳市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "贵州省人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "江西省精神卫生中心（南昌）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s2-r54"
+      ],
+      "region": "江西",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFM9IDRI",
+          "name": "江西省精神卫生中心-综合门诊楼",
+          "address": "上坊路43号(江西省心理康复中心西1门旁)",
+          "location": "115.931649,28.677696",
+          "pname": "江西省",
+          "cityname": "南昌市",
+          "adcode": "",
+          "typecode": "090000"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFM9IDRI",
+        "name": "江西省精神卫生中心-综合门诊楼",
+        "address": "上坊路43号(江西省心理康复中心西1门旁)",
+        "location": "115.931649,28.677696",
+        "pname": "江西省",
+        "cityname": "南昌市",
+        "adcode": "",
+        "typecode": "090000"
+      },
+      "matched_name": "江西省精神卫生中心-综合门诊楼",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "首都医科大学附属北京安定医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r12",
+        "kdocs-cp3b7toqal3j-s3-r13",
+        "kdocs-cp3b7toqal3j-s3-r14"
+      ],
+      "region": "北京",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B000A80ZRG",
+          "name": "首都医科大学附属北京安定医院",
+          "address": "安康胡同5号",
+          "location": "116.376791,39.952767",
+          "pname": "北京市",
+          "cityname": "北京市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B000A80ZRG",
+        "name": "首都医科大学附属北京安定医院",
+        "address": "安康胡同5号",
+        "location": "116.376791,39.952767",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "首都医科大学附属北京安定医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "中国人民解放军总医院301",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r15"
+      ],
+      "region": "北京",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B000A9DPJ4",
+          "name": "中国人民解放军总医院",
+          "address": "复兴路28号",
+          "location": "116.276578,39.904572",
+          "pname": "北京市",
+          "cityname": "北京市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B000A9DPJ4",
+        "name": "中国人民解放军总医院",
+        "address": "复兴路28号",
+        "location": "116.276578,39.904572",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "中国人民解放军总医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "北京协和医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r16",
+        "kdocs-cp3b7toqal3j-s3-r17"
+      ],
+      "region": "北京",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B000A82Z2N",
+          "name": "北京协和医院(东单院区)",
+          "address": "帅府园1号",
+          "location": "116.415130,39.912815",
+          "pname": "北京市",
+          "cityname": "北京市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B000A82Z2N",
+        "name": "北京协和医院(东单院区)",
+        "address": "帅府园1号",
+        "location": "116.415130,39.912815",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "北京协和医院(东单院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "河南商丘市第一人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r18"
+      ],
+      "region": "河南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0172004TQ",
+          "name": "商丘市第一人民医院",
+          "address": "凯旋南路292号(近北海路)",
+          "location": "115.621914,34.395716",
+          "pname": "河南省",
+          "cityname": "商丘市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0172004TQ",
+        "name": "商丘市第一人民医院",
+        "address": "凯旋南路292号(近北海路)",
+        "location": "115.621914,34.395716",
+        "pname": "河南省",
+        "cityname": "商丘市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "商丘市第一人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "河北省荣军医院（保定）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r19"
+      ],
+      "region": "河北",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFI99OQ6",
+          "name": "河北省荣军医院",
+          "address": "莲池南大街2296号",
+          "location": "115.482474,38.799502",
+          "pname": "河北省",
+          "cityname": "保定市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFI99OQ6",
+        "name": "河北省荣军医院",
+        "address": "莲池南大街2296号",
+        "location": "115.482474,38.799502",
+        "pname": "河北省",
+        "cityname": "保定市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "河北省荣军医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "河北医科大学第一医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r20"
+      ],
+      "region": "河北",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0MG2N0OLU",
+          "name": "河北医科大学第一医院2期",
+          "address": "东岗路与东环北街交叉口东北80米",
+          "location": "114.552075,38.016675",
+          "pname": "河北省",
+          "cityname": "石家庄市",
+          "adcode": "",
+          "typecode": "090000"
+        }
+      ],
+      "chosen": {
+        "id": "B0MG2N0OLU",
+        "name": "河北医科大学第一医院2期",
+        "address": "东岗路与东环北街交叉口东北80米",
+        "location": "114.552075,38.016675",
+        "pname": "河北省",
+        "cityname": "石家庄市",
+        "adcode": "",
+        "typecode": "090000"
+      },
+      "matched_name": "河北医科大学第一医院2期",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "山东省精卫（青岛）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r21",
+        "kdocs-cp3b7toqal3j-s3-r22"
+      ],
+      "region": "山东",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B02140828V",
+          "name": "青岛市精神卫生中心",
+          "address": "南京路299号",
+          "location": "120.385539,36.102571",
+          "pname": "山东省",
+          "cityname": "青岛市",
+          "adcode": "",
+          "typecode": "090210|090100"
+        }
+      ],
+      "chosen": {
+        "id": "B02140828V",
+        "name": "青岛市精神卫生中心",
+        "address": "南京路299号",
+        "location": "120.385539,36.102571",
+        "pname": "山东省",
+        "cityname": "青岛市",
+        "adcode": "",
+        "typecode": "090210|090100"
+      },
+      "matched_name": "青岛市精神卫生中心",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "甘肃天水市第三人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r25"
+      ],
+      "region": "甘肃",
+      "matched_name": "甘肃天水市第三人民医院",
+      "status": "not_found",
+      "reason": "高德候选尚未匹配到机构名称",
+      "candidates": []
+    },
+    {
+      "name": "内蒙古自治区人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r26",
+        "kdocs-cp3b7toqal3j-s3-r27"
+      ],
+      "region": "内蒙古",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B01D701PTI",
+          "name": "内蒙古自治区人民医院",
+          "address": "昭乌达路26号",
+          "location": "111.694245,40.816876",
+          "pname": "内蒙古自治区",
+          "cityname": "呼和浩特市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B01D701PTI",
+        "name": "内蒙古自治区人民医院",
+        "address": "昭乌达路26号",
+        "location": "111.694245,40.816876",
+        "pname": "内蒙古自治区",
+        "cityname": "呼和浩特市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "内蒙古自治区人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "内蒙古医科大学附属医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r28",
+        "kdocs-cp3b7toqal3j-s3-r29"
+      ],
+      "region": "内蒙古",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B01D7023H7",
+          "name": "内蒙古医科大学附属医院",
+          "address": "通道北街1号(附属医院地铁站A1口旁)",
+          "location": "111.657543,40.820551",
+          "pname": "内蒙古自治区",
+          "cityname": "呼和浩特市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B01D7023H7",
+        "name": "内蒙古医科大学附属医院",
+        "address": "通道北街1号(附属医院地铁站A1口旁)",
+        "location": "111.657543,40.820551",
+        "pname": "内蒙古自治区",
+        "cityname": "呼和浩特市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "内蒙古医科大学附属医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "内蒙古自治区第三医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r30",
+        "kdocs-cp3b7toqal3j-s3-r31",
+        "kdocs-cp3b7toqal3j-s3-r32"
+      ],
+      "region": "内蒙古",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B01D70106B",
+          "name": "内蒙古第三医院",
+          "address": "乌兰察布西街23号",
+          "location": "111.697089,40.820986",
+          "pname": "内蒙古自治区",
+          "cityname": "呼和浩特市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B01D70106B",
+        "name": "内蒙古第三医院",
+        "address": "乌兰察布西街23号",
+        "location": "111.697089,40.820986",
+        "pname": "内蒙古自治区",
+        "cityname": "呼和浩特市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "内蒙古第三医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "宁夏回族自治区宁安医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r33",
+        "kdocs-cp3b7toqal3j-s3-r34",
+        "kdocs-cp3b7toqal3j-s3-r35"
+      ],
+      "region": "宁夏",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B03B703CB6",
+          "name": "宁夏宁安医院",
+          "address": "中兴路",
+          "location": "106.339826,38.108049",
+          "pname": "宁夏回族自治区",
+          "cityname": "银川市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B03B703CB6",
+        "name": "宁夏宁安医院",
+        "address": "中兴路",
+        "location": "106.339826,38.108049",
+        "pname": "宁夏回族自治区",
+        "cityname": "银川市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "宁夏宁安医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "宁夏医科大学总医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r38",
+        "kdocs-cp3b7toqal3j-s3-r39"
+      ],
+      "region": "宁夏",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B03B7012B8",
+          "name": "宁夏医科大学总医院",
+          "address": "胜利街804号",
+          "location": "106.276807,38.433555",
+          "pname": "宁夏回族自治区",
+          "cityname": "银川市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B03B7012B8",
+        "name": "宁夏医科大学总医院",
+        "address": "胜利街804号",
+        "location": "106.276807,38.433555",
+        "pname": "宁夏回族自治区",
+        "cityname": "银川市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "宁夏医科大学总医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "尉犁县人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r40"
+      ],
+      "region": "新疆",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B03E400DRV",
+          "name": "尉犁县人民医院",
+          "address": "解放路7号",
+          "location": "86.266280,41.341616",
+          "pname": "新疆维吾尔自治区",
+          "cityname": "巴音郭楞蒙古自治州",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B03E400DRV",
+        "name": "尉犁县人民医院",
+        "address": "解放路7号",
+        "location": "86.266280,41.341616",
+        "pname": "新疆维吾尔自治区",
+        "cityname": "巴音郭楞蒙古自治州",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "尉犁县人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "乌鲁木齐市南湖医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r42"
+      ],
+      "region": "新疆",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B03DF05BDU",
+          "name": "乌鲁木齐南湖医院",
+          "address": "南湖西路42号",
+          "location": "87.604670,43.824681",
+          "pname": "新疆维吾尔自治区",
+          "cityname": "乌鲁木齐市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B03DF05BDU",
+        "name": "乌鲁木齐南湖医院",
+        "address": "南湖西路42号",
+        "location": "87.604670,43.824681",
+        "pname": "新疆维吾尔自治区",
+        "cityname": "乌鲁木齐市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "乌鲁木齐南湖医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "乌鲁木齐药业集团附属医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r43"
+      ],
+      "region": "新疆",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFIDAKP6",
+          "name": "乌鲁木齐药业集团附属医院",
+          "address": "昆明路363号第六层",
+          "location": "87.572965,43.859169",
+          "pname": "新疆维吾尔自治区",
+          "cityname": "乌鲁木齐市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFIDAKP6",
+        "name": "乌鲁木齐药业集团附属医院",
+        "address": "昆明路363号第六层",
+        "location": "87.572965,43.859169",
+        "pname": "新疆维吾尔自治区",
+        "cityname": "乌鲁木齐市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "乌鲁木齐药业集团附属医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "上海和睦家医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r58"
+      ],
+      "region": "上海",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFLCH87I",
+          "name": "上海和睦家医院(长宁院区)",
+          "address": "平塘路699号",
+          "location": "121.364921,31.206590",
+          "pname": "上海市",
+          "cityname": "上海市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFLCH87I",
+        "name": "上海和睦家医院(长宁院区)",
+        "address": "平塘路699号",
+        "location": "121.364921,31.206590",
+        "pname": "上海市",
+        "cityname": "上海市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "上海和睦家医院(长宁院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "复旦大学附属华山医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r59"
+      ],
+      "region": "上海",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00155KT4W",
+          "name": "复旦大学附属华山医院",
+          "address": "华山路493号",
+          "location": "121.442932,31.216111",
+          "pname": "上海市",
+          "cityname": "上海市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B00155KT4W",
+        "name": "复旦大学附属华山医院",
+        "address": "华山路493号",
+        "location": "121.442932,31.216111",
+        "pname": "上海市",
+        "cityname": "上海市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "复旦大学附属华山医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "上海交通大学医学院附属仁济医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r60",
+        "kdocs-cp3b7toqal3j-s3-r61"
+      ],
+      "region": "上海",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00155EI82",
+          "name": "上海交通大学医学院附属仁济医院(东院区)",
+          "address": "浦建路160号",
+          "location": "121.522239,31.206949",
+          "pname": "上海市",
+          "cityname": "上海市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B00155EI82",
+        "name": "上海交通大学医学院附属仁济医院(东院区)",
+        "address": "浦建路160号",
+        "location": "121.522239,31.206949",
+        "pname": "上海市",
+        "cityname": "上海市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "上海交通大学医学院附属仁济医院(东院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "同济大学附属精神卫生中心",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r62"
+      ],
+      "region": "上海",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00155AX6R",
+          "name": "同济大学附属精神卫生中心",
+          "address": "三林路165号",
+          "location": "121.494739,31.137644",
+          "pname": "上海市",
+          "cityname": "上海市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B00155AX6R",
+        "name": "同济大学附属精神卫生中心",
+        "address": "三林路165号",
+        "location": "121.494739,31.137644",
+        "pname": "上海市",
+        "cityname": "上海市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "同济大学附属精神卫生中心",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "广州医科大学附属脑科医院（芳村）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r63",
+        "kdocs-cp3b7toqal3j-s3-r64",
+        "kdocs-cp3b7toqal3j-s3-r65",
+        "kdocs-cp3b7toqal3j-s3-r66",
+        "kdocs-cp3b7toqal3j-s3-r67",
+        "kdocs-cp3b7toqal3j-s3-r68",
+        "kdocs-cp3b7toqal3j-s3-r69"
+      ],
+      "region": "广东",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00140HU1B",
+          "name": "广州医科大学附属脑科医院(芳村总院)",
+          "address": "明心路36号",
+          "location": "113.240369,23.098548",
+          "pname": "广东省",
+          "cityname": "广州市",
+          "adcode": "",
+          "typecode": "090208"
+        }
+      ],
+      "chosen": {
+        "id": "B00140HU1B",
+        "name": "广州医科大学附属脑科医院(芳村总院)",
+        "address": "明心路36号",
+        "location": "113.240369,23.098548",
+        "pname": "广东省",
+        "cityname": "广州市",
+        "adcode": "",
+        "typecode": "090208"
+      },
+      "matched_name": "广州医科大学附属脑科医院(芳村总院)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "广州市惠爱医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r70",
+        "kdocs-cp3b7toqal3j-s3-r71",
+        "kdocs-cp3b7toqal3j-s3-r72"
+      ],
+      "region": "广东",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00140HU1B",
+          "name": "广州医科大学附属脑科医院(芳村总院)",
+          "address": "明心路36号",
+          "location": "113.240369,23.098548",
+          "pname": "广东省",
+          "cityname": "广州市",
+          "adcode": "",
+          "typecode": "090208"
+        }
+      ],
+      "chosen": {
+        "id": "B00140HU1B",
+        "name": "广州医科大学附属脑科医院(芳村总院)",
+        "address": "明心路36号",
+        "location": "113.240369,23.098548",
+        "pname": "广东省",
+        "cityname": "广州市",
+        "adcode": "",
+        "typecode": "090208"
+      },
+      "matched_name": "广州医科大学附属脑科医院(芳村总院)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "广东省精神卫生中心",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r73",
+        "kdocs-cp3b7toqal3j-s3-r74"
+      ],
+      "region": "广东",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00140W7RP",
+          "name": "广东省人民医院惠福分院",
+          "address": "惠福西路123号",
+          "location": "113.257856,23.120662",
+          "pname": "广东省",
+          "cityname": "广州市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B00140W7RP",
+        "name": "广东省人民医院惠福分院",
+        "address": "惠福西路123号",
+        "location": "113.257856,23.120662",
+        "pname": "广东省",
+        "cityname": "广州市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "广东省人民医院惠福分院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "中山大学附属第三医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r75"
+      ],
+      "region": "广东",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFF5UY3V",
+          "name": "中山大学附属第三医院(天河院区)",
+          "address": "石牌街道天河路600号(岗顶地铁站D口步行50米)",
+          "location": "113.341211,23.134165",
+          "pname": "广东省",
+          "cityname": "广州市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFF5UY3V",
+        "name": "中山大学附属第三医院(天河院区)",
+        "address": "石牌街道天河路600号(岗顶地铁站D口步行50米)",
+        "location": "113.341211,23.134165",
+        "pname": "广东省",
+        "cityname": "广州市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "中山大学附属第三医院(天河院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "中山大学附属第一医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r76"
+      ],
+      "region": "广东",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00140226E",
+          "name": "中山大学附属第一医院",
+          "address": "中山二路58号",
+          "location": "113.291007,23.126383",
+          "pname": "广东省",
+          "cityname": "广州市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B00140226E",
+        "name": "中山大学附属第一医院",
+        "address": "中山二路58号",
+        "location": "113.291007,23.126383",
+        "pname": "广东省",
+        "cityname": "广州市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "中山大学附属第一医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "深圳市康宁医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r77"
+      ],
+      "region": "广东",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B02F37VEIG",
+          "name": "深圳市康宁医院(罗湖分院)",
+          "address": "翠竹街道翠岭社区翠竹路1080号(田贝地铁站D口步行270米)",
+          "location": "114.131093,22.563840",
+          "pname": "广东省",
+          "cityname": "深圳市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B02F37VEIG",
+        "name": "深圳市康宁医院(罗湖分院)",
+        "address": "翠竹街道翠岭社区翠竹路1080号(田贝地铁站D口步行270米)",
+        "location": "114.131093,22.563840",
+        "pname": "广东省",
+        "cityname": "深圳市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "深圳市康宁医院(罗湖分院)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "厦门大学附属第一医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r84"
+      ],
+      "region": "福建",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B025002CF9",
+          "name": "厦门大学附属第一医院",
+          "address": "镇海路55号(镇海路地铁站2号口步行330米)",
+          "location": "118.088180,24.450940",
+          "pname": "福建省",
+          "cityname": "厦门市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B025002CF9",
+        "name": "厦门大学附属第一医院",
+        "address": "镇海路55号(镇海路地铁站2号口步行330米)",
+        "location": "118.088180,24.450940",
+        "pname": "福建省",
+        "cityname": "厦门市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "厦门大学附属第一医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "泰康仙林鼓楼医院（南京）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r88"
+      ],
+      "region": "江苏",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFI2EN48",
+          "name": "泰康仙林鼓楼医院",
+          "address": "仙林街道灵山北路188号",
+          "location": "118.936142,32.094878",
+          "pname": "江苏省",
+          "cityname": "南京市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFI2EN48",
+        "name": "泰康仙林鼓楼医院",
+        "address": "仙林街道灵山北路188号",
+        "location": "118.936142,32.094878",
+        "pname": "江苏省",
+        "cityname": "南京市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "泰康仙林鼓楼医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "温州医科大学附属第一医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r90"
+      ],
+      "region": "浙江",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFGRGJRO",
+          "name": "温州医科大学附属第一医院南白象院区",
+          "address": "南白象街道上蔡村",
+          "location": "120.695473,27.938175",
+          "pname": "浙江省",
+          "cityname": "温州市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFGRGJRO",
+        "name": "温州医科大学附属第一医院南白象院区",
+        "address": "南白象街道上蔡村",
+        "location": "120.695473,27.938175",
+        "pname": "浙江省",
+        "cityname": "温州市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "温州医科大学附属第一医院南白象院区",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "武汉市精神卫生中心",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r91",
+        "kdocs-cp3b7toqal3j-s3-r92"
+      ],
+      "region": "湖北",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0LAMRCIBH",
+          "name": "武汉市精神卫生中心",
+          "address": "游艺路93号(汉正街地铁站C口步行470米)",
+          "location": "114.274314,30.574573",
+          "pname": "湖北省",
+          "cityname": "武汉市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B0LAMRCIBH",
+        "name": "武汉市精神卫生中心",
+        "address": "游艺路93号(汉正街地铁站C口步行470米)",
+        "location": "114.274314,30.574573",
+        "pname": "湖北省",
+        "cityname": "武汉市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "武汉市精神卫生中心",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "广西南宁第一人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r93"
+      ],
+      "region": "广西",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0303005FE",
+          "name": "南宁市第一人民医院",
+          "address": "七星路89号",
+          "location": "108.324994,22.810701",
+          "pname": "广西壮族自治区",
+          "cityname": "南宁市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0303005FE",
+        "name": "南宁市第一人民医院",
+        "address": "七星路89号",
+        "location": "108.324994,22.810701",
+        "pname": "广西壮族自治区",
+        "cityname": "南宁市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "南宁市第一人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "北海冉生精神病医院（私立）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r94"
+      ],
+      "region": "广西",
+      "matched_name": "北海冉生精神病医院",
+      "status": "not_found",
+      "reason": "高德候选尚未匹配到机构名称",
+      "candidates": []
+    },
+    {
+      "name": "广西北海市人民医院（银滩院区）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r95"
+      ],
+      "region": "广西",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFIUFVDH",
+          "name": "北海市人民医院银滩院区",
+          "address": "金海岸大道69号",
+          "location": "109.109641,21.431205",
+          "pname": "广西壮族自治区",
+          "cityname": "北海市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFIUFVDH",
+        "name": "北海市人民医院银滩院区",
+        "address": "金海岸大道69号",
+        "location": "109.109641,21.431205",
+        "pname": "广西壮族自治区",
+        "cityname": "北海市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "北海市人民医院银滩院区",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "玉林市第四人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r97"
+      ],
+      "region": "广西",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B03070MW10",
+          "name": "玉林市第四人民医院(大理街)",
+          "address": "一环北路营盘街17号",
+          "location": "110.138796,22.633894",
+          "pname": "广西壮族自治区",
+          "cityname": "玉林市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B03070MW10",
+        "name": "玉林市第四人民医院(大理街)",
+        "address": "一环北路营盘街17号",
+        "location": "110.138796,22.633894",
+        "pname": "广西壮族自治区",
+        "cityname": "玉林市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "玉林市第四人民医院(大理街)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "贵州省第二人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r99",
+        "kdocs-cp3b7toqal3j-s3-r100"
+      ],
+      "region": "贵州",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B035301EV4",
+          "name": "贵州省第二人民医院",
+          "address": "新添大道南段206号(汪家湾旁)",
+          "location": "106.728987,26.607965",
+          "pname": "贵州省",
+          "cityname": "贵阳市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B035301EV4",
+        "name": "贵州省第二人民医院",
+        "address": "新添大道南段206号(汪家湾旁)",
+        "location": "106.728987,26.607965",
+        "pname": "贵州省",
+        "cityname": "贵阳市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "贵州省第二人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "云南 大理州第二人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r102"
+      ],
+      "region": "云南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFGG4MZE",
+          "name": "大理州第二人民医院",
+          "address": "红山路",
+          "location": "100.281235,25.619268",
+          "pname": "云南省",
+          "cityname": "大理白族自治州",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFGG4MZE",
+        "name": "大理州第二人民医院",
+        "address": "红山路",
+        "location": "100.281235,25.619268",
+        "pname": "云南省",
+        "cityname": "大理白族自治州",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "大理州第二人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "云南 文山州第二人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r103"
+      ],
+      "region": "云南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFK54JCV",
+          "name": "文山州第二人民医院",
+          "address": "新平路东100米",
+          "location": "104.276178,23.344737",
+          "pname": "云南省",
+          "cityname": "文山壮族苗族自治州",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFK54JCV",
+        "name": "文山州第二人民医院",
+        "address": "新平路东100米",
+        "location": "104.276178,23.344737",
+        "pname": "云南省",
+        "cityname": "文山壮族苗族自治州",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "文山州第二人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "云南 玉溪市第二人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r104"
+      ],
+      "region": "云南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFFTFCBU",
+          "name": "玉溪市第二人民医院",
+          "address": "高新技术开发区星云路4号",
+          "location": "102.529425,24.335739",
+          "pname": "云南省",
+          "cityname": "玉溪市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFFTFCBU",
+        "name": "玉溪市第二人民医院",
+        "address": "高新技术开发区星云路4号",
+        "location": "102.529425,24.335739",
+        "pname": "云南省",
+        "cityname": "玉溪市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "玉溪市第二人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "云南 保山市第三人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r105"
+      ],
+      "region": "云南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B036B00TWX",
+          "name": "保山市第三人民医院",
+          "address": "小梨园",
+          "location": "99.148932,25.105915",
+          "pname": "云南省",
+          "cityname": "保山市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B036B00TWX",
+        "name": "保山市第三人民医院",
+        "address": "小梨园",
+        "location": "99.148932,25.105915",
+        "pname": "云南省",
+        "cityname": "保山市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "保山市第三人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "云南 昆明医科大学第一附属医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r106"
+      ],
+      "region": "云南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B036702A3E",
+          "name": "昆明医科大学第一附属医院(西昌路院区)",
+          "address": "西昌路295号",
+          "location": "102.693049,25.042449",
+          "pname": "云南省",
+          "cityname": "昆明市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B036702A3E",
+        "name": "昆明医科大学第一附属医院(西昌路院区)",
+        "address": "西昌路295号",
+        "location": "102.693049,25.042449",
+        "pname": "云南省",
+        "cityname": "昆明市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "昆明医科大学第一附属医院(西昌路院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "云南 桂林医学院附属医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r107"
+      ],
+      "region": "云南",
+      "matched_name": "桂林医学院附属医院",
+      "status": "not_found",
+      "reason": "高德候选尚未匹配到机构名称",
+      "candidates": []
+    },
+    {
+      "name": "四川大学华西厦门医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r108"
+      ],
+      "region": "四川",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFLIUHEG",
+          "name": "四川大学华西厦门医院",
+          "address": "后浦西路188号",
+          "location": "118.034840,24.603035",
+          "pname": "福建省",
+          "cityname": "厦门市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFLIUHEG",
+        "name": "四川大学华西厦门医院",
+        "address": "后浦西路188号",
+        "location": "118.034840,24.603035",
+        "pname": "福建省",
+        "cityname": "厦门市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "四川大学华西厦门医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "四川省精神卫生中心（绵阳三医院）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r109",
+        "kdocs-cp3b7toqal3j-s3-r110",
+        "kdocs-cp3b7toqal3j-s3-r111"
+      ],
+      "region": "四川",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B033001020",
+          "name": "绵阳市第三人民医院",
+          "address": "剑南路东段190号",
+          "location": "104.760463,31.470116",
+          "pname": "四川省",
+          "cityname": "绵阳市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B033001020",
+        "name": "绵阳市第三人民医院",
+        "address": "剑南路东段190号",
+        "location": "104.760463,31.470116",
+        "pname": "四川省",
+        "cityname": "绵阳市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "绵阳市第三人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "成都市第一人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r112"
+      ],
+      "region": "四川",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B001C7UU27",
+          "name": "成都市第一人民医院南区",
+          "address": "高新区万象北路18号",
+          "location": "104.052348,30.590126",
+          "pname": "四川省",
+          "cityname": "成都市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B001C7UU27",
+        "name": "成都市第一人民医院南区",
+        "address": "高新区万象北路18号",
+        "location": "104.052348,30.590126",
+        "pname": "四川省",
+        "cityname": "成都市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "成都市第一人民医院南区",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "四川省人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r113",
+        "kdocs-cp3b7toqal3j-s3-r114"
+      ],
+      "region": "四川",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0IB2L08GG",
+          "name": "四川省人民医院",
+          "address": "一环路西2段32号(青羊宫地铁站A口步行80米)",
+          "location": "104.039285,30.663179",
+          "pname": "四川省",
+          "cityname": "成都市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0IB2L08GG",
+        "name": "四川省人民医院",
+        "address": "一环路西2段32号(青羊宫地铁站A口步行80米)",
+        "location": "104.039285,30.663179",
+        "pname": "四川省",
+        "cityname": "成都市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "四川省人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "成都市第四人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r115",
+        "kdocs-cp3b7toqal3j-s3-r116",
+        "kdocs-cp3b7toqal3j-s3-r117",
+        "kdocs-cp3b7toqal3j-s3-r118"
+      ],
+      "region": "四川",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B001C7V2MO",
+          "name": "成都市第四人民医院营门口院区",
+          "address": "互利西一巷8号",
+          "location": "104.039040,30.691552",
+          "pname": "四川省",
+          "cityname": "成都市",
+          "adcode": "",
+          "typecode": "090101|090210"
+        }
+      ],
+      "chosen": {
+        "id": "B001C7V2MO",
+        "name": "成都市第四人民医院营门口院区",
+        "address": "互利西一巷8号",
+        "location": "104.039040,30.691552",
+        "pname": "四川省",
+        "cityname": "成都市",
+        "adcode": "",
+        "typecode": "090101|090210"
+      },
+      "matched_name": "成都市第四人民医院营门口院区",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "重庆市精神卫生中心",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r121",
+        "kdocs-cp3b7toqal3j-s3-r122",
+        "kdocs-cp3b7toqal3j-s3-r123",
+        "kdocs-cp3b7toqal3j-s3-r124"
+      ],
+      "region": "重庆",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00170BECF",
+          "name": "重庆市精神卫生中心",
+          "address": "金紫山102号",
+          "location": "106.530579,29.593684",
+          "pname": "重庆市",
+          "cityname": "重庆市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B00170BECF",
+        "name": "重庆市精神卫生中心",
+        "address": "金紫山102号",
+        "location": "106.530579,29.593684",
+        "pname": "重庆市",
+        "cityname": "重庆市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "重庆市精神卫生中心",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "重庆医科大学附属第一医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r125",
+        "kdocs-cp3b7toqal3j-s3-r126",
+        "kdocs-cp3b7toqal3j-s3-r127",
+        "kdocs-cp3b7toqal3j-s3-r128"
+      ],
+      "region": "重庆",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00170L57Q",
+          "name": "重庆医科大学附属第一医院院本部",
+          "address": "袁家岗友谊路1号",
+          "location": "106.512621,29.530815",
+          "pname": "重庆市",
+          "cityname": "重庆市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B00170L57Q",
+        "name": "重庆医科大学附属第一医院院本部",
+        "address": "袁家岗友谊路1号",
+        "location": "106.512621,29.530815",
+        "pname": "重庆市",
+        "cityname": "重庆市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "重庆医科大学附属第一医院院本部",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "重庆医科大学附属第二医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r129",
+        "kdocs-cp3b7toqal3j-s3-r130"
+      ],
+      "region": "重庆",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B001791T1I",
+          "name": "重庆医科大学附属第二医院渝中院区",
+          "address": "临江路74-76号(近中华路)",
+          "location": "106.574661,29.560179",
+          "pname": "重庆市",
+          "cityname": "重庆市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B001791T1I",
+        "name": "重庆医科大学附属第二医院渝中院区",
+        "address": "临江路74-76号(近中华路)",
+        "location": "106.574661,29.560179",
+        "pname": "重庆市",
+        "cityname": "重庆市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "重庆医科大学附属第二医院渝中院区",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "陆军军医大学西南医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r131",
+        "kdocs-cp3b7toqal3j-s3-r132"
+      ],
+      "region": "重庆",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B00170914B",
+          "name": "陆军军医大学西南医院",
+          "address": "高滩岩正街30号",
+          "location": "106.452226,29.536801",
+          "pname": "重庆市",
+          "cityname": "重庆市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B00170914B",
+        "name": "陆军军医大学西南医院",
+        "address": "高滩岩正街30号",
+        "location": "106.452226,29.536801",
+        "pname": "重庆市",
+        "cityname": "重庆市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "陆军军医大学西南医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "赣州市第三人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r133",
+        "kdocs-cp3b7toqal3j-s3-r134",
+        "kdocs-cp3b7toqal3j-s3-r135",
+        "kdocs-cp3b7toqal3j-s3-r136"
+      ],
+      "region": "江西",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B031D00L7W",
+          "name": "赣州市第三人民医院章江院区",
+          "address": "章江北大道10号",
+          "location": "114.952446,25.832405",
+          "pname": "江西省",
+          "cityname": "赣州市",
+          "adcode": "",
+          "typecode": "090200"
+        }
+      ],
+      "chosen": {
+        "id": "B031D00L7W",
+        "name": "赣州市第三人民医院章江院区",
+        "address": "章江北大道10号",
+        "location": "114.952446,25.832405",
+        "pname": "江西省",
+        "cityname": "赣州市",
+        "adcode": "",
+        "typecode": "090200"
+      },
+      "matched_name": "赣州市第三人民医院章江院区",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "赣南医学院第一附属医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r137",
+        "kdocs-cp3b7toqal3j-s3-r138"
+      ],
+      "region": "江西",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B031D00JPW",
+          "name": "赣南医科大学第一附属医院(章贡院区)",
+          "address": "青年路23号",
+          "location": "114.932481,25.855251",
+          "pname": "江西省",
+          "cityname": "赣州市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B031D00JPW",
+        "name": "赣南医科大学第一附属医院(章贡院区)",
+        "address": "青年路23号",
+        "location": "114.932481,25.855251",
+        "pname": "江西省",
+        "cityname": "赣州市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "赣南医科大学第一附属医院(章贡院区)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "湖南长沙湘雅医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r139"
+      ],
+      "region": "湖南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B02DB00B1E",
+          "name": "中南大学湘雅医院",
+          "address": "湘雅路87号",
+          "location": "112.984105,28.212240",
+          "pname": "湖南省",
+          "cityname": "长沙市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B02DB00B1E",
+        "name": "中南大学湘雅医院",
+        "address": "湘雅路87号",
+        "location": "112.984105,28.212240",
+        "pname": "湖南省",
+        "cityname": "长沙市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "中南大学湘雅医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "湖南省立第二人民医院/脑科医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r140",
+        "kdocs-cp3b7toqal3j-s3-r141"
+      ],
+      "region": "湖南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B02DB03S87",
+          "name": "湖南省脑科医院",
+          "address": "芙蓉中路三段427号(涂家冲地铁站4号口步行270米)",
+          "location": "112.984808,28.155643",
+          "pname": "湖南省",
+          "cityname": "长沙市",
+          "adcode": "",
+          "typecode": "090208"
+        }
+      ],
+      "chosen": {
+        "id": "B02DB03S87",
+        "name": "湖南省脑科医院",
+        "address": "芙蓉中路三段427号(涂家冲地铁站4号口步行270米)",
+        "location": "112.984808,28.155643",
+        "pname": "湖南省",
+        "cityname": "长沙市",
+        "adcode": "",
+        "typecode": "090208"
+      },
+      "matched_name": "湖南省脑科医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "湖南儿童医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r142"
+      ],
+      "region": "湖南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B02DB03KPH",
+          "name": "湖南省儿童医院",
+          "address": "梓园路86号",
+          "location": "112.989376,28.173845",
+          "pname": "湖南省",
+          "cityname": "长沙市",
+          "adcode": "",
+          "typecode": "090200"
+        }
+      ],
+      "chosen": {
+        "id": "B02DB03KPH",
+        "name": "湖南省儿童医院",
+        "address": "梓园路86号",
+        "location": "112.989376,28.173845",
+        "pname": "湖南省",
+        "cityname": "长沙市",
+        "adcode": "",
+        "typecode": "090200"
+      },
+      "matched_name": "湖南省儿童医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "中国人民解放军总医院（海南）",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r143"
+      ],
+      "region": "海南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B03830NCEK",
+          "name": "中国人民解放军总医院海南医院",
+          "address": "江林路80号",
+          "location": "109.713613,18.290343",
+          "pname": "海南省",
+          "cityname": "三亚市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B03830NCEK",
+        "name": "中国人民解放军总医院海南医院",
+        "address": "江林路80号",
+        "location": "109.713613,18.290343",
+        "pname": "海南省",
+        "cityname": "三亚市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "中国人民解放军总医院海南医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "海南医学院第一附属医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r144"
+      ],
+      "region": "海南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B03820OYOL",
+          "name": "海南医科大学第一附属医院",
+          "address": "龙华路31号",
+          "location": "110.333100,20.029055",
+          "pname": "海南省",
+          "cityname": "海口市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B03820OYOL",
+        "name": "海南医科大学第一附属医院",
+        "address": "龙华路31号",
+        "location": "110.333100,20.029055",
+        "pname": "海南省",
+        "cityname": "海口市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "海南医科大学第一附属医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "海南省肿瘤医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r145"
+      ],
+      "region": "海南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFFGLYOY",
+          "name": "海南省肿瘤医院",
+          "address": "长滨西四街6号",
+          "location": "110.184966,20.042245",
+          "pname": "海南省",
+          "cityname": "海口市",
+          "adcode": "",
+          "typecode": "090207|090100"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFFGLYOY",
+        "name": "海南省肿瘤医院",
+        "address": "长滨西四街6号",
+        "location": "110.184966,20.042245",
+        "pname": "海南省",
+        "cityname": "海口市",
+        "adcode": "",
+        "typecode": "090207|090100"
+      },
+      "matched_name": "海南省肿瘤医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "海南省安宁医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r146",
+        "kdocs-cp3b7toqal3j-s3-r147",
+        "kdocs-cp3b7toqal3j-s3-r148"
+      ],
+      "region": "海南",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B038202B8M",
+          "name": "海南省安宁医院",
+          "address": "南海大道东10号",
+          "location": "110.337253,19.994608",
+          "pname": "海南省",
+          "cityname": "海口市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B038202B8M",
+        "name": "海南省安宁医院",
+        "address": "南海大道东10号",
+        "location": "110.337253,19.994608",
+        "pname": "海南省",
+        "cityname": "海口市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "海南省安宁医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "华西医院西藏成办分院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r149",
+        "kdocs-cp3b7toqal3j-s3-r150"
+      ],
+      "region": "西藏",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B001C7WO02",
+          "name": "华西医院(西藏成办分院)",
+          "address": "浆洗街街道洗面桥横街20号",
+          "location": "104.051845,30.641995",
+          "pname": "四川省",
+          "cityname": "成都市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B001C7WO02",
+        "name": "华西医院(西藏成办分院)",
+        "address": "浆洗街街道洗面桥横街20号",
+        "location": "104.051845,30.641995",
+        "pname": "四川省",
+        "cityname": "成都市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "华西医院(西藏成办分院)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "西藏自治区人民医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r153"
+      ],
+      "region": "西藏",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFFX8HQY",
+          "name": "西藏自治区人民医院",
+          "address": "林廓北路18号",
+          "location": "91.127083,29.656341",
+          "pname": "西藏自治区",
+          "cityname": "拉萨市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFFX8HQY",
+        "name": "西藏自治区人民医院",
+        "address": "林廓北路18号",
+        "location": "91.127083,29.656341",
+        "pname": "西藏自治区",
+        "cityname": "拉萨市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "西藏自治区人民医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "青山医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r154",
+        "kdocs-cp3b7toqal3j-s3-r160"
+      ],
+      "region": "香港",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B073C02Y5K",
+          "name": "青山医院",
+          "address": "青松观路15青山医院杏晖楼E座附近",
+          "location": "113.978322,22.406666",
+          "pname": "香港特别行政区",
+          "cityname": "香港特别行政区",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B073C02Y5K",
+        "name": "青山医院",
+        "address": "青松观路15青山医院杏晖楼E座附近",
+        "location": "113.978322,22.406666",
+        "pname": "香港特别行政区",
+        "cityname": "香港特别行政区",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "青山医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "葵涌医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r155",
+        "kdocs-cp3b7toqal3j-s3-r156"
+      ],
+      "region": "香港",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B073C036VW",
+          "name": "葵涌医院",
+          "address": "香港新界葵涌葵涌医院路3-15号",
+          "location": "114.138527,22.340223",
+          "pname": "香港特别行政区",
+          "cityname": "香港特别行政区",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B073C036VW",
+        "name": "葵涌医院",
+        "address": "香港新界葵涌葵涌医院路3-15号",
+        "location": "114.138527,22.340223",
+        "pname": "香港特别行政区",
+        "cityname": "香港特别行政区",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "葵涌医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "玛丽医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r157"
+      ],
+      "region": "香港",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B073C04AKA",
+          "name": "玛丽医院",
+          "address": "香港岛薄扶林薄扶林道102号",
+          "location": "114.136568,22.267338",
+          "pname": "香港特别行政区",
+          "cityname": "香港特别行政区",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B073C04AKA",
+        "name": "玛丽医院",
+        "address": "香港岛薄扶林薄扶林道102号",
+        "location": "114.136568,22.267338",
+        "pname": "香港特别行政区",
+        "cityname": "香港特别行政区",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "玛丽医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "圣保禄/养和医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r158"
+      ],
+      "region": "香港",
+      "status": "not_found",
+      "reason": "高德接口拒绝查询（20011）",
+      "candidates": []
+    },
+    {
+      "name": "威尔斯亲王医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r159"
+      ],
+      "region": "香港",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B073C03EPG",
+          "name": "威尔斯亲王医院",
+          "address": "银城街30-32号",
+          "location": "114.206978,22.376584",
+          "pname": "香港特别行政区",
+          "cityname": "香港特别行政区",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B073C03EPG",
+        "name": "威尔斯亲王医院",
+        "address": "银城街30-32号",
+        "location": "114.206978,22.376584",
+        "pname": "香港特别行政区",
+        "cityname": "香港特别行政区",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "威尔斯亲王医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "明德医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r161"
+      ],
+      "region": "香港",
+      "status": "not_found",
+      "reason": "高德接口拒绝查询（20011）",
+      "candidates": []
+    },
+    {
+      "name": "港安医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r162"
+      ],
+      "region": "香港",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B073C04S0X",
+          "name": "香港港安医院",
+          "address": "跑马地司徒拔道40号",
+          "location": "114.189075,22.260874",
+          "pname": "香港特别行政区",
+          "cityname": "香港特别行政区",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B073C04S0X",
+        "name": "香港港安医院",
+        "address": "跑马地司徒拔道40号",
+        "location": "114.189075,22.260874",
+        "pname": "香港特别行政区",
+        "cityname": "香港特别行政区",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "香港港安医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "仁伯爵综合医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r163"
+      ],
+      "region": "澳门",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B073D00DG3",
+          "name": "仁伯爵综合医院",
+          "address": "若宪马路",
+          "location": "113.551481,22.190784",
+          "pname": "澳门特别行政区",
+          "cityname": "澳门特别行政区",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B073D00DG3",
+        "name": "仁伯爵综合医院",
+        "address": "若宪马路",
+        "location": "113.551481,22.190784",
+        "pname": "澳门特别行政区",
+        "cityname": "澳门特别行政区",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "仁伯爵综合医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "澳门大学心理学系诊所",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r164"
+      ],
+      "region": "澳门",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0G0A7X9DB",
+          "name": "澳门大学社会科学学院(由澳门特别行政区实施管辖)",
+          "address": "氹仔大学大马路1号澳门大学横琴校区",
+          "location": "113.548425,22.125825",
+          "pname": "广东省",
+          "cityname": "珠海市",
+          "adcode": "",
+          "typecode": "141201"
+        }
+      ],
+      "chosen": {
+        "id": "B0G0A7X9DB",
+        "name": "澳门大学社会科学学院(由澳门特别行政区实施管辖)",
+        "address": "氹仔大学大马路1号澳门大学横琴校区",
+        "location": "113.548425,22.125825",
+        "pname": "广东省",
+        "cityname": "珠海市",
+        "adcode": "",
+        "typecode": "141201"
+      },
+      "matched_name": "澳门大学社会科学学院(由澳门特别行政区实施管辖)",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "澳门科技大学医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r165"
+      ],
+      "region": "澳门",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B073D00KF2",
+          "name": "科大医院",
+          "address": "澳门科技大学H座",
+          "location": "113.573383,22.151479",
+          "pname": "澳门特别行政区",
+          "cityname": "澳门特别行政区",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B073D00KF2",
+        "name": "科大医院",
+        "address": "澳门科技大学H座",
+        "location": "113.573383,22.151479",
+        "pname": "澳门特别行政区",
+        "cityname": "澳门特别行政区",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "科大医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "澳门心理卫生中心",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r166"
+      ],
+      "region": "澳门",
+      "status": "not_found",
+      "reason": "高德接口拒绝查询（20011）",
+      "candidates": []
+    },
+    {
+      "name": "台北市立联合医院松德院区",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r167"
+      ],
+      "region": "台湾",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0K2NU6CEL",
+          "name": "台北市立联合医院松德院区",
+          "address": "110台湾台北市信义区三犁里松德路309号",
+          "location": "121.578455,25.027487",
+          "pname": "台湾省",
+          "cityname": "台北市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B0K2NU6CEL",
+        "name": "台北市立联合医院松德院区",
+        "address": "110台湾台北市信义区三犁里松德路309号",
+        "location": "121.578455,25.027487",
+        "pname": "台湾省",
+        "cityname": "台北市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "台北市立联合医院松德院区",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "台湾大学医学院附设医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r168"
+      ],
+      "region": "台湾",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0LKXSLAM3",
+          "name": "国立台湾大学医学院附设医院癌医中心分院",
+          "address": "106台湾台北市大安区学府里基隆路三段155巷57号1楼",
+          "location": "121.548018,25.011747",
+          "pname": "台湾省",
+          "cityname": "台北市",
+          "adcode": "",
+          "typecode": "090200"
+        }
+      ],
+      "chosen": {
+        "id": "B0LKXSLAM3",
+        "name": "国立台湾大学医学院附设医院癌医中心分院",
+        "address": "106台湾台北市大安区学府里基隆路三段155巷57号1楼",
+        "location": "121.548018,25.011747",
+        "pname": "台湾省",
+        "cityname": "台北市",
+        "adcode": "",
+        "typecode": "090200"
+      },
+      "matched_name": "国立台湾大学医学院附设医院癌医中心分院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "台北荣民总医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r169"
+      ],
+      "region": "台湾",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0L0ZZDX92",
+          "name": "台北荣民总医院",
+          "address": "112台湾台北市北投区永欣里石牌路二段201号",
+          "location": "121.524073,25.117003",
+          "pname": "台湾省",
+          "cityname": "台北市",
+          "adcode": "",
+          "typecode": "090000"
+        }
+      ],
+      "chosen": {
+        "id": "B0L0ZZDX92",
+        "name": "台北荣民总医院",
+        "address": "112台湾台北市北投区永欣里石牌路二段201号",
+        "location": "121.524073,25.117003",
+        "pname": "台湾省",
+        "cityname": "台北市",
+        "adcode": "",
+        "typecode": "090000"
+      },
+      "matched_name": "台北荣民总医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "马偕纪念医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r170"
+      ],
+      "region": "台湾",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0MA3RZCF4",
+          "name": "马偕纪念医院台北院区",
+          "address": "104台湾台北市中山区集英里中山北路二段92号",
+          "location": "121.526279,25.056006",
+          "pname": "台湾省",
+          "cityname": "台北市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B0MA3RZCF4",
+        "name": "马偕纪念医院台北院区",
+        "address": "104台湾台北市中山区集英里中山北路二段92号",
+        "location": "121.526279,25.056006",
+        "pname": "台湾省",
+        "cityname": "台北市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "马偕纪念医院台北院区",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "高雄医学大学附设医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r171"
+      ],
+      "region": "台湾",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0L0FNUB1K",
+          "name": "高雄医学大学中和纪念医院",
+          "address": "807台湾高雄市三民区安生里自由一路100号",
+          "location": "120.313491,22.643167",
+          "pname": "台湾省",
+          "cityname": "高雄市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B0L0FNUB1K",
+        "name": "高雄医学大学中和纪念医院",
+        "address": "807台湾高雄市三民区安生里自由一路100号",
+        "location": "120.313491,22.643167",
+        "pname": "台湾省",
+        "cityname": "高雄市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "高雄医学大学中和纪念医院",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "中国医药大学附设医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r172"
+      ],
+      "region": "台湾",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0L0FYXUHL",
+          "name": "China Medical University Hospital",
+          "address": "404台湾台中市北区五常里五权路499号",
+          "location": "120.687808,24.151337",
+          "pname": "台湾省",
+          "cityname": "台中市",
+          "adcode": "",
+          "typecode": "090000"
+        }
+      ],
+      "chosen": {
+        "id": "B0L0FYXUHL",
+        "name": "China Medical University Hospital",
+        "address": "404台湾台中市北区五常里五权路499号",
+        "location": "120.687808,24.151337",
+        "pname": "台湾省",
+        "cityname": "台中市",
+        "adcode": "",
+        "typecode": "090000"
+      },
+      "matched_name": "China Medical University Hospital",
+      "selection_rule": "base-name"
+    },
+    {
+      "name": "长庚医院",
+      "report_ids": [
+        "kdocs-cp3b7toqal3j-s3-r173"
+      ],
+      "region": "台湾",
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0L0SMIKHV",
+          "name": "长庚医疗财团法人林口长庚纪念医院",
+          "address": "333台湾桃园市龟山区公西里复兴街5号",
+          "location": "121.371673,25.058438",
+          "pname": "台湾省",
+          "cityname": "桃园市",
+          "adcode": "",
+          "typecode": "090000"
+        }
+      ],
+      "chosen": {
+        "id": "B0L0SMIKHV",
+        "name": "长庚医疗财团法人林口长庚纪念医院",
+        "address": "333台湾桃园市龟山区公西里复兴街5号",
+        "location": "121.371673,25.058438",
+        "pname": "台湾省",
+        "cityname": "桃园市",
+        "adcode": "",
+        "typecode": "090000"
+      },
+      "matched_name": "长庚医疗财团法人林口长庚纪念医院",
+      "selection_rule": "base-name"
+    }
+  ],
+  "provider": "amap",
+  "endpoint": "https://restapi.amap.com/v3/place/text",
+  "source_crs": "GCJ-02",
+  "stored_crs": "WGS84",
+  "conversion": "three-iteration approximate inverse"
+}

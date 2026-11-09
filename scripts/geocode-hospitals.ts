@@ -6,12 +6,12 @@
 import { readFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
-import { hospitalsFileSchema, reportsFileSchema } from '../lib/schema.ts'
+import { doctorsFileSchema, hospitalsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import type { Hospital, Report } from '../lib/schema.ts'
-import { reportsFromDocument, SOURCE_CAPTURE, SOURCE_URL } from './import-kdocs.ts'
+import { doctorsWithLocations, markUnlinked, reportsFromDocument, SOURCE_CAPTURE, SOURCE_URL } from './import-kdocs.ts'
 import type { SourceDocument } from './import-kdocs.ts'
 import { LOCATION_EVIDENCE, locationTargets, searchName, searchCity, selectPoi, searchAmap, linkLocationReports } from './lib/amap.ts'
-import type { LocationRun } from './lib/amap.ts'
+import type { LocationRun, Poi } from './lib/amap.ts'
 import { CURATED_FILES, readJson, writeJson } from './lib/paths.ts'
 
 function loadEnvKey(): string {
@@ -99,18 +99,20 @@ export function hospitalsFromRun(run: LocationRun): Hospital[] {
   return [...hospitals.values()]
 }
 
-export function applyRun(reports: Report[], run: LocationRun) {
+export function applyRun(reports: Report[], run: LocationRun, document: SourceDocument) {
   if (run.source_url !== SOURCE_URL || run.results.some(result => result.status === 'not_queried')) throw new Error('定位报告来源不符或尚未完成查询')
-  const linked = linkLocationReports(reports, run)
+  const linked = markUnlinked(linkLocationReports(reports, run), run)
   const hospitals = hospitalsFromRun(run)
   const updated_at = run.generated_at.slice(0, 10)
   const hospitalFile = hospitalsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: hospitals })
   const reportFile = reportsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: linked })
+  const doctorFile = doctorsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: doctorsWithLocations(document, linked) })
   // Keep public provenance minimal; the full candidate inventory stays in ignored raw storage.
   writeJson(LOCATION_EVIDENCE, { ...run, provider: 'amap', endpoint: 'https://restapi.amap.com/v3/place/text', source_crs: 'GCJ-02', stored_crs: 'WGS84', conversion: 'three-iteration approximate inverse', results: run.results.map(result => ({ ...result, candidates: result.chosen ? [result.chosen] : [] })) })
   writeJson(CURATED_FILES.hospitals, hospitalFile)
   writeJson(CURATED_FILES.reports, reportFile)
-  console.log(`已入库 ${hospitals.length} 个位置，关联 ${linked.filter(report => report.hospital_id).length}/${linked.length} 条来源；其余保留未定位`)
+  writeJson(CURATED_FILES.doctors, doctorFile)
+  console.log(`已入库 ${hospitals.length} 个位置，${doctorFile.items.length} 位医生，关联 ${linked.filter(report => report.hospital_id).length}/${linked.length} 条来源；其余保留未定位`)
 }
 
 async function main() {
@@ -129,7 +131,7 @@ async function main() {
       const matching = candidates.filter(poi => poi.name.replace(/[市（）()\s]/gu, '') === searchName(result.name).replace(/[市（）()\s]/gu, ''))
       return matching.length ? selectPoi(result, matching) : selected
     })
-    applyRun(reports, run)
+    applyRun(reports, run, document)
     return
   }
   const key = loadEnvKey()
@@ -145,7 +147,7 @@ async function main() {
   const targets = locationTargets(reports)
   const run: LocationRun = { source_url: SOURCE_URL, generated_at: new Date().toISOString(), requests: 0, requests_total: 0,
     results: targets.map(target => ({ ...target, status: 'not_queried', reason: '尚未查询', candidates: [] })) }
-  const rawPath = 'data/raw/amap-2026-10-27.json'
+  const rawPath = 'data/raw/amap-2026-11-09.json'
   if (args.includes('--missing') && existsSync(LOCATION_EVIDENCE)) {
     const previous = readJson<LocationRun>(LOCATION_EVIDENCE)
     if (previous.source_url !== SOURCE_URL) throw new Error('已有定位不属于当前来源，须重新全量定位')
@@ -153,12 +155,40 @@ async function main() {
     run.requests_total = previous.requests_total ?? previous.requests
     run.results = previous.results.map(result => result.status === 'geocoded' ? result : { ...result, status: 'not_queried', candidates: [] })
   }
+  // 上一轮主线已确认的同一家机构可直接复用 POI，避免为改造来源结构白查一遍高德配额。
+  const reusePath = args.includes('--reuse') ? args[args.indexOf('--reuse') + 1] : undefined
+  const reusable = new Map<string, Poi>()
+  if (reusePath) {
+    for (const result of readJson<LocationRun>(reusePath).results) {
+      if (result.status === 'geocoded' && result.chosen) reusable.set(result.name, result.chosen)
+    }
+    console.log(`复用上一轮定位：${reusable.size} 家机构可跳过查询`)
+  }
   const countedFetch: typeof fetch = (...args) => { run.requests++; run.requests_total!++; return fetch(...args) }
   try {
     for (let index = 0; index < targets.length; index++) {
       if (run.results[index].status === 'geocoded') continue
       const target = targets[index]
-      const reply = await searchAmap(key, searchName(target.name), searchCity(target), countedFetch)
+      const known = reusable.get(target.name)
+      if (known) {
+        run.results[index] = { ...target, status: 'geocoded', reason: '复用上一轮同一机构的定位结果', candidates: [known], chosen: known, matched_name: known.name, selection_rule: 'base-name' }
+        console.log(`${index + 1}/${targets.length} 复用 ${target.name} -> ${known.name}`)
+        writeJson(rawPath, run)
+        continue
+      }
+      let reply
+      try {
+        reply = await searchAmap(key, searchName(target.name), searchCity(target), countedFetch)
+      } catch (error) {
+        const message = (error as Error).message
+        // 高德业务拒绝（如境外机构超出 key 权限）只影响这一家，其余机构照常完成。
+        const infocode = message.match(/infocode=(\d+)/u)?.[1]
+        if (!infocode) throw error
+        run.results[index] = { ...target, status: 'not_found', reason: `高德接口拒绝查询（${infocode}）`, candidates: [] }
+        console.log(`${index + 1}/${targets.length} not_found ${target.name} -> 接口拒绝 ${infocode}`)
+        writeJson(rawPath, run)
+        continue
+      }
       run.results[index] = selectPoi(target, reply.pois)
       const result = run.results[index]
       console.log(`${index + 1}/${targets.length} ${result.status} ${target.name} -> ${result.chosen?.name ?? result.reason} (${reply.pois.length} 候选)`)
@@ -172,7 +202,7 @@ async function main() {
     throw error
   }
   console.log(`高德完成 ${targets.length} 个原文机构、${reports.length} 条来源，${run.requests} 次请求。候选报告：${rawPath}`)
-  if (args.includes('--write')) applyRun(reports, run)
+  if (args.includes('--write')) applyRun(reports, run, document)
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

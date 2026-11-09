@@ -11,12 +11,13 @@ import {
 } from '../lib/schema.ts'
 import { CURATED_FILES, readJson } from './lib/paths.ts'
 import { isDeepStrictEqual } from 'node:util'
-import { reportsWithLocations, SOURCE_CAPTURE, SOURCE_URL } from './import-kdocs.ts'
+import { reportsWithLocations, doctorsWithLocations, SOURCE_CAPTURE, SOURCE_TITLE, SOURCE_URL } from './import-kdocs.ts'
 import type { SourceDocument } from './import-kdocs.ts'
 import { existsSync } from 'node:fs'
 import { LOCATION_EVIDENCE } from './lib/amap.ts'
 import type { LocationRun } from './lib/amap.ts'
 import { hospitalsFromRun } from './geocode-hospitals.ts'
+import type { Hospital, Report } from '../lib/schema.ts'
 
 const errors: string[] = []
 const warnings: string[] = []
@@ -74,19 +75,25 @@ const provinces = parseOrReport('provinces.json', provincesFileSchema, provinces
   | null
 
 const sourceDocument = readJson<SourceDocument>(SOURCE_CAPTURE)
-if (sourceDocument.url !== SOURCE_URL || sourceDocument.title !== '就诊地图10.25') {
-  errors.push('来源转写必须对应唯一主线《就诊地图10.25》')
+if (sourceDocument.url !== SOURCE_URL || sourceDocument.title !== SOURCE_TITLE) {
+  errors.push(`来源转写必须对应唯一主线《${SOURCE_TITLE}》`)
 }
-if (!Number.isInteger(sourceDocument.page_count) || sourceDocument.page_count < 1 ||
-  sourceDocument.pages.length !== sourceDocument.page_count ||
-  sourceDocument.pages.some((page, index) => page.page !== index + 1 || page.lines.length === 0)) {
-  errors.push('来源转写页数必须为正整数，按序包含全部非空分页')
+const sourceStructureValid = Array.isArray(sourceDocument.sheets) &&
+  sourceDocument.sheets.length > 0 &&
+  sourceDocument.sheets.every((sheet, index) => sheet.index === index && sheet.values.length >= 2)
+if (!sourceStructureValid) {
+  errors.push('来源转写必须按工作表顺序包含表头与全部数据行')
 }
-if (reports && !isDeepStrictEqual(reports.items, reportsWithLocations(sourceDocument))) {
-  errors.push('reports.json 与主线分页转写不一致；请运行 node scripts/import-kdocs.ts，不能恢复旧源或手改引文')
+// 转写结构不成立时无法重放解析，只报结构错误，避免用残缺来源继续比对。
+if (sourceStructureValid && reports && !isDeepStrictEqual(reports.items, reportsWithLocations(sourceDocument))) {
+  errors.push('reports.json 与主线表格转写不一致；请运行 node scripts/import-kdocs.ts，不能恢复旧源或手改引文')
 }
 const expectedHospitals = existsSync(LOCATION_EVIDENCE) ? hospitalsFromRun(readJson<LocationRun>(LOCATION_EVIDENCE)) : []
 if (hospitals && !isDeepStrictEqual(hospitals.items, expectedHospitals)) errors.push('hospitals.json 与本轮高德定位依据不一致，不能恢复退役机构或手改坐标')
+if (sourceStructureValid && doctors && reports &&
+  !isDeepStrictEqual(doctors.items, doctorsWithLocations(sourceDocument, reports.items as Report[]))) {
+  errors.push('doctors.json 与主线表格里的诊室、备注、评价不一致；请运行 node scripts/import-kdocs.ts，不能手改医生档案')
+}
 
 if (disorders && hospitals && doctors && reports && provinces) {
   const disorderIds = new Set(disorders.items.map((item) => String(item.id)))

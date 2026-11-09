@@ -3,79 +3,221 @@ import { readFileSync, readdirSync, existsSync, mkdtempSync, mkdirSync, writeFil
 import { resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import test from 'node:test'
-import { reportsFromDocument, reportsWithLocations, SOURCE_CAPTURE, SOURCE_URL } from '../scripts/import-kdocs.ts'
-import { reportsFileSchema } from '../lib/schema.ts'
+import { cleanEvaluation, DOCTOR_NAME_FIXES, reportsFromDocument, reportsWithLocations, doctorsWithLocations, SOURCE_CAPTURE, SOURCE_TITLE, SOURCE_URL } from '../scripts/import-kdocs.ts'
+import { doctorsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import { LOCATION_EVIDENCE } from '../scripts/lib/amap.ts'
 import { hospitalsFromRun } from '../scripts/geocode-hospitals.ts'
 
 const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'))
 const document = readJson(SOURCE_CAPTURE)
 const reports = readJson('data/curated/reports.json').items
+const doctors = readJson('data/curated/doctors.json').items
 const expected = reportsWithLocations(document)
 
-test('all five pages and every institutional row are represented', () => {
+/** 工作表里地区与医院名只在段首填写，其余行留空继承。 */
+const filledRow = (sheetIndex, excelRow) => {
+  const values = document.sheets[sheetIndex - 1].values
+  let region = ''
+  let hospital = ''
+  for (let index = 1; index <= excelRow - 1; index++) {
+    if (values[index][0]) region = values[index][0].trim()
+    if (values[index][1]) hospital = values[index][1].trim()
+  }
+  return { region, hospital, cells: values[excelRow - 1].map((cell) => (cell ?? '').trim()) }
+}
+
+test('三张工作表与每一行有内容的记录都进了库', () => {
   assert.equal(document.url, SOURCE_URL)
-  assert.deepEqual(document.pages.map((page) => page.page), [1, 2, 3, 4, 5])
-  assert.deepEqual(document.pages.map((page) => expected.filter((r) => r.id.includes(`-p${page.page}-`)).length), [23, 40, 36, 40, 21])
-  assert.equal(reports.length, 160)
+  assert.equal(document.title, SOURCE_TITLE)
+  assert.deepEqual(document.sheets.map((sheet) => sheet.name), ['cptsd', 'osdd-did', '人格障碍'])
+  assert.deepEqual(document.sheets.map((sheet) => sheet.values.length), [57, 55, 184])
+  const perSheet = Object.fromEntries(document.sheets.map((sheet, index) => [
+    index + 1,
+    reports.filter((report) => report.id.includes(`-s${index + 1}-`)).length,
+  ]))
+  // 同一机构同一医生、同一行里没有姓名的多段发言都会合并成一条，
+  // 所以每表条数小于原始行数。
+  assert.deepEqual(perSheet, { 1: 55, 2: 46, 3: 158 })
+  assert.equal(reports.length, 259)
+  assert.equal(reportsFromDocument(document).length, 259)
+  // 合并必须可重放：同一份文档跑两遍得到同一组 id，定位表与断言样本才不会抖。
+  assert.deepEqual(reportsFromDocument(document).map((report) => report.id), reports.map((report) => report.id))
   assert.deepEqual(reports, expected)
-  assert.equal(document.pages[4].lines.at(-1), '长庚医院：刘嘉逸')
   assert.equal(reportsFileSchema.safeParse(readJson('data/curated/reports.json')).success, true)
+  assert.equal(doctorsFileSchema.safeParse(readJson('data/curated/doctors.json')).success, true)
 })
 
-test('source identity, wording and location cover every report', () => {
+test('每条线索都能回溯到同一张表的同一单元格', () => {
+  // 跨表合并后一条线索可能引用同一机构同一医生在两三张表里的发言，
+  // 因此回溯范围是「这家机构这位医生」在全部工作表里的姓名、备注、评价单元格。
+  const nameOf = (cell) => (cell ?? '')
+    .replace(/[（(][^）)]*[）)]/gu, '')
+    .replace(/\s+/gu, ' ')
+    .trim()
+    .replace(/\s*等$/u, '')
+    .replace(/医生$/u, '')
+    .trim()
+  const corpus = new Map()
+  for (const sheet of document.sheets) {
+    let hospital = ''
+    for (let row = 1; row < sheet.values.length; row++) {
+      const cells = sheet.values[row].map((cell) => (cell ?? '').trim())
+      if (!cells.some(Boolean)) continue
+      if (cells[1]) hospital = cells[1]
+      const key = `${hospital}\u0000${nameOf(cells[3])}`
+      corpus.set(key, [corpus.get(key), cells[3], cells[4], cells[5]].filter(Boolean).join('\n'))
+    }
+  }
   for (const report of reports) {
     assert.equal(report.source_url, SOURCE_URL)
-    assert.equal(report.source_post_id, 'crOlzFWeu2GY')
+    assert.equal(report.source_post_id, 'cp3b7ToQAl3J')
     assert.equal(report.evidence_context.note_title, document.title)
     assert.equal(report.evidence_context.capture_scope, SOURCE_CAPTURE)
-    const [, page, line] = report.id.match(/-p(\d+)-l(\d+)$/)
-    const lines = document.pages[Number(page) - 1].lines
-    const sourceLine = lines[Number(line) - 1]
-    assert.equal(report.hospital_name_raw, sourceLine.split('：')[0])
-    assert.equal(report.evidence_quote.split('\n')[0], sourceLine)
-    if (report.evidence_quote.includes('\n')) assert.equal(report.evidence_quote.split('\n')[1], lines[Number(line)])
+    const [, sheetIndex, excelRow] = report.id.match(/-s(\d+)-r(\d+)(?:-p\d+)?$/u).map(Number)
+    const sheet = document.sheets[sheetIndex - 1]
+    assert.equal(report.evidence_context.index_in_capture, `${sheet.name} · 第${excelRow}行`)
+    const { region, hospital, cells } = filledRow(sheetIndex, excelRow)
+    assert.equal(report.hospital_name_raw, hospital)
+    if (region) assert.equal(report.hospital_region, region)
+    if (cells[2]) assert.equal(report.department, cells[2])
+    // 姓名格只写了其中一位、评价里点了另一位时，姓名栏按人工修正表补齐（脚本里的 DOCTOR_NAME_FIXES）
+    const fixed = DOCTOR_NAME_FIXES[`s${sheetIndex}-r${excelRow}`]
+    if (fixed) assert.equal(report.doctor_name_raw, fixed.join('、'))
+    else if (cells[3] && report.doctor_name_raw) {
+      // 两位医生共用同一段评价时姓名栏会合并成「甲、乙」，
+      // 名字可能来自同院另一行，所以要逐个核对，而不是整串出现在这一格里。
+      for (const name of report.doctor_name_raw.split('、')) {
+        const known = cells[3].includes(name) || [...corpus.entries()].some(([key, text]) => key.startsWith(`${hospital}\u0000`) && text.includes(name))
+        assert.ok(known, `${report.id} 姓名对不上：${name}`)
+      }
+    }
+    // 正文必须来自这家机构这位医生的原文单元格，逐行可回溯（署名已剥离，所以只要求是子串）。
+    // 没有医生姓名的行（科室、专家会诊）按这一行自己的姓名格与备注、评价回溯。
+    // 比较时去掉空白：姓名格的团队名、状态附注会与紧随其后的发言拼进同一段。
+    const doctors = (report.doctor_name_raw ?? '').split('、').filter(Boolean)
+    const source = [
+      `${cells[3] ?? ''}\n${cells[4] ?? ''}\n${cells[5] ?? ''}`,
+      ...doctors.map((doctor) => corpus.get(`${hospital}\u0000${doctor}`) ?? ''),
+    ].join('\n').replace(/\s+/gu, '')
+    // 该行没有备注也没有评价时，正文由姓名格、院名、诊室兜底拼接，不来自发言单元格。
+    if (!cells[4] && !cells[5]) continue
+    for (const line of (report.evidence_full_text ?? report.evidence_quote).split('\n')) {
+      const plain = line.replace(/^（[^）]*）/u, '').replace(/…$/u, '').replace(/\s+/gu, '').trim()
+      if (plain.length < 2) continue
+      // 该行没有备注也没有评价时，正文由院名 · 诊室 · 姓名兜底拼接，不来自任何单元格。
+      if (plain.includes('·')) continue
+      assert.ok(source.includes(plain), `${report.id} 无法回溯：${plain.slice(0, 40)}`)
+    }
+    assert.ok(report.evidence_quote.length >= 1 && report.evidence_quote.length <= 200)
+    if (report.evidence_full_text) assert.ok(report.evidence_full_text.length <= 2000)
   }
 })
 
-test('source headings are categories rather than invented diagnoses or dates', () => {
-  assert.deepEqual(Object.fromEntries(['cptsd', 'osdd/did', 'pd'].map((group) => [group, reports.filter((r) => r.disorders.join('/') === group).length])), { cptsd: 32, 'osdd/did': 36, pd: 92 })
+test('工作表按病症分组，其他字段保持未知而不是编造', () => {
+  const byDisorder = Object.fromEntries(['cptsd', 'osdd/did', 'pd'].map((group) => [
+    group,
+    reports.filter((report) => report.disorders.join('/') === group).length,
+  ]))
+  // 合并后跨表的同一条发言带上了两张表的病症，只剩单一病症的条数会减少。
+  assert.deepEqual(byDisorder, { cptsd: 42, 'osdd/did': 42, pd: 158 })
+  assert.equal(reports.filter((report) => report.disorders.includes('cptsd')).length, 55)
+  assert.equal(reports.filter((report) => report.disorders.includes('pd')).length, 172)
   for (const report of reports) {
     assert.equal(report.stage, 'unknown')
     assert.equal(report.published_at, undefined)
     assert.equal(report.published_at_precision, 'unknown')
     assert.equal(report.diagnosis_claimed, undefined)
     assert.equal(report.verification.level, 'unverified')
+    assert.equal(report.experience, null)
+    assert.equal(report.evidence_source, 'article')
+    // 挂不上机构的线索保留原文但不进公开数字，其余正常发布。
+    if (report.hospital_id) {
+      assert.equal(report.status, 'published')
+      assert.equal(report.unlinked_reason, undefined)
+    } else {
+      assert.equal(report.status, 'unlinked')
+      assert.match(report.unlinked_reason, /^机构未定位：/u)
+    }
     if (report.disorders.includes('pd')) assert.deepEqual(report.source_topics, ['人格障碍'])
+    else assert.equal(report.source_topics, undefined)
   }
-  assert.equal(document.document_updated_at, null)
 })
 
-test('notes, fees, teams and departures remain in evidence, not credentials', () => {
-  const quotes = reports.map((r) => r.evidence_quote).join('\n')
-  for (const note of ['触发风险', '目前进修中', '胡玉凤（已离职）', '苗国栋（退休）', '2400-2520每45分钟', '挂号费1000，线上680', '首诊90分钟起步', '朱鸿儒课题组', '郑重团队', '有些医生在芳村和惠爱两边都出诊', '李苏义和阳琼为网友反馈']) assert.ok(quotes.includes(note), note)
+test('姓名的状态附注与团队行不冒充医生，备注和评价仍留在原文里', () => {
+  const quotes = reports.map((report) => `${report.evidence_quote}\n${report.evidence_full_text ?? ''}`).join('\n')
+  for (const note of ['触发风险', '目前进修中', '挂号要挂特需', '只会英语和德语', '首诊只有潘梁两位主任才能下诊断', '课题组', '团队']) {
+    assert.ok(quotes.includes(note), note)
+  }
   for (const report of reports) {
     assert.doesNotMatch(report.doctor_name_raw ?? '', /门诊|会诊|团队|课题组|医生|触发风险|离职|退休|进修/u)
     assert.equal(report.doctor_title_raw, undefined)
     assert.equal(report.cost_cny, undefined)
+    assert.equal(report.doctor_id, undefined)
   }
-  const xiamen = reports.find((r) => r.hospital_name_raw === '四川大学华西厦门医院')
-  assert.equal(xiamen.hospital_region, undefined)
-  assert.equal(xiamen.doctor_name_raw, undefined)
+  // 姓名格被写成整段科室介绍的行不进医生档案
+  const team = doctors.filter((doctor) => /团队|课题组|专家会诊/u.test(doctor.name))
+  assert.deepEqual(team, [])
+  const intro = reports.find((report) => report.id === 'kdocs-cp3b7toqal3j-s3-r109')
+  assert.equal(intro.doctor_name_raw, undefined)
 })
 
-test('retired reports, entities, evidence and run logs are outside the active tree', () => {
+test('医生档案只由表格里的诊室、备注、评价生成，且都能落到已定位机构', () => {
+  const hospitalIds = new Set(readJson('data/curated/hospitals.json').items.map((item) => item.id))
+  assert.equal(doctors.length, 238)
+  assert.deepEqual(doctors, doctorsWithLocations(document, expected))
+  for (const doctor of doctors) {
+    assert.match(doctor.id, /^kdocs-doctor-[0-9a-f]{12}$/)
+    assert.ok(hospitalIds.has(doctor.hospital_id), doctor.hospital_id)
+    // 表里没写的字段留空，界面走「无」；不留「未录入」这类录入过程用语
+    assert.equal(doctor.title, '')
+    assert.doesNotMatch(`${doctor.department}${doctor.title}`, /未录入|未知|暂无/u)
+    // 整批导入日不是逐人核对日，没有依据就不写日期
+    assert.equal(doctor.last_verified_at, undefined)
+  }
+  assert.equal(doctors.filter((doctor) => !doctor.department).length, 125)
+  assert.equal(new Set(doctors.map((doctor) => doctor.id)).size, doctors.length)
+  assert.equal(doctors.filter((doctor) => doctor.evaluation).length, 58)
+  assert.equal(doctors.filter((doctor) => doctor.note).length, 58)
+  // 无姓名的行仍然是医院线索，只是不进医生档案（人格障碍表多数行本就没写诊室）
+  const noName = reports.filter((report) => !report.doctor_name_raw)
+  assert.equal(noName.length, 7)
+  assert.ok(noName.every((report) => report.hospital_name_raw && report.hospital_region))
+  assert.ok(noName.every((report) => report.evidence_quote.length > 0))
+  // 同一行里没有姓名的多段发言也合并成一条，否则一个人的一次经历会被数成三条线索
+  const huilongguan = reports.filter((report) => report.hospital_name_raw === '北京回龙观医院')
+  assert.equal(huilongguan.length, 13)
+  assert.equal(huilongguan.filter((report) => !report.doctor_name_raw).length, 1)
+  // 合并过的线索记下合并前的发言条数，单条不写 1
+  const merged = reports.filter((report) => report.parts_count)
+  assert.equal(merged.length, 46)
+  assert.ok(merged.every((report) => report.parts_count >= 2))
+  assert.equal(merged.reduce((total, report) => total + report.parts_count, 0), 143)
+  // 合并后正文里不该留下同一句重复两遍
+  for (const report of merged) {
+    const lines = (report.evidence_full_text ?? report.evidence_quote).split('\n').map((line) => line.trim()).filter(Boolean)
+    assert.equal(new Set(lines).size, lines.length, `${report.id} 正文有重复行`)
+  }
+  // 评价里点到另一位医生的行，线索姓名补齐；被点到的人已有自己的档案，不继承这一行的评价
+  assert.equal(reports.find((report) => report.id === 'kdocs-cp3b7toqal3j-s1-r4').doctor_name_raw, '潘伟刚、梁红')
+  const pan = doctors.find((doctor) => doctor.name === '潘伟刚')
+  assert.ok(pan)
+  assert.doesNotMatch(pan.evaluation ?? '', /挂了梁红的/u)
+})
+
+test('机构清单等于本轮定位依据，未定位的 8 条线索保留院名而不编造坐标', () => {
   assert.deepEqual(readJson('data/curated/hospitals.json').items, existsSync(LOCATION_EVIDENCE) ? hospitalsFromRun(readJson(LOCATION_EVIDENCE)) : [])
-  assert.deepEqual(readJson('data/curated/doctors.json').items, [])
+  assert.equal(readJson('data/curated/hospitals.json').items.length, 119)
+  const unlocated = reports.filter((report) => !report.hospital_id)
+  assert.equal(unlocated.length, 8)
+  assert.ok(unlocated.every((report) => report.hospital_name_raw && report.hospital_region))
   assert.equal(readJson('data/curated/provinces.json').items.length, 34)
   assert.equal(readJson('data/curated/disorders.json').items.length, 7)
   assert.ok(!existsSync('data/evidence/manifest.json'))
   assert.ok(!existsSync('data/evidence/xiaohongshu'))
   assert.deepEqual(existsSync('data/runs') ? readdirSync('data/runs') : [], [])
   for (const report of reports) {
-    assert.match(report.id, /^kdocs-crolzfweu2gy-/)
+    assert.match(report.id, /^kdocs-cp3b7toqal3j-/)
     if (report.hospital_id) assert.match(report.hospital_id, /^kdocs-amap-/)
-    assert.equal(report.doctor_id, undefined)
     assert.doesNotMatch(JSON.stringify(report), /xiaohongshu|xsec_token|author_|parent_author|reply_to_author|ip_location|retired-2026/u)
   }
   for (const folder of ['data/curated', 'data/generated', 'data/evidence']) {
@@ -85,13 +227,13 @@ test('retired reports, entities, evidence and run logs are outside the active tr
   }
 })
 
-test('normal build and validation commands never call retired collection entry points', () => {
+test('常规构建与校验命令不再调用退役的采集入口', () => {
   const scripts = readJson('package.json').scripts
   for (const name of ['prebuild', 'data:validate', 'data:build', 'data:stats']) assert.doesNotMatch(scripts[name], /scripts\/collect|fix-privacy|data\/raw/u)
   assert.ok(!Object.keys(scripts).some((name) => name.startsWith('collect:') || name === 'evidence:manifest' || name === 'audit:sources'))
 })
 
-test('validator rejects retired/private data and incomplete pagination while allowing added pages', () => {
+test('校验器拒绝私人标识与改动过的引文，并拒绝结构不成立的工作表', () => {
   mkdirSync('tmp', { recursive: true })
   const fixture = mkdtempSync(resolve('tmp/data-source-'))
   try {
@@ -109,27 +251,22 @@ test('validator rejects retired/private data and incomplete pagination while all
     const result = spawnSync(process.execPath, [resolve('scripts/validate-data.ts')], { cwd: fixture, encoding: 'utf8' })
     assert.equal(result.status, 1)
     assert.match(result.stderr, /公开数据不得包含私人标识/u)
-    assert.match(result.stderr, /与主线分页转写不一致/u)
+    assert.match(result.stderr, /与主线表格转写不一致/u)
 
     cpSync('data/curated/reports.json', resolve(fixture, 'data/curated/reports.json'))
-    const expanded = structuredClone(document)
-    expanded.page_count = 6
-    expanded.pages.push({ page: 6, lines: ['补充说明'] })
-    const validatePages = (source) => {
+    const validateSheets = (source) => {
       writeFileSync(resolve(fixture, SOURCE_CAPTURE), JSON.stringify(source))
       return spawnSync(process.execPath, [resolve('scripts/validate-data.ts')], { cwd: fixture, encoding: 'utf8' })
     }
-    assert.equal(validatePages(expanded).status, 0)
+    assert.equal(validateSheets(document).status, 0)
     for (const source of [
-      { ...expanded, page_count: 0 },
-      { ...expanded, page_count: 6.5 },
-      { ...expanded, page_count: 5 },
-      { ...expanded, pages: [...document.pages, { page: 5, lines: ['补充说明'] }] },
-      { ...expanded, pages: [...document.pages, { page: 6, lines: [] }] },
+      { ...document, sheets: [] },
+      { ...document, sheets: document.sheets.map((sheet, index) => ({ ...sheet, index: index + 3 })) },
+      { ...document, sheets: document.sheets.map((sheet, index) => (index === 1 ? { ...sheet, values: sheet.values.slice(0, 1) } : sheet)) },
     ]) {
-      const invalid = validatePages(source)
+      const invalid = validateSheets(source)
       assert.equal(invalid.status, 1)
-      assert.match(invalid.stderr, /按序包含全部非空分页/u)
+      assert.match(invalid.stderr, /按工作表顺序包含表头与全部数据行/u)
     }
   } finally {
     assert.ok(fixture.startsWith(`${resolve('tmp')}/`) || fixture.startsWith(`${resolve('tmp')}\\`))

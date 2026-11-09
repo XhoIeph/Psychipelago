@@ -29,8 +29,12 @@ export type MapLead = {
   stage: string
   publishedAt?: string
   url: string
+  /** 长评价的完整原文；比 quote 长时才给，供「展开原文」使用 */
+  fullText?: string
   /** 线索原文里的医生姓名，照录 `doctor_name_raw`；没有姓名时不出现 */
   doctorName?: string
+  /** 线索原文标注的病症 id（cptsd / osdd / did / pd…），用于卡片上的病症标签；旧数据可能没有 */
+  disorders?: string[]
 }
 
 export type MapProvinceStat = {

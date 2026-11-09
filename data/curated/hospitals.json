@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "updated_at": "2026-10-27",
+  "updated_at": "2026-11-09",
   "items": [
     {
       "id": "kdocs-amap-b000a0989a",
@@ -29,7 +29,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b000a2ef2c",
@@ -58,7 +58,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b000a9q0a3",
@@ -87,7 +87,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0fff90qnj",
@@ -117,7 +117,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b03950291n",
@@ -146,13 +146,15 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
-      "id": "kdocs-amap-b0k0yye61d",
-      "name": "青岛市精神卫生中心高新院区",
+      "id": "kdocs-amap-b02140828v",
+      "name": "青岛市精神卫生中心",
       "aliases": [
-        "山东省青岛精神卫生中心"
+        "青岛精神卫生中心（市北院区）",
+        "青岛市精神卫生中心（第七人民医院）",
+        "山东省精卫（青岛）"
       ],
       "adcode": "370000",
       "province": "山东省",
@@ -168,20 +170,21 @@
         "icd11_practice": "unknown",
         "evidence": []
       },
-      "address": "河套街道振和路10号",
+      "address": "南京路299号",
       "coordinates": {
-        "lat": 36.22769,
-        "lng": 120.196565
+        "lat": 36.102289,
+        "lng": 120.380403
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
-      "id": "kdocs-amap-b03a3032b3",
-      "name": "兰州大学第二医院",
+      "id": "kdocs-amap-b0ffhx8hr2",
+      "name": "兰州大学第二医院本部生殖医学中心",
       "aliases": [
-        "甘肃兰州大学第二医院"
+        "兰州大学第二医院",
+        "甘肃 兰州大学第二医院"
       ],
       "adcode": "620000",
       "province": "甘肃省",
@@ -197,14 +200,14 @@
         "icd11_practice": "unknown",
         "evidence": []
       },
-      "address": "萃英门82-176号(西关地铁站B口步行230米)",
+      "address": "萃英门82-176号附近",
       "coordinates": {
-        "lat": 36.061389,
-        "lng": 103.810513
+        "lat": 36.060657,
+        "lng": 103.809461
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b03b700ee3",
@@ -233,7 +236,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b03e6002z0",
@@ -262,7 +265,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b03df060qx",
@@ -291,7 +294,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b03df04gda",
@@ -320,7 +323,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b00155kaoc",
@@ -349,7 +352,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b00155keix",
@@ -378,7 +381,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffgzngk5",
@@ -407,13 +410,14 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0fflch87i",
       "name": "上海和睦家医院(长宁院区)",
       "aliases": [
-        "上海和睦家医院（私立，普通门诊就诊费用500-1600，心理咨询2400-2520每45分钟）"
+        "上海和睦家医院（私立，普通门诊就诊费用500-1600，心理咨询2400-2520每45分钟）",
+        "上海和睦家医院"
       ],
       "adcode": "310000",
       "province": "上海市",
@@ -436,7 +440,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b00140hu1b",
@@ -467,7 +471,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b00140uerj",
@@ -496,7 +500,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffkc2ik8",
@@ -525,7 +529,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b025003yih",
@@ -555,7 +559,36 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
+    },
+    {
+      "id": "kdocs-amap-b0ffhijdbc",
+      "name": "厦门弘爱医院",
+      "aliases": [
+        "厦门弘爱医院（私立）"
+      ],
+      "adcode": "350000",
+      "province": "福建省",
+      "city": "厦门市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "仙岳路3777号",
+      "coordinates": {
+        "lat": 24.508905,
+        "lng": 118.166625
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b024f05ejn",
@@ -584,7 +617,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0303054bl",
@@ -613,7 +646,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0fff49imu",
@@ -642,13 +675,13 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b023b0by5o",
       "name": "浙江省立同德医院翠苑院区",
       "aliases": [
-        "浙江省立同德医院"
+        "浙江省立同德医院（翠苑院区）"
       ],
       "adcode": "330000",
       "province": "浙江省",
@@ -671,36 +704,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
-    },
-    {
-      "id": "kdocs-amap-b0353007b8",
-      "name": "贵阳正宇铁路医院",
-      "aliases": [
-        "贵州省贵阳正宇铁路医院（私立）"
-      ],
-      "adcode": "520000",
-      "province": "贵州省",
-      "city": "贵阳市",
-      "level": "未知",
-      "category": "其他",
-      "departments": [
-        "未录入"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "unknown",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": []
-      },
-      "address": "四通街8号(贵阳火车站地铁站B口步行280米)",
-      "coordinates": {
-        "lat": 26.559243,
-        "lng": 106.701607
-      },
-      "coordinates_source": "geocoded",
-      "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b00190b8c9",
@@ -729,13 +733,14 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffi2en48",
-      "name": "南京泰康仙林鼓楼医院",
+      "name": "泰康仙林鼓楼医院",
       "aliases": [
-        "南京泰康仙林鼓楼医院"
+        "南京 泰康仙林鼓楼医院",
+        "泰康仙林鼓楼医院（南京）"
       ],
       "adcode": "320000",
       "province": "江苏省",
@@ -758,7 +763,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b001c05yg2",
@@ -787,7 +792,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffjaykfh",
@@ -816,12 +821,13 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b00170becf",
       "name": "重庆市精神卫生中心",
       "aliases": [
+        "重庆精神卫生中心",
         "重庆精神卫生中心",
         "重庆市精神卫生中心"
       ],
@@ -846,7 +852,36 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
+    },
+    {
+      "id": "kdocs-amap-b0353007b8",
+      "name": "贵阳正宇铁路医院",
+      "aliases": [
+        "贵州省贵阳正宇铁路医院（私立）"
+      ],
+      "adcode": "520000",
+      "province": "贵州省",
+      "city": "贵阳市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "四通街8号(贵阳火车站地铁站B口步行280米)",
+      "coordinates": {
+        "lat": 26.559243,
+        "lng": 106.701607
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffg7aa3a",
@@ -875,13 +910,14 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b036702a3e",
       "name": "昆明医科大学第一附属医院(西昌路院区)",
       "aliases": [
-        "昆明医科大学第一附属医院"
+        "昆明医科大学第一附属医院",
+        "云南 昆明医科大学第一附属医院"
       ],
       "adcode": "530000",
       "province": "云南省",
@@ -904,7 +940,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b037b00887",
@@ -933,7 +969,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b000a80zrg",
@@ -963,7 +999,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b015f0038d",
@@ -992,7 +1028,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b001d0208c",
@@ -1021,7 +1057,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b001802fb0",
@@ -1050,7 +1086,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b00180ahox",
@@ -1079,17 +1115,17 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
-      "id": "kdocs-amap-b03a30apul",
-      "name": "甘肃省第二人民医院",
+      "id": "kdocs-amap-b019b01ad1",
+      "name": "大连市第七人民医院",
       "aliases": [
-        "甘肃省第二人民医院（西北民族大学附属医院）"
+        "大连市第七人民医院"
       ],
-      "adcode": "620000",
-      "province": "甘肃省",
-      "city": "兰州市",
+      "adcode": "210000",
+      "province": "辽宁省",
+      "city": "大连市",
       "level": "未知",
       "category": "其他",
       "departments": [
@@ -1101,14 +1137,43 @@
         "icd11_practice": "unknown",
         "evidence": []
       },
-      "address": "和政西街1号",
+      "address": "凌水路189号",
       "coordinates": {
-        "lat": 36.040947,
-        "lng": 103.835223
+        "lat": 38.875329,
+        "lng": 121.517567
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
+    },
+    {
+      "id": "kdocs-amap-b01c402231",
+      "name": "齐齐哈尔市精神卫生中心",
+      "aliases": [
+        "齐齐哈尔市精神卫生中心"
+      ],
+      "adcode": "230000",
+      "province": "黑龙江省",
+      "city": "齐齐哈尔市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "林化路28号",
+      "coordinates": {
+        "lat": 47.350153,
+        "lng": 123.919546
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b01cb00xzt",
@@ -1137,18 +1202,17 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
-      "id": "kdocs-amap-b02140828v",
-      "name": "青岛市精神卫生中心",
+      "id": "kdocs-amap-b03a30apul",
+      "name": "甘肃省第二人民医院",
       "aliases": [
-        "青岛市精神卫生中心（第七人民医院）",
-        "山东省精卫（青岛）"
+        "甘肃省第二人民医院（西北民族大学附属医院）"
       ],
-      "adcode": "370000",
-      "province": "山东省",
-      "city": "青岛市",
+      "adcode": "620000",
+      "province": "甘肃省",
+      "city": "兰州市",
       "level": "未知",
       "category": "其他",
       "departments": [
@@ -1160,14 +1224,14 @@
         "icd11_practice": "unknown",
         "evidence": []
       },
-      "address": "南京路299号",
+      "address": "和政西街1号",
       "coordinates": {
-        "lat": 36.102289,
-        "lng": 120.380403
+        "lat": 36.040947,
+        "lng": 103.835223
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffhgd85n",
@@ -1196,7 +1260,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffgsrr97",
@@ -1225,7 +1289,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b001c7v2mo",
@@ -1255,7 +1319,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0fffv30j7",
@@ -1284,7 +1348,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b033f01ikc",
@@ -1313,7 +1377,36 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
+    },
+    {
+      "id": "kdocs-amap-b001702698",
+      "name": "陆军军医大学第二附属医院",
+      "aliases": [
+        "陆军军医大学第二附属医院（新桥医院）"
+      ],
+      "adcode": "500000",
+      "province": "重庆市",
+      "city": "重庆市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "新桥正街177号",
+      "coordinates": {
+        "lat": 29.5224,
+        "lng": 106.434427
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b038202b8m",
@@ -1343,7 +1436,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b023b0929x",
@@ -1372,7 +1465,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b023b02359",
@@ -1401,7 +1494,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b020004f0d",
@@ -1430,7 +1523,36 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
+    },
+    {
+      "id": "kdocs-amap-b0ffh0n5u4",
+      "name": "无锡市精神卫生中心",
+      "aliases": [
+        "无锡市精神卫生中心"
+      ],
+      "adcode": "320000",
+      "province": "江苏省",
+      "city": "无锡市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "钱荣路156号",
+      "coordinates": {
+        "lat": 31.593742,
+        "lng": 120.227949
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b020400b9x",
@@ -1459,65 +1581,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
-    },
-    {
-      "id": "kdocs-amap-b0ffkh3c5y",
-      "name": "宁波大学附属民康医院",
-      "aliases": [
-        "浙江省荣军康复医院"
-      ],
-      "adcode": "330000",
-      "province": "浙江省",
-      "city": "宁波市",
-      "level": "未知",
-      "category": "其他",
-      "departments": [
-        "未录入"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "unknown",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": []
-      },
-      "address": "庄桥街道童家村日兴房11号",
-      "coordinates": {
-        "lat": 29.949751,
-        "lng": 121.567215
-      },
-      "coordinates_source": "geocoded",
-      "official_sources": [],
-      "last_verified_at": "2026-10-27"
-    },
-    {
-      "id": "kdocs-amap-b035300je6",
-      "name": "贵州中医药大学第一附属医院(阳明主院区)",
-      "aliases": [
-        "贵州中医院大学第一附属医院"
-      ],
-      "adcode": "520000",
-      "province": "贵州省",
-      "city": "贵阳市",
-      "level": "未知",
-      "category": "其他",
-      "departments": [
-        "未录入"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "unknown",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": []
-      },
-      "address": "宝山北路71号",
-      "coordinates": {
-        "lat": 26.583886,
-        "lng": 106.718818
-      },
-      "coordinates_source": "geocoded",
-      "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b035300vc0",
@@ -1546,11 +1610,11 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffm9idri",
-      "name": "江西省精神卫生中心",
+      "name": "江西省精神卫生中心-综合门诊楼",
       "aliases": [
         "江西省精神卫生中心（南昌）"
       ],
@@ -1575,7 +1639,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b000a9dpj4",
@@ -1604,7 +1668,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b000a82z2n",
@@ -1633,7 +1697,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0172004tq",
@@ -1662,7 +1726,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffi99oq6",
@@ -1691,7 +1755,36 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
+    },
+    {
+      "id": "kdocs-amap-b0mg2n0olu",
+      "name": "河北医科大学第一医院2期",
+      "aliases": [
+        "河北医科大学第一医院"
+      ],
+      "adcode": "130000",
+      "province": "河北省",
+      "city": "石家庄市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "东岗路与东环北街交叉口东北80米",
+      "coordinates": {
+        "lat": 38.016132,
+        "lng": 114.546217
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b01d701pti",
@@ -1720,7 +1813,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b01d7023h7",
@@ -1749,7 +1842,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b01d70106b",
@@ -1778,7 +1871,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b03b703cb6",
@@ -1807,7 +1900,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b03b7012b8",
@@ -1836,7 +1929,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b03e400drv",
@@ -1865,7 +1958,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b03df05bdu",
@@ -1894,7 +1987,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffidakp6",
@@ -1923,36 +2016,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
-    },
-    {
-      "id": "kdocs-amap-b001536893",
-      "name": "上海交通大学医学院附属精神卫生中心(徐汇院区)",
-      "aliases": [
-        "上海市精卫"
-      ],
-      "adcode": "310000",
-      "province": "上海市",
-      "city": "上海市",
-      "level": "未知",
-      "category": "其他",
-      "departments": [
-        "未录入"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "unknown",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": []
-      },
-      "address": "宛平南路600号",
-      "coordinates": {
-        "lat": 31.189166,
-        "lng": 121.443433
-      },
-      "coordinates_source": "geocoded",
-      "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b00155kt4w",
@@ -1981,7 +2045,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b00155ei82",
@@ -2010,7 +2074,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b00155ax6r",
@@ -2039,36 +2103,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
-    },
-    {
-      "id": "kdocs-amap-b00140uljc",
-      "name": "白云心理医院",
-      "aliases": [
-        "广州白云区心理医院"
-      ],
-      "adcode": "440000",
-      "province": "广东省",
-      "city": "广州市",
-      "level": "未知",
-      "category": "其他",
-      "departments": [
-        "未录入"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "unknown",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": []
-      },
-      "address": "白云大道北1722号广州白云心理医院正门",
-      "coordinates": {
-        "lat": 23.257568,
-        "lng": 113.316301
-      },
-      "coordinates_source": "geocoded",
-      "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b00140w7rp",
@@ -2097,13 +2132,13 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
-      "id": "kdocs-amap-b0lg3s7d9p",
-      "name": "中山大学法医鉴定中心",
+      "id": "kdocs-amap-b0fff5uy3v",
+      "name": "中山大学附属第三医院(天河院区)",
       "aliases": [
-        "中山大学法医鉴定中心"
+        "中山大学附属第三医院"
       ],
       "adcode": "440000",
       "province": "广东省",
@@ -2119,14 +2154,72 @@
         "icd11_practice": "unknown",
         "evidence": []
       },
-      "address": "东风东路658号",
+      "address": "石牌街道天河路600号(岗顶地铁站D口步行50米)",
       "coordinates": {
-        "lat": 23.133275,
-        "lng": 113.287178
+        "lat": 23.136733,
+        "lng": 113.335765
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
+    },
+    {
+      "id": "kdocs-amap-b00140226e",
+      "name": "中山大学附属第一医院",
+      "aliases": [
+        "中山大学附属第一医院"
+      ],
+      "adcode": "440000",
+      "province": "广东省",
+      "city": "广州市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "中山二路58号",
+      "coordinates": {
+        "lat": 23.12904,
+        "lng": 113.285655
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
+    },
+    {
+      "id": "kdocs-amap-b02f37veig",
+      "name": "深圳市康宁医院(罗湖分院)",
+      "aliases": [
+        "深圳市康宁医院"
+      ],
+      "adcode": "440000",
+      "province": "广东省",
+      "city": "深圳市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "翠竹街道翠岭社区翠竹路1080号(田贝地铁站D口步行270米)",
+      "coordinates": {
+        "lat": 22.566535,
+        "lng": 114.126005
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b025002cf9",
@@ -2155,65 +2248,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
-    },
-    {
-      "id": "kdocs-amap-b0ffhnq5jx",
-      "name": "厦门大学附属中山医院本部消毒供应中心",
-      "aliases": [
-        "厦门大学附属中山医院"
-      ],
-      "adcode": "350000",
-      "province": "福建省",
-      "city": "厦门市",
-      "level": "未知",
-      "category": "其他",
-      "departments": [
-        "未录入"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "unknown",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": []
-      },
-      "address": "开元街道湖滨南路201-209号厦门大学附属中山医院6号楼3楼",
-      "coordinates": {
-        "lat": 24.474199,
-        "lng": 118.091428
-      },
-      "coordinates_source": "geocoded",
-      "official_sources": [],
-      "last_verified_at": "2026-10-27"
-    },
-    {
-      "id": "kdocs-amap-b025003ame",
-      "name": "厦门市中医院(总院)",
-      "aliases": [
-        "厦门市中医院"
-      ],
-      "adcode": "350000",
-      "province": "福建省",
-      "city": "厦门市",
-      "level": "未知",
-      "category": "其他",
-      "departments": [
-        "未录入"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "unknown",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": []
-      },
-      "address": "仙岳路1739号",
-      "coordinates": {
-        "lat": 24.503331,
-        "lng": 118.135968
-      },
-      "coordinates_source": "geocoded",
-      "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffgrgjro",
@@ -2242,13 +2277,13 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0lamrcibh",
       "name": "武汉市精神卫生中心",
       "aliases": [
-        "武汉精神卫生中心"
+        "武汉市精神卫生中心"
       ],
       "adcode": "420000",
       "province": "湖北省",
@@ -2271,7 +2306,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0303005fe",
@@ -2300,36 +2335,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
-    },
-    {
-      "id": "kdocs-amap-b030b006v6",
-      "name": "北海市人民医院和平院区",
-      "aliases": [
-        "广西北海市人民医院"
-      ],
-      "adcode": "450000",
-      "province": "广西壮族自治区",
-      "city": "北海市",
-      "level": "未知",
-      "category": "其他",
-      "departments": [
-        "未录入"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "unknown",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": []
-      },
-      "address": "和平路83号",
-      "coordinates": {
-        "lat": 21.482354,
-        "lng": 109.111897
-      },
-      "coordinates_source": "geocoded",
-      "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffiufvdh",
@@ -2358,7 +2364,36 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
+    },
+    {
+      "id": "kdocs-amap-b03070mw10",
+      "name": "玉林市第四人民医院(大理街)",
+      "aliases": [
+        "玉林市第四人民医院"
+      ],
+      "adcode": "450000",
+      "province": "广西壮族自治区",
+      "city": "玉林市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "一环北路营盘街17号",
+      "coordinates": {
+        "lat": 22.636618,
+        "lng": 110.134244
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b035301ev4",
@@ -2387,13 +2422,13 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffgg4mze",
       "name": "大理州第二人民医院",
       "aliases": [
-        "大理州第二人民医院"
+        "云南 大理州第二人民医院"
       ],
       "adcode": "530000",
       "province": "云南省",
@@ -2416,13 +2451,13 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffk54jcv",
       "name": "文山州第二人民医院",
       "aliases": [
-        "文山州第二人民医院"
+        "云南 文山州第二人民医院"
       ],
       "adcode": "530000",
       "province": "云南省",
@@ -2445,13 +2480,13 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffftfcbu",
       "name": "玉溪市第二人民医院",
       "aliases": [
-        "玉溪市第二人民医院"
+        "云南 玉溪市第二人民医院"
       ],
       "adcode": "530000",
       "province": "云南省",
@@ -2474,13 +2509,13 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b036b00twx",
       "name": "保山市第三人民医院",
       "aliases": [
-        "保山市第三人民医院"
+        "云南 保山市第三人民医院"
       ],
       "adcode": "530000",
       "province": "云南省",
@@ -2503,7 +2538,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ffliuheg",
@@ -2532,7 +2567,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b033001020",
@@ -2561,7 +2596,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b001c7uu27",
@@ -2590,7 +2625,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ib2l08gg",
@@ -2619,7 +2654,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b00170l57q",
@@ -2648,7 +2683,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b001791t1i",
@@ -2677,7 +2712,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b00170914b",
@@ -2706,7 +2741,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b031d00l7w",
@@ -2735,7 +2770,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b031d00jpw",
@@ -2764,7 +2799,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b02db00b1e",
@@ -2793,7 +2828,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b02db03s87",
@@ -2822,7 +2857,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b02db03kph",
@@ -2851,7 +2886,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b03830ncek",
@@ -2880,7 +2915,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b03820oyol",
@@ -2909,7 +2944,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0fffglyoy",
@@ -2938,7 +2973,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b001c7wo02",
@@ -2967,7 +3002,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0fffx8hqy",
@@ -2996,7 +3031,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b073c02y5k",
@@ -3025,7 +3060,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b073c036vw",
@@ -3054,36 +3089,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
-    },
-    {
-      "id": "kdocs-amap-b073c04lok",
-      "name": "东区尤德夫人那打素医院",
-      "aliases": [
-        "东区尤德夫人那打素医院"
-      ],
-      "adcode": "810000",
-      "province": "香港特别行政区",
-      "city": "香港特别行政区",
-      "level": "未知",
-      "category": "其他",
-      "departments": [
-        "未录入"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "unknown",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": []
-      },
-      "address": "乐民道3号",
-      "coordinates": {
-        "lat": 22.269836,
-        "lng": 114.236487
-      },
-      "coordinates_source": "geocoded",
-      "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b073c04aka",
@@ -3112,36 +3118,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
-    },
-    {
-      "id": "kdocs-amap-b073c0qrtu",
-      "name": "伊利沙伯医院",
-      "aliases": [
-        "伊利沙伯医院"
-      ],
-      "adcode": "810000",
-      "province": "香港特别行政区",
-      "city": "香港特别行政区",
-      "level": "未知",
-      "category": "其他",
-      "departments": [
-        "未录入"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "unknown",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": []
-      },
-      "address": "佐敦加士居道30号",
-      "coordinates": {
-        "lat": 22.309,
-        "lng": 114.174687
-      },
-      "coordinates_source": "geocoded",
-      "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b073c03epg",
@@ -3170,65 +3147,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
-    },
-    {
-      "id": "kdocs-amap-b073c02z42",
-      "name": "屯门医院",
-      "aliases": [
-        "屯门医院"
-      ],
-      "adcode": "810000",
-      "province": "香港特别行政区",
-      "city": "香港特别行政区",
-      "level": "未知",
-      "category": "其他",
-      "departments": [
-        "未录入"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "unknown",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": []
-      },
-      "address": "新界屯门青松观路23号",
-      "coordinates": {
-        "lat": 22.40799,
-        "lng": 113.975989
-      },
-      "coordinates_source": "geocoded",
-      "official_sources": [],
-      "last_verified_at": "2026-10-27"
-    },
-    {
-      "id": "kdocs-amap-b073c04pm7",
-      "name": "养和医院",
-      "aliases": [
-        "养和医院"
-      ],
-      "adcode": "810000",
-      "province": "香港特别行政区",
-      "city": "香港特别行政区",
-      "level": "未知",
-      "category": "其他",
-      "departments": [
-        "未录入"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "unknown",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": []
-      },
-      "address": "山村道2号",
-      "coordinates": {
-        "lat": 22.26937,
-        "lng": 114.182912
-      },
-      "coordinates_source": "geocoded",
-      "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b073c04s0x",
@@ -3257,7 +3176,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b073d00dg3",
@@ -3286,11 +3205,11 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0g0a7x9db",
-      "name": "澳门大学心理学系诊所",
+      "name": "澳门大学社会科学学院(由澳门特别行政区实施管辖)",
       "aliases": [
         "澳门大学心理学系诊所"
       ],
@@ -3315,7 +3234,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b073d00kf2",
@@ -3344,7 +3263,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0k2nu6cel",
@@ -3373,7 +3292,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0lkxslam3",
@@ -3402,7 +3321,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0l0zzdx92",
@@ -3431,7 +3350,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0ma3rzcf4",
@@ -3460,7 +3379,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0l0fnub1k",
@@ -3489,7 +3408,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0l0fyxuhl",
@@ -3518,36 +3437,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
-    },
-    {
-      "id": "kdocs-amap-b0k2nu6bpi",
-      "name": "成功大学医学院附设医院",
-      "aliases": [
-        "成功大学医学院附设医院"
-      ],
-      "adcode": "710000",
-      "province": "台湾省",
-      "city": "台南市",
-      "level": "未知",
-      "category": "其他",
-      "departments": [
-        "未录入"
-      ],
-      "trauma_service": {
-        "cptsd_assessment": "unknown",
-        "cptsd_bpd_diagnosis": "unknown",
-        "icd11_practice": "unknown",
-        "evidence": []
-      },
-      "address": "704台湾台南市北区中楼里小东路35号",
-      "coordinates": {
-        "lat": 23.001596,
-        "lng": 120.217765
-      },
-      "coordinates_source": "geocoded",
-      "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     },
     {
       "id": "kdocs-amap-b0l0smikhv",
@@ -3576,7 +3466,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-10-27"
+      "last_verified_at": "2026-11-09"
     }
   ]
 }

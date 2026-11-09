@@ -21,7 +21,7 @@ export type LocationResult = LocationTarget & {
   selection_rule?: 'base-name' | 'main-campus' | 'best-score' | 'explicit-campus' | 'visit-site' | 'medical-building' | 'institution-building'
 }
 
-export const LOCATION_EVIDENCE = 'data/evidence/locations/amap-2026-10-27.json'
+export const LOCATION_EVIDENCE = 'data/evidence/locations/amap-2026-11-09.json'
 
 export type LocationRun = {
   source_url: string
@@ -31,19 +31,40 @@ export type LocationRun = {
   results: LocationResult[]
 }
 
+/**
+ * 同名机构可能分属不同地区（来源表里「重庆精神卫生中心」既标四川也标重庆），
+ * 分组必须带上地区，否则两处线索会被合成一个机构、并按错误的省份查询。
+ */
+function targetKey(name: string, region: string): string {
+  return `${name}\u0000${region}`
+}
+
+/**
+ * 同一行里的多条发言拆成的线索共用原始行 id（`-p2` 起是拆出来的段落）。
+ * 机构定位是机构级事实，拆段不会多出机构，所以归集时回到原始行 id。
+ */
+export function baseReportId(id: string): string {
+  return id.replace(/-p\d+$/u, '')
+}
+
 export function locationTargets(reports: Report[]): LocationTarget[] {
   const groups = new Map<string, LocationTarget>()
   for (const report of reports) {
     const name = report.hospital_name_raw!
-    const target = groups.get(name) ?? { name, report_ids: [], region: report.hospital_region ?? '' }
-    target.report_ids.push(report.id)
-    groups.set(name, target)
+    const region = report.hospital_region ?? ''
+    const key = targetKey(name, region)
+    const target = groups.get(key) ?? { name, report_ids: [], region }
+    const base = baseReportId(report.id)
+    if (!target.report_ids.includes(base)) target.report_ids.push(base)
+    groups.set(key, target)
   }
   return [...groups.values()]
 }
 
 export function searchName(raw: string): string {
-  return (SOURCE_NAME_EXPANSIONS[raw] ?? raw).replace(/（([^）]*)）/gu, (_, note: string) => /院区|芳村|^(?:保定|青岛|南昌|海南)$/u.test(note) ? note : '')
+  // 来源在跨省就诊的机构名前写了地区（「云南 大理州第二人民医院」），高德不接受这种前缀。
+  const bare = raw.replace(/^[^\s]{2,6}\s+/u, '')
+  return (SOURCE_NAME_EXPANSIONS[bare] ?? SOURCE_NAME_EXPANSIONS[raw] ?? bare).replace(/（([^）]*)）/gu, (_, note: string) => /院区|芳村|^(?:保定|青岛|南昌|海南)$/u.test(note) ? note : '')
 }
 
 const SOURCE_NAME_EXPANSIONS: Record<string, string> = {
@@ -204,12 +225,12 @@ export async function searchAmap(key: string, keywords: string, city: string, re
 export function linkLocationReports(reports: Report[], run: LocationRun): Report[] {
   const targets = locationTargets(reports)
   if (run.results.length !== targets.length) throw new Error('定位清单没有覆盖全部原文机构')
-  const byName = new Map(run.results.map(result => [result.name, result]))
-  if (byName.size !== targets.length) throw new Error('定位清单存在重复机构')
+  const byTarget = new Map(run.results.map(result => [targetKey(result.name, result.region), result]))
+  if (byTarget.size !== targets.length) throw new Error('定位清单存在重复机构')
   const links = new Map<string, string>()
   for (const target of targets) {
-    const result = byName.get(target.name)
-    if (!result || JSON.stringify(result.report_ids) !== JSON.stringify(target.report_ids) || result.region !== target.region) {
+    const result = byTarget.get(targetKey(target.name, target.region))
+    if (!result || JSON.stringify(result.report_ids) !== JSON.stringify(target.report_ids)) {
       throw new Error(`定位清单与来源对应不符：${target.name}`)
     }
     if (result.status === 'geocoded') {
@@ -217,5 +238,8 @@ export function linkLocationReports(reports: Report[], run: LocationRun): Report
       for (const id of result.report_ids) links.set(id, `kdocs-amap-${result.chosen.id.toLowerCase()}`)
     } else if (result.chosen) throw new Error(`未确定机构不能关联坐标：${target.name}`)
   }
-  return reports.map(report => links.has(report.id) ? { ...report, hospital_id: links.get(report.id) } : { ...report })
+  return reports.map(report => {
+    const hospitalId = links.get(baseReportId(report.id))
+    return hospitalId ? { ...report, hospital_id: hospitalId } : { ...report }
+  })
 }

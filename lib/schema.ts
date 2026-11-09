@@ -93,13 +93,15 @@ export const doctorSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   name: z.string().min(1),
   hospital_id: z.string().min(1),
-  department: z.string().min(1),
-  title: z.string().min(1),
+  /** 来源表格没写诊室时留空，界面按「无」呈现；不要在数据里写占位词 */
+  department: z.string(),
+  title: z.string(),
   credentials: z.array(z.string()),
   profile_urls: z.array(httpUrl),
   specialties: z.array(z.string()),
   official_sources: z.array(httpUrl),
-  last_verified_at: isoDate,
+  /** 只写真正逐个核对过的日期；整批导入日不是核对日，没有依据就留空 */
+  last_verified_at: isoDate.optional(),
   note: z.string().optional(),
   /** 医生评价，留空时界面上写「无」，不隐藏这一行 */
   evaluation: z.string().optional(),
@@ -152,6 +154,11 @@ export const reportSchema = z.object({
   /** 原文完整文本（评论常超过 200 字；截断会丢语义，故单独保存，≤2000 字） */
   evidence_full_text: z.string().max(2000).optional(),
   /**
+   * 合并前的发言条数：表格里同一位医生常被不同人分次评价，原文被并进一条线索。
+   * 只有合并过的才写，单条不写 1。
+   */
+  parts_count: z.number().int().min(2).optional(),
+  /**
    * 摘录的上下文。评论尤其容易「断头」：回复里的「这个 / 它 / 楼上」脱离父评论即无意义。
    * 无法还原上下文时必须显式标 context_incomplete，不允许含糊过去。
    */
@@ -185,7 +192,14 @@ export const reportSchema = z.object({
     contains_selfharm_detail: z.boolean(),
     sensitive: z.boolean(),
   }),
-  status: z.enum(['published', 'withheld', 'removed']),
+  /**
+   * published 之外的线索都不进公开站点。
+   * unlinked 表示原文确有其事、但机构尚未确定：保留整条原文备查，不计入任何可见数字，
+   * 免得全国头行、省份合计、医院页三处各算一个数。
+   */
+  status: z.enum(['published', 'withheld', 'removed', 'unlinked']),
+  /** status=unlinked 时写明机构为什么挂不上，便于后续人工补定位 */
+  unlinked_reason: z.string().optional(),
 })
 
 /* ------------------------------------------------------------------ 省级行政区 */

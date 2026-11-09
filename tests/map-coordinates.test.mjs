@@ -9,13 +9,13 @@ import { chinaCameraBounds } from '../lib/map-sidebar.ts'
 const read = path => JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'))
 const hospitals = read('../data/curated/hospitals.json').items
 const reports = read('../data/curated/reports.json').items.filter(report => report.status === 'published')
-const saved = read('../data/evidence/locations/amap-2026-10-27.json').results
+const saved = read('../data/evidence/locations/amap-2026-11-09.json').results
 
-test('123 个地图位置直接使用已保存 GCJ-02，159 条关联不变且不修改业务 WGS84', () => {
+test('119 个地图位置直接使用已保存 GCJ-02，251 条关联不变且不修改业务 WGS84', () => {
   const before = structuredClone(hospitals)
   const points = mapHospitalInputs(hospitals, reports, saved)
-  assert.equal(points.length, 123)
-  assert.equal(points.reduce((sum, point) => sum + point.leads, 0), 159)
+  assert.equal(points.length, 119)
+  assert.equal(points.reduce((sum, point) => sum + point.leads, 0), 251)
   for (const point of points) {
     const source = saved.find(result => result.status === 'geocoded' && `kdocs-amap-${result.chosen.id.toLowerCase()}` === point.id)
     assert.deepEqual([point.lng, point.lat], source.chosen.location.split(',').map(Number))

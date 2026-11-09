@@ -202,7 +202,7 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .tc-evidence { display:grid; gap:10px; min-width:0; overflow-wrap:anywhere; }
 .tc-evidence > * { margin:0; }
 .tc-evidence-source { display:block; font-size:12px; line-height:1.5; }
-.tc-quote { padding:0; margin:0; color:var(--tc-text); font-size:14px; line-height:1.7; }
+.tc-quote { padding:0; margin:0; color:var(--tc-text); font-size:14px; line-height:1.7; white-space:pre-wrap; }
 .tc-evidence details > summary { min-height:44px; padding-block:10px; cursor:pointer; color:var(--tc-accent); font-size:13px; }
 .tc-evidence details > .tc-quote { margin-top:12px; }
 .tc-table { width:100%; border-collapse:collapse; font-size:14px; }

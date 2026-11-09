@@ -79,7 +79,7 @@ export function DoctorDetail({
                   {lead.publishedAt && <span>{lead.publishedAt}</span>}
                 </div>
               )}
-              <LeadEvidence sourceLabel={lead.sourceLabel} url={lead.url} quote={lead.quote} contextNote={lead.contextNote} />
+              <LeadEvidence sourceLabel={lead.sourceLabel} url={lead.url} quote={lead.quote} contextNote={lead.contextNote} fullText={lead.fullText} />
             </article>
           ))
         )}
