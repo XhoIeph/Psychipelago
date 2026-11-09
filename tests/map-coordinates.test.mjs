@@ -11,11 +11,11 @@ const hospitals = read('../data/curated/hospitals.json').items
 const reports = read('../data/curated/reports.json').items.filter(report => report.status === 'published')
 const saved = read('../data/evidence/locations/amap-2026-11-09.json').results
 
-test('119 个地图位置直接使用已保存 GCJ-02，251 条关联不变且不修改业务 WGS84', () => {
+test('127 个地图位置直接使用已保存 GCJ-02，272 条关联不变且不修改业务 WGS84', () => {
   const before = structuredClone(hospitals)
   const points = mapHospitalInputs(hospitals, reports, saved)
-  assert.equal(points.length, 119)
-  assert.equal(points.reduce((sum, point) => sum + point.leads, 0), 251)
+  assert.equal(points.length, 127)
+  assert.equal(points.reduce((sum, point) => sum + point.leads, 0), 272)
   for (const point of points) {
     const source = saved.find(result => result.status === 'geocoded' && `kdocs-amap-${result.chosen.id.toLowerCase()}` === point.id)
     assert.deepEqual([point.lng, point.lat], source.chosen.location.split(',').map(Number))

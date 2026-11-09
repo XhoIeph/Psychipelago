@@ -1,24 +1,24 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-11-09T11:57:22.853Z",
+  "generated_at": "2026-11-09T14:58:18.580Z",
   "totals": {
-    "reports": 251,
+    "reports": 272,
     "reports_unlocated": 0,
-    "hospitals": 119,
-    "doctors": 238,
+    "hospitals": 127,
+    "doctors": 245,
     "provinces_with_reports": 30,
     "provinces_with_hospitals": 30
   },
   "items": [
     {
       "adcode": "110000",
-      "reports_total": 28,
+      "reports_total": 29,
       "reports_by_disorder": {
         "cptsd": 9,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 28
+        "web": 29
       },
       "hospitals_total": 6,
       "hospitals_with_service_evidence": 0,
@@ -26,7 +26,7 @@
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 28
+        "unverified": 29
       }
     },
     {
@@ -48,21 +48,21 @@
     },
     {
       "adcode": "130000",
-      "reports_total": 2,
+      "reports_total": 3,
       "reports_by_disorder": {
-        "cptsd": 0,
+        "cptsd": 1,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 2
+        "web": 3
       },
-      "hospitals_total": 2,
+      "hospitals_total": 3,
       "hospitals_with_service_evidence": 0,
-      "doctors_total": 2,
+      "doctors_total": 3,
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 2
+        "unverified": 3
       }
     },
     {
@@ -105,13 +105,13 @@
     },
     {
       "adcode": "210000",
-      "reports_total": 5,
+      "reports_total": 6,
       "reports_by_disorder": {
         "cptsd": 0,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 5
+        "web": 6
       },
       "hospitals_total": 3,
       "hospitals_with_service_evidence": 0,
@@ -119,7 +119,7 @@
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 5
+        "unverified": 6
       }
     },
     {
@@ -160,13 +160,13 @@
     },
     {
       "adcode": "310000",
-      "reports_total": 24,
+      "reports_total": 25,
       "reports_by_disorder": {
         "cptsd": 8,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 24
+        "web": 25
       },
       "hospitals_total": 7,
       "hospitals_with_service_evidence": 0,
@@ -174,7 +174,7 @@
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 24
+        "unverified": 25
       }
     },
     {
@@ -280,7 +280,7 @@
       "reports_by_platform": {
         "web": 6
       },
-      "hospitals_total": 1,
+      "hospitals_total": 2,
       "hospitals_with_service_evidence": 0,
       "doctors_total": 6,
       "verification": {
@@ -291,21 +291,21 @@
     },
     {
       "adcode": "410000",
-      "reports_total": 3,
+      "reports_total": 4,
       "reports_by_disorder": {
-        "cptsd": 1,
+        "cptsd": 2,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 3
+        "web": 4
       },
-      "hospitals_total": 2,
+      "hospitals_total": 3,
       "hospitals_with_service_evidence": 0,
-      "doctors_total": 2,
+      "doctors_total": 3,
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 3
+        "unverified": 4
       }
     },
     {
@@ -348,13 +348,13 @@
     },
     {
       "adcode": "440000",
-      "reports_total": 29,
+      "reports_total": 30,
       "reports_by_disorder": {
         "cptsd": 9,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 29
+        "web": 30
       },
       "hospitals_total": 9,
       "hospitals_with_service_evidence": 0,
@@ -362,26 +362,26 @@
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 29
+        "unverified": 30
       }
     },
     {
       "adcode": "450000",
-      "reports_total": 4,
+      "reports_total": 7,
       "reports_by_disorder": {
         "cptsd": 1,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 4
+        "web": 7
       },
-      "hospitals_total": 4,
+      "hospitals_total": 6,
       "hospitals_with_service_evidence": 0,
-      "doctors_total": 4,
+      "doctors_total": 6,
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 4
+        "unverified": 7
       }
     },
     {
@@ -424,13 +424,13 @@
     },
     {
       "adcode": "510000",
-      "reports_total": 22,
+      "reports_total": 23,
       "reports_by_disorder": {
         "cptsd": 2,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 22
+        "web": 23
       },
       "hospitals_total": 9,
       "hospitals_with_service_evidence": 0,
@@ -438,18 +438,18 @@
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 22
+        "unverified": 23
       }
     },
     {
       "adcode": "520000",
-      "reports_total": 6,
+      "reports_total": 7,
       "reports_by_disorder": {
         "cptsd": 2,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 6
+        "web": 7
       },
       "hospitals_total": 4,
       "hospitals_with_service_evidence": 0,
@@ -457,7 +457,7 @@
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 6
+        "unverified": 7
       }
     },
     {
@@ -481,13 +481,13 @@
     },
     {
       "adcode": "540000",
-      "reports_total": 3,
+      "reports_total": 4,
       "reports_by_disorder": {
         "cptsd": 1,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 3
+        "web": 4
       },
       "hospitals_total": 2,
       "hospitals_with_service_evidence": 0,
@@ -495,7 +495,7 @@
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 3
+        "unverified": 4
       }
     },
     {
@@ -519,21 +519,21 @@
     },
     {
       "adcode": "620000",
-      "reports_total": 3,
+      "reports_total": 4,
       "reports_by_disorder": {
         "cptsd": 1,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 3
+        "web": 4
       },
-      "hospitals_total": 2,
+      "hospitals_total": 3,
       "hospitals_with_service_evidence": 0,
-      "doctors_total": 2,
+      "doctors_total": 3,
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 3
+        "unverified": 4
       }
     },
     {
@@ -555,13 +555,13 @@
     },
     {
       "adcode": "640000",
-      "reports_total": 7,
+      "reports_total": 8,
       "reports_by_disorder": {
         "cptsd": 1,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 7
+        "web": 8
       },
       "hospitals_total": 3,
       "hospitals_with_service_evidence": 0,
@@ -569,18 +569,18 @@
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 7
+        "unverified": 8
       }
     },
     {
       "adcode": "650000",
-      "reports_total": 9,
+      "reports_total": 14,
       "reports_by_disorder": {
         "cptsd": 4,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 9
+        "web": 14
       },
       "hospitals_total": 6,
       "hospitals_with_service_evidence": 0,
@@ -588,7 +588,7 @@
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 9
+        "unverified": 14
       }
     },
     {
@@ -612,21 +612,21 @@
     },
     {
       "adcode": "810000",
-      "reports_total": 7,
+      "reports_total": 9,
       "reports_by_disorder": {
         "cptsd": 0,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 7
+        "web": 9
       },
-      "hospitals_total": 5,
+      "hospitals_total": 7,
       "hospitals_with_service_evidence": 0,
-      "doctors_total": 7,
+      "doctors_total": 9,
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 7
+        "unverified": 9
       }
     },
     {

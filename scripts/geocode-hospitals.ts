@@ -151,9 +151,17 @@ async function main() {
   if (args.includes('--missing') && existsSync(LOCATION_EVIDENCE)) {
     const previous = readJson<LocationRun>(LOCATION_EVIDENCE)
     if (previous.source_url !== SOURCE_URL) throw new Error('已有定位不属于当前来源，须重新全量定位')
-    linkLocationReports(reports, previous)
+    const byTarget = new Map(previous.results.map(result => [`${result.name}\u0000${result.region}`, result]))
     run.requests_total = previous.requests_total ?? previous.requests
-    run.results = previous.results.map(result => result.status === 'geocoded' ? result : { ...result, status: 'not_queried', candidates: [] })
+    // 线索的合并规则变了以后，report_ids 会随来源变化；定位结果是机构级事实，按机构名与地区沿用，
+    // 只把 report_ids 换成当前来源的归属，免得为一次合并规则调整重查全部高德配额。
+    run.results = targets.map(target => {
+      const known = byTarget.get(`${target.name}\u0000${target.region}`)
+      if (!known) return { ...target, status: 'not_queried' as const, reason: '尚未查询', candidates: [] }
+      return known.status === 'geocoded'
+        ? { ...known, report_ids: target.report_ids }
+        : { ...known, report_ids: target.report_ids, status: 'not_queried' as const, reason: '尚未查询', candidates: [] }
+    })
   }
   // 上一轮主线已确认的同一家机构可直接复用 POI，避免为改造来源结构白查一遍高德配额。
   const reusePath = args.includes('--reuse') ? args[args.indexOf('--reuse') + 1] : undefined

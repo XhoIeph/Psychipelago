@@ -1,8 +1,8 @@
 {
   "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
-  "generated_at": "2026-11-09T11:54:52.918Z",
-  "requests": 11,
-  "requests_total": 11,
+  "generated_at": "2026-11-09T14:53:16.782Z",
+  "requests": 2,
+  "requests_total": 57,
   "results": [
     {
       "name": "北京回龙观医院",
@@ -91,7 +91,8 @@
     {
       "name": "北大国际医院",
       "report_ids": [
-        "kdocs-cp3b7toqal3j-s1-r10"
+        "kdocs-cp3b7toqal3j-s1-r10",
+        "kdocs-cp3b7toqal3j-s2-r4"
       ],
       "region": "北京",
       "status": "geocoded",
@@ -160,10 +161,32 @@
         "kdocs-cp3b7toqal3j-s1-r12"
       ],
       "region": "河南",
-      "matched_name": "河南省精神卫生中心/新乡医学院第二附属医院",
-      "status": "not_found",
-      "reason": "高德候选尚未匹配到机构名称",
-      "candidates": []
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFHYOFX6",
+          "name": "河南医药大学第二附属医院",
+          "address": "前进路207号",
+          "location": "113.897184,35.327274",
+          "pname": "河南省",
+          "cityname": "新乡市",
+          "adcode": "",
+          "typecode": "090200"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFHYOFX6",
+        "name": "河南医药大学第二附属医院",
+        "address": "前进路207号",
+        "location": "113.897184,35.327274",
+        "pname": "河南省",
+        "cityname": "新乡市",
+        "adcode": "",
+        "typecode": "090200"
+      },
+      "matched_name": "河南医药大学第二附属医院",
+      "selection_rule": "base-name"
     },
     {
       "name": "河北唐山华北理工大学附属医院",
@@ -171,10 +194,32 @@
         "kdocs-cp3b7toqal3j-s1-r13"
       ],
       "region": "河北",
-      "matched_name": "河北唐山华北理工大学附属医院",
-      "status": "not_found",
-      "reason": "高德候选尚未匹配到机构名称",
-      "candidates": []
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0FFG369XG",
+          "name": "华北理工大学附属医院",
+          "address": "建设南路73号",
+          "location": "118.179299,39.640471",
+          "pname": "河北省",
+          "cityname": "唐山市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "chosen": {
+        "id": "B0FFG369XG",
+        "name": "华北理工大学附属医院",
+        "address": "建设南路73号",
+        "location": "118.179299,39.640471",
+        "pname": "河北省",
+        "cityname": "唐山市",
+        "adcode": "",
+        "typecode": "090101"
+      },
+      "matched_name": "华北理工大学附属医院",
+      "selection_rule": "base-name"
     },
     {
       "name": "陕西省宝鸡市康复医院",
@@ -215,8 +260,9 @@
         "kdocs-cp3b7toqal3j-s1-r15"
       ],
       "region": "山东",
+      "matched_name": "青岛精神卫生中心市北院区",
       "status": "geocoded",
-      "reason": "复用上一轮同一机构的定位结果",
+      "reason": "匹配原文指定院区",
       "candidates": [
         {
           "id": "B02140828V",
@@ -229,6 +275,7 @@
           "typecode": "090210|090100"
         }
       ],
+      "selection_rule": "explicit-campus",
       "chosen": {
         "id": "B02140828V",
         "name": "青岛市精神卫生中心",
@@ -238,9 +285,7 @@
         "cityname": "青岛市",
         "adcode": "",
         "typecode": "090210|090100"
-      },
-      "matched_name": "青岛市精神卫生中心",
-      "selection_rule": "base-name"
+      }
     },
     {
       "name": "兰州大学第二医院",
@@ -279,7 +324,8 @@
       "name": "银川市第一人民医院",
       "report_ids": [
         "kdocs-cp3b7toqal3j-s1-r17",
-        "kdocs-cp3b7toqal3j-s3-r36"
+        "kdocs-cp3b7toqal3j-s3-r36",
+        "kdocs-cp3b7toqal3j-s3-r37"
       ],
       "region": "宁夏",
       "status": "geocoded",
@@ -312,7 +358,8 @@
     {
       "name": "喀什地区第一人民医院",
       "report_ids": [
-        "kdocs-cp3b7toqal3j-s1-r18"
+        "kdocs-cp3b7toqal3j-s1-r18",
+        "kdocs-cp3b7toqal3j-s3-r41"
       ],
       "region": "新疆",
       "status": "geocoded",
@@ -346,6 +393,7 @@
       "name": "新疆医科大学第一附属医院",
       "report_ids": [
         "kdocs-cp3b7toqal3j-s1-r19",
+        "kdocs-cp3b7toqal3j-s3-r44",
         "kdocs-cp3b7toqal3j-s3-r45"
       ],
       "region": "新疆",
@@ -381,7 +429,10 @@
       "report_ids": [
         "kdocs-cp3b7toqal3j-s1-r20",
         "kdocs-cp3b7toqal3j-s1-r21",
-        "kdocs-cp3b7toqal3j-s3-r47"
+        "kdocs-cp3b7toqal3j-s2-r23",
+        "kdocs-cp3b7toqal3j-s3-r46",
+        "kdocs-cp3b7toqal3j-s3-r47",
+        "kdocs-cp3b7toqal3j-s3-r48"
       ],
       "region": "新疆",
       "status": "geocoded",
@@ -489,6 +540,7 @@
         "kdocs-cp3b7toqal3j-s2-r27",
         "kdocs-cp3b7toqal3j-s2-r28",
         "kdocs-cp3b7toqal3j-s3-r49",
+        "kdocs-cp3b7toqal3j-s3-r50",
         "kdocs-cp3b7toqal3j-s3-r51",
         "kdocs-cp3b7toqal3j-s3-r52",
         "kdocs-cp3b7toqal3j-s3-r53",
@@ -567,6 +619,7 @@
         "kdocs-cp3b7toqal3j-s1-r33",
         "kdocs-cp3b7toqal3j-s1-r34",
         "kdocs-cp3b7toqal3j-s1-r35",
+        "kdocs-cp3b7toqal3j-s2-r30",
         "kdocs-cp3b7toqal3j-s2-r31",
         "kdocs-cp3b7toqal3j-s2-r32"
       ],
@@ -768,7 +821,8 @@
     {
       "name": "广西南宁第五医院",
       "report_ids": [
-        "kdocs-cp3b7toqal3j-s1-r42"
+        "kdocs-cp3b7toqal3j-s1-r42",
+        "kdocs-cp3b7toqal3j-s2-r53"
       ],
       "region": "广西",
       "status": "geocoded",
@@ -976,7 +1030,8 @@
       "name": "四川省精神医学中心",
       "report_ids": [
         "kdocs-cp3b7toqal3j-s1-r51",
-        "kdocs-cp3b7toqal3j-s2-r42"
+        "kdocs-cp3b7toqal3j-s2-r42",
+        "kdocs-cp3b7toqal3j-s2-r43"
       ],
       "region": "四川",
       "status": "geocoded",
@@ -1075,7 +1130,8 @@
     {
       "name": "贵州医科大学附属医院",
       "report_ids": [
-        "kdocs-cp3b7toqal3j-s1-r54"
+        "kdocs-cp3b7toqal3j-s1-r54",
+        "kdocs-cp3b7toqal3j-s3-r101"
       ],
       "region": "贵州",
       "status": "geocoded",
@@ -1142,7 +1198,8 @@
       "name": "拉萨市人民医院",
       "report_ids": [
         "kdocs-cp3b7toqal3j-s1-r56",
-        "kdocs-cp3b7toqal3j-s3-r151"
+        "kdocs-cp3b7toqal3j-s3-r151",
+        "kdocs-cp3b7toqal3j-s3-r152"
       ],
       "region": "西藏",
       "status": "geocoded",
@@ -1341,7 +1398,8 @@
       "name": "辽宁省中国医科大学附属盛京医院",
       "report_ids": [
         "kdocs-cp3b7toqal3j-s2-r12",
-        "kdocs-cp3b7toqal3j-s2-r13"
+        "kdocs-cp3b7toqal3j-s2-r13",
+        "kdocs-cp3b7toqal3j-s3-r24"
       ],
       "region": "辽宁",
       "status": "geocoded",
@@ -1545,8 +1603,9 @@
         "kdocs-cp3b7toqal3j-s2-r22"
       ],
       "region": "山东",
+      "matched_name": "青岛市精神卫生中心",
       "status": "geocoded",
-      "reason": "复用上一轮同一机构的定位结果",
+      "reason": "按高德主体/本部及名称匹配选取机构代表位置",
       "candidates": [
         {
           "id": "B02140828V",
@@ -1559,6 +1618,7 @@
           "typecode": "090210|090100"
         }
       ],
+      "selection_rule": "base-name",
       "chosen": {
         "id": "B02140828V",
         "name": "青岛市精神卫生中心",
@@ -1568,9 +1628,7 @@
         "cityname": "青岛市",
         "adcode": "",
         "typecode": "090210|090100"
-      },
-      "matched_name": "青岛市精神卫生中心",
-      "selection_rule": "base-name"
+      }
     },
     {
       "name": "中山大学第八附属医院",
@@ -2317,32 +2375,32 @@
         "kdocs-cp3b7toqal3j-s3-r22"
       ],
       "region": "山东",
+      "matched_name": "青岛市精神卫生中心高新院区",
       "status": "geocoded",
-      "reason": "复用上一轮同一机构的定位结果",
+      "reason": "按高德主体/本部及名称匹配选取机构代表位置",
       "candidates": [
         {
-          "id": "B02140828V",
-          "name": "青岛市精神卫生中心",
-          "address": "南京路299号",
-          "location": "120.385539,36.102571",
+          "id": "B0K0YYE61D",
+          "name": "青岛市精神卫生中心高新院区",
+          "address": "河套街道振和路10号",
+          "location": "120.201693,36.227874",
           "pname": "山东省",
           "cityname": "青岛市",
           "adcode": "",
-          "typecode": "090210|090100"
+          "typecode": "090210"
         }
       ],
+      "selection_rule": "base-name",
       "chosen": {
-        "id": "B02140828V",
-        "name": "青岛市精神卫生中心",
-        "address": "南京路299号",
-        "location": "120.385539,36.102571",
+        "id": "B0K0YYE61D",
+        "name": "青岛市精神卫生中心高新院区",
+        "address": "河套街道振和路10号",
+        "location": "120.201693,36.227874",
         "pname": "山东省",
         "cityname": "青岛市",
         "adcode": "",
-        "typecode": "090210|090100"
-      },
-      "matched_name": "青岛市精神卫生中心",
-      "selection_rule": "base-name"
+        "typecode": "090210"
+      }
     },
     {
       "name": "甘肃天水市第三人民医院",
@@ -2350,10 +2408,32 @@
         "kdocs-cp3b7toqal3j-s3-r25"
       ],
       "region": "甘肃",
-      "matched_name": "甘肃天水市第三人民医院",
-      "status": "not_found",
-      "reason": "高德候选尚未匹配到机构名称",
-      "candidates": []
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B03AA0MXXT",
+          "name": "天水市第三人民医院(精表路)",
+          "address": "精表路17号",
+          "location": "105.692831,34.575109",
+          "pname": "甘肃省",
+          "cityname": "天水市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "chosen": {
+        "id": "B03AA0MXXT",
+        "name": "天水市第三人民医院(精表路)",
+        "address": "精表路17号",
+        "location": "105.692831,34.575109",
+        "pname": "甘肃省",
+        "cityname": "天水市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "matched_name": "天水市第三人民医院(精表路)",
+      "selection_rule": "base-name"
     },
     {
       "name": "内蒙古自治区人民医院",
@@ -3138,10 +3218,32 @@
         "kdocs-cp3b7toqal3j-s3-r94"
       ],
       "region": "广西",
-      "matched_name": "北海冉生精神病医院",
-      "status": "not_found",
-      "reason": "高德候选尚未匹配到机构名称",
-      "candidates": []
+      "status": "geocoded",
+      "reason": "复用上一轮同一机构的定位结果",
+      "candidates": [
+        {
+          "id": "B0H32R5HHJ",
+          "name": "北海冉升医院",
+          "address": "高德路与一街交叉口东北200米",
+          "location": "109.160649,21.503541",
+          "pname": "广西壮族自治区",
+          "cityname": "北海市",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "chosen": {
+        "id": "B0H32R5HHJ",
+        "name": "北海冉升医院",
+        "address": "高德路与一街交叉口东北200米",
+        "location": "109.160649,21.503541",
+        "pname": "广西壮族自治区",
+        "cityname": "北海市",
+        "adcode": "",
+        "typecode": "090100"
+      },
+      "matched_name": "北海冉升医院",
+      "selection_rule": "base-name"
     },
     {
       "name": "广西北海市人民医院（银滩院区）",
@@ -3414,10 +3516,32 @@
         "kdocs-cp3b7toqal3j-s3-r107"
       ],
       "region": "云南",
-      "matched_name": "桂林医学院附属医院",
-      "status": "not_found",
-      "reason": "高德候选尚未匹配到机构名称",
-      "candidates": []
+      "matched_name": "桂林医科大学第一附属医院乐群院区",
+      "status": "geocoded",
+      "reason": "按高德主体/本部及名称匹配选取机构代表位置",
+      "candidates": [
+        {
+          "id": "B03050261F",
+          "name": "桂林医科大学第一附属医院(乐群院区)",
+          "address": "乐群路15号",
+          "location": "110.291982,25.281478",
+          "pname": "广西壮族自治区",
+          "cityname": "桂林市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "selection_rule": "base-name",
+      "chosen": {
+        "id": "B03050261F",
+        "name": "桂林医科大学第一附属医院(乐群院区)",
+        "address": "乐群路15号",
+        "location": "110.291982,25.281478",
+        "pname": "广西壮族自治区",
+        "cityname": "桂林市",
+        "adcode": "",
+        "typecode": "090101"
+      }
     },
     {
       "name": "四川大学华西厦门医院",
@@ -4208,9 +4332,32 @@
         "kdocs-cp3b7toqal3j-s3-r158"
       ],
       "region": "香港",
-      "status": "not_found",
-      "reason": "高德接口拒绝查询（20011）",
-      "candidates": []
+      "matched_name": "圣保禄医院",
+      "status": "geocoded",
+      "reason": "按高德主体/本部及名称匹配选取机构代表位置",
+      "candidates": [
+        {
+          "id": "B073C04T8H",
+          "name": "圣保禄医院",
+          "address": "东院道2号",
+          "location": "114.193329,22.275542",
+          "pname": "香港特别行政区",
+          "cityname": "香港特别行政区",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "selection_rule": "base-name",
+      "chosen": {
+        "id": "B073C04T8H",
+        "name": "圣保禄医院",
+        "address": "东院道2号",
+        "location": "114.193329,22.275542",
+        "pname": "香港特别行政区",
+        "cityname": "香港特别行政区",
+        "adcode": "",
+        "typecode": "090100"
+      }
     },
     {
       "name": "威尔斯亲王医院",
@@ -4251,9 +4398,32 @@
         "kdocs-cp3b7toqal3j-s3-r161"
       ],
       "region": "香港",
-      "status": "not_found",
-      "reason": "高德接口拒绝查询（20011）",
-      "candidates": []
+      "matched_name": "香港明德国际医院",
+      "status": "geocoded",
+      "reason": "按高德主体/本部及名称匹配选取机构代表位置",
+      "candidates": [
+        {
+          "id": "B073C04BRQ",
+          "name": "明德国际医院",
+          "address": "香港山顶加列山道41号",
+          "location": "114.154246,22.256179",
+          "pname": "香港特别行政区",
+          "cityname": "香港特别行政区",
+          "adcode": "",
+          "typecode": "090100"
+        }
+      ],
+      "selection_rule": "base-name",
+      "chosen": {
+        "id": "B073C04BRQ",
+        "name": "明德国际医院",
+        "address": "香港山顶加列山道41号",
+        "location": "114.154246,22.256179",
+        "pname": "香港特别行政区",
+        "cityname": "香港特别行政区",
+        "adcode": "",
+        "typecode": "090100"
+      }
     },
     {
       "name": "港安医院",
@@ -4393,8 +4563,9 @@
         "kdocs-cp3b7toqal3j-s3-r166"
       ],
       "region": "澳门",
+      "matched_name": "澳門心理衛生中心",
       "status": "not_found",
-      "reason": "高德接口拒绝查询（20011）",
+      "reason": "高德候选尚未匹配到机构名称",
       "candidates": []
     },
     {

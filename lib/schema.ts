@@ -105,6 +105,26 @@ export const doctorSchema = z.object({
   note: z.string().optional(),
   /** 医生评价，留空时界面上写「无」，不隐藏这一行 */
   evaluation: z.string().optional(),
+  /**
+   * 评价按来源逐条拆开：同一位医生在不同表各有一行时，每行是一段独立的评价，
+   * 合并成一个长字符串后没法数「几条」，也没法回到各自出处。
+   * evaluation 仍是各条的拼接，供只读一处的界面用；要显示条数与逐条出处时读这里。
+   */
+  evaluation_items: z
+    .array(
+      z.object({
+        text: z.string().min(1),
+        /** 这条评价来自哪张表哪一行，例如「cptsd · 第10行」 */
+        source: z.string().min(1),
+      }),
+    )
+    .optional(),
+  /**
+   * 评价是否就是这位医生某条线索原文的复制。
+   * 前端拿到的引文是截断预览，在浏览器里比对会漏判（评价可能落在原文中段），所以判定放在数据层；
+   * 界面据此决定要不要重复渲染同一段话。
+   */
+  evaluation_echoes_report: z.boolean().optional(),
 })
 
 /* ------------------------------------------------------------------ 就诊线索 */

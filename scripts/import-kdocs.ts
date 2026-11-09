@@ -16,7 +16,8 @@ export const SOURCE_URL = 'https://www.kdocs.cn/l/cp3b7ToQAl3J'
 export const SOURCE_TITLE = '副本就诊地图10.25repo添加中'
 export const SOURCE_CAPTURE = 'data/evidence/kdocs/2026-11-09/document.json'
 
-export type SourceSheet = { index: number; name: string; rows: number; cols: number; values: string[][] }
+export type SourceMerge = { r1: number; c1: number; r2: number; c2: number }
+export type SourceSheet = { index: number; name: string; rows: number; cols: number; values: string[][]; merges?: SourceMerge[] }
 export type SourceDocument = {
   title: string
   url: string
@@ -45,16 +46,6 @@ const SENTENCE = /[。；，、]/u
 
 /** 「诊断：」「费用：」之类的正文前缀不是署名，剥署名时必须跳过。 */
 const LABEL_PREFIX = /^(?:诊断|结论|结果|费用|价格|挂号|注意|补充|更新|回复|地址|电话|时间|门诊|备注|提示)$/u
-
-/**
- * 姓名格只写了其中一位医生、评价里明确点了另一位医生的行。
- * 键是「s表号-rExcel行号」，值是这一行线索应记的全部医生姓名，按原表顺序。
- * 只影响线索的 doctor_name_raw；医生档案仍由姓名格决定，避免把别人的评价挂到被提到的人身上。
- */
-export const DOCTOR_NAME_FIXES: Record<string, string[]> = {
-  // 姓名格写「梁红（触发风险）」，同一格评价里「换潘伟刚医生也不要挂梁红医生」点出潘伟刚。
-  's1-r4': ['潘伟刚', '梁红'],
-}
 
 function clip(text: string, limit: number): string {
   if (text.length <= limit) return text
@@ -129,27 +120,53 @@ export type SourceRow = {
 }
 
 /**
+ * 合并单元格在 xlsx 里只有左上角带值，其余格子是空的。
+ * 这里还原出「每个被合并覆盖的格应该显示成什么」，用来区分「inherit 自上面一格」与「本来就没写」。
+ */
+function mergedValues(sheet: SourceSheet): Map<string, string> {
+  const inherited = new Map<string, string>()
+  for (const range of sheet.merges ?? []) {
+    const anchor = (sheet.values[range.r1 - 1]?.[range.c1 - 1] ?? '').trim()
+    if (!anchor) continue
+    for (let row = range.r1; row <= range.r2; row++) {
+      for (let col = range.c1; col <= range.c2; col++) {
+        if (row === range.r1 && col === range.c1) continue
+        inherited.set(`${row},${col}`, anchor)
+      }
+    }
+  }
+  return inherited
+}
+
+/**
  * 把合并单元格留空的地区与医院名向下填充，并逐行分出姓名、备注与评价。
  * 报告与医生档案都由这一层推导，保证两者对同一张表的理解一致。
+ *
+ * 诊室只认合并单元格的继承，不按「上一行有值就沿用」推断：cptsd 表 C2:C7 是合并的六个行共用一个诊室，
+ * 其余空的格子是真的没写。按上一行沿用会把上一个医生的诊室安到下一个医生头上。
  */
 export function sourceRows(document: SourceDocument): SourceRow[] {
   const rows: SourceRow[] = []
   for (const sheet of document.sheets) {
     let region = ''
     let hospital = ''
+    const merged = mergedValues(sheet)
     for (let index = 1; index < sheet.values.length; index++) {
       const cells = sheet.values[index].map(cell => (cell ?? '').trim())
       if (!cells.some(Boolean)) continue
+      const excelRow = index + 1
+      const inherited = (col: number) => merged.get(`${excelRow},${col}`) ?? ''
       if (cells[0]) region = cells[0]
+      else if (inherited(1)) region = inherited(1)
       if (cells[1]) hospital = cells[1]
-      const department = cells[2] ?? ''
+      else if (inherited(2)) hospital = inherited(2)
+      const department = cells[2] || inherited(3)
       const nameCell = cells[3] ?? ''
       const { name, annotations } = splitName(nameCell)
       const isPerson = !!name && name.length <= 24 && !SENTENCE.test(name) &&
         !NON_PERSON.test(name) && name !== department
       const annotation = annotations.length ? `（${annotations.join('，')}）` : ''
       const reportId = `kdocs-cp3b7toqal3j-s${sheet.index + 1}-r${index + 1}`
-      const fixed = DOCTOR_NAME_FIXES[`s${sheet.index + 1}-r${index + 1}`]
       rows.push({
         reportId,
         sheet: sheet.name,
@@ -158,7 +175,7 @@ export function sourceRows(document: SourceDocument): SourceRow[] {
         hospital,
         department,
         doctor: isPerson ? name : '',
-        doctors: fixed ?? (isPerson ? [name] : []),
+        doctors: isPerson ? [name] : [],
         // 团队、专家会诊、科室介绍不是医生，但姓名格里是原文，要留在这一行的线索里。
         label: isPerson ? '' : name,
         annotation,
@@ -250,23 +267,22 @@ export function reportsFromDocument(document: SourceDocument): Report[] {
 const DISORDER_ORDER: Report['disorders'] = ['cptsd', 'bpd', 'osdd', 'did', 'ptsd', 'pd', 'other']
 
 /**
- * 同一位医生的若干条发言合成一条线索；没有医生姓名的段按原始行合并。
+ * 同一行拆出来的若干段合成一条线索。
  *
  * 拆段解决的是「一条线索里塞了十几个人的话」，但医院页随即排出同一医生的十几张卡，
  * 读者看到的是同一个名字重复十几次。合并后 id 用第一段的 id，原文按出现顺序用换行连接，
  * 不改写、不加分隔符；段数记在 parts_count，病症取各段并集。
  *
- * 姓名格是科室或团队时也照同样道理合并：一行里同一个人的一次就诊经历被拆成三段，
- * 界面上会写成三条线索，等于把一个证人算成三个。合并按原始行 id 归属，不跨行。
+ * 合并只在这一行内部进行，不跨行、不跨表。表格里同一位医生常在两三张表各有一行，
+ * 那是不同人分别写的不同经历，行有各自的诊室与出处；按姓名跨行合并会把 A 行的评价挂到
+ * B 行的诊室下面——读者点开就会看到不属于这个诊室的发言。内容真的一字不差时，
+ * 交给 mergeDuplicateQuotes 处理，那里会保留两边的姓名与病症。
  */
 function mergeSegmentsByDoctor(reports: Report[]): Report[] {
   const merged: Report[] = []
   const byKey = new Map<string, Report>()
   for (const report of reports) {
-    const doctor = report.doctor_name_raw
-    const row = `${report.hospital_name_raw}\u0000${report.hospital_region ?? ''}`
-    // 有医生名按医生合并；姓名格不是个人时按原始行合并，绝不跨行。
-    const key = doctor ? `${row}\u0000${doctor}` : `${row}\u0000row:${report.id.replace(/-p\d+$/u, '')}`
+    const key = report.id.replace(/-p\d+$/u, '')
     const target = byKey.get(key)
     if (!target) {
       byKey.set(key, report)
@@ -282,6 +298,15 @@ function mergeSegmentsByDoctor(reports: Report[]): Report[] {
     target.evidence_quote = quote
     if (text.length > quote.length) target.evidence_full_text = clip(text, 2000)
     else delete target.evidence_full_text
+    // 合并进来的每一行都要出现在出处里：卡片正文含另一行的原话时，只标第一行的位置等于谎报来源，
+    // 读者照着「cptsd 第10行」回去核对，会发现那段话根本不在那一行。
+    const positions = new Set([
+      ...(target.evidence_context?.index_in_capture ?? '').split('、'),
+      report.evidence_context?.index_in_capture ?? '',
+    ].map(position => position.trim()).filter(Boolean))
+    if (target.evidence_context) {
+      target.evidence_context = { ...target.evidence_context, index_in_capture: [...positions].join('、') }
+    }
     target.parts_count = (target.parts_count ?? 1) + (report.parts_count ?? 1)
     target.disorders = DISORDER_ORDER.filter(id => target.disorders.includes(id) || report.disorders.includes(id))
     const topics = [...(target.source_topics ?? []), ...(report.source_topics ?? [])]
@@ -320,6 +345,54 @@ function mergeDuplicateQuotes(reports: Report[]): Report[] {
   return merged
 }
 
+/** 判为重复所需的最短连续共享片段：短于此长度的重合只是「态度好」这类常见短语撞车。 */
+const ECHO_MIN_SHARED = 20
+
+/** 判为重复所需的共享片段占评价长度的比例。 */
+const ECHO_MIN_RATIO = 0.7
+
+/** 两段文本的最长连续公共子串长度；入参已去空白，按字符比对。 */
+function longestSharedRun(left: string, right: string): number {
+  if (!left || !right) return 0
+  let best = 0
+  let previous = new Array<number>(right.length + 1).fill(0)
+  for (let i = 1; i <= left.length; i++) {
+    const current = new Array<number>(right.length + 1).fill(0)
+    for (let j = 1; j <= right.length; j++) {
+      if (left[i - 1] !== right[j - 1]) continue
+      const run = previous[j - 1] + 1
+      current[j] = run
+      if (run > best) best = run
+    }
+    previous = current
+  }
+  return best
+}
+
+/**
+ * 评价是不是这位医生某条线索原文的复制。
+ * 前端只拿到截断到 200 字的引文，在浏览器里比对会漏判（评价可能落在原文中段），所以判定放在这里。
+ *
+ * 判据是「最长连续共享片段 ≥20 字，且 ≥ 评价长度的 70%」：
+ * - 只要求整段相等会漏掉「评价比原文多一句结尾」的情况；
+ * - 只要求占比会误伤 12–18 字的短评价——整段都在原文里、占比 100%，其实只是「态度好」这类短语撞车，
+ *   隐藏它等于吞掉一条真实评价。
+ *
+ * 任一方向整段包含仍算重复：原文被评价整段吞进去、或评价是原文的一截，
+ * 两种情况下读者点开看到的都是同一段话，比例判据会低估它们。
+ */
+function evaluationEchoesReport(evaluation: string, texts: string[]): boolean {
+  const probe = evaluation.replace(/\s+/gu, '')
+  if (probe.length < ECHO_MIN_SHARED) return false
+  const threshold = Math.max(ECHO_MIN_SHARED, probe.length * ECHO_MIN_RATIO)
+  return texts.some((text) => {
+    const source = text.replace(/\s+/gu, '')
+    if (!source) return false
+    if (source.includes(probe) || probe.includes(source)) return true
+    return longestSharedRun(probe, source) >= threshold
+  })
+}
+
 /**
  * 医生档案只承载与个人绑定的字段：诊室取首次出现的非空值，备注与评价按线索合并。
  * 同一医生可能出现在多张表里且备注、评价各不相同，因此合并而不是覆盖。
@@ -332,12 +405,21 @@ export function doctorsFromDocument(document: SourceDocument, reports: Report[])
   // 跨表合并会把后面那行的线索并进前一行，后一行的 id 就不再出现在 reports 里。
   // 那一行的医生仍然存在（他确实在这家机构出诊），所以按机构名与地区兜底找同一家机构。
   const hospitalByName = new Map<string, string>()
+  // 一位医生的线索原文：姓名栏可能是「甲、乙」，两位都要拿到这条线索的正文。
+  const textsByDoctor = new Map<string, string[]>()
   for (const report of reports) {
     if (!report.hospital_id) continue
     const key = `${report.hospital_name_raw}\u0000${report.hospital_region ?? ''}`
     if (!hospitalByName.has(key)) hospitalByName.set(key, report.hospital_id)
+    const text = [report.evidence_quote, report.evidence_full_text ?? ''].join('\n')
+    for (const name of (report.doctor_name_raw ?? '').split('、').map(part => part.trim()).filter(Boolean)) {
+      const doctorKey = `${report.hospital_id}\u0000${name}`
+      const texts = textsByDoctor.get(doctorKey)
+      if (texts) texts.push(text)
+      else textsByDoctor.set(doctorKey, [text])
+    }
   }
-  const groups = new Map<string, { hospitalId: string; name: string; department: string; notes: string[]; evaluations: string[] }>()
+  const groups = new Map<string, { hospitalId: string; name: string; department: string; notes: string[]; evaluations: { text: string; source: string }[] }>()
   for (const row of sourceRows(document)) {
     const hospitalId = hospitalOf.get(row.reportId) ?? hospitalByName.get(`${row.hospital}\u0000${row.region}`)
     if (!row.doctor || !hospitalId) continue
@@ -345,23 +427,34 @@ export function doctorsFromDocument(document: SourceDocument, reports: Report[])
     const group = groups.get(key) ?? { hospitalId, name: row.doctor, department: '', notes: [], evaluations: [] }
     if (!group.department && row.department) group.department = row.department
     if (row.note && !group.notes.includes(row.note)) group.notes.push(row.note)
-    if (row.evaluation && !group.evaluations.includes(row.evaluation)) group.evaluations.push(row.evaluation)
+    // 评价按来源逐条留：同一位医生在两三张表各有一行时，每行是独立的一条，
+    // 拼成一个长字符串就没法数条数，也回不到各自出处。
+    if (row.evaluation && !group.evaluations.some(item => item.text === row.evaluation)) {
+      group.evaluations.push({ text: row.evaluation, source: `${row.sheet} · 第${row.row}行` })
+    }
     groups.set(key, group)
   }
-  return [...groups.values()].map(group => ({
-    id: `kdocs-doctor-${createHash('sha1').update(`${group.hospitalId}\u0000${group.name}`).digest('hex').slice(0, 12)}`,
-    name: group.name,
-    hospital_id: group.hospitalId,
-    department: group.department,
-    // 职称表里没有，留空让界面走「无」，不写占位词
-    title: '',
-    credentials: [],
-    profile_urls: [],
-    specialties: [],
-    official_sources: [],
-    ...(group.notes.length ? { note: group.notes.join('\n') } : {}),
-    ...(group.evaluations.length ? { evaluation: group.evaluations.join('\n\n') } : {}),
-  }))
+  return [...groups.values()].map(group => {
+    const evaluation = group.evaluations.length ? group.evaluations.map(item => item.text).join('\n\n') : undefined
+    const echoes = evaluation ? evaluationEchoesReport(evaluation, textsByDoctor.get(`${group.hospitalId}\u0000${group.name}`) ?? []) : false
+    return {
+      id: `kdocs-doctor-${createHash('sha1').update(`${group.hospitalId}\u0000${group.name}`).digest('hex').slice(0, 12)}`,
+      name: group.name,
+      hospital_id: group.hospitalId,
+      department: group.department,
+      // 职称表里没有，留空让界面走「无」，不写占位词
+      title: '',
+      credentials: [],
+      profile_urls: [],
+      specialties: [],
+      official_sources: [],
+      ...(group.notes.length ? { note: group.notes.join('\n') } : {}),
+      ...(evaluation ? { evaluation } : {}),
+      ...(group.evaluations.length ? { evaluation_items: group.evaluations } : {}),
+      // 只有真的重复时才写 true；没有评价、或评价有自己的内容，都不写这个键
+      ...(echoes ? { evaluation_echoes_report: true } : {}),
+    }
+  })
 }
 
 /**

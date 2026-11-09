@@ -61,10 +61,31 @@ export function locationTargets(reports: Report[]): LocationTarget[] {
   return [...groups.values()]
 }
 
+/**
+ * 同一个机构在来源里用「/」并列两个名号（「河南省精神卫生中心/新乡医学院第二附属医院」）。
+ * 这是两个名字指向一家医院，不是机构全名：查询与匹配都应接受其中任意一个。
+ */
+export function nameVariants(raw: string): string[] {
+  const parts = raw.split('/').map(part => part.trim()).filter(Boolean)
+  // 「圣保禄/养和医院」这种写法把「医院」只留在最后一个名号上，前半截缺了通名就查不到。
+  return parts.map((part, index) => index < parts.length - 1 && !/医院|卫生院|中心|诊所/u.test(part) ? `${part}医院` : part)
+}
+
+/** 原文地区写错、机构本身明确的几家：按机构实际所在地定位，原文地名仍原样留在 hospital_region 里备查。 */
+const REGION_OVERRIDES: Record<string, string> = {
+  // 桂林医学院附属医院在广西桂林，来源把它记在云南。
+  '云南 桂林医学院附属医院': '广西',
+}
+
 export function searchName(raw: string): string {
   // 来源在跨省就诊的机构名前写了地区（「云南 大理州第二人民医院」），高德不接受这种前缀。
-  const bare = raw.replace(/^[^\s]{2,6}\s+/u, '')
+  const bare = nameVariants(raw)[0].replace(/^[^\s]{2,6}\s+/u, '')
   return (SOURCE_NAME_EXPANSIONS[bare] ?? SOURCE_NAME_EXPANSIONS[raw] ?? bare).replace(/（([^）]*)）/gu, (_, note: string) => /院区|芳村|^(?:保定|青岛|南昌|海南)$/u.test(note) ? note : '')
+}
+
+/** 查询与省界校验用的地区；原文地区写错的少数机构按实际所在地查，证据里仍保留原文地区。 */
+export function searchRegion(target: LocationTarget): string {
+  return REGION_OVERRIDES[target.name] ?? target.region
 }
 
 const SOURCE_NAME_EXPANSIONS: Record<string, string> = {
@@ -103,7 +124,6 @@ const SOURCE_NAME_EXPANSIONS: Record<string, string> = {
   '长庚医院': '长庚纪念医院',
   '河南省郑州大学第一附属医院东区': '郑州大学第一附属医院东区',
   '陕西省宝鸡市康复医院': '宝鸡市康复医院',
-  '山东省青岛精神卫生中心': '青岛市精神卫生中心',
   '辽宁省中国医科大学附属盛京医院': '中国医科大学附属盛京医院',
   '贵州省贵阳正宇铁路医院（私立）': '贵阳正宇铁路医院',
   '四川省成都第四人民医院': '成都市第四人民医院',
@@ -117,21 +137,46 @@ const SOURCE_NAME_EXPANSIONS: Record<string, string> = {
   '山西医科大学第一附属医院': '山西医科大学第一医院',
   '成功大学医学院附设医院': '国立成功大学医学院附设医院',
   '广州市惠爱医院': '广州医科大学附属脑科医院',
-  '山东省精卫（青岛）': '青岛市精神卫生中心',
+  // 「山东省精卫（青岛）」指高新院区（河套街道振和路10号），不是南京路299号的本部；
+  // 旧源同一批行也把它记作「山东省青岛精神卫生中心」，挂在高新院区名下。
+  '山东省精卫（青岛）': '青岛市精神卫生中心高新院区',
+  '山东省青岛精神卫生中心': '青岛市精神卫生中心高新院区',
   '广东省精神卫生中心': '广东省人民医院惠福分院',
   '中国医药大学附设医院': 'China Medical University Hospital',
   '澳门大学心理学系诊所': '澳门大学社会科学学院',
   '澳门心理卫生中心': '澳門心理衛生中心',
+  // 以下四家原文名与高德收录名不一致，按原表字面查不到，属名称差异而非机构缺失。
+  // 河南省精神卫生中心与新乡医学院第二附属医院是同一家的两个名号，现已更名河南医药大学第二附属医院。
+  '河南省精神卫生中心/新乡医学院第二附属医院': '河南医药大学第二附属医院',
+  // 原表把省与市连写进机构名（河北唐山…），高德收录名不带行政区前缀。
+  '河北唐山华北理工大学附属医院': '华北理工大学附属医院',
+  '甘肃天水市第三人民医院': '天水市第三人民医院',
+  // 原文写「冉生」，高德收录为同音的「冉升医院」。
+  '北海冉生精神病医院（私立）': '北海冉升医院',
+  // 「圣保禄/养和医院」是两个名号指同一家（香港圣保禄医院），高德按前者能查到实体。
+  '圣保禄/养和医院': '圣保禄医院',
+  // 桂林医学院附属医院已更名桂林医科大学第一附属医院；原文没写院区，取乐群路15号的院本部（乐群院区）。
+  '桂林医学院附属医院': '桂林医科大学第一附属医院（乐群院区）',
+  // 香港明德医院即山顶加列山道41号的明德国际医院，高德只收后者这个名字；
+  // 只写「明德国际医院」会先命北京那家，带上城市限定词才能落到香港。
+  '明德医院': '香港明德国际医院',
 }
+
+/** 港澳台在高德里按「境外」计费：带 city 参数会被判为无境外权限（infocode 20011），不带 city 才可检索。 */
+const ABROAD_REGIONS = new Set(['香港', '澳门', '台湾'])
 
 export function searchCity(target: LocationTarget): string {
   const cities: Record<string, string> = {
     '中国医药大学附设医院': '台中市',
     '成功大学医学院附设医院': '台南市',
     '苏州广济医院（在吴中人民医院出诊）': '苏州市',
+    // 来源把桂林写进了云南那一栏，机构本身在桂林市。
+    '云南 桂林医学院附属医院': '桂林市',
   }
+  // 港澳台不能传 city，否则一律 INSUFFICIENT_ABROAD_PRIVILEGES；结果仍按 pname 限定在本地。
+  if (ABROAD_REGIONS.has(searchRegion(target))) return ''
   const hint = target.name.match(/（(保定|青岛|南昌)）/u)?.[1]
-  return cities[target.name] ?? (hint ? `${hint}市` : target.region)
+  return cities[target.name] ?? (hint ? `${hint}市` : searchRegion(target))
 }
 
 const BUILDING = /门诊|急诊|住院|病房|楼|病区|科室|药房|停车|入口|出口|大厅|诊疗|体检|急救|科$/u
@@ -144,6 +189,9 @@ export function siteCandidates(pois: Poi[]): Poi[] {
 export function normalizedName(name: string): string {
   return name.replace(/^首都医科大学附属/u, '')
     .replace(/^国立/u, '')
+    // 港澳台的机构名常带地名前缀（「香港明德国际医院」），而 POI 名里未必有：
+    // 去掉前缀再比，才不会因为多两个字把同一家判成不同家。
+    .replace(/^(?:香港|澳门|澳門|台湾)/u, '')
     .replace(/^北大国际/u, '北京大学国际')
     .replace(/^郑大一附院/u, '郑州大学第一附属医院')
     .replace(/精卫$/u, '精神卫生中心')
@@ -156,12 +204,13 @@ export function selectPoi(target: LocationTarget, pois: Poi[]): LocationResult {
   const base: LocationResult = { name: target.name, report_ids: target.report_ids, region: target.region, matched_name: searchName(target.name), status: 'not_found', reason: '高德候选尚未匹配到机构名称', candidates: pois }
   const wanted = normalizedName(searchName(target.name).replace(/(?:保定|青岛|南昌)$/u, ''))
   const hint = target.name.match(/（(保定|青岛|南昌|海南)）/u)?.[1]
+  const region = searchRegion(target)
   const located = pois.filter(poi => {
     if (!poi.location || !poi.address || !poi.pname) return false
     const macauManaged = target.name === '澳门大学心理学系诊所' && /由澳门特别行政区.*管辖/u.test(`${poi.name}${poi.address}`)
-    if (!macauManaged && target.region && poi.pname.replace(/省|市|壮族自治区|维吾尔自治区|回族自治区|自治区|特别行政区/gu, '') !== target.region.replace(/省|市|壮族自治区|维吾尔自治区|回族自治区|自治区|特别行政区/gu, '')) return false
+    if (!macauManaged && region && poi.pname.replace(/省|市|壮族自治区|维吾尔自治区|回族自治区|自治区|特别行政区/gu, '') !== region.replace(/省|市|壮族自治区|维吾尔自治区|回族自治区|自治区|特别行政区/gu, '')) return false
     const city = searchCity(target)
-    if (city && city !== target.region && !`${poi.cityname}${poi.address}`.includes(city.replace(/市$/u, ''))) return false
+    if (city && city !== region && !`${poi.cityname}${poi.address}`.includes(city.replace(/市$/u, ''))) return false
     return !hint || `${poi.pname}${poi.cityname}${poi.address}`.includes(hint)
   })
   const names = /在.+出诊/u.test(target.name) ? [wanted] : [wanted, normalizedName(target.name.replace(/（[^）]*）/gu, ''))]

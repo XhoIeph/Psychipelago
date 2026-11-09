@@ -51,6 +51,7 @@
       "hospital_region": "北京",
       "hospital_id": "kdocs-amap-b000a0989a",
       "hospital_name_raw": "北京回龙观医院",
+      "department": "创伤后应激障碍专病门诊",
       "doctor_name_raw": "潘伟刚",
       "disorders": [
         "cptsd"
@@ -90,7 +91,8 @@
       "hospital_region": "北京",
       "hospital_id": "kdocs-amap-b000a0989a",
       "hospital_name_raw": "北京回龙观医院",
-      "doctor_name_raw": "潘伟刚、梁红",
+      "department": "创伤后应激障碍专病门诊",
+      "doctor_name_raw": "梁红",
       "disorders": [
         "cptsd"
       ],
@@ -129,6 +131,7 @@
       "hospital_region": "北京",
       "hospital_id": "kdocs-amap-b000a0989a",
       "hospital_name_raw": "北京回龙观医院",
+      "department": "创伤后应激障碍专病门诊",
       "doctor_name_raw": "李玉龙",
       "disorders": [
         "cptsd"
@@ -167,6 +170,7 @@
       "hospital_region": "北京",
       "hospital_id": "kdocs-amap-b000a0989a",
       "hospital_name_raw": "北京回龙观医院",
+      "department": "创伤后应激障碍专病门诊",
       "doctor_name_raw": "王晓莹",
       "disorders": [
         "cptsd"
@@ -206,6 +210,7 @@
       "hospital_region": "北京",
       "hospital_id": "kdocs-amap-b000a0989a",
       "hospital_name_raw": "北京回龙观医院",
+      "department": "创伤后应激障碍专病门诊",
       "doctor_name_raw": "徐鑫鹏",
       "disorders": [
         "cptsd"
@@ -328,15 +333,12 @@
       "department": "心理科",
       "doctor_name_raw": "张艳萍",
       "disorders": [
-        "cptsd",
-        "osdd",
-        "did"
+        "cptsd"
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "官方简介写“专长于各类精神障碍的诊断治疗和心理创伤的EMDR治疗”\n反馈一下回龙观张艳萍医生，专业性肯定是可以的，但这位医生不停质疑我的创伤史，认为我是在网上自己诊断的 并表示我夸大自己的问题 忽视我的症状，给我造成二次创伤并在诊室内解离\n这个医生，我也看过，我觉得专业性也不怎么样，感觉她倾向于反向打压患者，跟她对话的时候有一种权力博弈的感觉\n张艳萍医生个人体验完全神来的，超级温柔耐心，能观察出…",
-      "evidence_full_text": "官方简介写“专长于各类精神障碍的诊断治疗和心理创伤的EMDR治疗”\n反馈一下回龙观张艳萍医生，专业性肯定是可以的，但这位医生不停质疑我的创伤史，认为我是在网上自己诊断的 并表示我夸大自己的问题 忽视我的症状，给我造成二次创伤并在诊室内解离\n这个医生，我也看过，我觉得专业性也不怎么样，感觉她倾向于反向打压患者，跟她对话的时候有一种权力博弈的感觉\n张艳萍医生个人体验完全神来的，超级温柔耐心，能观察出来你在内部切换或者内部交流 但是不会打扰你们，只会在快结束的时候提一嘴，尊重你的主观体验，对创伤解离很友好，我之前在诊室内解离发作不认识自己是谁张医生还特地去倒了温水给我，处理方法也很专业",
-      "parts_count": 4,
+      "evidence_quote": "官方简介写“专长于各类精神障碍的诊断治疗和心理创伤的EMDR治疗”\n反馈一下回龙观张艳萍医生，专业性肯定是可以的，但这位医生不停质疑我的创伤史，认为我是在网上自己诊断的 并表示我夸大自己的问题 忽视我的症状，给我造成二次创伤并在诊室内解离\n这个医生，我也看过，我觉得专业性也不怎么样，感觉她倾向于反向打压患者，跟她对话的时候有一种权力博弈的感觉",
+      "parts_count": 3,
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "cptsd · 第10行",
@@ -405,6 +407,7 @@
       "source_post_id": "cp3b7ToQAl3J",
       "published_at_precision": "unknown",
       "hospital_region": "河南",
+      "hospital_id": "kdocs-amap-b0ffhyofx6",
       "hospital_name_raw": "河南省精神卫生中心/新乡医学院第二附属医院",
       "department": "精神科普通门诊",
       "doctor_name_raw": "张林娜",
@@ -432,8 +435,7 @@
         "contains_selfharm_detail": false,
         "sensitive": false
       },
-      "status": "unlinked",
-      "unlinked_reason": "机构未定位：高德候选尚未匹配到机构名称"
+      "status": "published"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s1-r13",
@@ -443,6 +445,7 @@
       "source_post_id": "cp3b7ToQAl3J",
       "published_at_precision": "unknown",
       "hospital_region": "河北",
+      "hospital_id": "kdocs-amap-b0ffg369xg",
       "hospital_name_raw": "河北唐山华北理工大学附属医院",
       "department": "临床心理科",
       "doctor_name_raw": "李凌",
@@ -470,8 +473,7 @@
         "contains_selfharm_detail": false,
         "sensitive": false
       },
-      "status": "unlinked",
-      "unlinked_reason": "机构未定位：高德候选尚未匹配到机构名称"
+      "status": "published"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s1-r14",
@@ -607,16 +609,12 @@
       "disorders": [
         "cptsd",
         "osdd",
-        "did",
-        "pd"
-      ],
-      "source_topics": [
-        "人格障碍"
+        "did"
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "银川市第一人民医院 · 精神心理科 · 邱虹\n银川市第一人民医院 · 邱虹",
-      "parts_count": 3,
+      "evidence_quote": "银川市第一人民医院 · 精神心理科 · 邱虹",
+      "parts_count": 2,
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "cptsd · 第17行",
@@ -650,16 +648,11 @@
       "department": "精神心理科",
       "doctor_name_raw": "李健博",
       "disorders": [
-        "cptsd",
-        "pd"
-      ],
-      "source_topics": [
-        "人格障碍"
+        "cptsd"
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "喀什地区第一人民医院 · 精神心理科 · 李健博\n喀什地区第一人民医院 · 李健博",
-      "parts_count": 2,
+      "evidence_quote": "喀什地区第一人民医院 · 精神心理科 · 李健博",
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "cptsd · 第18行",
@@ -693,16 +686,11 @@
       "department": "心理医学科",
       "doctor_name_raw": "伊琪忠",
       "disorders": [
-        "cptsd",
-        "pd"
-      ],
-      "source_topics": [
-        "人格障碍"
+        "cptsd"
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "新疆医科大学第一附属医院 · 心理医学科 · 伊琪忠\n新疆医科大学第一附属医院 · 伊琪忠",
-      "parts_count": 2,
+      "evidence_quote": "新疆医科大学第一附属医院 · 心理医学科 · 伊琪忠",
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "cptsd · 第19行",
@@ -736,18 +724,11 @@
       "department": "临床心理科",
       "doctor_name_raw": "阿地拉·阿吉",
       "disorders": [
-        "cptsd",
-        "osdd",
-        "did",
-        "pd"
-      ],
-      "source_topics": [
-        "人格障碍"
+        "cptsd"
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "新疆维吾尔自治区人民医院 · 临床心理科 · 阿地拉·阿吉\n有反馈书面得到多重人格障碍诊断\n新疆维吾尔自治区人民医院 · 阿地拉·阿吉",
-      "parts_count": 3,
+      "evidence_quote": "新疆维吾尔自治区人民医院 · 临床心理科 · 阿地拉·阿吉",
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "cptsd · 第20行",
@@ -781,16 +762,11 @@
       "department": "临床心理科",
       "doctor_name_raw": "胡曼娜",
       "disorders": [
-        "cptsd",
-        "pd"
-      ],
-      "source_topics": [
-        "人格障碍"
+        "cptsd"
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "新疆维吾尔自治区人民医院 · 临床心理科 · 胡曼娜\n新疆维吾尔自治区人民医院 · 胡曼娜",
-      "parts_count": 2,
+      "evidence_quote": "新疆维吾尔自治区人民医院 · 临床心理科 · 胡曼娜",
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "cptsd · 第21行",
@@ -1135,14 +1111,12 @@
       "department": "临床心理科",
       "doctor_name_raw": "彭红军",
       "disorders": [
-        "cptsd",
-        "osdd",
-        "did"
+        "cptsd"
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "擅长儿童青少年心理问题、亲子问题、恋爱问题、婚姻家庭问题、神经症、抑郁症、双相障碍、创伤后应激障碍、边缘型人格障碍、睡眠障碍、性心理障碍、精神分裂症\n回复 momo : 我只去了一次心理咨询，只是确认了一下情况。他给我一种我只是一个普通的病人的感觉，而不是精神病患者。总之他的态度很平和，也很有经验\n有反馈可以看did、可以做精神分析治疗",
-      "parts_count": 3,
+      "evidence_quote": "擅长儿童青少年心理问题、亲子问题、恋爱问题、婚姻家庭问题、神经症、抑郁症、双相障碍、创伤后应激障碍、边缘型人格障碍、睡眠障碍、性心理障碍、精神分裂症\n回复 momo : 我只去了一次心理咨询，只是确认了一下情况。他给我一种我只是一个普通的病人的感觉，而不是精神病患者。总之他的态度很平和，也很有经验",
+      "parts_count": 2,
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "cptsd · 第30行",
@@ -1600,8 +1574,6 @@
       "doctor_name_raw": "鄢利福",
       "disorders": [
         "cptsd",
-        "osdd",
-        "did",
         "pd"
       ],
       "source_topics": [
@@ -1609,8 +1581,8 @@
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "该院官网个人简介明确写其擅长治疗“多重人格障碍”，并提及运用催眠疗法处理“复合型心理创伤”等。\n有反馈书面得到分离转换性障碍诊断",
-      "parts_count": 3,
+      "evidence_quote": "该院官网个人简介明确写其擅长治疗“多重人格障碍”，并提及运用催眠疗法处理“复合型心理创伤”等。",
+      "parts_count": 2,
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "cptsd · 第42行",
@@ -1948,15 +1920,11 @@
       "department": "心身医学",
       "doctor_name_raw": "黄雨兰",
       "disorders": [
-        "cptsd",
-        "osdd",
-        "did"
+        "cptsd"
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "你好，四川省精神卫生中心的黄雨兰我去看了，反而被创到了…我问“现在还是没有办法诊断cptsd吗”她说“你很需要这个标签吗”。之前就在这个医院被诊断成抑郁症，但是吃了药没什么用。我跟她讲了我的创伤，说了和抑郁症症状不相符的地方，她说“所以你今天是来澄清你不是抑郁症的？”，最后处方笺上还是写的抑郁症，感觉我都白说了。\n有反馈书面得到分离转换性障碍诊断，医生态度好\n你好，四川省精神卫生中心的黄雨兰我去…",
-      "evidence_full_text": "你好，四川省精神卫生中心的黄雨兰我去看了，反而被创到了…我问“现在还是没有办法诊断cptsd吗”她说“你很需要这个标签吗”。之前就在这个医院被诊断成抑郁症，但是吃了药没什么用。我跟她讲了我的创伤，说了和抑郁症症状不相符的地方，她说“所以你今天是来澄清你不是抑郁症的？”，最后处方笺上还是写的抑郁症，感觉我都白说了。\n有反馈书面得到分离转换性障碍诊断，医生态度好\n你好，四川省精神卫生中心的黄雨兰我去看了，反而被创到了…我问“现在还是没有办法诊断cptsd吗”她说“你很需要这个标签吗”。之前就在这个医院被诊断成抑郁症，但是吃了药没什么用。我跟她讲了我的创伤，说了和抑郁症症状不相符的地方，她说“所以你今天是来澄清你不是抑郁症的？”，最后处方笺上还是写的抑郁症，感觉我都白说了。\"",
-      "parts_count": 3,
+      "evidence_quote": "你好，四川省精神卫生中心的黄雨兰我去看了，反而被创到了…我问“现在还是没有办法诊断cptsd吗”她说“你很需要这个标签吗”。之前就在这个医院被诊断成抑郁症，但是吃了药没什么用。我跟她讲了我的创伤，说了和抑郁症症状不相符的地方，她说“所以你今天是来澄清你不是抑郁症的？”，最后处方笺上还是写的抑郁症，感觉我都白说了。",
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "cptsd · 第51行",
@@ -2066,16 +2034,11 @@
       "department": "心理科",
       "doctor_name_raw": "朱祥路",
       "disorders": [
-        "cptsd",
-        "pd"
-      ],
-      "source_topics": [
-        "人格障碍"
+        "cptsd"
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "贵州医科大学附属医院 · 心理科 · 朱祥路\n贵州医科大学附属医院 · 精神科 · 朱祥路",
-      "parts_count": 2,
+      "evidence_quote": "贵州医科大学附属医院 · 心理科 · 朱祥路",
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "cptsd · 第54行",
@@ -2147,16 +2110,11 @@
       "department": "精神科",
       "doctor_name_raw": "刘毅",
       "disorders": [
-        "cptsd",
-        "pd"
-      ],
-      "source_topics": [
-        "人格障碍"
+        "cptsd"
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "拉萨市人民医院 · 精神科 · 刘毅\n拉萨市人民医院 · 刘毅",
-      "parts_count": 2,
+      "evidence_quote": "拉萨市人民医院 · 精神科 · 刘毅",
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "cptsd · 第56行",
@@ -2238,6 +2196,45 @@
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "osdd-did · 第3行",
+        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
+      },
+      "evidence_source": "article",
+      "verification": {
+        "level": "unverified"
+      },
+      "extraction": {
+        "tool": "kdocs-sheet-transcription",
+        "captured_at": "2026-11-09"
+      },
+      "flags": {
+        "contains_minor": false,
+        "contains_selfharm_detail": false,
+        "sensitive": false
+      },
+      "status": "published"
+    },
+    {
+      "id": "kdocs-cp3b7toqal3j-s2-r4",
+      "platform": "web",
+      "source_channel": "browser_session",
+      "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
+      "source_post_id": "cp3b7ToQAl3J",
+      "published_at_precision": "unknown",
+      "hospital_region": "北京",
+      "hospital_id": "kdocs-amap-b000a9q0a3",
+      "hospital_name_raw": "北大国际医院",
+      "department": "心理科",
+      "doctor_name_raw": "张艳萍",
+      "disorders": [
+        "osdd",
+        "did"
+      ],
+      "stage": "unknown",
+      "experience": null,
+      "evidence_quote": "张艳萍医生个人体验完全神来的，超级温柔耐心，能观察出来你在内部切换或者内部交流 但是不会打扰你们，只会在快结束的时候提一嘴，尊重你的主观体验，对创伤解离很友好，我之前在诊室内解离发作不认识自己是谁张医生还特地去倒了温水给我，处理方法也很专业",
+      "evidence_context": {
+        "note_title": "副本就诊地图10.25repo添加中",
+        "index_in_capture": "osdd-did · 第4行",
         "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
       },
       "evidence_source": "article",
@@ -2505,16 +2502,11 @@
       "doctor_name_raw": "韩继阳",
       "disorders": [
         "osdd",
-        "did",
-        "pd"
-      ],
-      "source_topics": [
-        "人格障碍"
+        "did"
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "辽宁省中国医科大学附属盛京医院 · 心理门诊 · 韩继阳\n参与发表《反思功能问卷-54中文版的修订及信效度研究》，研究组为“具有边缘型人格特质”的患者。",
-      "parts_count": 2,
+      "evidence_quote": "辽宁省中国医科大学附属盛京医院 · 心理门诊 · 韩继阳",
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "osdd-did · 第12行",
@@ -2927,6 +2919,45 @@
       "status": "published"
     },
     {
+      "id": "kdocs-cp3b7toqal3j-s2-r23",
+      "platform": "web",
+      "source_channel": "browser_session",
+      "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
+      "source_post_id": "cp3b7ToQAl3J",
+      "published_at_precision": "unknown",
+      "hospital_region": "新疆",
+      "hospital_id": "kdocs-amap-b03df04gda",
+      "hospital_name_raw": "新疆维吾尔自治区人民医院",
+      "department": "精神科",
+      "doctor_name_raw": "阿地拉·阿吉",
+      "disorders": [
+        "osdd",
+        "did"
+      ],
+      "stage": "unknown",
+      "experience": null,
+      "evidence_quote": "有反馈书面得到多重人格障碍诊断",
+      "evidence_context": {
+        "note_title": "副本就诊地图10.25repo添加中",
+        "index_in_capture": "osdd-did · 第23行",
+        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
+      },
+      "evidence_source": "article",
+      "verification": {
+        "level": "unverified"
+      },
+      "extraction": {
+        "tool": "kdocs-sheet-transcription",
+        "captured_at": "2026-11-09"
+      },
+      "flags": {
+        "contains_minor": false,
+        "contains_selfharm_detail": false,
+        "sensitive": false
+      },
+      "status": "published"
+    },
+    {
       "id": "kdocs-cp3b7toqal3j-s2-r25",
       "platform": "web",
       "source_channel": "browser_session",
@@ -2940,16 +2971,12 @@
       "doctor_name_raw": "仇剑崟",
       "disorders": [
         "osdd",
-        "did",
-        "pd"
-      ],
-      "source_topics": [
-        "人格障碍"
+        "did"
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "有反馈书面得到分离转换性障碍诊断\n雖然他是能診斷多重人格障礙的，但是有DID患者首診在他那裡開出的是分離轉換性障礙。後經多次复診，依然維持首診判斷。所以只能說這個醫生他對於DID這方面，有概率開多重人格障礙，也有概率寫分離轉換性障礙。\n研究方向涵盖心理治疗临床疗效与神经精神分析机制、边缘型人格障碍评估治疗路径、女性经前期至围绝经期抑郁障碍干预",
-      "parts_count": 3,
+      "evidence_quote": "有反馈书面得到分离转换性障碍诊断\n雖然他是能診斷多重人格障礙的，但是有DID患者首診在他那裡開出的是分離轉換性障礙。後經多次复診，依然維持首診判斷。所以只能說這個醫生他對於DID這方面，有概率開多重人格障礙，也有概率寫分離轉換性障礙。",
+      "parts_count": 2,
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "osdd-did · 第25行",
@@ -3114,6 +3141,45 @@
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "osdd-did · 第29行",
+        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
+      },
+      "evidence_source": "article",
+      "verification": {
+        "level": "unverified"
+      },
+      "extraction": {
+        "tool": "kdocs-sheet-transcription",
+        "captured_at": "2026-11-09"
+      },
+      "flags": {
+        "contains_minor": false,
+        "contains_selfharm_detail": false,
+        "sensitive": false
+      },
+      "status": "published"
+    },
+    {
+      "id": "kdocs-cp3b7toqal3j-s2-r30",
+      "platform": "web",
+      "source_channel": "browser_session",
+      "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
+      "source_post_id": "cp3b7ToQAl3J",
+      "published_at_precision": "unknown",
+      "hospital_region": "广东",
+      "hospital_id": "kdocs-amap-b00140hu1b",
+      "hospital_name_raw": "广州医科大学附属脑科医院",
+      "department": "临床心理科",
+      "doctor_name_raw": "彭红军",
+      "disorders": [
+        "osdd",
+        "did"
+      ],
+      "stage": "unknown",
+      "experience": null,
+      "evidence_quote": "有反馈可以看did、可以做精神分析治疗",
+      "evidence_context": {
+        "note_title": "副本就诊地图10.25repo添加中",
+        "index_in_capture": "osdd-did · 第30行",
         "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
       },
       "evidence_source": "article",
@@ -3603,6 +3669,46 @@
       "status": "published"
     },
     {
+      "id": "kdocs-cp3b7toqal3j-s2-r43",
+      "platform": "web",
+      "source_channel": "browser_session",
+      "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
+      "source_post_id": "cp3b7ToQAl3J",
+      "published_at_precision": "unknown",
+      "hospital_region": "四川",
+      "hospital_id": "kdocs-amap-b0ffjaykfh",
+      "hospital_name_raw": "四川省精神医学中心",
+      "department": "心身医学门诊",
+      "doctor_name_raw": "黄雨兰",
+      "disorders": [
+        "osdd",
+        "did"
+      ],
+      "stage": "unknown",
+      "experience": null,
+      "evidence_quote": "有反馈书面得到分离转换性障碍诊断，医生态度好\n你好，四川省精神卫生中心的黄雨兰我去看了，反而被创到了…我问“现在还是没有办法诊断cptsd吗”她说“你很需要这个标签吗”。之前就在这个医院被诊断成抑郁症，但是吃了药没什么用。我跟她讲了我的创伤，说了和抑郁症症状不相符的地方，她说“所以你今天是来澄清你不是抑郁症的？”，最后处方笺上还是写的抑郁症，感觉我都白说了。\"",
+      "parts_count": 2,
+      "evidence_context": {
+        "note_title": "副本就诊地图10.25repo添加中",
+        "index_in_capture": "osdd-did · 第43行",
+        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
+      },
+      "evidence_source": "article",
+      "verification": {
+        "level": "unverified"
+      },
+      "extraction": {
+        "tool": "kdocs-sheet-transcription",
+        "captured_at": "2026-11-09"
+      },
+      "flags": {
+        "contains_minor": false,
+        "contains_selfharm_detail": false,
+        "sensitive": false
+      },
+      "status": "published"
+    },
+    {
       "id": "kdocs-cp3b7toqal3j-s2-r44",
       "platform": "web",
       "source_channel": "browser_session",
@@ -3942,6 +4048,45 @@
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "osdd-did · 第52行",
+        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
+      },
+      "evidence_source": "article",
+      "verification": {
+        "level": "unverified"
+      },
+      "extraction": {
+        "tool": "kdocs-sheet-transcription",
+        "captured_at": "2026-11-09"
+      },
+      "flags": {
+        "contains_minor": false,
+        "contains_selfharm_detail": false,
+        "sensitive": false
+      },
+      "status": "published"
+    },
+    {
+      "id": "kdocs-cp3b7toqal3j-s2-r53",
+      "platform": "web",
+      "source_channel": "browser_session",
+      "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
+      "source_post_id": "cp3b7ToQAl3J",
+      "published_at_precision": "unknown",
+      "hospital_region": "广西",
+      "hospital_id": "kdocs-amap-b0303054bl",
+      "hospital_name_raw": "广西南宁第五医院",
+      "department": "心理健康科",
+      "doctor_name_raw": "鄢利福",
+      "disorders": [
+        "osdd",
+        "did"
+      ],
+      "stage": "unknown",
+      "experience": null,
+      "evidence_quote": "有反馈书面得到分离转换性障碍诊断",
+      "evidence_context": {
+        "note_title": "副本就诊地图10.25repo添加中",
+        "index_in_capture": "osdd-did · 第53行",
         "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
       },
       "evidence_source": "article",
@@ -4728,7 +4873,7 @@
       "source_post_id": "cp3b7ToQAl3J",
       "published_at_precision": "unknown",
       "hospital_region": "山东",
-      "hospital_id": "kdocs-amap-b02140828v",
+      "hospital_id": "kdocs-amap-b0k0yye61d",
       "hospital_name_raw": "山东省精卫（青岛）",
       "doctor_name_raw": "乔东东",
       "disorders": [
@@ -4768,7 +4913,7 @@
       "source_post_id": "cp3b7ToQAl3J",
       "published_at_precision": "unknown",
       "hospital_region": "山东",
-      "hospital_id": "kdocs-amap-b02140828v",
+      "hospital_id": "kdocs-amap-b0k0yye61d",
       "hospital_name_raw": "山东省精卫（青岛）",
       "doctor_name_raw": "曾波涛",
       "disorders": [
@@ -4801,6 +4946,46 @@
       "status": "published"
     },
     {
+      "id": "kdocs-cp3b7toqal3j-s3-r24",
+      "platform": "web",
+      "source_channel": "browser_session",
+      "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
+      "source_post_id": "cp3b7ToQAl3J",
+      "published_at_precision": "unknown",
+      "hospital_region": "辽宁",
+      "hospital_id": "kdocs-amap-b00180ahox",
+      "hospital_name_raw": "辽宁省中国医科大学附属盛京医院",
+      "doctor_name_raw": "韩继阳",
+      "disorders": [
+        "pd"
+      ],
+      "source_topics": [
+        "人格障碍"
+      ],
+      "stage": "unknown",
+      "experience": null,
+      "evidence_quote": "参与发表《反思功能问卷-54中文版的修订及信效度研究》，研究组为“具有边缘型人格特质”的患者。",
+      "evidence_context": {
+        "note_title": "副本就诊地图10.25repo添加中",
+        "index_in_capture": "人格障碍 · 第24行",
+        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
+      },
+      "evidence_source": "article",
+      "verification": {
+        "level": "unverified"
+      },
+      "extraction": {
+        "tool": "kdocs-sheet-transcription",
+        "captured_at": "2026-11-09"
+      },
+      "flags": {
+        "contains_minor": false,
+        "contains_selfharm_detail": false,
+        "sensitive": false
+      },
+      "status": "published"
+    },
+    {
       "id": "kdocs-cp3b7toqal3j-s3-r25",
       "platform": "web",
       "source_channel": "browser_session",
@@ -4808,6 +4993,7 @@
       "source_post_id": "cp3b7ToQAl3J",
       "published_at_precision": "unknown",
       "hospital_region": "甘肃",
+      "hospital_id": "kdocs-amap-b03aa0mxxt",
       "hospital_name_raw": "甘肃天水市第三人民医院",
       "doctor_name_raw": "任俊赏",
       "disorders": [
@@ -4837,8 +5023,7 @@
         "contains_selfharm_detail": false,
         "sensitive": false
       },
-      "status": "unlinked",
-      "unlinked_reason": "机构未定位：高德候选尚未匹配到机构名称"
+      "status": "published"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s3-r26",
@@ -5281,6 +5466,46 @@
       "status": "published"
     },
     {
+      "id": "kdocs-cp3b7toqal3j-s3-r37",
+      "platform": "web",
+      "source_channel": "browser_session",
+      "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
+      "source_post_id": "cp3b7ToQAl3J",
+      "published_at_precision": "unknown",
+      "hospital_region": "宁夏",
+      "hospital_id": "kdocs-amap-b03b700ee3",
+      "hospital_name_raw": "银川市第一人民医院",
+      "doctor_name_raw": "邱虹",
+      "disorders": [
+        "pd"
+      ],
+      "source_topics": [
+        "人格障碍"
+      ],
+      "stage": "unknown",
+      "experience": null,
+      "evidence_quote": "银川市第一人民医院 · 邱虹",
+      "evidence_context": {
+        "note_title": "副本就诊地图10.25repo添加中",
+        "index_in_capture": "人格障碍 · 第37行",
+        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
+      },
+      "evidence_source": "article",
+      "verification": {
+        "level": "unverified"
+      },
+      "extraction": {
+        "tool": "kdocs-sheet-transcription",
+        "captured_at": "2026-11-09"
+      },
+      "flags": {
+        "contains_minor": false,
+        "contains_selfharm_detail": false,
+        "sensitive": false
+      },
+      "status": "published"
+    },
+    {
       "id": "kdocs-cp3b7toqal3j-s3-r38",
       "platform": "web",
       "source_channel": "browser_session",
@@ -5401,6 +5626,46 @@
       "status": "published"
     },
     {
+      "id": "kdocs-cp3b7toqal3j-s3-r41",
+      "platform": "web",
+      "source_channel": "browser_session",
+      "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
+      "source_post_id": "cp3b7ToQAl3J",
+      "published_at_precision": "unknown",
+      "hospital_region": "新疆",
+      "hospital_id": "kdocs-amap-b03e6002z0",
+      "hospital_name_raw": "喀什地区第一人民医院",
+      "doctor_name_raw": "李健博",
+      "disorders": [
+        "pd"
+      ],
+      "source_topics": [
+        "人格障碍"
+      ],
+      "stage": "unknown",
+      "experience": null,
+      "evidence_quote": "喀什地区第一人民医院 · 李健博",
+      "evidence_context": {
+        "note_title": "副本就诊地图10.25repo添加中",
+        "index_in_capture": "人格障碍 · 第41行",
+        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
+      },
+      "evidence_source": "article",
+      "verification": {
+        "level": "unverified"
+      },
+      "extraction": {
+        "tool": "kdocs-sheet-transcription",
+        "captured_at": "2026-11-09"
+      },
+      "flags": {
+        "contains_minor": false,
+        "contains_selfharm_detail": false,
+        "sensitive": false
+      },
+      "status": "published"
+    },
+    {
       "id": "kdocs-cp3b7toqal3j-s3-r42",
       "platform": "web",
       "source_channel": "browser_session",
@@ -5481,6 +5746,46 @@
       "status": "published"
     },
     {
+      "id": "kdocs-cp3b7toqal3j-s3-r44",
+      "platform": "web",
+      "source_channel": "browser_session",
+      "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
+      "source_post_id": "cp3b7ToQAl3J",
+      "published_at_precision": "unknown",
+      "hospital_region": "新疆",
+      "hospital_id": "kdocs-amap-b03df060qx",
+      "hospital_name_raw": "新疆医科大学第一附属医院",
+      "doctor_name_raw": "伊琪忠",
+      "disorders": [
+        "pd"
+      ],
+      "source_topics": [
+        "人格障碍"
+      ],
+      "stage": "unknown",
+      "experience": null,
+      "evidence_quote": "新疆医科大学第一附属医院 · 伊琪忠",
+      "evidence_context": {
+        "note_title": "副本就诊地图10.25repo添加中",
+        "index_in_capture": "人格障碍 · 第44行",
+        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
+      },
+      "evidence_source": "article",
+      "verification": {
+        "level": "unverified"
+      },
+      "extraction": {
+        "tool": "kdocs-sheet-transcription",
+        "captured_at": "2026-11-09"
+      },
+      "flags": {
+        "contains_minor": false,
+        "contains_selfharm_detail": false,
+        "sensitive": false
+      },
+      "status": "published"
+    },
+    {
       "id": "kdocs-cp3b7toqal3j-s3-r45",
       "platform": "web",
       "source_channel": "browser_session",
@@ -5503,6 +5808,46 @@
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "人格障碍 · 第45行",
+        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
+      },
+      "evidence_source": "article",
+      "verification": {
+        "level": "unverified"
+      },
+      "extraction": {
+        "tool": "kdocs-sheet-transcription",
+        "captured_at": "2026-11-09"
+      },
+      "flags": {
+        "contains_minor": false,
+        "contains_selfharm_detail": false,
+        "sensitive": false
+      },
+      "status": "published"
+    },
+    {
+      "id": "kdocs-cp3b7toqal3j-s3-r46",
+      "platform": "web",
+      "source_channel": "browser_session",
+      "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
+      "source_post_id": "cp3b7ToQAl3J",
+      "published_at_precision": "unknown",
+      "hospital_region": "新疆",
+      "hospital_id": "kdocs-amap-b03df04gda",
+      "hospital_name_raw": "新疆维吾尔自治区人民医院",
+      "doctor_name_raw": "阿地拉·阿吉",
+      "disorders": [
+        "pd"
+      ],
+      "source_topics": [
+        "人格障碍"
+      ],
+      "stage": "unknown",
+      "experience": null,
+      "evidence_quote": "新疆维吾尔自治区人民医院 · 阿地拉·阿吉",
+      "evidence_context": {
+        "note_title": "副本就诊地图10.25repo添加中",
+        "index_in_capture": "人格障碍 · 第46行",
         "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
       },
       "evidence_source": "article",
@@ -5561,6 +5906,46 @@
       "status": "published"
     },
     {
+      "id": "kdocs-cp3b7toqal3j-s3-r48",
+      "platform": "web",
+      "source_channel": "browser_session",
+      "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
+      "source_post_id": "cp3b7ToQAl3J",
+      "published_at_precision": "unknown",
+      "hospital_region": "新疆",
+      "hospital_id": "kdocs-amap-b03df04gda",
+      "hospital_name_raw": "新疆维吾尔自治区人民医院",
+      "doctor_name_raw": "胡曼娜",
+      "disorders": [
+        "pd"
+      ],
+      "source_topics": [
+        "人格障碍"
+      ],
+      "stage": "unknown",
+      "experience": null,
+      "evidence_quote": "新疆维吾尔自治区人民医院 · 胡曼娜",
+      "evidence_context": {
+        "note_title": "副本就诊地图10.25repo添加中",
+        "index_in_capture": "人格障碍 · 第48行",
+        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
+      },
+      "evidence_source": "article",
+      "verification": {
+        "level": "unverified"
+      },
+      "extraction": {
+        "tool": "kdocs-sheet-transcription",
+        "captured_at": "2026-11-09"
+      },
+      "flags": {
+        "contains_minor": false,
+        "contains_selfharm_detail": false,
+        "sensitive": false
+      },
+      "status": "published"
+    },
+    {
       "id": "kdocs-cp3b7toqal3j-s3-r49",
       "platform": "web",
       "source_channel": "browser_session",
@@ -5582,6 +5967,46 @@
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "人格障碍 · 第49行",
+        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
+      },
+      "evidence_source": "article",
+      "verification": {
+        "level": "unverified"
+      },
+      "extraction": {
+        "tool": "kdocs-sheet-transcription",
+        "captured_at": "2026-11-09"
+      },
+      "flags": {
+        "contains_minor": false,
+        "contains_selfharm_detail": false,
+        "sensitive": false
+      },
+      "status": "published"
+    },
+    {
+      "id": "kdocs-cp3b7toqal3j-s3-r50",
+      "platform": "web",
+      "source_channel": "browser_session",
+      "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
+      "source_post_id": "cp3b7ToQAl3J",
+      "published_at_precision": "unknown",
+      "hospital_region": "上海",
+      "hospital_id": "kdocs-amap-b0ffgzngk5",
+      "hospital_name_raw": "上海市精神卫生中心",
+      "doctor_name_raw": "仇剑崟",
+      "disorders": [
+        "pd"
+      ],
+      "source_topics": [
+        "人格障碍"
+      ],
+      "stage": "unknown",
+      "experience": null,
+      "evidence_quote": "研究方向涵盖心理治疗临床疗效与神经精神分析机制、边缘型人格障碍评估治疗路径、女性经前期至围绝经期抑郁障碍干预",
+      "evidence_context": {
+        "note_title": "副本就诊地图10.25repo添加中",
+        "index_in_capture": "人格障碍 · 第50行",
         "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
       },
       "evidence_source": "article",
@@ -7273,6 +7698,7 @@
       "source_post_id": "cp3b7ToQAl3J",
       "published_at_precision": "unknown",
       "hospital_region": "广西",
+      "hospital_id": "kdocs-amap-b0h32r5hhj",
       "hospital_name_raw": "北海冉生精神病医院（私立）",
       "doctor_name_raw": "陈刚伟",
       "disorders": [
@@ -7302,8 +7728,7 @@
         "contains_selfharm_detail": false,
         "sensitive": false
       },
-      "status": "unlinked",
-      "unlinked_reason": "机构未定位：高德候选尚未匹配到机构名称"
+      "status": "published"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s3-r95",
@@ -7492,6 +7917,47 @@
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "人格障碍 · 第100行",
+        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
+      },
+      "evidence_source": "article",
+      "verification": {
+        "level": "unverified"
+      },
+      "extraction": {
+        "tool": "kdocs-sheet-transcription",
+        "captured_at": "2026-11-09"
+      },
+      "flags": {
+        "contains_minor": false,
+        "contains_selfharm_detail": false,
+        "sensitive": false
+      },
+      "status": "published"
+    },
+    {
+      "id": "kdocs-cp3b7toqal3j-s3-r101",
+      "platform": "web",
+      "source_channel": "browser_session",
+      "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
+      "source_post_id": "cp3b7ToQAl3J",
+      "published_at_precision": "unknown",
+      "hospital_region": "贵州",
+      "hospital_id": "kdocs-amap-b0ffg7aa3a",
+      "hospital_name_raw": "贵州医科大学附属医院",
+      "department": "精神科",
+      "doctor_name_raw": "朱祥路",
+      "disorders": [
+        "pd"
+      ],
+      "source_topics": [
+        "人格障碍"
+      ],
+      "stage": "unknown",
+      "experience": null,
+      "evidence_quote": "贵州医科大学附属医院 · 精神科 · 朱祥路",
+      "evidence_context": {
+        "note_title": "副本就诊地图10.25repo添加中",
+        "index_in_capture": "人格障碍 · 第101行",
         "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
       },
       "evidence_source": "article",
@@ -7718,6 +8184,7 @@
       "source_post_id": "cp3b7ToQAl3J",
       "published_at_precision": "unknown",
       "hospital_region": "云南",
+      "hospital_id": "kdocs-amap-b03050261f",
       "hospital_name_raw": "云南 桂林医学院附属医院",
       "doctor_name_raw": "黄永新",
       "disorders": [
@@ -7747,8 +8214,7 @@
         "contains_selfharm_detail": false,
         "sensitive": false
       },
-      "status": "unlinked",
-      "unlinked_reason": "机构未定位：高德候选尚未匹配到机构名称"
+      "status": "published"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s3-r108",
@@ -9513,6 +9979,46 @@
       "status": "published"
     },
     {
+      "id": "kdocs-cp3b7toqal3j-s3-r152",
+      "platform": "web",
+      "source_channel": "browser_session",
+      "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
+      "source_post_id": "cp3b7ToQAl3J",
+      "published_at_precision": "unknown",
+      "hospital_region": "西藏",
+      "hospital_id": "kdocs-amap-b037b00887",
+      "hospital_name_raw": "拉萨市人民医院",
+      "doctor_name_raw": "刘毅",
+      "disorders": [
+        "pd"
+      ],
+      "source_topics": [
+        "人格障碍"
+      ],
+      "stage": "unknown",
+      "experience": null,
+      "evidence_quote": "拉萨市人民医院 · 刘毅",
+      "evidence_context": {
+        "note_title": "副本就诊地图10.25repo添加中",
+        "index_in_capture": "人格障碍 · 第152行",
+        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
+      },
+      "evidence_source": "article",
+      "verification": {
+        "level": "unverified"
+      },
+      "extraction": {
+        "tool": "kdocs-sheet-transcription",
+        "captured_at": "2026-11-09"
+      },
+      "flags": {
+        "contains_minor": false,
+        "contains_selfharm_detail": false,
+        "sensitive": false
+      },
+      "status": "published"
+    },
+    {
       "id": "kdocs-cp3b7toqal3j-s3-r153",
       "platform": "web",
       "source_channel": "browser_session",
@@ -9720,6 +10226,7 @@
       "source_post_id": "cp3b7ToQAl3J",
       "published_at_precision": "unknown",
       "hospital_region": "香港",
+      "hospital_id": "kdocs-amap-b073c04t8h",
       "hospital_name_raw": "圣保禄/养和医院",
       "doctor_name_raw": "张鸿坚",
       "disorders": [
@@ -9749,8 +10256,7 @@
         "contains_selfharm_detail": false,
         "sensitive": false
       },
-      "status": "unlinked",
-      "unlinked_reason": "机构未定位：高德接口拒绝查询（20011）"
+      "status": "published"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s3-r159",
@@ -9840,6 +10346,7 @@
       "source_post_id": "cp3b7ToQAl3J",
       "published_at_precision": "unknown",
       "hospital_region": "香港",
+      "hospital_id": "kdocs-amap-b073c04brq",
       "hospital_name_raw": "明德医院",
       "doctor_name_raw": "陈佳鼐",
       "disorders": [
@@ -9869,8 +10376,7 @@
         "contains_selfharm_detail": false,
         "sensitive": false
       },
-      "status": "unlinked",
-      "unlinked_reason": "机构未定位：高德接口拒绝查询（20011）"
+      "status": "published"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s3-r162",
@@ -10070,7 +10576,7 @@
         "sensitive": false
       },
       "status": "unlinked",
-      "unlinked_reason": "机构未定位：高德接口拒绝查询（20011）"
+      "unlinked_reason": "机构未定位：高德候选尚未匹配到机构名称"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s3-r167",

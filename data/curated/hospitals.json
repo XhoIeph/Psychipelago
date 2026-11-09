@@ -120,6 +120,64 @@
       "last_verified_at": "2026-11-09"
     },
     {
+      "id": "kdocs-amap-b0ffhyofx6",
+      "name": "河南医药大学第二附属医院",
+      "aliases": [
+        "河南省精神卫生中心/新乡医学院第二附属医院"
+      ],
+      "adcode": "410000",
+      "province": "河南省",
+      "city": "新乡市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "前进路207号",
+      "coordinates": {
+        "lat": 35.327848,
+        "lng": 113.891262
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
+    },
+    {
+      "id": "kdocs-amap-b0ffg369xg",
+      "name": "华北理工大学附属医院",
+      "aliases": [
+        "河北唐山华北理工大学附属医院"
+      ],
+      "adcode": "130000",
+      "province": "河北省",
+      "city": "唐山市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "建设南路73号",
+      "coordinates": {
+        "lat": 39.639148,
+        "lng": 118.172999
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
+    },
+    {
       "id": "kdocs-amap-b03950291n",
       "name": "宝鸡市康复医院",
       "aliases": [
@@ -153,8 +211,7 @@
       "name": "青岛市精神卫生中心",
       "aliases": [
         "青岛精神卫生中心（市北院区）",
-        "青岛市精神卫生中心（第七人民医院）",
-        "山东省精卫（青岛）"
+        "青岛市精神卫生中心（第七人民医院）"
       ],
       "adcode": "370000",
       "province": "山东省",
@@ -1787,6 +1844,64 @@
       "last_verified_at": "2026-11-09"
     },
     {
+      "id": "kdocs-amap-b0k0yye61d",
+      "name": "青岛市精神卫生中心高新院区",
+      "aliases": [
+        "山东省精卫（青岛）"
+      ],
+      "adcode": "370000",
+      "province": "山东省",
+      "city": "青岛市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "河套街道振和路10号",
+      "coordinates": {
+        "lat": 36.22769,
+        "lng": 120.196565
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
+    },
+    {
+      "id": "kdocs-amap-b03aa0mxxt",
+      "name": "天水市第三人民医院(精表路)",
+      "aliases": [
+        "甘肃天水市第三人民医院"
+      ],
+      "adcode": "620000",
+      "province": "甘肃省",
+      "city": "天水市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "精表路17号",
+      "coordinates": {
+        "lat": 34.576482,
+        "lng": 105.688973
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
+    },
+    {
       "id": "kdocs-amap-b01d701pti",
       "name": "内蒙古自治区人民医院",
       "aliases": [
@@ -2338,6 +2453,35 @@
       "last_verified_at": "2026-11-09"
     },
     {
+      "id": "kdocs-amap-b0h32r5hhj",
+      "name": "北海冉升医院",
+      "aliases": [
+        "北海冉生精神病医院（私立）"
+      ],
+      "adcode": "450000",
+      "province": "广西壮族自治区",
+      "city": "北海市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "高德路与一街交叉口东北200米",
+      "coordinates": {
+        "lat": 21.505985,
+        "lng": 109.156389
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
+    },
+    {
       "id": "kdocs-amap-b0ffiufvdh",
       "name": "北海市人民医院银滩院区",
       "aliases": [
@@ -2535,6 +2679,35 @@
       "coordinates": {
         "lat": 25.108748,
         "lng": 99.147998
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
+    },
+    {
+      "id": "kdocs-amap-b03050261f",
+      "name": "桂林医科大学第一附属医院(乐群院区)",
+      "aliases": [
+        "云南 桂林医学院附属医院"
+      ],
+      "adcode": "450000",
+      "province": "广西壮族自治区",
+      "city": "桂林市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "乐群路15号",
+      "coordinates": {
+        "lat": 25.284317,
+        "lng": 110.287401
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
@@ -3121,6 +3294,35 @@
       "last_verified_at": "2026-11-09"
     },
     {
+      "id": "kdocs-amap-b073c04t8h",
+      "name": "圣保禄医院",
+      "aliases": [
+        "圣保禄/养和医院"
+      ],
+      "adcode": "810000",
+      "province": "香港特别行政区",
+      "city": "香港特别行政区",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "东院道2号",
+      "coordinates": {
+        "lat": 22.278317,
+        "lng": 114.188415
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
+    },
+    {
       "id": "kdocs-amap-b073c03epg",
       "name": "威尔斯亲王医院",
       "aliases": [
@@ -3144,6 +3346,35 @@
       "coordinates": {
         "lat": 22.379403,
         "lng": 114.202092
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-09"
+    },
+    {
+      "id": "kdocs-amap-b073c04brq",
+      "name": "明德国际医院",
+      "aliases": [
+        "明德医院"
+      ],
+      "adcode": "810000",
+      "province": "香港特别行政区",
+      "city": "香港特别行政区",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "香港山顶加列山道41号",
+      "coordinates": {
+        "lat": 22.258876,
+        "lng": 114.14923
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
