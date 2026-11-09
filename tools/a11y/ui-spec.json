@@ -1154,10 +1154,10 @@
     {
       "id": "type.lead-doctor",
       "type": "computed",
-      "desc": "§1.1：线索卡医生名 16px / 650（2026-11-03 放大）",
-      "selector": ".tc-report .tc-lead-doctor",
+      "desc": "§1.1：线索卡医生名桌面 17px / 650（卡身三行改版 2026-11-10）",
+      "selector": ".tc-doctor-card .tc-lead-doctor",
       "props": {
-        "fontSize": "16px",
+        "fontSize": "17px",
         "fontWeight": "650"
       },
       "precondition": [
@@ -1211,8 +1211,15 @@
           "selector": ".tc-hospital-row"
         },
         {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "textContains": "潘伟刚",
+          "afterMs": 1200
+        },
+        {
           "action": "wait",
-          "selector": ".tc-lead-doctor"
+          "selector": ".tc-doctor-detail .tc-report",
+          "afterMs": 600
         }
       ],
       "at": 1440
@@ -1242,8 +1249,15 @@
           "selector": ".tc-hospital-row"
         },
         {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "textContains": "潘伟刚",
+          "afterMs": 1200
+        },
+        {
           "action": "wait",
-          "selector": ".tc-lead-doctor"
+          "selector": ".tc-doctor-detail .tc-report",
+          "afterMs": 600
         }
       ],
       "at": 1440
@@ -3280,7 +3294,7 @@
         },
         {
           "action": "wait",
-          "selector": ".tc-report"
+          "selector": ".tc-doctor-card"
         }
       ],
       "at": 1440
@@ -3348,7 +3362,7 @@
         },
         {
           "action": "wait",
-          "selector": ".tc-report"
+          "selector": ".tc-doctor-card"
         }
       ],
       "at": 1440
@@ -3461,9 +3475,9 @@
     {
       "id": "v3.chip-union",
       "type": "hasText",
-      "desc": "V3-06 多选取并集：cptsd + 人格障碍 → 111 家医院 · 223 条线索（2026-11-09 数据 22:53:19 / 构建 22:58:23 界面实测，只算挂上机构的）",
+      "desc": "V3-06 多选取并集：cptsd + 人格障碍 → 111 家医院 · 267 条线索（2026-11-09 数据 22:53:19 / 构建 22:58:23 界面实测，只算挂上机构的）",
       "selector": ".tc-level-head--country .tc-level-meta",
-      "text": "111 家医院 · 223 条线索",
+      "text": "111 家医院 · 267 条线索",
       "precondition": [
         {
           "action": "reload",
@@ -3522,7 +3536,7 @@
       "id": "v3.report-card",
       "type": "computed",
       "desc": "V3-07 线索卡白底、#E1EBE7 描边、14px 圆角",
-      "selector": ".tc-report",
+      "selector": ".tc-doctor-card",
       "props": {
         "backgroundColor": "rgb(255, 255, 255)",
         "borderTopColor": "rgb(225, 235, 231)",
@@ -3545,7 +3559,7 @@
         },
         {
           "action": "wait",
-          "selector": ".tc-report"
+          "selector": ".tc-doctor-card"
         }
       ],
       "at": 1440
@@ -3579,7 +3593,7 @@
         },
         {
           "action": "wait",
-          "selector": ".tc-report"
+          "selector": ".tc-doctor-card"
         }
       ],
       "at": 1440
@@ -3613,96 +3627,7 @@
         },
         {
           "action": "wait",
-          "selector": ".tc-report"
-        }
-      ],
-      "at": 1440
-    },
-    {
-      "id": "v3.quote-type",
-      "type": "computed",
-      "desc": "V3-07 原文 15px / 1.75",
-      "selector": ".tc-quote",
-      "props": {
-        "fontSize": "15px",
-        "lineHeight": "26.25px"
-      },
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "北京"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row",
-          "textContains": "回龙观"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-report"
-        }
-      ],
-      "at": 1440
-    },
-    {
-      "id": "v3.source-type",
-      "type": "computed",
-      "desc": "V3-07 来源 13px 深绿，带文档图标",
-      "selector": ".tc-evidence-source",
-      "props": {
-        "fontSize": "13px",
-        "color": "rgb(9, 104, 97)"
-      },
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "北京"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row",
-          "textContains": "回龙观"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-report"
-        }
-      ],
-      "at": 1440
-    },
-    {
-      "id": "v3.source-icon",
-      "type": "mustExist",
-      "desc": "V3-07 来源前的 FileText 图标",
-      "selector": ".tc-evidence-source > svg",
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "北京"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row",
-          "textContains": "回龙观"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-report"
+          "selector": ".tc-doctor-card"
         }
       ],
       "at": 1440
@@ -4110,7 +4035,7 @@
         },
         {
           "action": "wait",
-          "selector": ".tc-report"
+          "selector": ".tc-doctor-card"
         }
       ],
       "at": 1440
@@ -4434,7 +4359,7 @@
         },
         {
           "action": "wait",
-          "selector": ".sheet .tc-report"
+          "selector": ".sheet .tc-doctor-card"
         }
       ],
       "at": 390
@@ -4467,7 +4392,7 @@
         },
         {
           "action": "wait",
-          "selector": ".sheet .tc-report"
+          "selector": ".sheet .tc-doctor-card"
         }
       ],
       "at": 390
@@ -4505,7 +4430,7 @@
         },
         {
           "action": "wait",
-          "selector": ".sheet .tc-report"
+          "selector": ".sheet .tc-doctor-card"
         }
       ],
       "at": 390
@@ -4540,7 +4465,7 @@
         },
         {
           "action": "wait",
-          "selector": ".sheet .tc-report"
+          "selector": ".sheet .tc-doctor-card"
         },
         {
           "action": "focus",
@@ -4862,7 +4787,7 @@
         },
         {
           "action": "wait",
-          "selector": ".sheet .tc-report"
+          "selector": ".sheet .tc-doctor-card"
         }
       ],
       "at": 320
@@ -4897,7 +4822,7 @@
         },
         {
           "action": "wait",
-          "selector": ".sheet .tc-report"
+          "selector": ".sheet .tc-doctor-card"
         }
       ],
       "at": 320
@@ -5616,7 +5541,7 @@
         },
         {
           "action": "wait",
-          "selector": ".sheet .tc-report"
+          "selector": ".sheet .tc-doctor-card"
         },
         {
           "action": "assertrect",
@@ -5699,9 +5624,9 @@
       "missMin": 100,
       "headerIncludes": [
         "35 家医院",
-        "55 条线索"
+        "90 条线索"
       ],
-      "desc": "V3-12 桌面勾「cptsd」后地图命中省画成 #087f7b/.26、未命中省压到 ≤.05，头部同步 35 家医院 · 55 条线索（2026-11-09 构建 21:37:26 实测）"
+      "desc": "V3-12 桌面勾「cptsd」后地图命中省画成 #087f7b/.26、未命中省压到 ≤.05，头部同步 35 家医院 · 90 条线索（2026-11-10 构建 21:37:26 实测）"
     },
     {
       "id": "v3.d-filter-clear-restores-density-1440",
@@ -6228,11 +6153,12 @@
         },
         {
           "action": "wait",
-          "selector": ".tc-report"
+          "selector": ".tc-doctor-card"
         },
         {
           "action": "click",
           "selector": ".tc-doctor-link",
+          "textContains": "潘伟刚",
           "settle": 1400
         },
         {
@@ -6615,7 +6541,7 @@
         },
         {
           "action": "wait",
-          "selector": ".tc-report"
+          "selector": ".tc-doctor-card"
         }
       ],
       "at": 1440
@@ -6651,7 +6577,7 @@
         },
         {
           "action": "wait",
-          "selector": ".sheet .tc-report"
+          "selector": ".sheet .tc-doctor-card"
         }
       ],
       "at": 390
@@ -6677,40 +6603,6 @@
           "afterMs": 1500
         }
       ]
-    },
-    {
-      "id": "v3.quote-clamp-two-lines-1440",
-      "type": "rect",
-      "desc": "线索原文默认封顶 2 行（2 × 26.25px = 52.5px）——3 行时代一条线索占掉小半屏；展开由「展开原文」按钮接管，本版不是 details",
-      "selector": ".tc-detail-section > .tc-report:nth-of-type(1) .tc-quote",
-      "min": {
-        "h": 45
-      },
-      "max": {
-        "h": 58
-      },
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "北京"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row",
-          "textContains": "回龙观",
-          "settle": 1200
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-report"
-        }
-      ],
-      "at": 1440
     },
     {
       "id": "v3.doctor-meta-rows-1440",
@@ -6959,6 +6851,603 @@
           "selector": ".tc-doctor-link",
           "textContains": "马弘",
           "afterMs": 1200
+        }
+      ]
+    },
+    {
+      "id": "v3.doctor-card-count-1440",
+      "type": "count",
+      "at": 1440,
+      "selector": ".tc-doctor-card",
+      "expect": 15,
+      "desc": "回龙观按医生合并成 15 张卡（12 位有名医生 + 3 条无名发言各自成卡）；一段发言一个 .tc-report，条数口径仍是 24",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-card",
+          "afterMs": 500
+        }
+      ]
+    },
+    {
+      "id": "v3.doctor-card-tag-count-1440",
+      "type": "count",
+      "at": 1440,
+      "selector": ".tc-doctor-card .tc-lead-tag",
+      "expect": 15,
+      "desc": "15 张卡各一个组头标签（3 张只标签、12 张名字+标签）；与两条反向守卫合看，剩余误差只可能是「一张多、一张少」，逐卡保证下一轮补",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-card",
+          "afterMs": 500
+        }
+      ]
+    },
+    {
+      "id": "v3.m-doctor-card-count-390",
+      "type": "count",
+      "at": 390,
+      "selector": ".tc-doctor-card",
+      "expect": 15,
+      "desc": "手机医院详情同样 15 张卡（与桌面同一份 DOM，数字同口径）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 700
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".sheet .tc-doctor-card",
+          "afterMs": 500
+        }
+      ]
+    },
+    {
+      "id": "v3.m-doctor-card-tag-count-390",
+      "type": "count",
+      "at": 390,
+      "selector": ".tc-doctor-card .tc-lead-tag",
+      "expect": 15,
+      "desc": "手机 15 张卡共 15 个组头标签（3 张只标签）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 700
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".sheet .tc-doctor-card",
+          "afterMs": 500
+        }
+      ]
+    },
+    {
+      "id": "v3.doctor-card-dept-count-1440",
+      "type": "count",
+      "at": 1440,
+      "selector": ".tc-doctor-card .tc-doctor-card-dept",
+      "expect": 15,
+      "desc": "15 张卡各一行诊室（department）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-card",
+          "afterMs": 600
+        }
+      ]
+    },
+    {
+      "id": "v3.doctor-card-note-count-1440",
+      "type": "count",
+      "at": 1440,
+      "selector": ".tc-doctor-card .tc-doctor-card-note",
+      "expect": 15,
+      "desc": "15 张卡各一行备注（note）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-card",
+          "afterMs": 600
+        }
+      ]
+    },
+    {
+      "id": "v3.doctor-card-dept-single-line-1440",
+      "type": "rect",
+      "at": 1440,
+      "selector": ".tc-doctor-card .tc-doctor-card-dept",
+      "max": {
+        "h": 26
+      },
+      "desc": "诊室行不换行：高度 ≤ 单行行高 ×1.2（当前 26px）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-card",
+          "afterMs": 600
+        }
+      ]
+    },
+    {
+      "id": "v3.doctor-card-note-single-line-1440",
+      "type": "rect",
+      "at": 1440,
+      "selector": ".tc-doctor-card .tc-doctor-card-note",
+      "max": {
+        "h": 26
+      },
+      "desc": "备注行不换行：高度 ≤ 单行行高 ×1.2（当前 26px）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-card",
+          "afterMs": 600
+        }
+      ]
+    },
+    {
+      "id": "v3.doctor-card-no-body-1440",
+      "type": "mustNotExist",
+      "at": 1440,
+      "selector": ".tc-doctor-card :is(.tc-report, .tc-quote, .tc-evidence-source, .tc-quote-toggle)",
+      "desc": "卡内不再有原文/来源/展开控件：四类节点在卡内计数为 0（反向守卫）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-card",
+          "afterMs": 600
+        }
+      ]
+    },
+    {
+      "id": "v3.m-doctor-card-dept-count-390",
+      "type": "count",
+      "at": 390,
+      "selector": ".tc-doctor-card .tc-doctor-card-dept",
+      "expect": 15,
+      "desc": "手机 15 张卡各一行诊室",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 700
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".sheet .tc-doctor-card",
+          "afterMs": 600
+        }
+      ]
+    },
+    {
+      "id": "v3.m-doctor-card-note-count-390",
+      "type": "count",
+      "at": 390,
+      "selector": ".tc-doctor-card .tc-doctor-card-note",
+      "expect": 15,
+      "desc": "手机 15 张卡各一行备注",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 700
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".sheet .tc-doctor-card",
+          "afterMs": 600
+        }
+      ]
+    },
+    {
+      "id": "v3.m-doctor-card-dept-single-line-390",
+      "type": "rect",
+      "at": 390,
+      "selector": ".tc-doctor-card .tc-doctor-card-dept",
+      "max": {
+        "h": 26
+      },
+      "desc": "手机诊室行不换行（高 ≤ 26px）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 700
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".sheet .tc-doctor-card",
+          "afterMs": 600
+        }
+      ]
+    },
+    {
+      "id": "v3.m-doctor-card-note-single-line-390",
+      "type": "rect",
+      "at": 390,
+      "selector": ".tc-doctor-card .tc-doctor-card-note",
+      "max": {
+        "h": 26
+      },
+      "desc": "手机备注行不换行（高 ≤ 26px）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 700
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".sheet .tc-doctor-card",
+          "afterMs": 600
+        }
+      ]
+    },
+    {
+      "id": "v3.m-doctor-card-no-body-390",
+      "type": "mustNotExist",
+      "at": 390,
+      "selector": ".tc-doctor-card :is(.tc-report, .tc-quote, .tc-evidence-source, .tc-quote-toggle)",
+      "desc": "手机卡内同样没有原文/来源/展开控件",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 700
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-hospital-row",
+          "textContains": "回龙观",
+          "afterMs": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".sheet .tc-doctor-card",
+          "afterMs": 600
+        }
+      ]
+    },
+    {
+      "id": "v3.doctor-quote-clamp-1440",
+      "type": "computed",
+      "at": 1440,
+      "selector": ".tc-doctor-detail > .tc-detail-section:last-child .tc-quote.is-clamped",
+      "props": {
+        "webkitLineClamp": "2"
+      },
+      "desc": "医生页折叠态引文 -webkit-line-clamp: 2",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "textContains": "潘伟刚",
+          "afterMs": 1200
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-report"
+        }
+      ]
+    },
+    {
+      "id": "v3.doctor-quote-clamp-height-1440",
+      "type": "rect",
+      "at": 1440,
+      "selector": ".tc-doctor-detail > .tc-detail-section:last-child .tc-quote.is-clamped",
+      "min": {
+        "h": 50.5
+      },
+      "max": {
+        "h": 54.5
+      },
+      "desc": "医生页折叠态引文高 52.5±2（2 行 × 26.25）",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "textContains": "潘伟刚",
+          "afterMs": 1200
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-report"
+        }
+      ]
+    },
+    {
+      "id": "v3.doctor-quote-clamp-has-toggle-1440",
+      "type": "mustExist",
+      "at": 1440,
+      "selector": ".tc-doctor-detail > .tc-detail-section:last-child .tc-evidence:has(.tc-quote.is-clamped) .tc-quote-toggle",
+      "desc": "只有存在 tc-quote-toggle 时才封顶（折叠态与展开控件同 .tc-evidence）",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "回龙观"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "textContains": "潘伟刚",
+          "afterMs": 1200
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail .tc-report"
         }
       ]
     }
@@ -7447,6 +7936,21 @@
       "retiredIn": "v3-2026-11-07"
     },
     {
+      "id": "v3.quote-type",
+      "why": "2026-11-10 卡身三行改版：医院页不再有原文行，判据随需求消失",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.source-type",
+      "why": "2026-11-10 卡身三行改版：医院页不再有来源行，判据随需求消失",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.source-icon",
+      "why": "2026-11-10 卡身三行改版：医院页不再有来源图标，判据随需求消失",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
       "id": "v3.doctor-rating",
       "why": "评价改为独立节，空值文案由 v3.doctor-eval-empty-copy-1440 承接",
       "retiredIn": "v3-2026-11-07"
@@ -7454,6 +7958,11 @@
     {
       "id": "v3.doctor-leads-section-last",
       "why": "评价节排在「医生线索」之后，「末节是线索」已不成立，改由 v3.doctor-eval-section-last-1440 判",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.quote-clamp-two-lines-1440",
+      "why": "2026-11-10 卡身三行改版：医院页不再有原文与来源行，折叠判据挪到医生页（v3.doctor-quote-clamp-*）",
       "retiredIn": "v3-2026-11-07"
     },
     {
