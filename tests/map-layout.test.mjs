@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { CHINA_BOUNDS, chinaCameraBounds, constrainChinaCenter, sidebarCameraFrame } from '../lib/map-sidebar.ts'
+import { CHINA_BOUNDS, constrainChinaCenter, sidebarCameraFrame } from '../lib/map-sidebar.ts'
 import { MAP_MAX_ZOOM, MapPoint, project as projectCamera, unproject } from '../lib/map-camera.ts'
 import { attachMapPointer } from '../lib/map-pointer.ts'
 import { groupMapNodes, mapNodeLayout, NODE_SPACING } from '../lib/map-nodes.ts'
@@ -50,22 +50,24 @@ test('展开收回均落整数级，并保留最大缩放限制', () => {
   assert.equal(sidebarCameraFrame(camera, anchor, 1280, 380, 0, 4, 4).zoom, 4)
 })
 
-test('中国边界按剩余视区计算，全国下限居中、放大后不能移出省域范围', () => {
-  for (const inset of [0, 180, 380]) {
-    for (const zoom of [4, 10, MAP_MAX_ZOOM]) {
-      const scale = 2 ** zoom
-      const map = {
-        getZoom: () => zoom,
-        getSize: () => ({ x: 1280, y: 720 }),
-        project: ([lat, lng]) => ({ x: lng * scale, y: -lat * scale }),
-        unproject: ([x, y]) => ({ lat: -y / scale, lng: x / scale }),
-      }
-      const [nw, se] = chinaCameraBounds(map, inset)
-      const minCenter = nw.lng + (1280 + inset) / 2 / scale
-      const maxCenter = se.lng - (1280 - inset) / 2 / scale
-      assert.ok(minCenter >= CHINA_BOUNDS[0][1])
-      assert.ok(maxCenter <= CHINA_BOUNDS[1][1])
-      assert.ok(minCenter <= maxCenter)
+test('中国边界按「至少留 48px 在屏内」计算，中心区间有序且不会被压成一条线', () => {
+  for (const zoom of [4, 6, 10, MAP_MAX_ZOOM]) {
+    const scale = 2 ** zoom
+    const map = {
+      getZoom: () => zoom,
+      getSize: () => ({ x: 1280, y: 720 }),
+      project: (point) => (Array.isArray(point) ? { x: point[1] * scale, y: -point[0] * scale } : { x: point.lng * scale, y: -point.lat * scale }),
+      unproject: ([x, y]) => ({ lat: -y / scale, lng: x / scale }),
+    }
+    const minCenter = constrainChinaCenter(map, { lat: 35, lng: -180 }, 48)
+    const maxCenter = constrainChinaCenter(map, { lat: 35, lng: 180 }, 48)
+    assert.ok(minCenter.lng <= maxCenter.lng)
+
+    const west = CHINA_BOUNDS[0][1] * scale, east = CHINA_BOUNDS[1][1] * scale
+    for (const center of [minCenter, maxCenter]) {
+      const mid = center.lng * scale
+      const visible = Math.min(east, mid + 640) - Math.max(west, mid - 640)
+      assert.ok(visible >= 47.9, `zoom ${zoom} 时中国应至少留 48px 在屏内，实测 ${visible}`)
     }
   }
 })
@@ -185,7 +187,7 @@ function pointerFixture() {
     containerPointToLatLng(point){return unproject(projectCamera(this.center,this.zoom).add(point.subtract(this.getSize().divideBy(2))),this.zoom)},
     mouseEventToContainerPoint:event=>new MapPoint(event.clientX,event.clientY),
     beginMove(){starts++}, endMove(){ends++},
-    move(center,zoom){this.zoom=zoom;this.center=constrainChinaCenter(this,center,0);paints.push({...this.center,zoom})},
+    move(center,zoom){this.zoom=zoom;this.center=constrainChinaCenter(this,center,48);paints.push({...this.center,zoom})},
   }
   const controller=attachMapPointer(map)
   return {map,listeners,captures,frames,paints,controller,get starts(){return starts},get ends(){return ends},
@@ -205,7 +207,14 @@ test('拖动在每次绘制前限位，松手不回跳，碰边后反向立即�
   const before={...f.map.center}
   f.event('pointerup')
   assert.deepEqual(f.map.center,before)
-  assert.ok(f.paints.every(point=>point.lng>=73&&point.lng<=135.5&&point.lat>=17.5&&point.lat<=53.8))
+  assert.ok(f.paints.every(point=>{
+    const nw=projectCamera([CHINA_BOUNDS[1][0],CHINA_BOUNDS[0][1]],point.zoom)
+    const se=projectCamera([CHINA_BOUNDS[0][0],CHINA_BOUNDS[1][1]],point.zoom)
+    const mid=projectCamera([point.lat,point.lng],point.zoom)
+    const width=Math.min(1000,se.x-(mid.x-500))-Math.max(0,nw.x-(mid.x-500))
+    const height=Math.min(600,se.y-(mid.y-300))-Math.max(0,nw.y-(mid.y-300))
+    return width>=47.9&&height>=47.9
+  }),'每次绘制前都要保证中国至少留 48px 在屏内')
   assert.equal(f.starts,1);assert.equal(f.ends,1)
   f.controller.dispose()
 })

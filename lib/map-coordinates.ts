@@ -16,7 +16,8 @@ export function mapHospitalInputs(hospitals: Hospital[], reports: Report[], loca
     if (!coordinate) throw new Error(`缺少机构的原始高德坐标：${hospital.id}`)
     return {
       id: hospital.id, name: hospital.name, adcode: hospital.adcode,
-      province: hospital.province, city: hospital.city, category: hospital.category, level: hospital.level,
+      province: hospital.province, city: hospital.city, address: hospital.address,
+      category: hospital.category, level: hospital.level,
       lng: coordinate[0], lat: coordinate[1], coordinateSource: hospital.coordinates_source,
       leads: reports.filter(report => report.hospital_id === hospital.id).length,
     }

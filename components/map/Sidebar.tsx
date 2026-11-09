@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, type ReactNode, type Ref } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { Brand } from '@/components/Brand'
@@ -30,6 +30,13 @@ export function Sidebar({
   activeTab,
   onTabChange,
   modal = false,
+  width,
+  minWidth = 280,
+  maxWidth = 520,
+  onResize,
+  onResizeCommit,
+  onResizeReset,
+  themeToggle,
 }: {
   id?: string
   open: boolean
@@ -46,6 +53,18 @@ export function Sidebar({
   onTabChange?: (tab: SidebarTabId) => void
   /** 手机抽屉打开时它是模态对话框；桌面停靠态只是普通区域。 */
   modal?: boolean
+  /** 停靠宽度；不传或不传 onResize 时不渲染把手。 */
+  width?: number
+  minWidth?: number
+  maxWidth?: number
+  /** 拖动与键盘调宽途中，逐次把宽度交回去。 */
+  onResize?: (width: number) => void
+  /** 松手或键盘调整结束：这里才该写存储、让地图重新取景。 */
+  onResizeCommit?: (width: number) => void
+  /** 双击或回车回到默认宽度。 */
+  onResizeReset?: () => void
+  /** 桌面端主题开关：放在品牌行右端，不覆盖地图。 */
+  themeToggle?: ReactNode
 }) {
   const [internalTab, setInternalTab] = useState<SidebarTabId>('hospitals')
   const tab = activeTab ?? internalTab
@@ -80,6 +99,48 @@ export function Sidebar({
     tabRefs.current[next.id]?.focus()
   }
 
+  // 拉伸把手：拖动 1:1 跟手，键盘按 16px 一档；宽度本身由 MapApp 存。
+  const dragRef = useRef<{ startX: number; startWidth: number } | null>(null)
+  const widthRef = useRef(width ?? 380)
+  widthRef.current = width ?? 380
+  const clampWidth = (value: number) => Math.max(minWidth, Math.min(maxWidth, Math.round(value)))
+
+  useEffect(() => () => { document.body.classList.remove('tc-sidebar-resizing') }, [])
+
+  const commitWidth = (next: number) => {
+    onResize?.(next)
+    onResizeCommit?.(next)
+  }
+
+  const beginResize = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0) return
+    event.preventDefault()
+    event.currentTarget.setPointerCapture(event.pointerId)
+    dragRef.current = { startX: event.clientX, startWidth: widthRef.current }
+    document.body.classList.add('tc-sidebar-resizing')
+  }
+
+  const moveResize = (event: PointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current
+    if (!drag) return
+    onResize?.(clampWidth(drag.startWidth + event.clientX - drag.startX))
+  }
+
+  const endResize = () => {
+    if (!dragRef.current) return
+    dragRef.current = null
+    document.body.classList.remove('tc-sidebar-resizing')
+    onResizeCommit?.(widthRef.current)
+  }
+
+  const onResizeKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'ArrowLeft') { event.preventDefault(); commitWidth(clampWidth(widthRef.current - 16)) }
+    else if (event.key === 'ArrowRight') { event.preventDefault(); commitWidth(clampWidth(widthRef.current + 16)) }
+    else if (event.key === 'Home') { event.preventDefault(); commitWidth(clampWidth(minWidth)) }
+    else if (event.key === 'End') { event.preventDefault(); commitWidth(clampWidth(maxWidth)) }
+    else if (event.key === 'Enter') { event.preventDefault(); onResizeReset?.() }
+  }
+
   return (
     <aside
       id={id}
@@ -90,51 +151,77 @@ export function Sidebar({
       aria-label="地图侧边栏"
       inert={!open}
     >
+      {/* 把手放在最前面：它绝对定位、视觉位置不变，但 Tab 顺序变成「顶栏 → 把手 → 页签 → 列表」，
+          否则键盘用户要按三十多次才够得到。 */}
+      {onResize && (
+        <div
+          className="tc-sidebar-resize"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="调整侧栏宽度"
+          aria-controls={id}
+          aria-valuenow={Math.round(width ?? 380)}
+          aria-valuemin={minWidth}
+          aria-valuemax={maxWidth}
+          tabIndex={0}
+          onPointerDown={beginResize}
+          onPointerMove={moveResize}
+          onPointerUp={endResize}
+          onPointerCancel={endResize}
+          onDoubleClick={() => onResizeReset?.()}
+          onKeyDown={onResizeKeyDown}
+        >
+          <span aria-hidden="true" />
+        </div>
+      )}
+
       <div className="tc-sidebar-head">
         <div className="tc-row tc-row--between">
           <Brand height={44} className="tc-brand--map" />
-          {onClose && (
-            <button type="button" className="tc-sidebar-close" onClick={onClose} aria-label="收起侧边栏">
-              <X size={20} aria-hidden="true" />
-            </button>
-          )}
+          <div className="tc-sidebar-head-actions">
+            {themeToggle}
+            {onClose && (
+              <button type="button" className="tc-sidebar-close" onClick={onClose} aria-label="收起侧边栏">
+                <X size={20} aria-hidden="true" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {detail ? (
-        <div className="tc-sidebar-body"><PanelMotion motionKey={detailKey ?? 'detail'} slideIndex={detailDepth ?? 1}>{detail}</PanelMotion></div>
-      ) : (
-        <>
-          <nav ref={navRef} className="tc-sidebar-tabs" role="tablist" aria-label="侧边栏功能">
-            <span ref={indicatorRef} className="tc-sidebar-tab-indicator" aria-hidden="true" />
-            {TABS.map((item) => (
-              <button
-                key={item.id}
-                ref={(node) => { tabRefs.current[item.id] = node }}
-                type="button"
-                role="tab"
-                id={`tc-sidebar-tab-${item.id}`}
-                aria-selected={tab === item.id}
-                aria-controls="tc-sidebar-panel"
-                tabIndex={tab === item.id ? 0 : -1}
-                className={`tc-sidebar-tab${tab === item.id ? ' tc-sidebar-tab--active' : ''}`}
-                onClick={() => setTab(item.id)}
-                onKeyDown={(event) => {
-                  if (event.key === 'ArrowRight') { event.preventDefault(); moveTab(1) }
-                  else if (event.key === 'ArrowLeft') { event.preventDefault(); moveTab(-1) }
-                  else if (event.key === 'Home') { event.preventDefault(); setTab(TABS[0].id); tabRefs.current[TABS[0].id]?.focus() }
-                  else if (event.key === 'End') { event.preventDefault(); setTab(TABS[TABS.length - 1].id); tabRefs.current[TABS[TABS.length - 1].id]?.focus() }
-                }}
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
-          <div className="tc-sidebar-body" role="tabpanel" id="tc-sidebar-panel" aria-labelledby={`tc-sidebar-tab-${tab}`}>
-            <PanelMotion motionKey={tab} slideIndex={slideIndex}>{tabs[tab]}</PanelMotion>
-          </div>
-        </>
-      )}
+      <nav ref={navRef} className="tc-sidebar-tabs" role="tablist" aria-label="侧边栏功能">
+        <span ref={indicatorRef} className="tc-sidebar-tab-indicator" aria-hidden="true" />
+        {TABS.map((item) => (
+          <button
+            key={item.id}
+            ref={(node) => { tabRefs.current[item.id] = node }}
+            type="button"
+            role="tab"
+            id={`tc-sidebar-tab-${item.id}`}
+            aria-selected={tab === item.id}
+            aria-controls="tc-sidebar-panel"
+            tabIndex={tab === item.id ? 0 : -1}
+            className={`tc-sidebar-tab${tab === item.id ? ' tc-sidebar-tab--active' : ''}`}
+            onClick={() => setTab(item.id)}
+            onKeyDown={(event) => {
+              if (event.key === 'ArrowRight') { event.preventDefault(); moveTab(1) }
+              else if (event.key === 'ArrowLeft') { event.preventDefault(); moveTab(-1) }
+              else if (event.key === 'Home') { event.preventDefault(); setTab(TABS[0].id); tabRefs.current[TABS[0].id]?.focus() }
+              else if (event.key === 'End') { event.preventDefault(); setTab(TABS[TABS.length - 1].id); tabRefs.current[TABS[TABS.length - 1].id]?.focus() }
+            }}
+          >
+            {item.label}
+          </button>
+        ))}
+      </nav>
+      <div className="tc-sidebar-body" role="tabpanel" id="tc-sidebar-panel" aria-labelledby={`tc-sidebar-tab-${tab}`}>
+        {/* 详情属于「医院」页签：切到投稿时让位给该页签内容，切回来还是原样。 */}
+        {detail && tab === 'hospitals' ? (
+          <PanelMotion motionKey={detailKey ?? 'detail'} slideIndex={detailDepth ?? 1}>{detail}</PanelMotion>
+        ) : (
+          <PanelMotion motionKey={tab} slideIndex={slideIndex}>{tabs[tab]}</PanelMotion>
+        )}
+      </div>
     </aside>
   )
 }

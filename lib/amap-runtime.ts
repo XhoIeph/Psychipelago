@@ -7,9 +7,21 @@ import { mapNodeLayout, NODE_SPACING } from './map-nodes'
 import { NODE_ZOOM_THRESHOLD, showMapNodes } from './map-mode'
 import { attachMapWheelZoom } from './map-wheel-zoom'
 import { attachMapPointer } from './map-pointer'
+import type { Theme } from './theme'
 
-const colors = ['#ffffff', '#b9e6c8', '#7dd3a4', '#4dbb83', '#2f9e68', '#147a52']
-const densityColor = (count: number) => colors[count <= 0 ? 0 : count <= 2 ? 1 : count <= 4 ? 2 : count <= 7 ? 3 : count <= 10 ? 4 : 5]
+export type { Theme }
+// 密度色阶与筛选色的夜间值来自 DARK-THEME-v1.md §4：两色线性插值，只有一个数组常量。
+// 夜间五档按线性光插值取中间值：sRGB 直接插值会让最低两档在深底上几乎贴在一起。
+const densityRamp: Record<Theme, readonly string[]> = {
+  light: ['#ffffff', '#b9e6c8', '#7dd3a4', '#4dbb83', '#2f9e68', '#147a52'],
+  dark: ['#16312a', '#16312a', '#2a604e', '#377d65', '#419376', '#4aa585'],
+}
+const densityIndex = (count: number) => (count <= 0 ? 0 : count <= 2 ? 1 : count <= 4 ? 2 : count <= 7 ? 3 : count <= 10 ? 4 : 5)
+const densityColor = (theme: Theme, count: number) => densityRamp[theme][densityIndex(count)]
+const palettes: Record<Theme, { hitFill: string; hitStroke: string; hitOpacity: number; missOpacity: number; blockOpacity: number; stroke: string }> = {
+  light: { hitFill: '#087f7b', hitStroke: 'rgba(8,127,123,.5)', hitOpacity: .26, missOpacity: .04, blockOpacity: .55, stroke: '#78a88e' },
+  dark: { hitFill: '#4fd1b0', hitStroke: 'rgba(79,209,176,.5)', hitOpacity: .24, missOpacity: .02, blockOpacity: .9, stroke: '#4a5f57' },
+}
 type Geometry = { features: { properties: { adcode: string | number; name?: string }; geometry: { type?: string; coordinates: CoordinateTree } }[] }
 type LiveNode = { marker: AMap.Marker; element: HTMLButtonElement; members: string[]; exit?: gsap.core.Tween }
 /** 省面可能是 MultiPolygon：每个多边形单独建实例，飞地与岛屿才不会连成一整块。 */
@@ -40,8 +52,13 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   onMapClick(): void
   /** 底卡正停在 large：此时点地图一律只收一档，省界也按「点空白」处理。 */
   sheetLarge(): boolean
+  /** 初始主题；之后切换走 setTheme()。 */
+  theme: Theme
 }) {
   const map = new sdk.Map(container, {
+    mapStyle: options.theme === 'dark' ? 'amap://styles/grey' : 'amap://styles/whitesmoke',
+    // 标注层压在矢量色块之上：否则省份密度填充会把底图文字染成灰绿。
+    labelzIndex: 130,
     viewMode: '2D', center: [105, 35.5], zoom: 4, zooms: [2, MAP_MAX_ZOOM],
     animateEnable: false, jogEnable: false, scrollWheel: false, rotateEnable: false, pitchEnable: false,
     dragEnable: false, touchZoom: false, keyboardEnable: false, doubleClickZoom: false,
@@ -74,8 +91,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
     containerPointToLatLng(point) { return unproject(project(center(), camera.getZoom()).add(point.subtract(size.divideBy(2))), camera.getZoom()) },
     beginMove() { options.closeCluster() },
     move(point, zoom) {
-      const wide = size.x >= 1000
-      const target = constrainChinaCenter({ ...camera, getZoom: () => zoom }, point, wide ? options.inset() : 0, wide ? 0 : 48)
+      const target = constrainChinaCenter({ ...camera, getZoom: () => zoom }, point, 48)
       map.setZoomAndCenter(zoom, [target.lng, target.lat], true)
     },
     endMove() { update() },
@@ -153,6 +169,14 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
           body.append(cross)
           if (!single) { const count = document.createElement('strong'); count.textContent = String(entry.members.length); body.append(count) }
           element.append(body)
+          if (single) {
+            // 名称标签只在 .tc-pin--selected 时由 CSS 显示；聚合钉不带标签。
+            const label = document.createElement('span')
+            label.className = 'tc-pin-label'
+            label.setAttribute('aria-hidden', 'true')
+            label.textContent = entry.members[0].name
+            element.append(label)
+          }
           element.title = entry.members.map(item => item.name).join('、')
           element.addEventListener('click', event => {
             event.stopPropagation()
@@ -200,12 +224,21 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
         node.exit = gsap.to(node.element.firstElementChild, { autoAlpha: 0, scale: .92, duration: reduced() ? 0 : .32, overwrite: true,
           onComplete: () => { map.remove(node.marker); liveNodes.delete(key) } })
       }
+      // 自愈：入场/退场 tween 被打断后，节点会停在半透明，后续只有新建的钉才播入场，
+      // 于是一枚钉会一直发灰。没有在播（或待播）的 tween 却不到 1 的，直接在位拉满。
+      for (const node of liveNodes.values()) {
+        if (node.exit) continue
+        const body = node.element.firstElementChild
+        if (!(body instanceof HTMLElement)) continue
+        if (gsap.getTweensOf(body).length > 0) continue
+        if (Number(getComputedStyle(body).opacity) < .985) gsap.set(body, { autoAlpha: 1, scale: 1 })
+      }
     })
     syncSelection()
   }
   const opacity = { density: 1, nodes: 0 }
   let filterHits: Set<string> | null = null
-  const densityStroke = '#78a88e'
+  let theme: Theme = options.theme
 
   /**
    * 这一省此刻的填充样式：密度态、命中态、未命中态都从这里出。
@@ -215,13 +248,14 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   function paintProvince(adcode: string) {
     const entry = provinces.get(adcode)
     if (!entry) return
+    const palette = palettes[theme]
     const reports = options.stats[adcode]?.reports ?? 0
     const hit = filterHits ? filterHits.has(adcode) : null
     const style = hit === true
-      ? { fillColor: '#087f7b', fillOpacity: .26, strokeColor: 'rgba(8,127,123,.5)', strokeWeight: 1, strokeOpacity: 1 }
+      ? { fillColor: palette.hitFill, fillOpacity: palette.hitOpacity, strokeColor: palette.hitStroke, strokeWeight: 1, strokeOpacity: 1 }
       : hit === false
-        ? { fillColor: densityColor(reports), fillOpacity: .04, strokeColor: densityStroke, strokeWeight: 1.1, strokeOpacity: .25 }
-        : { fillColor: densityColor(reports), fillOpacity: reports > 0 ? .55 : 0, strokeColor: densityStroke, strokeWeight: 1.1, strokeOpacity: 1 }
+        ? { fillColor: densityColor(theme, reports), fillOpacity: palette.missOpacity, strokeColor: palette.stroke, strokeWeight: 1.1, strokeOpacity: .25 }
+        : { fillColor: densityColor(theme, reports), fillOpacity: reports > 0 ? palette.blockOpacity : 0, strokeColor: palette.stroke, strokeWeight: 1.1, strokeOpacity: 1 }
     style.fillOpacity *= opacity.density
     style.strokeOpacity *= opacity.density
     for (const shape of entry.shapes) shape.setOptions(style)
@@ -332,14 +366,16 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
     if (target?.closest?.('.tc-map-node')) return
     options.onMapClick()
   })
-  const resize = new ResizeObserver(() => {
+  // 画布换了可见区域（侧栏改宽）也要走同一套重算：尺寸没变，但取景与最小缩放都跟着 inset 变。
+  function remeasure() {
     const wasCountry = camera.getZoom() <= minZoom + .001
     size = new MapPoint(container.clientWidth, container.clientHeight)
     setMinZoom(countryFrame().zoom)
     if (wasCountry) country(false)
     else camera.move(center(), camera.getZoom())
     update()
-  })
+  }
+  const resize = new ResizeObserver(remeasure)
   resize.observe(container)
   country(false)
   update()
@@ -347,6 +383,15 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   return {
     camera, syncSelection, cancelWheel: wheel.cancel, interrupt, isNavigating: () => !!cameraTween,
     setMinZoom,
+    /** 主题切换：底图样式与省面色一起换；不做整屏过渡，避免两套主题混一帧。 */
+    setTheme(next: Theme) {
+      if (next === theme) return
+      theme = next
+      map.setMapStyle(next === 'dark' ? 'amap://styles/grey' : 'amap://styles/whitesmoke')
+      paintProvinces()
+    },
+    /** 侧栏宽度变了但画布尺寸没变：重算取景与最小缩放，等价于容器的 resize。 */
+    remeasure,
     moveTo, country,
     /** 手机筛选联动：传命中省 adcode，逐个省面改样式；null 恢复密度色。 */
     setFilterHits(adcodes: string[] | null) {
@@ -389,8 +434,8 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
           }
           const shape = new sdk.Polygon()
           shape.setOptions({ path: rings as unknown as AMap.LngLatLike[][][],
-            fillColor: densityColor(options.stats[adcode]?.reports ?? 0), fillOpacity: 0,
-            strokeColor: densityStroke, strokeWeight: 1.1, zIndex: 20, bubble: false, cursor: 'pointer',
+            fillColor: densityColor(theme, options.stats[adcode]?.reports ?? 0), fillOpacity: 0,
+            strokeColor: palettes[theme].stroke, strokeWeight: 1.1, zIndex: 20, bubble: false, cursor: 'pointer',
           })
           shape.on('click', () => {
             // 大卡时地图只剩一条缝，省界几乎盖满；这一下是在说「把卡让开」，不是「跳去这个省」。

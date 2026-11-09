@@ -1,12 +1,14 @@
 'use client'
 
-import { Fragment, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { hospitalSearchText, matchesSearch } from '@/lib/search'
+import { knownText } from '@/lib/hospital-row'
 import { aggregateDoctorLeads, splitDoctorNames } from '@/lib/doctor-leads'
 import { displayDisorderLabels, disorderDisplayLabel, disorderDisplayRank, DISORDER_FILTER_GROUPS } from '@/lib/disorder-labels'
 import { loadAmap } from '@/lib/amap-loader'
 import { createAmapRuntime } from '@/lib/amap-runtime'
+import { applyTheme, readTheme, type Theme } from '@/lib/theme'
 import type { MapCamera } from '@/lib/map-camera'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
@@ -15,16 +17,94 @@ import type { Disorder, Doctor, Hospital, Province, Report } from '@/lib/schema'
 import { HospitalExplorer, type DisorderGroup, type ResultFilter } from '@/components/HospitalExplorer'
 import { Sidebar, type SidebarTabId } from './Sidebar'
 import { MapSheet, type SheetHeights, type SheetLevel, type SheetStop } from './MapSheet'
+import { ThemeToggle } from './ThemeToggle'
 import { HospitalDetail } from './HospitalDetail'
 import { DoctorDetail, type DoctorDisorderStat } from './DoctorDetail'
 import { ProvinceDetail } from './ProvinceDetail'
 import type { MapHospital, MapLead, MapProvinceStat, SearchGroup, SearchResult } from './types'
-import { Info, LocateFixed, Menu, Search, X } from 'lucide-react'
+import { ClipboardList, Info, LocateFixed, Menu, Search, X } from 'lucide-react'
+
+/** 友链：桌面按钮、手机图标、关于卡正文三处共用同一地址。 */
+const SCALE_URL = 'https://psymetra.underlined.ink'
 
 const HOSPITAL_ZOOM = 10
+// 桌面侧栏宽度：默认 380，可拖 280–520，且不超过视口 42%（再宽地图就没地方了）。
+const SIDEBAR_DEFAULT = 380
+const SIDEBAR_MIN = 280
+const SIDEBAR_MAX = 520
+const SIDEBAR_STORAGE_KEY = 'tc.sidebar.width'
+const sidebarWidthCap = (viewport: number) =>
+  Math.max(SIDEBAR_MIN, Math.min(SIDEBAR_MAX, Math.round((viewport || 1440) * .42)))
+const clampSidebarWidth = (value: number) =>
+  Math.max(SIDEBAR_MIN, Math.min(sidebarWidthCap(window.innerWidth), Math.round(value)))
+// 省简称：卡片返回行、医院 meta 与搜索结果副标题都用它。模块级别放，
+// 免得放在组件体后半段被 useMemo 的闭包提前调用（const 的 TDZ 只在生产包里炸）。
+function provinceShortName(provinces: readonly Province[], adcode: string): string {
+  return provinces.find((province) => province.adcode === adcode)?.short_name ?? ''
+}
 gsap.registerPlugin(useGSAP)
 // 掉帧时不拉长动画时间：dock 入场 0.68 秒在节流或卡顿的机器上不该拖成二十秒。
 gsap.ticker.lagSmoothing(0)
+
+// 两张角标卡（关于 / 量表）共用同一套开关节奏：出现 320ms、关闭 130ms 都由
+// `.tc-project-card` 的 CSS 决定，这里只负责状态、互斥与关闭后的焦点归还。
+const CARD_CLOSE_MS = 130
+type CornerCardId = 'about' | 'scale'
+
+function useCornerCards(isDesktopRef: { current: boolean }) {
+  const [openCard, setOpenCard] = useState<CornerCardId | null>(null)
+  const [closingCard, setClosingCard] = useState<CornerCardId | null>(null)
+  const openCardRef = useRef<CornerCardId | null>(null)
+  const timers = useRef<Partial<Record<CornerCardId, number>>>({})
+  const triggers = useRef<Partial<Record<CornerCardId, { desktop: HTMLElement | null; mobile: HTMLElement | null }>>>({})
+
+  const registerTrigger = useCallback((id: CornerCardId, slot: 'desktop' | 'mobile') => (node: HTMLElement | null) => {
+    const entry = triggers.current[id] ?? { desktop: null, mobile: null }
+    entry[slot] = node
+    triggers.current[id] = entry
+  }, [])
+
+  const open = useCallback((id: CornerCardId) => {
+    if (openCardRef.current === id) return
+    const previous = openCardRef.current
+    if (previous) {
+      // 互斥切换：上一张照常播 130ms 关闭动画，但不再抢焦点。
+      window.clearTimeout(timers.current[previous])
+      setClosingCard(previous)
+      timers.current[previous] = window.setTimeout(() => {
+        setClosingCard((current) => (current === previous ? null : current))
+      }, CARD_CLOSE_MS)
+    }
+    openCardRef.current = id
+    setOpenCard(id)
+  }, [])
+
+  const close = useCallback((id: CornerCardId, restoreFocus = true) => {
+    if (openCardRef.current !== id) return
+    openCardRef.current = null
+    window.clearTimeout(timers.current[id])
+    setClosingCard(id)
+    timers.current[id] = window.setTimeout(() => {
+      setOpenCard((current) => (current === id ? null : current))
+      setClosingCard((current) => (current === id ? null : current))
+      if (!restoreFocus) return
+      const target = triggers.current[id]
+      const trigger = isDesktopRef.current ? target?.desktop : target?.mobile
+      trigger?.focus({ preventScroll: true })
+    }, CARD_CLOSE_MS)
+  }, [isDesktopRef])
+
+  const toggle = useCallback((id: CornerCardId) => {
+    if (openCardRef.current === id) close(id)
+    else open(id)
+  }, [close, open])
+
+  useEffect(() => () => {
+    for (const timer of Object.values(timers.current)) window.clearTimeout(timer)
+  }, [])
+
+  return { openCard, closingCard, open, close, toggle, registerTrigger }
+}
 
 type Props = {
   provinces: Province[]
@@ -57,7 +137,8 @@ export function MapApp(props: Props) {
   const projectRef = useRef<HTMLDivElement | null>(null)
   const aboutButtonRef = useRef<HTMLButtonElement | null>(null)
   const aboutIconRef = useRef<HTMLButtonElement | null>(null)
-  const aboutCloseTimer = useRef<number | undefined>(undefined)
+  const scaleButtonRef = useRef<HTMLButtonElement | null>(null)
+  const scaleIconRef = useRef<HTMLAnchorElement | null>(null)
   const desktopRef = useRef(false)
 
   // The server and phones start map-first; desktop docking follows after hydration.
@@ -68,8 +149,6 @@ export function MapApp(props: Props) {
   const [query, setQuery] = useState('')
   const [mapError, setMapError] = useState('')
   const [mapReady, setMapReady] = useState(false)
-  const [aboutOpen, setAboutOpen] = useState(false)
-  const [aboutClosing, setAboutClosing] = useState(false)
   const [limits, setLimits] = useState({ atMin: true, atMax: false })
   const [cluster, setCluster] = useState<{ members: MapHospital[]; key: string; x: number; y: number } | null>(null)
   const clusterRef = useRef<HTMLDivElement | null>(null)
@@ -89,45 +168,96 @@ export function MapApp(props: Props) {
   const hospitalReturnFocusRef = useRef<string | null>(null)
   // 底卡的档位：peek 随内容，medium/large 按视口定。高度由 MapSheet 量、MapApp 只算让位。
   const [sheetStop, setSheetStop] = useState<SheetStop>('peek')
-  const [filterOpen, setFilterOpen] = useState(false)
   const [peekHeight, setPeekHeight] = useState(0)
   const [viewportHeight, setViewportHeight] = useState(0)
   // 点钉进详情时，钉在画布里的 y：让位目标是这枚钉，不是层级锚点。
   const [pinFocusY, setPinFocusY] = useState<number | null>(null)
+  // 桌面侧栏宽度：默认 380，可拖 280–520（且不超过视口 42%），写进 localStorage。
+  const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_DEFAULT)
+  // 相机当前是按多宽的侧栏取的景；改宽时用它算需要平移多少。
+  const sidebarInsetRef = useRef(0)
+  const [viewportWidth, setViewportWidth] = useState(0)
+  // 主题：初始化脚本已把 data-theme 写在 <html> 上，这里只负责切换与写回存储。
+  const [theme, setTheme] = useState<Theme>('light')
+  const themeRef = useRef<Theme>('light')
 
   useEffect(() => {
-    const update = () => setViewportHeight(window.innerHeight)
+    const initial = document.documentElement.dataset.theme === 'dark' ? 'dark' : readTheme()
+    themeRef.current = initial
+    setTheme(initial)
+    applyTheme(initial, false)
+  }, [])
+
+  const toggleTheme = useCallback(() => {
+    const next: Theme = themeRef.current === 'dark' ? 'light' : 'dark'
+    themeRef.current = next
+    setTheme(next)
+    applyTheme(next)
+    runtimeRef.current?.setTheme(next)
+  }, [])
+
+  useEffect(() => {
+    const update = () => {
+      setViewportHeight(window.innerHeight)
+      setViewportWidth(window.innerWidth)
+    }
     update()
     window.addEventListener('resize', update)
     return () => window.removeEventListener('resize', update)
   }, [])
 
-  // 关于卡：先弹卡，再从卡里进 /about。关闭等 130ms 收动画结束，焦点还回触发它的那个按钮。
-  const openAbout = useCallback(() => {
-    window.clearTimeout(aboutCloseTimer.current)
-    setAboutClosing(false)
-    setAboutOpen(true)
-  }, [])
-  const closeAbout = useCallback(() => {
-    window.clearTimeout(aboutCloseTimer.current)
-    setAboutClosing(true)
-    aboutCloseTimer.current = window.setTimeout(() => {
-      setAboutOpen(false)
-      setAboutClosing(false)
-      const trigger = desktopRef.current ? aboutButtonRef.current : aboutIconRef.current
-      trigger?.focus({ preventScroll: true })
-    }, 130)
-  }, [])
-  useEffect(() => () => window.clearTimeout(aboutCloseTimer.current), [])
+  // 视口变窄时把宽度夹回上限，但不动存储：窗口再放宽仍回到用户拖过的值。
   useEffect(() => {
-    if (!aboutOpen || aboutClosing) return
+    setSidebarWidth((current) => clampSidebarWidth(current))
+  }, [viewportWidth])
+
+  // 下次打开还原上次拖的宽度；没有记录就用 380。
+  useEffect(() => {
+    const saved = Number(window.localStorage.getItem(SIDEBAR_STORAGE_KEY))
+    if (Number.isFinite(saved) && saved > 0) setSidebarWidth(clampSidebarWidth(saved))
+  }, [])
+
+  // 宽度只写 CSS 变量：侧栏自身、顶栏、图例与地图 logo 都吃同一个值。
+  useLayoutEffect(() => {
+    shellRef.current?.style.setProperty('--tc-sidebar-w', `${sidebarWidth}px`)
+  }, [sidebarWidth])
+
+  // 拖动途中只走 CSS，不碰相机；松手才写存储、重量画布，并把取景中心重新对准可见带。
+  const applySidebarWidth = useCallback((value: number, commit: boolean) => {
+    const next = clampSidebarWidth(value)
+    setSidebarWidth(next)
+    if (desktopRef.current && sidebarOpen) {
+      dockRef.current.inset = next
+      shellRef.current?.style.setProperty('--tc-sidebar-offset', `${next}px`)
+    }
+    if (!commit) return
+    const fromInset = sidebarInsetRef.current
+    window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next))
+    runtimeRef.current?.remeasure()
+    const map = mapRef.current
+    if (!map || Math.abs(fromInset - dockRef.current.inset) < 1) return
+    // 全国层由 remeasure 重新取景；其他层级保持视野内容，只把中心从旧可见带挪到新的可见带。
+    if (map.getZoom() > map.getMinZoom() + .001) {
+      const width = map.getSize().x
+      const anchor = map.unproject(map.project(map.getCenter(), map.getZoom()).add([fromInset / 2, 0]), map.getZoom())
+      const frame = sidebarCameraFrame(map, anchor, width, fromInset, dockRef.current.inset, map.getZoom(), map.getMinZoom(), dockRef.current.inset)
+      runtimeRef.current?.setMinZoom(frame.minZoom)
+      map.move(frame.center, frame.zoom)
+    }
+    sidebarInsetRef.current = dockRef.current.inset
+  }, [sidebarOpen])
+
+  // 关于 / 量表两张卡共用一套状态机（互斥、关闭动画、焦点归还）。
+  const { openCard, closingCard, close: closeCardById, toggle: toggleCard, registerTrigger } = useCornerCards(desktopRef)
+  useEffect(() => {
+    if (!openCard || closingCard === openCard) return
     const onPointerDown = (event: PointerEvent) => {
       if (projectRef.current?.contains(event.target as Node)) return
-      closeAbout()
+      closeCardById(openCard)
     }
     document.addEventListener('pointerdown', onPointerDown)
     return () => document.removeEventListener('pointerdown', onPointerDown)
-  }, [aboutClosing, aboutOpen, closeAbout])
+  }, [openCard, closingCard, closeCardById])
 
   const handlePeekHeight = useCallback((height: number) => {
     setPeekHeight((current) => (current === height ? current : height))
@@ -211,6 +341,8 @@ export function MapApp(props: Props) {
         moving = false
         map.endMove()
       }
+      // 记住「相机是按多宽的侧栏取的景」，改宽时要靠它算平移量。
+      sidebarInsetRef.current = dock.inset
     }
     if (moving) {
       cancelWheelRef.current?.()
@@ -264,6 +396,27 @@ export function MapApp(props: Props) {
     runtimeRef.current?.moveTo(hospital, Math.max(mapRef.current?.getZoom() ?? 0, HOSPITAL_ZOOM), desktopRef.current ? 380 : 0)
   }
 
+  // 再点一次已选中的钉＝取消选中：回该省列表，但不动镜头——人还在原地看着这枚钉。
+  // 只给图钉用；侧栏行、定位按钮仍走 selectHospital，不会把详情关掉。
+  const deselectHospital = (id: string) => {
+    const hospital = propsRef.current.mapHospitals.find(item => item.id === id)
+    if (!hospital) return
+    hospitalReturnFocusRef.current = id
+    setSelectedProvinceAdcode(hospital.adcode)
+    setSelectedHospitalId(null)
+    setSelectedDoctor(null)
+    setPinFocusY(null)
+  }
+
+  const pickHospital = (id: string, fromPin?: { y: number }) => {
+    // runtime 初始化闭包拿不到最新 state，只能读 ref。
+    if (selectedRef.current === id) {
+      deselectHospital(id)
+      return
+    }
+    selectHospital(id, fromPin)
+  }
+
   const selectProvince = (adcode: string) => {
     setCluster(null)
     setSelectedDoctor(null)
@@ -312,7 +465,7 @@ export function MapApp(props: Props) {
           inset: () => dockRef.current.inset, selected: () => selectedRef.current,
           province: () => provinceRef.current,
           activeIds: () => activeIdsRef.current,
-          selectHospital, selectProvince, interruptDock: () => cancelDockCameraRef.current?.(),
+          selectHospital: pickHospital, selectProvince, interruptDock: () => cancelDockCameraRef.current?.(),
           limits: (atMin, atMax) => setLimits(previous => previous.atMin === atMin && previous.atMax === atMax ? previous : { atMin, atMax }),
           closeCluster: () => setCluster(null),
           cluster: (members, key, x, y) => {
@@ -322,6 +475,7 @@ export function MapApp(props: Props) {
           ready: () => { if (!disposed) setMapReady(true) },
           onMapClick: () => mapClickRef.current(),
           sheetLarge: () => sheetStopRef.current === 'large',
+          theme: themeRef.current,
         })
         runtimeRef.current = runtime
         mapRef.current = runtime.camera
@@ -400,6 +554,14 @@ export function MapApp(props: Props) {
     }
     return ids
   }, [selectedDisorders.length, selectedSet])
+  // 详情层与列表层要用同一份命中集合：省列表的 leadCountFor 是按线索过滤的，
+  // 详情里若仍取 leadsByHospital 的全量，条数和内容都会对不上。
+  const matchingLeadIds = useMemo(() => {
+    if (!activeDisorderIds) return null
+    return new Set(props.reports
+      .filter((report) => report.disorders.some((id) => activeDisorderIds.has(id)))
+      .map((report) => report.id))
+  }, [props.reports, activeDisorderIds])
   const activeLeads = activeDisorderIds
     ? props.reports.filter((report) => report.disorders.some((id) => activeDisorderIds.has(id))).length
     : null
@@ -458,17 +620,32 @@ export function MapApp(props: Props) {
       }
       if (results.filter((item) => item.group === '省份').length >= 3) break
     }
+    // 筛选态下搜索层也要用命中集合：结果行的「线索 N 条」必须等于点进去详情的 N 条。
+    const reports = propsRef.current.reports
+    const hitLeadIds = activeDisorderIds
+      ? new Set(reports
+        .filter((report) => report.disorders.some((id) => activeDisorderIds.has(id)))
+        .map((report) => report.id))
+      : null
+    const leadCountOf = (hospitalId: string) => hitLeadIds
+      ? reports.filter((report) => report.hospital_id === hospitalId && hitLeadIds.has(report.id)).length
+      : propsRef.current.reportCounts[hospitalId] ?? 0
+
     const hospitals: SearchResult[] = []
     for (const hospital of propsRef.current.hospitals) {
       const haystack = hospitalSearchText(hospital, propsRef.current.reports)
       if (matchesSearch(haystack, q)) {
-        hospitals.push({
-          key: `hospital-${hospital.id}`,
-          group: '医院',
-          label: hospital.name,
-          sub: `${hospital.city && hospital.city !== hospital.province ? `${hospital.province} · ${hospital.city}` : hospital.province} · 线索 ${propsRef.current.reportCounts[hospital.id] ?? 0} 条`,
-          run: () => selectHospital(hospital.id),
-        })
+        const count = leadCountOf(hospital.id)
+        // 命中 0 条的机构在筛选态下不出现在结果里，与省份列表同一规则。
+        if (!hitLeadIds || count > 0) {
+          hospitals.push({
+            key: `hospital-${hospital.id}`,
+            group: '医院',
+            label: hospital.name,
+            sub: `${provinceShortName(propsRef.current.provinces, hospital.adcode)} · 线索 ${count} 条`,
+            run: () => selectHospital(hospital.id),
+          })
+        }
       }
       if (hospitals.length >= 4) break
     }
@@ -479,6 +656,10 @@ export function MapApp(props: Props) {
     const doctorKeys = new Set<string>()
     for (const group of aggregateDoctorLeads(propsRef.current.hospitals, propsRef.current.reports, q)) {
       for (const entry of group.entries) {
+        const hitReportIds = hitLeadIds
+          ? entry.reportIds.filter((id) => hitLeadIds.has(id))
+          : entry.reportIds
+        if (!hitReportIds.length) continue
         const key = `doctor-${entry.hospitalId ?? entry.hospitalName}-${entry.name}`
         if (doctorKeys.has(key)) continue
         doctorKeys.add(key)
@@ -486,7 +667,7 @@ export function MapApp(props: Props) {
           key,
           group: '医生',
           label: entry.name,
-          sub: `${entry.hospitalName} · ${group.label} · 线索 ${entry.leadCount} 条`,
+          sub: `${entry.hospitalName} · ${group.label} · 线索 ${hitReportIds.length} 条`,
           run: () => {
             if (entry.hospitalId) {
               focusDetailRef.current = true
@@ -498,7 +679,7 @@ export function MapApp(props: Props) {
             const hospitalIds = propsRef.current.hospitals
               .filter((hospital) => hospital.name === entry.hospitalName)
               .map((hospital) => hospital.id)
-            enterFilter({ label: entry.name, hint: `线索 ${entry.leadCount} 条`, hospitalIds }, [])
+            enterFilter({ label: entry.name, hint: `线索 ${hitReportIds.length} 条`, hospitalIds }, [])
           },
         })
         if (doctors.length >= 2) break
@@ -558,7 +739,7 @@ export function MapApp(props: Props) {
     const provinceHits = results.filter((item) => item.group === '省份').slice(0, 2)
     return [...provinceHits, ...hospitals.slice(0, 4), ...doctors.slice(0, 2), ...disorders.slice(0, 2)]
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query])
+  }, [query, activeDisorderIds])
 
   const grouped = useMemo(() => {
     const order: SearchGroup[] = ['省份', '医院', '医生', '病症']
@@ -575,21 +756,27 @@ export function MapApp(props: Props) {
 
   const selectedHospital = props.mapHospitals.find((item) => item.id === selectedHospitalId) ?? null
   const selectedProvince = props.provinces.find((item) => item.adcode === selectedProvinceAdcode) ?? null
-  const selectedLeads = selectedHospital ? (props.leadsByHospital[selectedHospital.id] ?? []) : []
+  const selectedLeadsAll = selectedHospital ? (props.leadsByHospital[selectedHospital.id] ?? []) : []
+  const selectedLeads = matchingLeadIds
+    ? selectedLeadsAll.filter((lead) => matchingLeadIds.has(lead.id))
+    : selectedLeadsAll
 
   const doctorHospital = selectedDoctor
     ? props.mapHospitals.find((item) => item.id === selectedDoctor.hospitalId) ?? null
     : null
 
-  const doctorLeads = useMemo(() => {
+  const doctorLeadsAll = useMemo(() => {
     if (!selectedDoctor) return []
     return (props.leadsByHospital[selectedDoctor.hospitalId] ?? []).filter((lead) =>
       splitDoctorNames(lead.doctorName).includes(selectedDoctor.name))
   }, [selectedDoctor, props.leadsByHospital])
+  const doctorLeads = matchingLeadIds
+    ? doctorLeadsAll.filter((lead) => matchingLeadIds.has(lead.id))
+    : doctorLeadsAll
 
   const doctorDisorders = useMemo<DoctorDisorderStat[]>(() => {
     if (!selectedDoctor) return []
-    const reportIds = new Set(doctorLeads.map((lead) => lead.id))
+    const reportIds = new Set(doctorLeadsAll.map((lead) => lead.id))
     // 按显示标签计数：osdd 与 did 合成一条，同一条线索不会在两个标签下各记一次。
     const counts = new Map<string, number>()
     for (const report of props.reports) {
@@ -599,7 +786,7 @@ export function MapApp(props: Props) {
     return [...counts.entries()]
       .sort((a, b) => disorderDisplayRank(a[0]) - disorderDisplayRank(b[0]))
       .map(([label, count]) => ({ id: label, label, count }))
-  }, [selectedDoctor, doctorLeads, props.reports])
+  }, [selectedDoctor, doctorLeadsAll, props.reports])
 
   // The record section only exists when doctors.json actually holds this person.
   const doctorProfile = selectedDoctor
@@ -633,28 +820,7 @@ export function MapApp(props: Props) {
     : false
   const clearDisorderFilter = () => setSelectedDisorders([])
 
-  // 每家医院能对上几个筛选分组：全国列表的排序与第二行文案都用它，不另造评分。
-  const hospitalStats = useMemo(() => {
-    const categories = new Map<string, Set<string>>()
-    for (const report of props.reports) {
-      if (!report.hospital_id) continue
-      let set = categories.get(report.hospital_id)
-      if (!set) { set = new Set(); categories.set(report.hospital_id, set) }
-      for (const group of DISORDER_FILTER_GROUPS) {
-        if (report.disorders.some((id) => group.ids.includes(id))) set.add(group.id)
-      }
-    }
-    const stats: Record<string, { categories: number; leads: number }> = {}
-    for (const hospital of props.hospitals) {
-      stats[hospital.id] = {
-        categories: categories.get(hospital.id)?.size ?? 0,
-        leads: props.reportCounts[hospital.id] ?? 0,
-      }
-    }
-    return stats
-  }, [props.hospitals, props.reportCounts, props.reports])
-
-  // 手机底卡与桌面侧栏共用详情组件；手机隐藏已经搬到卡头部的家数/标题重复行。
+  // 手机底卡与桌面侧栏共用详情组件；卡头的返回行只写上一层名字。
   const renderDetail = (mobile: boolean) => selectedDoctor && doctorHospital ? (
     <DoctorDetail
       name={selectedDoctor.name}
@@ -663,32 +829,32 @@ export function MapApp(props: Props) {
       disorders={doctorDisorders}
       profile={doctorProfile}
       onBackToHospital={backToHospital}
-      onBackToProvince={() => backToProvince(doctorHospital.adcode)}
-      onBackToCountry={backToCountryFromDetail}
     />
   ) : selectedHospital ? (
     <HospitalDetail
       hospital={selectedHospital}
       leads={selectedLeads}
-      provinceName={selectedHospital.province}
+      provinceName={provinceShortName(props.provinces, selectedHospital.adcode)}
+      doctorProfiles={props.doctorProfiles}
       onBackToProvince={() => backToProvince(selectedHospital.adcode)}
-      onBackToCountry={backToCountryFromDetail}
       onLocate={() => selectHospital(selectedHospital.id)}
       onSelectDoctor={(name) => openDoctor(name, selectedHospital.id)}
     />
   ) : selectedProvince ? (
     <ProvinceDetail
-      provinceName={selectedProvince.name}
+      provinceName={selectedProvince.short_name}
+      provinceFullName={selectedProvince.name}
       stat={props.provinceStats[selectedProvince.adcode]}
       hospitals={provinceHospitals}
       onBackToCountry={backToCountryFromDetail}
       onZoomToProvince={() => selectProvince(selectedProvince.adcode)}
       onSelectHospital={openHospital}
-      hideCount={mobile}
+      disorderGroups={disorderGroups}
+      selectedDisorders={selectedDisorders}
+      onToggleDisorder={toggleDisorder}
       filteredEmpty={mobile && selectedDisorders.length > 0 && provinceHasRecords && provinceHospitals.length === 0}
       onClearFilter={clearDisorderFilter}
       variant={mobile ? 'sheet' : 'sidebar'}
-      stats={mobile ? hospitalStats : undefined}
     />
   ) : null
 
@@ -718,6 +884,7 @@ export function MapApp(props: Props) {
           selectedDisorders={selectedDisorders}
           onToggleDisorder={toggleDisorder}
           activeLeads={activeLeads}
+          totalLeads={props.reports.length}
           resultFilter={resultFilter}
         />
       </Suspense>
@@ -727,38 +894,6 @@ export function MapApp(props: Props) {
         <p className="tc-submit-placeholder">这里还没定好（；´д｀）ゞ</p>
       </div>
     ),
-  }
-
-  // 手机底卡的筛选入口在搜索行右侧：同样的分组，不再重复正文里的旧面板。
-  const sheetFilters = disorderGroups.map((group) => ({
-    id: group.id,
-    label: group.label,
-    count: group.hospitalIds.length,
-  }))
-
-  // 面板左栏是 34 个省份全量：0 家医院的省也列出来，选进去看空态，而不是从名单里消失。
-  // 筛选病症时计数跟着命中集合走，和头部「N 家医院」是同一份数。
-  const provinceCounts = useMemo(() => {
-    const counts = new Map<string, number>()
-    for (const hospital of props.mapHospitals) {
-      if (activeHospitalIds && !activeHospitalIds.has(hospital.id)) continue
-      counts.set(hospital.adcode, (counts.get(hospital.adcode) ?? 0) + 1)
-    }
-    return counts
-  }, [activeHospitalIds, props.mapHospitals])
-  const sheetProvinces = useMemo(
-    () => props.provinces.map((province) => ({
-      adcode: province.adcode,
-      name: province.short_name,
-      count: provinceCounts.get(province.adcode) ?? 0,
-    })),
-    [provinceCounts, props.provinces],
-  )
-
-  // 面板里的省名和地图上的省是同一个动作：再点同一个就取消选省回全国，已选病症保留。
-  const selectSheetProvince = (adcode: string) => {
-    if (selectedProvinceAdcode === adcode) backToCountry()
-    else selectProvince(adcode)
   }
 
   const mobileExplorer = (
@@ -774,15 +909,12 @@ export function MapApp(props: Props) {
         selectedDisorders={selectedDisorders}
         onToggleDisorder={toggleDisorder}
         activeLeads={activeLeads}
+        totalLeads={props.reports.length}
         resultFilter={resultFilter}
         hideHeading
-        hideFilterPanel
-        showFilteredNote
+        hideChips
         onClearFilter={clearDisorderFilter}
         sheetEmpty
-        hospitalList
-        hospitalStats={hospitalStats}
-        sortNote
       />
     </Suspense>
   )
@@ -800,41 +932,24 @@ export function MapApp(props: Props) {
           : 'country'
   // 已经在全国层、没放大、也没有聚合钉摊开时，「回到全国」没有可回的地方。
   const canReset = sheetLevel !== 'country' || cluster !== null || !limits.atMin
-  const sheetTitle = searching
-    ? query.trim()
-    : selectedDoctor?.name ?? selectedHospital?.name ?? selectedProvince?.name ?? '医院与线索'
-  // 搜索头部只数会在结果里出现的东西：省份 → 医院 → 医生，病症是标签不是实体。
-  const searchProvinceHits = grouped.find((entry) => entry.group === '省份')?.items.length ?? 0
-  const searchHospitalHits = grouped.find((entry) => entry.group === '医院')?.items.length ?? 0
-  const searchDoctorHits = grouped.find((entry) => entry.group === '医生')?.items.length ?? 0
-  const sheetCounts = searching
+  // 卡头标题只跟层级走，搜索态也不例外（参考页 titleOf(t) 与查询词无关）。
+  // 搜索时 v3.css 把 sheet-head 整块隐藏，这一行只影响读屏读到的区块名。
+  const sheetTitle = selectedDoctor?.name ?? selectedHospital?.name ?? selectedProvince?.short_name ?? '全国'
+  // 卡头计数：全国/省报医院与线索，医院层报城市·地址·条数，医生层不报。
+  const hospitalSheetMeta = selectedHospital
     ? [
-      ...(searchProvinceHits > 0 ? [{ value: searchProvinceHits, unit: '个省份' }] : []),
-      ...(searchHospitalHits > 0 ? [{ value: searchHospitalHits, unit: '家医院' }] : []),
-      ...(searchDoctorHits > 0 ? [{ value: searchDoctorHits, unit: '位医生' }] : []),
-    ]
-    : sheetLevel === 'country'
-      ? [
-        { value: activeHospitalIds ? activeHospitalIds.size : props.hospitals.length, unit: '家医院' },
-        { value: activeLeads ?? props.reports.length, unit: '条线索' },
-      ]
-      : sheetLevel === 'province'
-        ? [{ value: provinceHospitals.length, unit: '家医院' }]
-        : []
-  // 面板收起后，头部这行是唯一还看得出「筛了什么」的地方。
-  const selectedFilterLabels = disorderGroups
-    .filter((group) => selectedDisorders.includes(group.id))
-    .map((group) => group.label)
-  const sheetMeta = sheetCounts.length > 0 ? (
-    <>
-      {selectedFilterLabels.length > 0 ? <Fragment>{selectedFilterLabels.join('、')} · </Fragment> : null}
-      {sheetCounts.map((part, index) => (
-        <Fragment key={part.unit}>{index > 0 ? ' · ' : ''}<b>{part.value}</b> {part.unit}</Fragment>
-      ))}
-    </>
+      knownText(selectedHospital.city) || provinceShortName(props.provinces, selectedHospital.adcode),
+      knownText(selectedHospital.address),
+      `${selectedLeads.length} 条线索`,
+    ].filter(Boolean).join(' · ')
+    : ''
+  const sheetMeta = searching ? null : sheetLevel === 'country' ? (
+    <><b>{activeHospitalIds ? activeHospitalIds.size : props.hospitals.length}</b> 家医院 · <b>{activeLeads ?? props.reports.length}</b> 条线索</>
+  ) : sheetLevel === 'province' ? (
+    <><b>{provinceHospitals.length}</b> 家医院 · <b>{provinceHospitals.reduce((sum, item) => sum + item.leads, 0)}</b> 条线索</>
+  ) : sheetLevel === 'hospital' ? (
+    hospitalSheetMeta
   ) : null
-  // 省层正文是空态时，卡头的返回行和层级名会把同一件事说三遍，藏起来只留计数。
-  const sheetEmpty = sheetLevel === 'province' && provinceHospitals.length === 0
 
   const sheetViewport = viewportHeight || 844
   const sheetHeights = useMemo<SheetHeights>(() => ({
@@ -868,15 +983,24 @@ export function MapApp(props: Props) {
     shell.style.setProperty('--tc-sheet-live', `${sheetHeights[sheetStop]}px`)
   }, [isDesktop, sheetHeights, sheetShift, sheetStop])
 
+  // 档位同步给样式：large 时关于图标与「回到全国」藏起来，不占位也不可点。
+  useLayoutEffect(() => {
+    const shell = shellRef.current
+    if (!shell) return
+    if (isDesktop) delete shell.dataset.sheetStop
+    else shell.dataset.sheetStop = sheetStop
+  }, [isDesktop, sheetStop])
+
   // 选中钉时把其余钉压到 42%，让「卡里的详情」和「地图上的这枚钉」对得上。
   useEffect(() => {
     containerRef.current?.classList.toggle('tc-mapapp-canvas--pinned', pinFocusY !== null)
   }, [pinFocusY])
 
   // 筛选联动地图：命中的省提亮，其余被半透明压层盖住（覆盖层由 runtime 自绘）。
+  // 手机与桌面共用同一套 paintProvince，桌面只是取景不同，别另写一套。
   useEffect(() => {
     const runtime = runtimeRef.current
-    if (!runtime || isDesktop || !mapReady) return
+    if (!runtime || !mapReady) return
     if (!activeHospitalIds) {
       runtime.setFilterHits(null)
       return
@@ -886,13 +1010,11 @@ export function MapApp(props: Props) {
       if (activeHospitalIds.has(hospital.id)) adcodes.add(hospital.adcode)
     }
     runtime.setFilterHits([...adcodes])
-  }, [activeHospitalIds, isDesktop, mapReady, props.mapHospitals])
+  }, [activeHospitalIds, mapReady, props.mapHospitals])
 
-  // 详情层没有 peek 这一档（A24）：所有换档都从这里过，任何调用方都绕不过去。
+  // 详情层也能落到 peek（V3-11）：换档不按层级夹。
   const detailSheet = sheetLevel === 'hospital' || sheetLevel === 'doctor'
-  const applySheetStop = useCallback((next: SheetStop) => {
-    setSheetStop(detailSheet && next === 'peek' ? 'medium' : next)
-  }, [detailSheet])
+  const applySheetStop = useCallback((next: SheetStop) => setSheetStop(next), [])
 
   // 736 时地图只剩 108px，点它得有点回应，否则「底卡非模态、地图始终可用」不成立：
   // 只从 large 收一档到 medium，medium / peek 不动，详情层也只收档不退层。
@@ -904,23 +1026,46 @@ export function MapApp(props: Props) {
     applySheetStop('medium')
   }
 
-  // 换层级时换档：进省看列表用 medium，进详情看内容用 large；搜索不动档位。
-  // 筛选面板在 medium 就放得下，进省时保持这个档位，别把刚展开的面板顶到 large。
+  // 换层级时换档：详情之间互跳保持当前档位（736 进医生仍是 736、返回医院也还是 736）；
+  // 但 peek 下正文看不见，任何路径到详情都至少抬到 medium。
+  // 进省、回全国、搜索进出照旧走 medium。
   const previousSheetLevelRef = useRef<SheetLevel>('country')
   useEffect(() => {
     const previous = previousSheetLevelRef.current
     previousSheetLevelRef.current = sheetLevel
     if (previous === sheetLevel) return
-    if (sheetLevel === 'hospital' || sheetLevel === 'doctor' || sheetLevel === 'search') setFilterOpen(false)
+    const isDetailLevel = (level: SheetLevel) => level === 'hospital' || level === 'doctor'
+    if (isDetailLevel(previous) && isDetailLevel(sheetLevel) && sheetStopRef.current !== 'peek') return
     if (sheetLevel === 'province') applySheetStop('medium')
-    // 点钉进来的详情用 medium，让地图露出更多；从列表或搜索进来的看内容用 large。
-    else if (sheetLevel === 'hospital' || sheetLevel === 'doctor') applySheetStop(pinFocusY !== null ? 'medium' : 'large')
+    else if (sheetLevel === 'hospital' || sheetLevel === 'doctor') applySheetStop('medium')
     else if (sheetLevel === 'country' && previous !== 'search') applySheetStop('medium')
-  }, [applySheetStop, pinFocusY, sheetLevel])
+  }, [applySheetStop, sheetLevel])
+
+  // 换层级时把焦点交给新层级的标题：返回一层后焦点掉到 body，键盘用户就丢了位置。
+  // 进搜索层不抢（输入框要留在手上）；清词后输入框还握着焦点也不抢。
+  // 放到下一帧再聚焦：底卡换档的过渡要和焦点无关地先起步，别让聚焦的样式计算挤在起始帧前面。
+  const previousFocusLevelRef = useRef<SheetLevel | null>(null)
+  useLayoutEffect(() => {
+    const previous = previousFocusLevelRef.current
+    previousFocusLevelRef.current = sheetLevel
+    if (previous === null || previous === sheetLevel || isDesktop) return
+    if (sheetLevel === 'search') return
+    const active = document.activeElement
+    if (active instanceof HTMLElement && active.closest('.sheet') && active.matches('input, textarea')) return
+    // 手机底卡的可见标题在卡头；正文里的 .tc-level-head 在 sheet 内是 display:none，点了也不会真的获得焦点。
+    const frame = requestAnimationFrame(() => {
+      shellRef.current?.querySelector<HTMLElement>('.sheet .head-title')?.focus({ preventScroll: true })
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [isDesktop, sheetLevel])
 
   const sheetBackLabel = selectedDoctor
     ? props.mapHospitals.find((item) => item.id === selectedDoctor.hospitalId)?.name
-    : selectedHospital?.province ?? (selectedProvince ? '全国' : undefined)
+    : selectedHospital
+      ? provinceShortName(props.provinces, selectedHospital.adcode)
+      : selectedProvince
+        ? '全国'
+        : undefined
   const sheetBack = selectedDoctor
     ? backToHospital
     : selectedHospital
@@ -929,34 +1074,30 @@ export function MapApp(props: Props) {
         ? backToCountry
         : undefined
 
-  // 搜索失焦：只收回因聚焦抬起来的那一档；详情层根本没有 peek 可退。
+  // 搜索失焦：有关键词或筛选条件时保留当前档位；回到聚焦前的档位由 MapSheet 自己还原。
   // 点结果行、拖把手这类焦点暂时跑开的场景由 MapSheet 用 relatedTarget 和指针状态挡掉。
   const dismissSearchSheet = () => {
     if (query.trim()) return false
     if (resultFilter || selectedDisorders.length > 0) return false
     if (sheetLevel !== 'country') return false
-    applySheetStop('peek')
     return true
   }
 
-  // Escape 的优先级：清搜索词 → 关筛选面板 → 详情退一层（大卡先落到中档）→ 列表收一档。
+  // Escape 的优先级：关于 → 搜索 → 详情退一层（大卡先落到中档）→ 列表收一档。
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape' || event.defaultPrevented) return
       const target = event.target
       if (target instanceof HTMLElement && (target.closest('input, textarea, select') || target.isContentEditable)) return
-      if (aboutOpen) {
-        closeAbout()
+      // 两张角标卡在同一层：先关当前开着的那张，再轮到搜索、详情、列表。
+      if (openCard) {
+        closeCardById(openCard)
         return
       }
       if (isDesktop) return
       if (query) {
         setQuery('')
         setActiveResult(-1)
-        return
-      }
-      if (filterOpen) {
-        setFilterOpen(false)
         return
       }
       if (detailSheet) {
@@ -972,7 +1113,7 @@ export function MapApp(props: Props) {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [aboutOpen, applySheetStop, backToCountry, backToHospital, backToProvince, closeAbout, detailSheet, filterOpen, isDesktop, query, selectedDoctor, selectedHospital, sheetLevel, sheetStop])
+  }, [openCard, applySheetStop, backToCountry, backToHospital, backToProvince, closeCardById, detailSheet, isDesktop, query, selectedDoctor, selectedHospital, sheetLevel, sheetStop])
 
   return (
     <div ref={shellRef} className="tc-mapapp">
@@ -1038,7 +1179,13 @@ export function MapApp(props: Props) {
             }}
           />
           {query && <button type="button" className="tc-search-clear" aria-label="清除搜索" onClick={() => { setQuery(''); setActiveResult(-1) }}><X size={16} aria-hidden="true" /></button>}
-          {query.trim() && searchResults.length === 0 && <div className="tc-mapapp-no-results" role="status">没有找到匹配结果，试试省份、医院或医生名称。</div>}
+          {query.trim() && searchResults.length === 0 && (
+            <div className="tc-mapapp-no-results" role="status">
+              {activeDisorderIds
+                ? '当前筛选下没有匹配结果，试试取消病症筛选。'
+                : '没有找到匹配结果，试试省份、医院或医生名称。'}
+            </div>
+          )}
           {searchResults.length > 0 && (
             <ul className="tc-mapapp-results" id="tc-map-search-results" role="listbox" aria-label="搜索结果">
               {grouped.map((entry) => (
@@ -1068,16 +1215,65 @@ export function MapApp(props: Props) {
           )}
         </div>
         <div className="tc-project-corner" ref={projectRef}>
-          <button ref={aboutButtonRef} type="button" className="tc-mapapp-ctl tc-mapapp-about" aria-expanded={aboutOpen} aria-controls="tc-project-card" onClick={() => (aboutOpen ? closeAbout() : openAbout())}>关于项目</button>
+          <button
+            ref={(node) => { scaleButtonRef.current = node; registerTrigger('scale', 'desktop')(node) }}
+            type="button"
+            className="tc-mapapp-ctl tc-mapapp-scale-link"
+            aria-expanded={openCard === 'scale'}
+            aria-controls="tc-scale-card"
+            onClick={() => toggleCard('scale')}
+          >量表测试</button>
+          <button
+            ref={(node) => { aboutButtonRef.current = node; registerTrigger('about', 'desktop')(node) }}
+            type="button"
+            className="tc-mapapp-ctl tc-mapapp-about"
+            aria-expanded={openCard === 'about'}
+            aria-controls="tc-project-card"
+            onClick={() => toggleCard('about')}
+          >关于项目</button>
           {/* 手机顶栏只留图标入口：同样先弹卡，卡里的「了解我们」才去 /about。 */}
-          <button ref={aboutIconRef} type="button" className="tc-about-icon" aria-label="关于项目" aria-expanded={aboutOpen} aria-controls="tc-project-card" onClick={() => (aboutOpen ? closeAbout() : openAbout())}>
+          <button
+            ref={(node) => { aboutIconRef.current = node; registerTrigger('about', 'mobile')(node) }}
+            type="button"
+            className="tc-about-icon"
+            aria-label="关于项目"
+            aria-expanded={openCard === 'about'}
+            aria-controls="tc-project-card"
+            onClick={() => toggleCard('about')}
+          >
             <Info size={20} aria-hidden="true" />
           </button>
-          {aboutOpen && <section id="tc-project-card" className={aboutClosing ? 'tc-project-card is-closing' : 'tc-project-card'} aria-label="关于项目">
-            <div className="tc-row tc-row--between"><strong>TraumaCompass</strong></div>
-            <p>本项目旨在为CPTSD/BPD人群提供全国就诊地图，帮助更多人治疗心理创伤与障碍</p>
-            <Link className="tc-card-action" href="/about/">了解我们</Link>
-          </section>}
+          {/* 手机：关于 → 量表 → 夜间，同一列 44×44；桌面主题按钮在侧栏顶部。 */}
+          <a
+            ref={(node) => { scaleIconRef.current = node; registerTrigger('scale', 'mobile')(node) }}
+            className="tc-scale-icon"
+            href={SCALE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="量表测试"
+            aria-expanded={openCard === 'scale'}
+            aria-controls="tc-scale-card"
+            onClick={(event) => { event.preventDefault(); toggleCard('scale') }}
+          >
+            <ClipboardList size={20} aria-hidden="true" />
+          </a>
+          {!isDesktop && <ThemeToggle theme={theme} onToggle={toggleTheme} />}
+          {(openCard === 'about' || closingCard === 'about') && (
+            <section id="tc-project-card" className={closingCard === 'about' ? 'tc-project-card is-closing' : 'tc-project-card'} aria-label="关于项目">
+              <div className="tc-row tc-row--between"><strong>TraumaCompass</strong></div>
+              <p>本项目旨在为CPTSD/BPD人群提供全国就诊地图，帮助更多人治疗心理创伤与障碍</p>
+              <Link className="tc-card-action" href="/about/">了解我们</Link>
+            </section>
+          )}
+          {(openCard === 'scale' || closingCard === 'scale') && (
+            <section id="tc-scale-card" className={closingCard === 'scale' ? 'tc-project-card is-closing' : 'tc-project-card'} aria-label="量表测试">
+              <p>
+                免费量表测试看这里！→
+                <a href={SCALE_URL} target="_blank" rel="noopener noreferrer">PSYMETRA</a>
+                ←
+              </p>
+            </section>
+          )}
         </div>
       </div>
 
@@ -1094,6 +1290,13 @@ export function MapApp(props: Props) {
           onTabChange={setSidebarTab}
           modal={false}
           onClose={closeDrawer}
+          width={sidebarWidth}
+          minWidth={SIDEBAR_MIN}
+          maxWidth={sidebarWidthCap(viewportWidth)}
+          onResize={(next) => applySidebarWidth(next, false)}
+          onResizeCommit={(next) => applySidebarWidth(next, true)}
+          onResizeReset={() => applySidebarWidth(SIDEBAR_DEFAULT, true)}
+          themeToggle={<ThemeToggle theme={theme} onToggle={toggleTheme} />}
         />
       )}
 
@@ -1103,7 +1306,6 @@ export function MapApp(props: Props) {
           title={sheetTitle}
           meta={sheetMeta}
           stop={sheetStop}
-          minStop={detailSheet ? 'medium' : 'peek'}
           heights={sheetHeights}
           onStopChange={applySheetStop}
           onPeekHeight={handlePeekHeight}
@@ -1111,7 +1313,6 @@ export function MapApp(props: Props) {
           onDragChange={handleSheetDragChange}
           backLabel={sheetBackLabel}
           onBack={sheetBack}
-          hideHead={sheetEmpty}
           onDismiss={dismissSearchSheet}
           query={query}
           onQueryChange={(value) => {
@@ -1122,16 +1323,10 @@ export function MapApp(props: Props) {
           activeResult={activeResult}
           onActiveResultChange={setActiveResult}
           onRunResult={runResult}
-          filters={sheetLevel === 'country' || sheetLevel === 'province' ? sheetFilters : []}
-          selectedFilters={selectedDisorders}
-          onToggleFilter={toggleDisorder}
-          onClearFilters={clearDisorderFilter}
-          provinces={sheetProvinces}
-          selectedProvince={selectedProvinceAdcode}
-          onSelectProvince={selectSheetProvince}
-          onSelectCountry={backToCountry}
-          filterOpen={filterOpen}
-          onFilterOpenChange={setFilterOpen}
+          emptyText={activeDisorderIds ? '当前筛选下没有匹配结果，试试取消病症筛选。' : undefined}
+          disorderGroups={disorderGroups}
+          selectedDisorders={selectedDisorders}
+          onToggleDisorder={toggleDisorder}
         >
           {mobileDetailNode ?? mobileExplorer}
         </MapSheet>
@@ -1146,7 +1341,7 @@ export function MapApp(props: Props) {
         <button type="button" aria-label="放大地图" disabled={!mapReady || limits.atMax} onClick={() => zoomBy(1)}>+</button>
         <button type="button" aria-label="缩小地图" disabled={!mapReady || limits.atMin} onClick={() => zoomBy(-1)}>−</button>
       </div>
-      <div className={canReset || isDesktop ? 'tc-mapapp-actions' : 'tc-mapapp-actions is-collapsed'}>
+      <div className={isDesktop && !canReset ? 'tc-mapapp-actions is-collapsed' : 'tc-mapapp-actions'}>
         <button type="button" className="tc-mapapp-ctl" onClick={backToCountry} title="回到全国视图" aria-label="回到全国视图">
           <LocateFixed size={18} aria-hidden="true" />
           <span className="tc-mapapp-ctl-label">回到全国</span>

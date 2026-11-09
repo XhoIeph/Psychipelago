@@ -12,6 +12,8 @@ export type MapHospital = {
   adcode: string
   province: string
   city: string
+  /** 机构地址，卡片第二行跟在城市后面；没收录的机构不出现 */
+  address?: string
   category: string
   level: string
   // Only map inputs use the saved Amap GCJ-02 coordinates; curated coordinates remain WGS84.
