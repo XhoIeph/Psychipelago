@@ -5,7 +5,7 @@
 | 文件 | 原件位置 | 快照 sha256（前 16 位） | 字节 |
 | --- | --- | --- | --- |
 | `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `216efcaa84b5d431` | 81568 |
-| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `128ecfedaed8ea53` | 187544 |
+| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `c1e3d3460c116bec` | 205303 |
 
 `ui-spec.json` 是从 `docs/` 原件的逐字节拷贝，只改名不改内容；`spec.cjs` 同样逐字节拷贝（skill 目录那份也已同步成这一版）。换行统一成 LF 后再算 sha 与字节数（工作流里打印的也是这个）；这一版原件与快照同为 LF，两个文件逐字节相同。
 
@@ -13,29 +13,29 @@
 
 V3-02 那五条（选中钉橙色 / 光圈 / 标签 / 其余钉不压透明度 / 手机同款）的前置必须是「点省 → 点 `.tc-cluster-pin` 展开 → 点 `.tc-hospital-pin` → 等 `.tc-pin--selected`」。聚合钉的类名是 `tc-cluster-pin` 而不是 `tc-cluster`，写成 `.tc-map-node:not(.tc-cluster)` 会抓到聚合钉、点了只展开不选中，五条会一直「前置没跑成」。选中后 canvas 加 `tc-mapapp-canvas--pinned`、标签 `display:block`、其余钉 `opacity: 1`（`v3.css:17` 走 `--tc-nodes-opacity`）。
 
-**当前被测身份（已锁定）**：`out/index.html` **2026-11-09 22:58:23 / 786848 B / sha256 前 16 `475D0634863CAD7D`**，配断言表 279 条 / 唯一 278 / 退役 104 / 204225 B / `cee8d3c83b80aa2a`。这一版是 Kipfel 清掉跨表重复段、把「评价」从元信息第四行改成区块之后重出的构建；详细改动与判据口径见下面的「第十轮」。
+**当前被测身份**：**待重新锁定**。上一份锁定身份（`out/index.html` 2026-11-09 23:55:50 / 786848 B / `02ED4E165E78CA92`，表 280 条 / `c1e3d3460c116bec`）的产物已被 2026-11-10 00:22:18 的构建覆盖（860993 B / `58F20EAEEF5EF884`）；上游 `scripts/import-kdocs.ts` 00:21:17 改动后 `data/curated/*.json` 在 00:21:49 重新生成，线索从 272（已发布）变成 326，判据里的条数因此全部过期。Kiwi 在重新锁定前不发新锚点，表与四档都按“等锚点”处理。
 
 **上一轮被锁定的身份**：`out/index.html` **2026-11-09 09:41:38 / 390,514 B / sha256 前 16 `0C3A1F663952ED8F`**，配断言表 258 条 / `00435191f7a96285`（表未动）。这一版由 Kiwi 在小镜停手后锁定，九条在同一哈希上跑三门。被它取代的 09:17:50（`5BD36C2F6EEC62FF`）只改了医生详情三行网格的 CSS，但 hover 的 `::before` 压住文字——几何探针量不出来、只有截图看得见，所以修好后又重出了一版。留档：09:17:50 只改医生详情三行网格；08:58:42（`21372E9E73D51527`，已取代）把手势判定抽成 `lib/sheet-drag.ts` 并补 `tests/sheet-drag.test.mjs`（`test:map-layout` 22 条），纯重构、不进 a11y 分母；08:41:30（`96AB29EFE033FD3E`，已被本版取代）把相机约束从「中国全境留在框内」换成 `constrainChinaCenter`——中国至少留 48px 在屏内、中心可自由移动，`chinaCameraBounds` 已删，`lib/amap-runtime.ts` 的 `move()` 改调 `constrainChinaCenter({ ...camera, getZoom: () => zoom }, point, 48)`；同版让 `.searchrow` 挂上 `dragProps`（输入框移出拖拽排除名单，`beginDrag` 按下即 `setPointerCapture`，6px 只决定写不写高度）；03:02:36（`2A040FB3FB07CD8E`）加了手机筛选按钮抽屉（`.chipbtn` + `.chipdrawer`）、夜间模式（`.theme-toggle`，键 `tc.theme`）、卡头与地图拖拽，并修了深色下侧栏滚动条与比例尺的对比度；00:43:56（`BB221CE6142956BB`）改了 `components/map/MapApp.tsx` 两处——手机医院↔医生互跳保住当前档位（large 留 large、medium 留 medium，peek 例外仍抬 medium），桌面筛选开始联动地图、与手机共用 `paintProvince()`；22:57:29（`1383CD09566589F1`）是把 `Sidebar.tsx` 的宽度把手从 `<aside>` 末尾挪到最前（绝对定位、视觉不变），Tab 顺序因此从「…省行 → 把手」变成「关于 → 把手 → 品牌 → 页签」。`tabOrder` 一类断言在更早的构建上会假红，对身份要连改动文件一起看。
 
 ## 第十轮（2026-11-09 晚）：数据换轮、「评价」改区块、图钉链换省
 
-断言表 **279 条 / 唯一 278 / 退役 104 / 204,225 B / `CEE8D3C83B80AA2A`**；登记分母 **1440 = 174、390 = 103、375 = 13、320 = 10，合计 300**。
+断言表 **280 条 / 唯一 279 / 退役 105 / 205,303 B / `C1E3D3460C116BEC`**；登记分母 **1440 = 175、390 = 103、375 = 13、320 = 10，合计 301**（多为换序与空值那条新增，减掉退役的「评价是末节」）。
 
 - **数据换轮**：医院 119 → 123 → 124 → **127**，线索已发布 **272**（文件 273，1 条未挂机构：澳门心理卫生中心），医生 **245**。界面读数：全国「127 家医院 · 272 条线索」、cptsd「35 家医院 · 55 条线索」、cptsd+pd「111 家医院 · 223 条线索」；回龙观 13 卡，筛 cptsd 6、cptsd+pd 11。
 - **判据以界面读数为准**：源文件按线索条数数出来会比界面多几条（构建期按机构合并重复段，未挂机构的线索不进医院行），拿源文件数去对断言会差几条，别这么对。
 - **跟着数据改的两处**：`v3.chip-union` → 「111 家医院 · 223 条线索」；`v3.d-filter-paints-provinces-1440` 的 `headerIncludes` 保持「35 家医院」「55 条线索」（cptsd 那组没变），只把 desc 里的旧数改掉；`base185.json` 的 `filter.multi-select-union-leads` 期望文本同步成 223。
 - **两处换样本（判据不动）**：`v3.doctor-clinic` 与 `doctor.clinic-empty` 改指于宏华（回龙观里科室为空的一位）；`v3.doctor-separator` 改指山西唯一医院那条线索（「曹晓华、王祎坤」，全库唯一并列两位医生的线索）——山东拆院后不再是单家省。
-- **「评价」从元信息第四行改成区块**：`section.tc-detail-section.tc-doctor-rating`（`h3`「评价」），正文 `article.tc-report > p.tc-quote`；位置在「医生线索」之后、`.tc-detail` 最后一个子元素。元信息固定三行（门诊 / 所在医院 / 备注）。
+- **「评价」从元信息第四行改成区块**：`section.tc-detail-section.tc-doctor-rating`（`h3`「评价」），正文 `article.tc-report > p.tc-quote`。元信息固定三行（门诊 / 所在医院 / 备注）。**2026-11-09 深夜小雨再改一次序**：评价在前、线索原文在末位——现在 `.tc-detail` 的子节点是 `head → 医生线索列表 → 元信息 → 评价节 → 线索原文节`，判顺序的两条是 `v3.doctor-leads-section-last-1440`（末节文本含「线索原文」）与 `v3.doctor-eval-section-before-leads-1440`（倒数第二节文本含「评价」）。
 - **回声规则最终版**：评价节**一律渲染**，不再按 `evaluation_echoes_report` 隐藏。原本「回声医生整节不渲染」的实现被小雨打回，表里那条 `v3.doctor-eval-absent-echo-1440` 随之退役，**没有改成反向断言**（这轮不动面）。
 - **空值不成卡片**（`UI_SPEC.md` §3）：评价为空时正文是一行灰字「无」，类名 `tc-doctor-rating-empty`，与该节 `h3` 左缘对齐、不画边框不铺底色，区块本身不消失。两条断言按此写：`v3.d-doctor-eval-empty-not-card-1440`（`borderTopWidth` / `borderLeftWidth` 为 `0px`、`backgroundColor` 透明）与 `v3.d-doctor-eval-empty-align-1440`（`styleMatch` 比 `left`，容差 1）。
-- **评价节的其余三条**：末节是评价节（马弘）、排版与同页线索原文逐项一致（`styleMatch`）、空评价正文「无」（刘华清）。
-- **退役**：`v3.doctor-rating`（原判 `hasText .tc-doctor-meta--rating` = 评价无）、`doctor.rating-empty`、`v3.doctor-leads-section-last`（末节判定交给评价节那条）、`doctor.profile-only-with-record`（档案块整块删除）、`v3.doctor-eval-absent-echo-1440`。改指等于换样本换判据，那是新检查，不是修旧检查。
+- **评价节的其余三条**：评价节紧挨在末节（线索原文）之前（马弘）；正文排版与同页线索原文逐项一致（`styleMatch`，评价节 `.tc-quote` 对 `section.tc-detail-section:last-child .tc-quote`——换序前这两处指到同一个元素、会自己跟自己比，所以换序后必须按节前缀各取一处）；空评价正文「无」（刘华清、罗新妮）。
+- **退役**：`v3.doctor-rating`（原判 `hasText .tc-doctor-meta--rating` = 评价无）、`doctor.rating-empty`、`v3.doctor-eval-section-last-1440`（原判「评价是最后一节」，换序后方向相反；末位判定改由 `v3.doctor-leads-section-last-1440` 承担）、`doctor.profile-only-with-record`（档案块整块删除）、`v3.doctor-eval-absent-echo-1440`。改指等于换样本换判据，那是新检查，不是修旧检查。
 - **图钉链换省**：山东拆院后成 2 家，全库只剩山西 1 家（山西医科大学第一医院 解放路院区）；单钉 34×34 在 (192,232)，`elementFromPoint(中心)` 就是钉体、没被右上角按钮列挡住，所以链里从 `clickat` 偏移改成直接点中心。
 - **新能力 `styleMatch`**：两处元素逐项比 `fontSize` / `lineHeight` / `color` / `whiteSpace` 与 `left` / `width`，容差 1px。读与比必须在**一次 `page.evaluate`** 里完成——分两次读会撞 `Execution context was destroyed, most likely because of a navigation`，把比较搬到 Node 侧还会反复报 `Cannot access 'delta' before initialization`。
 - **退役机制**：`RETIRE_V3_BY_ID` 里的 id 必须仍留在 `v3-checks.cjs`，由 `build-spec.cjs` 在生成时摘掉；先把检查块物理删掉再登记，会直接报 `RETIRE_V3_BY_ID ids not found in v3-checks`。另：删块脚本别留下空槽，`[...]` 里多出一个逗号会让 `for (const c of v3)` 读到 `undefined`，报错是 `Cannot read properties of undefined (reading 'id')`。
 - **本轮构建换得很密**（20:22:11 → 20:49:41 → 20:59:04 → 21:37:26 → 22:07:33 → 22:28:44 → 22:31:50 → 数据 22:35:54 后的重建）。每次换锚点都先核三件套：`out/index.html` 的时间、字节、sha256 前 16 位，三者必须来自同一次读取；字节相同而哈希不同，先怀疑取自两次构建。
 
-断言表登记 **1440 = 174、390 = 103、375 = 13、320 = 10，分母 300**（279 条表）。四档实跑（spec `204225 B / sha256 前 16 cee8d3c83b80aa2a`，锚点 22:58:23 / `475D0634863CAD7D`，跑前跑后时间、字节、sha 一致）：1440×900 = **174 / 0 / 0**、390×844 = **102 / 0 / 1**、375×812 = **12 / 0 / 1**、320×568 = **9 / 0 / 1**，合计 **297 通过 / 0 失败 / 3 不适用**；三个小视口少的都是 `s5-disabled-opacity`。报告在 `a11y-reports/lock-225823-<视口>/`。
+断言表登记 **1440 = 175、390 = 103、375 = 13、320 = 10，分母 301**（280 条表）。四档实跑（spec `205303 B / sha256 前 16 c1e3d3460c116bec`，锚点 23:55:50 / `02ED4E165E78CA92`，跑前跑后时间、字节、sha 一致）：1440×900 = **175 / 0 / 0**、390×844 = **102 / 0 / 1**、375×812 = **12 / 0 / 1**、320×568 = **9 / 0 / 1**，合计 **298 通过 / 0 失败 / 3 不适用**（`s5-disabled-opacity`）。**这组数已随产物作废**——00:22:18 的构建覆盖了 `02ED4E16`，数据同时换轮（线索 272 → 326），等重新锁定后重跑。报告留在 `a11y-reports/lock-235550b-1440`、`lock-235550b-mobile`（只作历史）。
 
 这一版把 `a11y.mapclick-*` 六条链的时序固定下来，判据一字未动：点击前 `wait .amap-layers` 加 `settle: 900`（等相机与切片稳定，否则点击会落空、量到 736），`clickat` 加 `afterMs: 700`（底卡收档过渡 340ms，350ms 的默认等待正好卡在尾巴上，会量到 432 这种中间值）。独立复跑曾在这六条里出过 `432.2>428` 与 `736>428` 两种偶发——都是采样时机、不是实现不稳定，所以固的是等待、不是容差。
 
