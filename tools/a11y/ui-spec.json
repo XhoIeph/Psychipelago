@@ -4746,7 +4746,7 @@
         {
           "action": "key",
           "value": "ArrowDown",
-          "afterMs": 450
+          "afterMs": 700
         }
       ],
       "at": 390
@@ -5833,7 +5833,7 @@
         {
           "action": "key",
           "value": "ArrowUp",
-          "afterMs": 500
+          "afterMs": 700
         },
         {
           "action": "assertrect",
@@ -6301,7 +6301,7 @@
     {
       "id": "v3.m-sheet-drag-down-390",
       "type": "rect",
-      "desc": "卡头回拖：先拖到 736，再从标题区向下拖 400px，底卡收回 peek（148–162）",
+      "desc": "卡头回拖：先拖到 736，再从标题区向下拖 600px，底卡收回 peek（148–162）。600px 是解耦速度项的纯位移量——400px 正卡在「速度项能到 736、纯位移只到 424」两段吸附的缝里，会随采样节奏跳",
       "selector": ".sheet",
       "min": {
         "h": 148
@@ -6318,14 +6318,14 @@
         {
           "action": "drag",
           "selector": ".sheet .grab",
-          "dy": -400,
+          "dy": -600,
           "steps": 24,
           "afterMs": 800
         },
         {
           "action": "drag",
           "selector": ".sheet .grab",
-          "dy": 400,
+          "dy": 600,
           "steps": 24,
           "afterMs": 800
         }
@@ -6345,6 +6345,99 @@
       "desc": "D 夜间按钮的图标在（常态无底无边，图标丢了看不出来）",
       "selector": ".theme-toggle svg",
       "at": 390
+    },
+    {
+      "id": "v3.d-hospital-leads-match-row-1440",
+      "type": "numberEquals",
+      "desc": "筛了病症进医院详情，列表行说「N 条线索」，详情标题也得说 N——两层各说各的数就是错（小雨报的「详情里仍是全部线索」）。数字比较，不比整句文案",
+      "selector": ".tc-level-head--hospital .tc-level-meta",
+      "pattern": "(\\d+)\\s*条线索",
+      "from": "rowLeads",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-chip",
+          "settle": 1000
+        },
+        {
+          "action": "click",
+          "selector": "button.tc-province-row",
+          "textContains": "北京",
+          "settle": 1400
+        },
+        {
+          "action": "wait",
+          "selector": "button.tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": "button.tc-hospital-row",
+          "remember": "rowLeads",
+          "settle": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-level-head--hospital .tc-level-meta"
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.d-doctor-leads-match-labels-1440",
+      "type": "numberEquals",
+      "desc": "筛了病症进医生详情，标题条数 = 该医生「关联病症」里所选病症那一项的条数（医生页同样按命中线索收窄）",
+      "selector": ".tc-doctor-detail .tc-detail-count",
+      "pattern": "(\\d+)",
+      "expectSelector": ".tc-doctor-detail .tc-doctor-disorders li",
+      "expectMatch": "cptsd",
+      "expectPattern": "(\\d+)",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-disorder-chip",
+          "settle": 1000
+        },
+        {
+          "action": "click",
+          "selector": "button.tc-province-row",
+          "textContains": "北京",
+          "settle": 1400
+        },
+        {
+          "action": "wait",
+          "selector": "button.tc-hospital-row"
+        },
+        {
+          "action": "click",
+          "selector": "button.tc-hospital-row",
+          "textContains": "回龙观",
+          "settle": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-report"
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "settle": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-detail"
+        }
+      ],
+      "at": 1440
     }
   ],
   "appliesTo": [

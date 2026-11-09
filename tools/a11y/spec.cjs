@@ -24,6 +24,7 @@
  *   hasText       {selector, text:"这里还没定好"}  // 该元素（或其后代）的可见文本里必须含这句话
  *   前置的 click 若用 text 定位，会依次按 button / tab / link 找同名元素（侧栏栏目是 role=tab）。
  *   textEquals    {selector, from:"doctor"}      // 与前置 remember 记下的文本逐字相等（验证「照录」这类承诺）
+ *   numberEquals  {selector, pattern, from|expectSelector}  // 两边各抽一个数再比（同类数据在两处必须一致）
  *   count         {selector, expect:1}          // 元素个数（h1 唯一）
  *   uniqueText    {selector}                    // 命中的可见元素文本两两不同（查搜索结果里重复的行）
  *   focusOn       {selector, text}
@@ -325,6 +326,61 @@ function runChecks(checks) {
       r.note = r.pass ? `与前置记下的「${c.from}」逐字一致` : `期望「${expect}」实际「${actual}」`;
       if (!r.pass) r.evidence.push(`取样 ${els[0].tagName.toLowerCase()}`);
       out.push(r); continue;
+    }
+
+
+    // 两个元素（或「前置记下的文本」与一个元素）各抽一个数再比。
+    // 用来验「同一屏里两处说法必须一致」：列表说 1 条线索，详情不能说 4 条。
+    // pattern 是正则串，取第 1 个捕获组；没有捕获组就取整个匹配。数字比较，不比字符串（「1 条」「1条」「1 条线索」都算 1）。
+    if (c.type === 'numberEquals') {
+      const flat = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
+      const vis = (el) => {
+        const rc = el.getBoundingClientRect();
+        return rc.width > 0 && rc.height > 0;
+      };
+      const pick = (sel, match) => {
+        const list = [...document.querySelectorAll(String(sel))].filter(vis);
+        if (!match) return list[0] || null;
+        return list.find((e) => flat(e.textContent).includes(String(match))) || null;
+      };
+      const num = (text, pat) => {
+        const raw = String(text == null ? '' : text);
+        if (!pat) {
+          const m = raw.match(/-?\d+(?:\.\d+)?/);
+          return m ? Number(m[0]) : null;
+        }
+        const m = new RegExp(String(pat)).exec(raw);
+        if (!m) return null;
+        const v = m[1] != null ? m[1] : m[0];
+        const n = Number(v);
+        return Number.isFinite(n) ? n : null;
+      };
+      const left = pick(c.selector, c.match);
+      if (!left) {
+        r.pass = false;
+        r.note = '选择器没有可见元素：' + c.selector;
+        out.push(r);
+        continue;
+      }
+      const leftText = flat(left.textContent);
+      const rightEl = c.expectSelector ? pick(c.expectSelector, c.expectMatch) : null;
+      const rightText = rightEl ? flat(rightEl.textContent) : flat(c.memoValue);
+      if (!rightEl && !rightText) {
+        r.pass = false;
+        r.note = c.expectSelector
+          ? '对照元素没有可见元素：' + c.expectSelector
+          : '前置没有记下「' + c.from + '」：检查 remember 是否写在那一步 click 上';
+        out.push(r);
+        continue;
+      }
+      const lv = num(leftText, c.pattern);
+      const rv = num(rightText, c.expectPattern || c.pattern);
+      r.pass = lv != null && rv != null && lv === rv;
+      r.note = r.pass
+        ? '两边都是 ' + lv + '（「' + leftText.slice(0, 40) + '」对「' + rightText.slice(0, 40) + '」）'
+        : '左边「' + leftText.slice(0, 60) + '」→ ' + lv + '，右边「' + rightText.slice(0, 60) + '」→ ' + rv;
+      out.push(r);
+      continue;
     }
 
     if (c.type === 'uniqueText') {
@@ -1269,7 +1325,7 @@ async function applyPrecondition(page, steps) {
       const simple = group
         .filter(c => !SPECIAL.has(c.type))
         // textEquals / focusOn 要把前置记下的文本带进页面里比对。
-        .map(c => (c.type === 'textEquals' || c.type === 'focusOn'
+        .map(c => (c.type === 'textEquals' || c.type === 'focusOn' || c.type === 'numberEquals'
           ? Object.assign({}, c, { memoValue: c.from && pre.memo ? pre.memo[c.from] : null })
           : c));
       const special = group.filter(c => SPECIAL.has(c.type));
