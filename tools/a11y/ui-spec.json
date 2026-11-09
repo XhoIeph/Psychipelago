@@ -6745,44 +6745,11 @@
       ]
     },
     {
-      "id": "v3.doctor-eval-section-last-1440",
-      "at": 1440,
-      "type": "hasText",
-      "selector": ".tc-detail > .tc-detail-section:last-child > h3",
-      "text": "评价",
-      "desc": "2026-11-09 改版：评价从元信息行改为独立区块，位置在「医生线索」之后、是 .tc-detail 的最后一个子元素（样本：马弘）",
-      "precondition": [
-        {
-          "action": "wait",
-          "selector": ".amap-layers",
-          "settle": 1200
-        },
-        {
-          "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "北京",
-          "afterMs": 1200
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row",
-          "textContains": "北京大学第六医院",
-          "afterMs": 1200
-        },
-        {
-          "action": "click",
-          "selector": ".tc-doctor-link",
-          "textContains": "马弘",
-          "afterMs": 1200
-        }
-      ]
-    },
-    {
       "id": "v3.doctor-eval-typography-1440",
       "at": 1440,
       "type": "styleMatch",
-      "selector": ".tc-detail > .tc-detail-section:last-child .tc-quote",
-      "against": ".tc-detail > .tc-detail-section:first-of-type .tc-quote",
+      "selector": ".tc-detail-section.tc-doctor-rating .tc-quote",
+      "against": ".tc-detail-section:last-child .tc-quote",
       "styles": [
         "fontSize",
         "lineHeight",
@@ -6825,7 +6792,7 @@
       "id": "v3.doctor-eval-empty-copy-1440",
       "at": 1440,
       "type": "hasText",
-      "selector": ".tc-detail > .tc-detail-section:last-child .tc-quote",
+      "selector": ".tc-detail-section.tc-doctor-rating .tc-quote",
       "text": "无",
       "desc": "空评价的医生仍渲染评价节，正文写「无」，排版不降级（样本：刘华清）",
       "precondition": [
@@ -6928,6 +6895,72 @@
         }
       ],
       "styles": []
+    },
+    {
+      "id": "v3.doctor-leads-section-last-1440",
+      "type": "hasText",
+      "at": 1440,
+      "selector": ".tc-doctor-detail > .tc-detail-section:last-child",
+      "text": "线索原文",
+      "desc": "医生页区块顺序：线索原文是最后一节（小雨 2026-11-09 定：评价在前、原文在后）",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "北京大学第六医院",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "textContains": "马弘",
+          "afterMs": 1200
+        }
+      ]
+    },
+    {
+      "id": "v3.doctor-eval-section-before-leads-1440",
+      "type": "hasText",
+      "at": 1440,
+      "selector": ".tc-doctor-detail > .tc-detail-section:nth-last-child(2)",
+      "text": "评价",
+      "desc": "医生页区块顺序：评价节紧挨在末节（线索原文）之前",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "北京大学第六医院",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "textContains": "马弘",
+          "afterMs": 1200
+        }
+      ]
     }
   ],
   "appliesTo": [
@@ -7421,6 +7454,11 @@
     {
       "id": "v3.doctor-leads-section-last",
       "why": "评价节排在「医生线索」之后，「末节是线索」已不成立，改由 v3.doctor-eval-section-last-1440 判",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.doctor-eval-section-last-1440",
+      "why": "2026-11-09 晚小雨改判：评价在前、线索原文在末位，原判「评价节是末位」方向反了",
       "retiredIn": "v3-2026-11-07"
     },
     {
