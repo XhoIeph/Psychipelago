@@ -88,6 +88,14 @@ const NAME = arg('name', 'spec-' + new URL(URL_ARG).hostname.replace(/[^\w.-]+/g
 const VIEWPORTS = String(arg('viewports', '1440x900,999x900,375x812'))
   .split(',').map(s => { const [w, h] = s.split('x').map(Number); return { width: w, height: h }; });
 
+// 地图状态：CI 没有 key 时 workflow 传 --no-map，同时把 A11Y_MAP_STATE=absent 放进环境，
+// 两者取或。absent 下地图域的断言不跑，直接记不适用并在 note 里写明来源——不靠 15s 超时兜。
+const MAP_STATE = argv.includes('--no-map') || String(process.env.A11Y_MAP_STATE || '').toLowerCase() === 'absent'
+  ? 'absent' : 'auto';
+const MAP_DOMAIN_NOTE = '地图状态 absent（A11Y_MAP_STATE=absent）：该断言依赖地图运行时，记不适用';
+const isMapDomain = (c) => Boolean(c.absentOk)
+  || (Array.isArray(c.precondition) && c.precondition.some((st) => st && st.envGate));
+
 let spec;
 try {
   spec = JSON.parse(fs.readFileSync(SPEC_ARG, 'utf8').replace(/^\uFEFF/, ''));
@@ -99,8 +107,21 @@ const CHECKS = Array.isArray(spec.checks) ? spec.checks : [];
 if (!CHECKS.length) { console.error('spec 里没有 checks'); process.exit(2); }
 
 // ───────────── 页面内执行体（会被序列化，常量必须写在函数体内）─────────────
-function runChecks(checks) {
+async function runChecks(checks) {
   const out = [];
+  // 取样前等动效收敛：transition/animation 跑完再读样式，避免读到中间帧（如按下态的混色）。
+  // 有无限动效时最多等 1.2s 就继续，不把断言拖成超时。
+  const settleAnimations = async () => {
+    const until = performance.now() + 1200;
+    for (;;) {
+      const running = document.getAnimations().filter((a) => a.playState === 'running');
+      if (!running.length || performance.now() > until) return;
+      await Promise.race([
+        Promise.all(running.map((a) => a.finished.catch(() => {}))),
+        new Promise((r) => setTimeout(r, 120)),
+      ]);
+    }
+  };
   const norm = (v) => (v == null ? '' : String(v));
   const toPx = (v) => {
     const m = /^(-?[\d.]+)px$/.exec(v);
@@ -121,6 +142,7 @@ function runChecks(checks) {
     }
 
     if (c.type === 'computed') {
+      if (!c.sampleNow) await settleAnimations();
       // 计算样式跟尺寸无关：body 在这种全固定布局里高度为 0，但 fontSize/lineHeight 仍然有意义。
       // 所以优先取可见元素，没有可见的退到第一个匹配（不因为尺寸为 0 就判失败）。
       const allEls = [...document.querySelectorAll(c.selector)];
@@ -1441,7 +1463,7 @@ async function applyPrecondition(page, steps) {
   const browser = await chromium.launch();
   const report = {
     url: URL_ARG, name: NAME, specName: spec.name || null, specSource: spec.source || null,
-    startedAt: new Date().toISOString(), viewports: [],
+    startedAt: new Date().toISOString(), viewports: [], mapState: MAP_STATE,
     // tally 必须写进报告：下游（baseline.cjs）要读它做判定，不能只靠 console 打印。
     tally: { pass: 0, fail: 0, unknown: 0 },
   };
@@ -1449,6 +1471,11 @@ async function applyPrecondition(page, steps) {
   for (const vp of VIEWPORTS) {
     const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: 1, locale: 'zh-CN' });
     const page = await ctx.newPage();
+    if (MAP_STATE === 'absent') {
+      // 本地跑 --no-map 时把高德运行时真正拦掉：CI 上没 key 时 SDK 请求根本不会发，
+      // 只靠表里门控跳过会留下「地图还在、marker 还在」的假象，数字对不上 CI。
+      await page.route(/amap\.com|_AMapService/, (r) => r.abort());
+    }
     // 焦点落点是否在 aria-hidden 子树里，只能在 focus 发生的那一刻判断：
     // 常驻挂载的入口若「先 focus 再摘 aria-hidden」，事后再查已经看不到那个中间态了。
     await page.addInitScript(() => {
@@ -1478,7 +1505,9 @@ async function applyPrecondition(page, steps) {
     // 按 precondition 分组：不同前置状态必须各用一张干净页面，否则前一组点开的
     // 面板会串到下一组（比如筛选态漏进首屏断言）。
     const groups = new Map();
+    const skippedByMap = [];
     applicable.forEach((c, i) => {
+      if (MAP_STATE === 'absent' && isMapDomain(c)) { skippedByMap.push(i); return; }
       const steps = Array.isArray(c.precondition) ? c.precondition : [];
       const key = steps.length ? JSON.stringify(steps) : '';
       if (!groups.has(key)) groups.set(key, { steps, idx: [] });
@@ -1487,6 +1516,7 @@ async function applyPrecondition(page, steps) {
 
     const results = new Array(applicable.length);
     const blank = (c, note) => ({ id: c.id || c.type + ':' + (c.selector || ''), type: c.type, desc: c.desc || '', pass: null, note, evidence: [] });
+    for (const i of skippedByMap) results[i] = blank(applicable[i], MAP_DOMAIN_NOTE);
     let navError = null;
 
     for (const { steps, idx } of groups.values()) {
@@ -1604,6 +1634,7 @@ async function applyPrecondition(page, steps) {
   if (report.specSource) L.push(`- 规范来源：\`${report.specSource}\``);
   L.push(`- 断言数：${CHECKS.length}（按视口适用）`);
   L.push(`- 生成：${report.startedAt}`);
+  L.push(`- 地图状态：${MAP_STATE === 'absent' ? 'absent（无 key，地图相关断言记不适用）' : 'auto'}`);
   L.push('');
   for (const v of report.viewports) {
     const pass = v.checks.filter(c => c.pass === true).length;
