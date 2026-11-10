@@ -55,6 +55,21 @@ export function gcj02ToWgs84(lng: number, lat: number): [number, number] {
 }
 
 /**
+ * 人工选点能不能盖这家机构。三种坐标来源的分量不一样：
+ *
+ * - `geocoded`：高德按机构地址查到的点，有地址依据。人工在图上点一下没有更强的来源，
+ *   所以不覆盖——但拒绝必须说出来，静默丢掉等于「界面说成功、地图没变」。
+ * - `province-centroid`：`place-hospitals.ts` 填的省中心近似值，本来就是占位（那个脚本
+ *   自己也允许被覆盖）。人工精确选中的点严格更好，应当盖掉。
+ * - `manual`：上一次人工选的点。重选同样是人在改，以新的为准，否则选错了没法改。
+ * - 没有坐标：当然接受，这正是新增机构上图的路径。
+ */
+export function acceptsManualCoordinate(hospital: Hospital): boolean {
+  // 没有坐标就一律接受：即便来源字段还留着 geocoded，那也是一条缺坐标的记录，得有人把它补上。
+  return !hospital.coordinates || hospital.coordinates_source !== 'geocoded'
+}
+
+/**
  * 覆盖层新增的机构没有源表行，也就没有定位依据，`coordinates` 一直是 null，
  * 于是在地图上永远没有图钉。人工用 `--query`/`--pick` 选定的落点记在
  * `amap-manual.json`，这里把它补回机构记录：只要人工表里有一条已选定的落点，这家机构就上图。
@@ -71,7 +86,7 @@ export function withManualCoordinates(hospitals: Hospital[], manual: ManualLocat
   }
   if (picked.size === 0) return hospitals
   return hospitals.map(hospital => {
-    if (hospital.coordinates) return hospital
+    if (!acceptsManualCoordinate(hospital)) return hospital
     const entry = picked.get(hospital.id)
     if (!entry?.chosen) return hospital
     const values = entry.chosen.location.split(',').map(Number)

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 import { doctorsFileSchema, hospitalsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import type { Hospital, Report } from '../lib/schema.ts'
-import { hospitalsFromRun } from './lib/hospitals.ts'
+import { acceptsManualCoordinate, hospitalsFromRun } from './lib/hospitals.ts'
 import { doctorsWithLocations, markUnlinked, reportsFromDocument, SOURCE_CAPTURE, SOURCE_URL } from './import-kdocs.ts'
 import type { SourceDocument } from './import-kdocs.ts'
 import { LOCATION_EVIDENCE, locationTargets, searchName, searchCity, selectPoi, searchAmap, linkLocationReports } from './lib/amap.ts'
@@ -81,9 +81,19 @@ async function main() {
       if (!hospitalId || !poiId) throw new Error('--pick 需要「机构 id 候选 id」两个参数')
       const existing = readManualLocations().find(entry => entry.hospital_id === hospitalId)
       if (!existing) throw new Error(`还没有为 ${hospitalId} 查过坐标，先跑 --query`)
+      // 先判再写：自动定位过的机构不覆盖，人工表就一个字节都不动。
+      // 写进去再「不生效」会留一个废点躺在 amap-manual.json 里——将来这家机构的来源
+      // 一旦变了（重定位失败降级、人工重置），几周前的落点会突然生效，没人想得起它。
+      const hospital = hospitals.find(item => item.id === hospitalId)
+      if (hospital && !acceptsManualCoordinate(hospital)) {
+        console.error(`  该机构已有自动定位坐标（${hospital.coordinates_source ?? '未标注来源'}），人工选点不覆盖，amap-manual.json 未改动`)
+        process.exitCode = 1
+        return
+      }
       const picked = pickCandidate(existing, poiId, { by: PICKED_BY })
       upsertManualLocation(picked)
       console.log(`已选定 ${hospitalId} → ${picked.chosen!.name}（${picked.chosen!.location}）`)
+      console.log('  再跑 node scripts/import-kdocs.ts 让这条坐标进库')
       return
     }
     const target = resolveTarget(hospitals, args[args.indexOf('--query') + 1] ?? '')
