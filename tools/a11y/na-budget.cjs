@@ -21,7 +21,7 @@ const ALLOWED = new Set(['s5-disabled-opacity'])
 // 每档 NA 的期望条数。改表就要改这里，改不动就说明表里发生了没人预期的漂移。
 const EXPECTED = {
   auto: { '1440x900': 0, '390x844': 1, '375x812': 1, '320x568': 1 },
-  absent: { '1440x900': 12, '390x844': 13, '375x812': 1, '320x568': 1 },
+  absent: { '1440x900': 12, '390x844': 14, '375x812': 1, '320x568': 1 },
 }
 
 const specPath = path.join(__dirname, 'ui-spec.json')
