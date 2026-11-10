@@ -7524,6 +7524,252 @@
           "afterMs": 1500
         }
       ]
+    },
+    {
+      "id": "v3.card-head-ellipsis-390",
+      "type": "textFits",
+      "at": 390,
+      "expect": "clip",
+      "selector": ".tc-doctor-card .tc-doctor-link",
+      "matchText": "心身疾病一科",
+      "textOverflow": "ellipsis",
+      "maxLines": 1,
+      "injectText": "心身疾病一科设有“人格障碍组”与创伤后应激障碍专病门诊联合门诊",
+      "siblingSelector": ".tc-lead-tag",
+      "tagRightMax": 0.5,
+      "cardHeight": {
+        "min": 111,
+        "max": 113
+      },
+      "desc": "卡头名字超出列宽时：scrollWidth > clientWidth、text-overflow 为 ellipsis、单行；标签右缘不得越过卡片内容右缘，卡高 112±1。注入 30 字长名、量完立刻还原，不依赖数据里恰好有超长姓名。",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 700
+        },
+        {
+          "action": "fill",
+          "selector": ".sfield input",
+          "value": "绵阳"
+        },
+        {
+          "action": "wait",
+          "selector": ".sr-row",
+          "afterMs": 1400
+        },
+        {
+          "action": "click",
+          "selector": ".sr-row",
+          "textContains": "绵阳市第三人民医院",
+          "afterMs": 1600
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-card",
+          "afterMs": 800
+        }
+      ]
+    },
+    {
+      "id": "v3.card-head-ellipsis-375",
+      "type": "textFits",
+      "at": 375,
+      "expect": "clip",
+      "selector": ".tc-doctor-card .tc-doctor-link",
+      "matchText": "心身疾病一科",
+      "textOverflow": "ellipsis",
+      "maxLines": 1,
+      "injectText": "心身疾病一科设有“人格障碍组”与创伤后应激障碍专病门诊联合门诊",
+      "siblingSelector": ".tc-lead-tag",
+      "tagRightMax": 0.5,
+      "cardHeight": {
+        "min": 111,
+        "max": 113
+      },
+      "desc": "卡头名字超出列宽时：scrollWidth > clientWidth、text-overflow 为 ellipsis、单行；标签右缘不得越过卡片内容右缘，卡高 112±1。注入 30 字长名、量完立刻还原，不依赖数据里恰好有超长姓名。",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 700
+        },
+        {
+          "action": "fill",
+          "selector": ".sfield input",
+          "value": "绵阳"
+        },
+        {
+          "action": "wait",
+          "selector": ".sr-row",
+          "afterMs": 1400
+        },
+        {
+          "action": "click",
+          "selector": ".sr-row",
+          "textContains": "绵阳市第三人民医院",
+          "afterMs": 1600
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-card",
+          "afterMs": 800
+        }
+      ]
+    },
+    {
+      "id": "v3.card-head-ellipsis-320",
+      "type": "textFits",
+      "at": 320,
+      "expect": "clip",
+      "selector": ".tc-doctor-card .tc-doctor-link",
+      "matchText": "心身疾病一科",
+      "textOverflow": "ellipsis",
+      "maxLines": 1,
+      "injectText": "心身疾病一科设有“人格障碍组”与创伤后应激障碍专病门诊联合门诊",
+      "siblingSelector": ".tc-lead-tag",
+      "tagRightMax": 0.5,
+      "cardHeight": {
+        "min": 111,
+        "max": 113
+      },
+      "desc": "卡头名字超出列宽时：scrollWidth > clientWidth、text-overflow 为 ellipsis、单行；标签右缘不得越过卡片内容右缘，卡高 112±1。注入 30 字长名、量完立刻还原，不依赖数据里恰好有超长姓名。",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 700
+        },
+        {
+          "action": "fill",
+          "selector": ".sfield input",
+          "value": "绵阳"
+        },
+        {
+          "action": "wait",
+          "selector": ".sr-row",
+          "afterMs": 1400
+        },
+        {
+          "action": "click",
+          "selector": ".sr-row",
+          "textContains": "绵阳市第三人民医院",
+          "afterMs": 1600
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-card",
+          "afterMs": 800
+        }
+      ]
+    },
+    {
+      "id": "v3.card-head-ellipsis-1440",
+      "type": "textFits",
+      "at": 1440,
+      "expect": "clip",
+      "selector": ".tc-doctor-card .tc-doctor-link",
+      "matchText": "心身疾病一科",
+      "textOverflow": "ellipsis",
+      "maxLines": 1,
+      "injectText": "心身疾病一科设有“人格障碍组”与创伤后应激障碍专病门诊联合门诊",
+      "siblingSelector": ".tc-lead-tag",
+      "tagRightMax": 0.5,
+      "cardHeight": {
+        "min": 112,
+        "max": 114
+      },
+      "desc": "卡头名字超出列宽时：scrollWidth > clientWidth、text-overflow 为 ellipsis、单行；标签右缘不得越过卡片内容右缘，卡高 113±1。注入 30 字长名、量完立刻还原，不依赖数据里恰好有超长姓名。",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "四川",
+          "afterMs": 1400
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "绵阳市第三人民医院",
+          "afterMs": 1600
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-card",
+          "afterMs": 800
+        }
+      ]
+    },
+    {
+      "id": "v3.card-head-ellipsis-390-fit",
+      "type": "textFits",
+      "at": 390,
+      "expect": "fit",
+      "selector": ".tc-doctor-card .tc-doctor-link",
+      "matchText": "心身疾病一科",
+      "textOverflow": "ellipsis",
+      "maxLines": 1,
+      "injectText": "王",
+      "siblingSelector": ".tc-lead-tag",
+      "tagRightMax": 0.5,
+      "cardHeight": {
+        "min": 111,
+        "max": 113
+      },
+      "desc": "卡头名字装得下时：scrollWidth == clientWidth、仍单行；标签右缘不得越过卡片内容右缘，卡高 112±1。反向对照：注入 1 字短名，宽度够时不该裁。",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 700
+        },
+        {
+          "action": "fill",
+          "selector": ".sfield input",
+          "value": "绵阳"
+        },
+        {
+          "action": "wait",
+          "selector": ".sr-row",
+          "afterMs": 1400
+        },
+        {
+          "action": "click",
+          "selector": ".sr-row",
+          "textContains": "绵阳市第三人民医院",
+          "afterMs": 1600
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-doctor-card",
+          "afterMs": 800
+        }
+      ]
     }
   ],
   "appliesTo": [

@@ -769,6 +769,105 @@ async function runSpecial(page, checks) {
         out.push(r)
         continue
       }
+      // 卡名是否真的走省略号：注入一段长名字，量完立刻还原（同一 tick 内），不污染后续断言。
+      // 判 scrollWidth 与 clientWidth 的关系 + text-overflow + 行数；可附带判标签右缘与卡片内容右缘、卡高。
+      // 注入是为了不依赖「数据里恰好有超长姓名」，否则数据一改这条就悄悄失真。
+      if (c.type === 'textFits') {
+        const payload = {
+          q: String(c.selector),
+          mt: c.matchText ? String(c.matchText) : '',
+          expect: c.expect === 'fit' ? 'fit' : 'clip',
+          to: c.textOverflow ? String(c.textOverflow) : 'ellipsis',
+          maxLines: c.maxLines == null ? 1 : Number(c.maxLines),
+          inject: c.injectText ? String(c.injectText) : '',
+          sib: c.siblingSelector ? String(c.siblingSelector) : '',
+          tagMax: c.tagRightMax ? Number(c.tagRightMax) : 0.5,
+          hMin: c.cardHeight ? Number(c.cardHeight.min) : null,
+          hMax: c.cardHeight ? Number(c.cardHeight.max) : null,
+        }
+        const probe = ({ q, mt, expect, to, maxLines, inject, sib, tagMax, hMin, hMax }) => {
+          const visible = Array.from(document.querySelectorAll(q)).filter((el) => {
+            const b = el.getBoundingClientRect()
+            const cs = getComputedStyle(el)
+            return b.width > 0 && b.height > 0 && cs.display !== 'none' && cs.visibility !== 'hidden'
+          })
+          const el = mt ? visible.find((x) => (x.textContent || '').includes(mt)) : visible[0]
+          if (!el) return { missing: true, count: visible.length }
+          const original = el.textContent
+          if (inject) el.textContent = inject
+          try {
+            const cs = getComputedStyle(el)
+            const box = el.getBoundingClientRect()
+            const lh = parseFloat(cs.lineHeight)
+            const card = el.closest('.tc-doctor-card')
+            const cardCs = card ? getComputedStyle(card) : null
+            const cardBox = card ? card.getBoundingClientRect() : null
+            const tag = card && sib ? card.querySelector(sib) : null
+            return {
+              sw: el.scrollWidth,
+              cw: el.clientWidth,
+              overflow: el.scrollWidth > el.clientWidth,
+              textOverflow: cs.textOverflow,
+              lines: lh > 0 ? Math.round(box.height / lh) : null,
+              height: Math.round(box.height * 10) / 10,
+              lineHeight: cs.lineHeight,
+              text: (el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 40),
+              tagRight: tag ? Math.round(tag.getBoundingClientRect().right * 10) / 10 : null,
+              contentRight: cardBox && cardCs ? Math.round((cardBox.right - parseFloat(cardCs.paddingRight || '0')) * 10) / 10 : null,
+              cardH: cardBox ? Math.round(cardBox.height * 10) / 10 : null,
+            }
+          } finally {
+            if (inject) el.textContent = original
+          }
+        }
+        let snap = null
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          try {
+            snap = await page.evaluate(probe, payload)
+          } catch (e) {
+            snap = null
+          }
+          if (snap && !snap.missing) break
+          await page.waitForTimeout(400)
+        }
+        if (!snap) {
+          r.pass = false
+          r.note = '读取失败：' + payload.q
+          out.push(r)
+          continue
+        }
+        if (snap.missing) {
+          r.pass = false
+          r.note = '没有可见元素：' + payload.q + (payload.mt ? '（含「' + payload.mt + '」）' : '')
+          out.push(r)
+          continue
+        }
+        const ok = []
+        const bad = []
+        const wantOverflow = payload.expect === 'clip'
+        if (snap.overflow === wantOverflow) ok.push('scrollWidth ' + snap.sw + (snap.overflow ? ' > ' : ' = ') + 'clientWidth ' + snap.cw)
+        else bad.push('scrollWidth ' + snap.sw + (snap.overflow ? ' > ' : ' = ') + 'clientWidth ' + snap.cw + '（期望' + (wantOverflow ? '裁切' : '装得下') + '）')
+        if (snap.textOverflow === payload.to) ok.push('text-overflow ' + snap.textOverflow)
+        else bad.push('text-overflow ' + snap.textOverflow + '（期望 ' + payload.to + '）')
+        if (payload.maxLines) {
+          if (snap.lines != null && snap.lines <= payload.maxLines) ok.push('行数 ' + snap.lines + '（高 ' + snap.height + ' / 行高 ' + snap.lineHeight + '）')
+          else bad.push('行数 ' + snap.lines + '（高 ' + snap.height + ' / 行高 ' + snap.lineHeight + '，上限 ' + payload.maxLines + '）')
+        }
+        if (snap.tagRight != null && snap.contentRight != null) {
+          if (snap.tagRight <= snap.contentRight + payload.tagMax) ok.push('标签右缘 ' + snap.tagRight + ' ≤ 内容右缘 ' + snap.contentRight)
+          else bad.push('标签右缘 ' + snap.tagRight + ' > 内容右缘 ' + snap.contentRight)
+        }
+        if (payload.hMin != null && payload.hMax != null && snap.cardH != null) {
+          if (snap.cardH >= payload.hMin && snap.cardH <= payload.hMax) ok.push('卡高 ' + snap.cardH)
+          else bad.push('卡高 ' + snap.cardH + '（期望 ' + payload.hMin + '–' + payload.hMax + '）')
+        }
+        r.pass = bad.length === 0
+        r.evidence = ['「' + snap.text + '」', ...ok.map((x) => '✓ ' + x), ...bad.map((x) => '❌ ' + x)]
+        r.note = r.pass ? (wantOverflow ? '裁切' : '装得下') + '：' + snap.sw + '/' + snap.cw : '未达预期：' + bad.join('；')
+        out.push(r)
+        continue
+      }
+
       // 排版一致：两处元素的读取与逐项比较都放在一次 page.evaluate 里完成。
       // 一次往返避免两次读之间发生导航把执行上下文打掉；页面侧比较也避开 Node 侧的临时变量。
       if (c.type === 'styleMatch') {
@@ -1374,7 +1473,7 @@ async function applyPrecondition(page, steps) {
     const applicable = CHECKS.filter(c => c.at == null || !vp.width || Math.abs(c.at - vp.width) < 1);
     // page.evaluate 只能跑"读当前状态"的断言。焦点环要真按 Tab，reduced-motion 要
     // 模拟媒体特性——这两类在 Node 侧做，页面上下文做不了。
-    const SPECIAL = new Set(['focusRing', 'focusBorder', 'focusNoColor', 'media', 'tabStaysWithin', 'tabOrder', 'polygonPaint', 'mapPan', 'styleMatch']);
+    const SPECIAL = new Set(['focusRing', 'focusBorder', 'focusNoColor', 'media', 'tabStaysWithin', 'tabOrder', 'polygonPaint', 'mapPan', 'styleMatch', 'textFits']);
 
     // 按 precondition 分组：不同前置状态必须各用一张干净页面，否则前一组点开的
     // 面板会串到下一组（比如筛选态漏进首屏断言）。
