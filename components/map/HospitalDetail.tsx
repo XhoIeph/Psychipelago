@@ -126,8 +126,8 @@ export function HospitalDetail({
                   ))}
                 </p>
               )}
-              <p className={department ? 'tc-doctor-card-dept' : 'tc-doctor-card-dept is-empty'}>{department || '无'}</p>
-              <p className={note ? 'tc-doctor-card-note' : 'tc-doctor-card-note is-empty'}>{note || '无'}</p>
+              <p className={department ? 'tc-doctor-card-dept' : 'tc-doctor-card-dept is-empty'}>{department || '暂无门诊收录'}</p>
+              <p className={note ? 'tc-doctor-card-note' : 'tc-doctor-card-note is-empty'}>{note || '暂无备注记录'}</p>
             </section>
           )
         })
