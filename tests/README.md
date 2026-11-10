@@ -46,6 +46,18 @@ node tests/map-leads-invariant-probe.mjs
 
 `tests/map-coordinates.test.mjs` 里那条断言现在是派生的：图上各点的 `leads` 之和要等于「已发布且挂了机构」的线索条数，不写死 326。控制台撤下一条线索是合法操作，写死的常数一定过期，所以这里验的是「撤下后仍然成立」（326 → 325 后依旧绿）。反向那一半固定在测试体里：同一份数据少给一条 `leads`，断言必须变红——只做前者等于把断言删了。
 
+## 新增机构能不能连着保存
+
+```
+node tests/overrides-insert-idempotent-probe.mjs
+```
+
+控制台的正常流程是「新增 → 定位 → 再保存」。烘焙必须对同一条 insert 反复稳定：连跑三次都 exit 0，第二次起 `hospitals.json` 逐字节不变。
+
+判重的基准只能是**覆盖层之前**的派生集（`hospitalsFromRun` 的结果）。`hospitals.json` 是烘焙产物，里面本来就有 insert 出来的机构，拿它当基准再叠一遍同一条 insert，看到的就是「已是源记录」——第一次烘焙之后这条路自我否定。`tests/overrides-insert.test.mjs` 把这个陷阱固定下来了：同一个 insert 叠派生集两次结果一致，叠烘焙产物则必然报错。
+
+`geocode-hospitals.ts --query/--pick` 走的是同一条合成（`hospitalsWithOverrides()`），所以新增机构烘焙之后还能继续查坐标、选落点。
+
 ## 新增机构能不能上图
 
 ```

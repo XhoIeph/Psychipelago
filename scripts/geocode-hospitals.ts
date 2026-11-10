@@ -8,8 +8,8 @@ import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 import { doctorsFileSchema, hospitalsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import type { Hospital, Report } from '../lib/schema.ts'
-import { acceptsManualCoordinate, hospitalsFromRun } from './lib/hospitals.ts'
-import { doctorsWithLocations, markUnlinked, reportsFromDocument, SOURCE_CAPTURE, SOURCE_URL } from './import-kdocs.ts'
+import { acceptsManualCoordinate, hospitalsFromRun, withManualCoordinates } from './lib/hospitals.ts'
+import { doctorsWithLocations, hospitalsWithOverrides, markUnlinked, reportsFromDocument, SOURCE_CAPTURE, SOURCE_URL } from './import-kdocs.ts'
 import type { SourceDocument } from './import-kdocs.ts'
 import { LOCATION_EVIDENCE, locationTargets, searchName, searchCity, selectPoi, searchAmap, linkLocationReports } from './lib/amap.ts'
 import type { LocationRun, Poi } from './lib/amap.ts'
@@ -36,9 +36,11 @@ export { hospitalsFromRun, gcj02ToWgs84 } from './lib/hospitals.ts'
 export function applyRun(reports: Report[], run: LocationRun, document: SourceDocument) {
   if (run.source_url !== SOURCE_URL || run.results.some(result => result.status === 'not_queried')) throw new Error('定位报告来源不符或尚未完成查询')
   const linked = markUnlinked(linkLocationReports(reports, run), run)
-  const hospitals = hospitalsFromRun(run)
+  // 与烘焙同一条合成：派生集 → 覆盖层 → 人工确定的坐标。少补最后一步，
+  // 这里写出的 hospitals.json 就与 validate 的比对基准差一批坐标，那份红会指向「有人手改数据」。
+  const hospitals = withManualCoordinates(applyStoredOverrides('hospitals', hospitalsFromRun(run)), readManualLocations())
   const updated_at = run.generated_at.slice(0, 10)
-  const hospitalFile = hospitalsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: applyStoredOverrides('hospitals', hospitals) })
+  const hospitalFile = hospitalsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: hospitals })
   const reportFile = reportsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: applyStoredOverrides('reports', linked) })
   const doctorFile = doctorsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: applyStoredOverrides('doctors', doctorsWithLocations(document, linked)) })
   // Keep public provenance minimal; the full candidate inventory stays in ignored raw storage.
@@ -73,7 +75,9 @@ async function main() {
   // 高德经常给出多条同城候选，这里只把原样返回摆出来，选哪一条由人定，
   // 不让打分规则替人决定——历史上挂错机构就是自动选定造成的。
   if (args.includes('--query') || args.includes('--pick')) {
-    const hospitals = applyStoredOverrides('hospitals', readJson<{ items: Hospital[] }>(CURATED_FILES.hospitals).items)
+    // 基准必须是「覆盖层之前」的派生集。拿已烘焙的 hospitals.json 当基准，新增的机构
+    // 在里面已经有了，叠同一条 insert 就是「已是源记录」——第一次烘焙之后这条路自我否定。
+    const hospitals = hospitalsWithOverrides() ?? []
     if (args.includes('--pick')) {
       const index = args.indexOf('--pick')
       const hospitalId = args[index + 1]
