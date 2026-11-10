@@ -4,8 +4,8 @@
 
 | 文件 | 原件位置 | 快照 sha256（前 16 位） | 字节 |
 | --- | --- | --- | --- |
-| `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `216efcaa84b5d431` | 81568 |
-| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `7d76b7d28e5a3ac8` | 219208 |
+| `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `d4e1ca8c42662111` | 82051 |
+| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `2cd513fc00ac2244` | 219372 |
 
 `ui-spec.json` 是从 `docs/` 原件的逐字节拷贝，只改名不改内容；`spec.cjs` 同样逐字节拷贝（skill 目录那份也已同步成这一版）。换行统一成 LF 后再算 sha 与字节数（工作流里打印的也是这个）；这一版原件与快照同为 LF，两个文件逐字节相同。
 
@@ -13,7 +13,7 @@
 
 V3-02 那五条（选中钉橙色 / 光圈 / 标签 / 其余钉不压透明度 / 手机同款）的前置必须是「点省 → 点 `.tc-cluster-pin` 展开 → 点 `.tc-hospital-pin` → 等 `.tc-pin--selected`」。聚合钉的类名是 `tc-cluster-pin` 而不是 `tc-cluster`，写成 `.tc-map-node:not(.tc-cluster)` 会抓到聚合钉、点了只展开不选中，五条会一直「前置没跑成」。选中后 canvas 加 `tc-mapapp-canvas--pinned`、标签 `display:block`、其余钉 `opacity: 1`（`v3.css:17` 走 `--tc-nodes-opacity`）。
 
-**当前被测身份**：`out/index.html` **2026-11-10 01:08:23 / 860,993 B / sha256 前 16 `AF1653F25ABBFC60`**（数据 00:21:49：127 家医院 / 326 条线索已发布 / 245 位医生）；配断言表 293 条 / `7d76b7d28e5a3ac8`（219,208 B）。四档实跑与报告路径见本节末尾。
+**当前被测身份**：`out/index.html` **2026-11-10 08:12:10 / 860,993 B / sha256 前 16 `F297BF1E6162AE7A`**（数据 00:21:49：127 家医院 / 326 条线索已发布 / 245 位医生）；配断言表 293 条 / `2cd513fc00ac2244`（219,372 B）。四档实跑与报告路径见本节末尾。
 
 **上一轮被锁定的身份**：`out/index.html` **2026-11-09 09:41:38 / 390,514 B / sha256 前 16 `0C3A1F663952ED8F`**，配断言表 258 条 / `00435191f7a96285`（表未动）。这一版由 Kiwi 在小镜停手后锁定，九条在同一哈希上跑三门。被它取代的 09:17:50（`5BD36C2F6EEC62FF`）只改了医生详情三行网格的 CSS，但 hover 的 `::before` 压住文字——几何探针量不出来、只有截图看得见，所以修好后又重出了一版。留档：09:17:50 只改医生详情三行网格；08:58:42（`21372E9E73D51527`，已取代）把手势判定抽成 `lib/sheet-drag.ts` 并补 `tests/sheet-drag.test.mjs`（`test:map-layout` 22 条），纯重构、不进 a11y 分母；08:41:30（`96AB29EFE033FD3E`，已被本版取代）把相机约束从「中国全境留在框内」换成 `constrainChinaCenter`——中国至少留 48px 在屏内、中心可自由移动，`chinaCameraBounds` 已删，`lib/amap-runtime.ts` 的 `move()` 改调 `constrainChinaCenter({ ...camera, getZoom: () => zoom }, point, 48)`；同版让 `.searchrow` 挂上 `dragProps`（输入框移出拖拽排除名单，`beginDrag` 按下即 `setPointerCapture`，6px 只决定写不写高度）；03:02:36（`2A040FB3FB07CD8E`）加了手机筛选按钮抽屉（`.chipbtn` + `.chipdrawer`）、夜间模式（`.theme-toggle`，键 `tc.theme`）、卡头与地图拖拽，并修了深色下侧栏滚动条与比例尺的对比度；00:43:56（`BB221CE6142956BB`）改了 `components/map/MapApp.tsx` 两处——手机医院↔医生互跳保住当前档位（large 留 large、medium 留 medium，peek 例外仍抬 medium），桌面筛选开始联动地图、与手机共用 `paintProvince()`；22:57:29（`1383CD09566589F1`）是把 `Sidebar.tsx` 的宽度把手从 `<aside>` 末尾挪到最前（绝对定位、视觉不变），Tab 顺序因此从「…省行 → 把手」变成「关于 → 把手 → 品牌 → 页签」。`tabOrder` 一类断言在更早的构建上会假红，对身份要连改动文件一起看。
 
@@ -35,7 +35,7 @@ V3-02 那五条（选中钉橙色 / 光圈 / 标签 / 其余钉不压透明度 /
 - **退役机制**：`RETIRE_V3_BY_ID` 里的 id 必须仍留在 `v3-checks.cjs`，由 `build-spec.cjs` 在生成时摘掉；先把检查块物理删掉再登记，会直接报 `RETIRE_V3_BY_ID ids not found in v3-checks`。另：删块脚本别留下空槽，`[...]` 里多出一个逗号会让 `for (const c of v3)` 读到 `undefined`，报错是 `Cannot read properties of undefined (reading 'id')`。
 - **本轮构建换得很密**（20:22:11 → 20:49:41 → 20:59:04 → 21:37:26 → 22:07:33 → 22:28:44 → 22:31:50 → 数据 22:35:54 后的重建）。每次换锚点都先核三件套：`out/index.html` 的时间、字节、sha256 前 16 位，三者必须来自同一次读取；字节相同而哈希不同，先怀疑取自两次构建。
 
-断言表登记 **1440 = 181、390 = 110、375 = 13、320 = 10，合计 314**（293 条表）。四档实跑（spec `219208 B / sha256 前 16 7d76b7d28e5a3ac8`，锚点 01:08:23 / `AF1653F25ABBFC60`，跑前跑后时间、字节、sha 一致）：1440×900 = **181 / 0 / 0**、390×844 = **109 / 0 / 1**、375×812 = **12 / 0 / 1**、320×568 = **9 / 0 / 1**，合计 **311 通过 / 0 失败 / 3 不适用**（`s5-disabled-opacity`）。报告留在 `a11y-reports/lock-010823b-1440`、`lock-010823b-mobile`。
+断言表登记 **1440 = 181、390 = 110、375 = 13、320 = 10，合计 314**（293 条表）。四档实跑（spec `219372 B / sha256 前 16 2cd513fc00ac2244`，锚点 08:12:10 / `F297BF1E6162AE7A`，跑前跑后时间、字节、sha 一致）：1440×900 = **181 / 0 / 0**、390×844 = **109 / 0 / 1**、375×812 = **12 / 0 / 1**、320×568 = **9 / 0 / 1**，合计 **311 通过 / 0 失败 / 3 不适用**（`s5-disabled-opacity`）。报告留在 `a11y-reports/lock-081210b-<视口>/`。这一版把 `v3.m-sheet-drag-up-390` 的拖动距离从 400px 改成 **600px**（判据「必须落到 736」未动，理由见文末「两处已知的读数抖动」），另给 `type.input` 补了 `mobileSelector`。
 **五列对账（分母 / 实跑 / 通过 / 不适用 / 未执行）**：1440 = 181 / 181 / 181 / 0 / 0；390 = 110 / 110 / 109 / 1 / 0；375 = 13 / 13 / 12 / 1 / 0；320 = 10 / 10 / 9 / 1 / 0；合计 314 / 314 / 311 / 3 / 0。7 条无 `at` 的通用条目（`type.body`、`type.input`、`copy.no-arrow`、`s5-disabled-opacity`、`s6-z-map`、`s6-z-ctl`、`s6-z-topbar`）在每一档都执行，390 上 6 通过、`s5-disabled-opacity` 不适用（本页没有 `.tc-map-zoom button[disabled]`）。
 
 
@@ -63,7 +63,7 @@ V3-02 那五条（选中钉橙色 / 光圈 / 标签 / 其余钉不压透明度 /
 
 ## 第十一轮（2026-11-10 凌晨）：医院页卡身改三行、原文搬到医生页
 
-锚点 **01:08:23 / 860,993 B / `AF1653F25ABBFC60`**，表 293 条 / `7d76b7d28e5a3ac8`（219,208 B），分母 181 / 110 / 13 / 10 = 314，四档 **311 / 0 / 3**。
+锚点 **08:12:10 / 860,993 B / `F297BF1E6162AE7A`**，表 293 条 / `2cd513fc00ac2244`（219,372 B），分母 181 / 110 / 13 / 10 = 314，四档 **311 / 0 / 3**。
 
 - **医院页按医生合并成卡**：一位医生一张 `section.tc-doctor-card`，回龙观 15 张 = 12 位有名医生 + 3 条无医生名的发言（无名不再合并、各自成卡）；卡内 `article.tc-report` 仍是一条发言（24 条），所以「行 N = 详情 N = `.tc-report` 数」不变。
 - **卡身固定三行**：医生名 + 病症标签、`p.tc-doctor-card-dept`、`p.tc-doctor-card-note`；后两行单行、超出省略（实测 15px / 行高 22.5px、`nowrap` + `ellipsis`、`scrollWidth == clientWidth`），空值灰字「无」。**卡内不再有原文、评价、来源与展开控件**——`.tc-report` / `.tc-quote` / `.tc-evidence-source` / `.tc-quote-toggle` 在医院页计数必须为 0。
@@ -215,8 +215,10 @@ CI 的机器上起不来高德地图：没有渲染运行时，标记（`.tc-map
 - `v3.m-hospital-can-peek` 的 `key ArrowDown`、`a11y.escape-province-peek` 的 `key Escape`：`afterMs 450 → 700`；`v3.m-detail-to-detail-keeps-stop` 的 `key ArrowUp`：`500 → 700`。入场动画 340ms，原来 450/500 只留 110/160ms 余量，整轮里偶发量到「还没抬上去」的 424。旧条目一点没删，就是要后面对得上「为什么放宽」。
 - `v3.m-sheet-drag-down-390`：下拖 400 → **600px**。400 正卡在「速度项能到 736、纯位移只到 424」两段吸附的缝里，会随采样节奏在 154/424 之间跳；600px 是纯位移就够的距离，三轮复跑全同。
 
+- `v3.m-sheet-drag-up-390`：上拖 400 → **600px**（2026-11-10，Kiwi 定）。这条要证明的是「向上拖到底卡应该落到 large」，而 154 + 400 = 554 恰好落在 424 与 736 中间，落点由合成事件的帧间隔决定——runner 里同一条单独跑 3 次是 1 过 2 红，我用与 runner 完全相同的浏览器设置（`chromium.launch()`、`deviceScaleFactor: 1`、无 touch）另写探针跑 400px 是 15/15 全 736，说明这是判具的抖、不是界面行为；改 600px 后纯位移就过 large 阈值，runner 里 4/4 通过。「必须落到 736」一个字没松。
+
 ## 两处已知的读数抖动（不改判据，下一轮再收紧）
 
-- `v3.m-sheet-drag-down-390`：在 09:17:50 的整轮里读到 `424`（要求 148–162），同一构建单独重跑一轮就绿。用 runner 相同参数（24 步、每步 16ms、`afterMs` 800）连跑三轮是 154 → 736 → 154，另跑 400 / 500 / 600px 下拖六次全是 154——动作本身没问题。缺口在起点档位取决于上一组残留，而 400px 正好落在「速度项能顶到 736 / 纯位移只到 424」两个吸附区间之间。下一轮把两条拖拽都改成 600px：154 + 600 到顶、736 − 600 到底，纯位移就够，本机已验证 3/3。
+- `v3.m-sheet-drag-down-390`：在 09:17:50 的整轮里读到 `424`（要求 148–162），同一构建单独重跑一轮就绿。用 runner 相同参数（24 步、每步 16ms、`afterMs` 800）连跑三轮是 154 → 736 → 154，另跑 400 / 500 / 600px 下拖六次全是 154——动作本身没问题。缺口在起点档位取决于上一组残留，而 400px 正好落在「速度项能顶到 736 / 纯位移只到 424」两个吸附区间之间。两条拖拽现已都改成 600px：154 + 600 到顶、736 − 600 到底，纯位移就够（上拖那条 2026-11-10 落表，见上一条）。
 - `a11y.escape-province-peek`：整轮里读到 `179.8`（要求 151–163），重跑是 157。直接复现该链路（点 `.grab` → 点「北京」→ Esc）采样：150ms 时 170.9，300ms 后稳定 157，所以 179.8 是过渡中的读数。下一轮把这条 `key` 的 `afterMs` 从 450 提到 700。
 - 两条都只影响一次读数、不影响判据；本轮锚点与断言表已锁定，不改表，记录在此供下一轮落。

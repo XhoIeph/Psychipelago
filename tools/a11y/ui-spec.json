@@ -71,8 +71,9 @@
     {
       "id": "type.input",
       "type": "computed",
-      "desc": "输入 16px（页面唯一的文本输入是顶部搜索框）",
+      "desc": "输入 16px（桌面用顶部搜索框，手机用底卡搜索框）",
       "selector": ".tc-mapapp-search input",
+      "mobileSelector": ".sfield input",
       "props": {
         "fontSize": "16px"
       },
@@ -5922,7 +5923,7 @@
     {
       "id": "v3.m-sheet-drag-up-390",
       "type": "rect",
-      "desc": "卡头可拖：从标题区向上拖 400px，底卡从 peek 154 拖到 736（实测 216px 只到 424，按实现的比例吸附取 400）",
+      "desc": "卡头可拖：从标题区向上拖 600px，底卡从 peek 154 拖到 736（600 用于跨过 424 与 736 的中间地带，避免落点依赖速度项与事件帧间隔；实测同样的 400px 会因合成事件被合并成 ≤8ms 一帧而停在 424）",
       "selector": ".sheet",
       "min": {
         "h": 730
@@ -5939,7 +5940,7 @@
         {
           "action": "drag",
           "selector": ".sheet .grab",
-          "dy": -400,
+          "dy": -600,
           "steps": 24,
           "afterMs": 800
         }
