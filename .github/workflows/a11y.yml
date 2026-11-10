@@ -301,8 +301,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          # --force 是幂等的：标签已存在只会更新。所以这一步失败就说明权限或 API 真有问题，
+          # 让它红，比把红盖住更好——账要落在能看见的地方。
           gh label create a11y-drill --repo "$GITHUB_REPOSITORY" --color B60205 \
-            --description "每周无 key 演练" --force >/dev/null 2>&1 || true
+            --description "每周无 key 演练" --force >/dev/null
           open=$(gh issue list --repo "$GITHUB_REPOSITORY" --label a11y-drill \
             --state open --json number --jq '.[0].number')
           if [ -n "$open" ]; then
@@ -314,7 +316,7 @@ jobs:
             --title "a11y 无 key 演练红了：$(date -u +%Y-%m-%d)" \
             --body "每周一的无 key 演练失败，失败的 job 见 $RUN_URL 。"
 
-      - name: Note recovery
+      - name: Note recovery and close the issue
         if: ${{ !contains(needs.*.result, 'failure') }}
         env:
           GH_TOKEN: ${{ github.token }}
@@ -324,4 +326,6 @@ jobs:
             --state open --json number --jq '.[0].number')
           [ -z "$open" ] && exit 0
           gh issue comment "$open" --repo "$GITHUB_REPOSITORY" \
-            --body "这次演练恢复正常：$RUN_URL 。确认无误后关掉这条。"
+            --body "这次演练恢复正常：$RUN_URL 。"
+          # 关账由这里做：红的是它开的，绿了也该它关。不留「等人手动关」的悬空状态。
+          gh issue close "$open" --repo "$GITHUB_REPOSITORY" --reason completed
