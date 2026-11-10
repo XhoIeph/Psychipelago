@@ -5,7 +5,7 @@
 | 文件 | 原件位置 | 快照 sha256（前 16 位） | 字节 |
 | --- | --- | --- | --- |
 | `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `7738bee1bd6034d9` | 82372 |
-| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `fc5738efc2aefa76` | 221956 |
+| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `a5d5bfb59428feba` | 222092 |
 
 `ui-spec.json` 是从 `docs/` 原件的逐字节拷贝，只改名不改内容；`spec.cjs` 同样逐字节拷贝（skill 目录那份也已同步成这一版）。换行统一成 LF 后再算 sha 与字节数（工作流里打印的也是这个）；这一版原件与快照同为 LF，两个文件逐字节相同。
 
@@ -13,7 +13,9 @@
 
 V3-02 那五条（选中钉橙色 / 光圈 / 标签 / 其余钉不压透明度 / 手机同款）的前置必须是「点省 → 点 `.tc-cluster-pin` 展开 → 点 `.tc-hospital-pin` → 等 `.tc-pin--selected`」。聚合钉的类名是 `tc-cluster-pin` 而不是 `tc-cluster`，写成 `.tc-map-node:not(.tc-cluster)` 会抓到聚合钉、点了只展开不选中，五条会一直「前置没跑成」。选中后 canvas 加 `tc-mapapp-canvas--pinned`、标签 `display:block`、其余钉 `opacity: 1`（`v3.css:17` 走 `--tc-nodes-opacity`）。
 
-**当前被测身份**：`out/index.html` **2026-11-10 13:35:33 / 847,046 B / sha256 前 16 `4C5CBF38673606A1`**（数据 09:02:25：127 家医院 / 318 条线索已发布 / 245 位医生）；配断言表 296 条 / `fc5738efc2aefa76`（221,956 B）。四档实跑与报告路径见本节末尾。
+**当前被测身份**：`out/index.html` **2026-11-10 17:29:01 / 865,726 B / sha256 前 16 `B70C49BB869ED2E5`**（数据 17:12:33：127 家医院 / 326 条线索已发布 / 252 位医生）；配断言表 296 条 / `a5d5bfb59428feba`（222,092 B）。四档实跑与报告路径见本节末尾。
+
+**第十二轮：数据换到 326 条、搜索排序、卡数 13**。界面读数：全国「127 家医院 · 326 条线索」、cptsd「35 家医院 · 90 条线索」、cptsd＋人格障碍「111 家医院 · 267 条线索」、回龙观 24 条 / 13 张卡（首卡以原文串「创伤后应激障碍专病门诊」当卡名，含 3 条线索）。跟着改的写死数：`v3.chip-union` → 111 家 / 267 条；`v3.d-filter-paints-provinces-1440` 的 `headerIncludes` → 35 家 / 90 条；八条卡身计数 12 → 13；`base185.json` 的并集文案同步 267。`doctor.note-empty`（原判「没有备注时写『无』」）在换轮后第一条 `.tc-doctor-link` 指向了带备注的卡，样本改指**潘伟刚**（回龙观里备注为空的一位），判据不动。新加两条搜索排序断言（1440 / 390 各一）：搜「武汉」时医院结果首行必须含「湖北」——`v3.d-search-wuhan-first-1440` 判 `li[role="group"][aria-label="医院"] ul.tc-plainlist > li:first-child .tc-mapapp-result`，`v3.m-search-wuhan-first-390` 判手机底卡 `.sheet-search > div:first-of-type > .sr-row:first-of-type`（手机不渲染 `.tc-mapapp-result`，先点 `.sheet .grab` 再用 `.sfield input`）。省行家数不变量（`v3.d-province-count-matches-rows-1440`）保持一般表述：当前数据 127 家全部有线索，0 条分支没有样本、未覆盖。
 
 **上一轮被锁定的身份**：`out/index.html` **2026-11-09 09:41:38 / 390,514 B / sha256 前 16 `0C3A1F663952ED8F`**，配断言表 258 条 / `00435191f7a96285`（表未动）。这一版由 Kiwi 在小镜停手后锁定，九条在同一哈希上跑三门。被它取代的 09:17:50（`5BD36C2F6EEC62FF`）只改了医生详情三行网格的 CSS，但 hover 的 `::before` 压住文字——几何探针量不出来、只有截图看得见，所以修好后又重出了一版。留档：09:17:50 只改医生详情三行网格；08:58:42（`21372E9E73D51527`，已取代）把手势判定抽成 `lib/sheet-drag.ts` 并补 `tests/sheet-drag.test.mjs`（`test:map-layout` 22 条），纯重构、不进 a11y 分母；08:41:30（`96AB29EFE033FD3E`，已被本版取代）把相机约束从「中国全境留在框内」换成 `constrainChinaCenter`——中国至少留 48px 在屏内、中心可自由移动，`chinaCameraBounds` 已删，`lib/amap-runtime.ts` 的 `move()` 改调 `constrainChinaCenter({ ...camera, getZoom: () => zoom }, point, 48)`；同版让 `.searchrow` 挂上 `dragProps`（输入框移出拖拽排除名单，`beginDrag` 按下即 `setPointerCapture`，6px 只决定写不写高度）；03:02:36（`2A040FB3FB07CD8E`）加了手机筛选按钮抽屉（`.chipbtn` + `.chipdrawer`）、夜间模式（`.theme-toggle`，键 `tc.theme`）、卡头与地图拖拽，并修了深色下侧栏滚动条与比例尺的对比度；00:43:56（`BB221CE6142956BB`）改了 `components/map/MapApp.tsx` 两处——手机医院↔医生互跳保住当前档位（large 留 large、medium 留 medium，peek 例外仍抬 medium），桌面筛选开始联动地图、与手机共用 `paintProvince()`；22:57:29（`1383CD09566589F1`）是把 `Sidebar.tsx` 的宽度把手从 `<aside>` 末尾挪到最前（绝对定位、视觉不变），Tab 顺序因此从「…省行 → 把手」变成「关于 → 把手 → 品牌 → 页签」。`tabOrder` 一类断言在更早的构建上会假红，对身份要连改动文件一起看。
 
@@ -35,8 +37,8 @@ V3-02 那五条（选中钉橙色 / 光圈 / 标签 / 其余钉不压透明度 /
 - **退役机制**：`RETIRE_V3_BY_ID` 里的 id 必须仍留在 `v3-checks.cjs`，由 `build-spec.cjs` 在生成时摘掉；先把检查块物理删掉再登记，会直接报 `RETIRE_V3_BY_ID ids not found in v3-checks`。另：删块脚本别留下空槽，`[...]` 里多出一个逗号会让 `for (const c of v3)` 读到 `undefined`，报错是 `Cannot read properties of undefined (reading 'id')`。
 - **本轮构建换得很密**（20:22:11 → 20:49:41 → 20:59:04 → 21:37:26 → 22:07:33 → 22:28:44 → 22:31:50 → 数据 22:35:54 后的重建）。每次换锚点都先核三件套：`out/index.html` 的时间、字节、sha256 前 16 位，三者必须来自同一次读取；字节相同而哈希不同，先怀疑取自两次构建。
 
-断言表登记 **1440 = 181、390 = 110、375 = 13、320 = 10，合计 314**（293 条表）。四档实跑（spec `219372 B / sha256 前 16 2cd513fc00ac2244`，锚点 08:12:10 / `F297BF1E6162AE7A`，跑前跑后时间、字节、sha 一致）：1440×900 = **181 / 0 / 0**、390×844 = **109 / 0 / 1**、375×812 = **12 / 0 / 1**、320×568 = **9 / 0 / 1**，合计 **311 通过 / 0 失败 / 3 不适用**（`s5-disabled-opacity`）。报告留在 `a11y-reports/lock-081210b-<视口>/`。这一版把 `v3.m-sheet-drag-up-390` 的拖动距离从 400px 改成 **600px**（判据「必须落到 736」未动，理由见文末「两处已知的读数抖动」），另给 `type.input` 补了 `mobileSelector`。
-**五列对账（分母 / 实跑 / 通过 / 不适用 / 未执行）**：1440 = 181 / 181 / 181 / 0 / 0；390 = 110 / 110 / 109 / 1 / 0；375 = 13 / 13 / 12 / 1 / 0；320 = 10 / 10 / 9 / 1 / 0；合计 314 / 314 / 311 / 3 / 0。7 条无 `at` 的通用条目（`type.body`、`type.input`、`copy.no-arrow`、`s5-disabled-opacity`、`s6-z-map`、`s6-z-ctl`、`s6-z-topbar`）在每一档都执行，390 上 6 通过、`s5-disabled-opacity` 不适用（本页没有 `.tc-map-zoom button[disabled]`）。
+断言表登记 **1440 = 183、390 = 111、375 = 13、320 = 10，合计 317**（296 条表）。四档实跑（spec `222092 B / sha256 前 16 a5d5bfb59428feba`，锚点 17:29:01 / `B70C49BB869ED2E5`，跑前跑后时间、字节、sha 一致）：1440×900 = **183 / 0 / 0**、390×844 = **110 / 0 / 1**、375×812 = **12 / 0 / 1**、320×568 = **9 / 0 / 1**，合计 **314 通过 / 0 失败 / 3 不适用**（`s5-disabled-opacity`）。报告留在 `a11y-reports/lock-172901b-<视口>/`。这一版跟着数据换轮改了四处写死数（`v3.chip-union` 111 家 / 267 条、`headerIncludes` 35 家 / 90 条、八条卡身计数 13、base185 并集 267），`doctor.note-empty` 的样本改指潘伟刚（换轮后第一位医生带了备注），另加两条「搜『武汉』首行必须含湖北」的排序断言。上一版（08:12:10 / `F297BF1E`，293 条 / `2cd513fc`）的四档是 311/0/3，已随数据换轮作废，只留作留档。
+**五列对账（分母 / 实跑 / 通过 / 不适用 / 未执行）**：1440 = 183 / 183 / 183 / 0 / 0；390 = 111 / 111 / 110 / 1 / 0；375 = 13 / 13 / 12 / 1 / 0；320 = 10 / 10 / 9 / 1 / 0；合计 317 / 317 / 314 / 3 / 0。7 条无 `at` 的通用条目（`type.body`、`type.input`、`copy.no-arrow`、`s5-disabled-opacity`、`s6-z-map`、`s6-z-ctl`、`s6-z-topbar`）在每一档都执行，390 上 6 通过、`s5-disabled-opacity` 不适用（本页没有 `.tc-map-zoom button[disabled]`）。
 
 
 这一版把 `a11y.mapclick-*` 六条链的时序固定下来，判据一字未动：点击前 `wait .amap-layers` 加 `settle: 900`（等相机与切片稳定，否则点击会落空、量到 736），`clickat` 加 `afterMs: 700`（底卡收档过渡 340ms，350ms 的默认等待正好卡在尾巴上，会量到 432 这种中间值）。独立复跑曾在这六条里出过 `432.2>428` 与 `736>428` 两种偶发——都是采样时机、不是实现不稳定，所以固的是等待、不是容差。
