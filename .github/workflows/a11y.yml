@@ -10,8 +10,24 @@ permissions:
 
 jobs:
   spec:
+    name: spec (${{ matrix.viewport }})
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # 单档约 10 分钟（build 3–4 分钟 + 装 chromium + 跑断言）。这里的 25 分钟是「每个 job 自己的保险丝」，
+    # 不是把原来 20 分钟的总门槛放宽：一个 job 只跑一档，保险丝挡的是单档卡死；
+    # 四档谁红了谁自己红，不再出现「前几档跑完、后几档被总超时挤掉」的取消。
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - viewport: 1440x900
+            slug: ci-1440
+          - viewport: 390x844
+            slug: ci-390
+          - viewport: 375x812
+            slug: ci-375
+          - viewport: 320x568
+            slug: ci-320
     steps:
       - uses: actions/checkout@v4
 
@@ -29,7 +45,7 @@ jobs:
           NEXT_PUBLIC_BASE_PATH: ''
 
       # runner 在步骤结束时可能收掉整个进程组，所以服务要脱离当前会话（nohup + setsid），
-      # 否则后面两个 step 会撞 connection refused。
+      # 否则后面的 step 会撞 connection refused。
       - name: Serve out/ on 4177
         run: |
           nohup setsid node scripts/preview.ts --port 4177 > /tmp/preview.log 2>&1 &
@@ -50,7 +66,9 @@ jobs:
           .ci/node_modules/.bin/playwright install --with-deps chromium
 
       # sha 是用来对表的，所以写进 job summary（日志要人翻，summary 在 PR 页面上直接可见）。
+      # 四档并行会各写一遍同样的表，只在 1440 那个 job 写一次。
       - name: Snapshot provenance
+        if: matrix.viewport == '1440x900'
         run: |
           node - <<'NODE'
           const crypto = require('crypto')
@@ -76,7 +94,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary + '\n')
           NODE
 
-      - name: Spec at 1440x900
+      - name: Spec at ${{ matrix.viewport }}
         env:
           NODE_PATH: ${{ github.workspace }}/.ci/node_modules
         run: |
@@ -90,57 +108,12 @@ jobs:
           fi
           mkdir -p reports/a11y
           node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json \
-            --viewports 1440x900 --out reports/a11y --name ci-1440
-
-      - name: Spec at 390x844
-        if: always()
-        env:
-          NODE_PATH: ${{ github.workspace }}/.ci/node_modules
-        run: |
-          if ! curl -fsS http://127.0.0.1:4177/ > /dev/null; then
-            nohup setsid node scripts/preview.ts --port 4177 > /tmp/preview.log 2>&1 &
-            for attempt in $(seq 1 40); do
-              curl -fsS http://127.0.0.1:4177/ > /dev/null && break
-              sleep 1
-            done
-          fi
-          node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json \
-            --viewports 390x844 --out reports/a11y --name ci-390
-
-      - name: Spec at 375x812
-        if: always()
-        env:
-          NODE_PATH: ${{ github.workspace }}/.ci/node_modules
-        run: |
-          if ! curl -fsS http://127.0.0.1:4177/ > /dev/null; then
-            nohup setsid node scripts/preview.ts --port 4177 > /tmp/preview.log 2>&1 &
-            for attempt in $(seq 1 40); do
-              curl -fsS http://127.0.0.1:4177/ > /dev/null && break
-              sleep 1
-            done
-          fi
-          node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json \
-            --viewports 375x812 --out reports/a11y --name ci-375
-
-      - name: Spec at 320x568
-        if: always()
-        env:
-          NODE_PATH: ${{ github.workspace }}/.ci/node_modules
-        run: |
-          if ! curl -fsS http://127.0.0.1:4177/ > /dev/null; then
-            nohup setsid node scripts/preview.ts --port 4177 > /tmp/preview.log 2>&1 &
-            for attempt in $(seq 1 40); do
-              curl -fsS http://127.0.0.1:4177/ > /dev/null && break
-              sleep 1
-            done
-          fi
-          node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json \
-            --viewports 320x568 --out reports/a11y --name ci-320
+            --viewports ${{ matrix.viewport }} --out reports/a11y --name ${{ matrix.slug }}
 
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: a11y-spec-reports
+          name: a11y-spec-${{ matrix.viewport }}
           path: reports/a11y
           if-no-files-found: warn
