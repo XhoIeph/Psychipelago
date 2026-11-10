@@ -60,6 +60,26 @@ jobs:
           cat /tmp/preview.log
           exit 1
 
+      # 断言里凡是等地图容器的都会在 CI 里 15 秒超时。那到底是「出网被挡」还是「加载了但初始化失败」，
+      # 只看 note 只能猜。这里把 SDK 域名直接拉一次，把 curl 退出码和 HTTP 状态码写进 summary：
+      # curl_exit 6/7/28 = DNS/连接/超时（出网问题）；0 + 200 = 域名可达（问题在运行时或 key 白名单）。
+      - name: AMap egress probe
+        run: |
+          set +e
+          url='https://webapi.amap.com/maps?v=2.0'
+          code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "$url" 2>/tmp/amap-curl.err)
+          rc=$?
+          err=$(tr '\n' ' ' < /tmp/amap-curl.err | cut -c1-160)
+          echo "probe url=$url curl_exit=$rc http_code=$code err=$err"
+          {
+            echo ''
+            echo '### AMap SDK 出网探测'
+            echo ''
+            echo '| 档 | curl 退出码 | HTTP | 错误 |'
+            echo '| --- | --- | --- | --- |'
+            echo "| \`${{ matrix.viewport }}\` | $rc | $code | ${err:-none} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Install playwright for the spec runner
         run: |
           npm i --no-save --prefix .ci playwright@1.63.0
