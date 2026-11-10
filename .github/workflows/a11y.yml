@@ -38,11 +38,17 @@ jobs:
 
       - run: npm ci
 
+      # 与 deploy-pages.yml 对齐：地图 Key 是构建期内联的，缺了它 lib/amap-loader.ts 会直接 reject，
+      # 页面上根本不会出现 window.AMap —— 之前四档的地图类断言全红就是这个原因，不是出网也不是白名单。
+      # 这里不设 NEXT_PUBLIC_AMAP_SERVICE_HOST：留空时 bundle 走 127.0.0.1 的 /_AMapService，正由下个 step 的 preview.ts 代跑。
       - name: Build static site
-        run: npm run build
+        run: |
+          : "${NEXT_PUBLIC_AMAP_JS_KEY:?缺少 NEXT_PUBLIC_AMAP_JS_KEY 仓库 secret；没有它 a11y 永远拿不到地图}"
+          npm run build
         env:
           GITHUB_PAGES: 'true'
           NEXT_PUBLIC_BASE_PATH: ''
+          NEXT_PUBLIC_AMAP_JS_KEY: ${{ secrets.NEXT_PUBLIC_AMAP_JS_KEY }}
 
       # runner 在步骤结束时可能收掉整个进程组，所以服务要脱离当前会话（nohup + setsid），
       # 否则后面的 step 会撞 connection refused。
@@ -64,6 +70,7 @@ jobs:
       # 只看 note 只能猜。这里把 SDK 域名直接拉一次，把 curl 退出码和 HTTP 状态码写进 summary：
       # curl_exit 6/7/28 = DNS/连接/超时（出网问题）；0 + 200 = 域名可达（问题在运行时或 key 白名单）。
       - name: AMap egress probe
+        continue-on-error: true
         run: |
           set +e
           url='https://webapi.amap.com/maps?v=2.0'
