@@ -37,3 +37,11 @@ node tests/overrides-badjson-probe.mjs
 ```
 
 写一个未闭合引号的覆盖文件，确认校验器把文件名点出来并停下。这类文件比你想象的常见：用 PowerShell 的 `ConvertTo-Json` 写中文会坏。写覆盖层一律用 node 的 `fs.writeFileSync(path, json, 'utf8')`。
+
+## 地图上的线索数跟着数据走
+
+```
+node tests/map-leads-invariant-probe.mjs
+```
+
+`tests/map-coordinates.test.mjs` 里那条断言现在是派生的：图上各点的 `leads` 之和要等于「已发布且挂了机构」的线索条数，不写死 326。控制台撤下一条线索是合法操作，写死的常数一定过期，所以这里验的是「撤下后仍然成立」（326 → 325 后依旧绿）。反向那一半固定在测试体里：同一份数据少给一条 `leads`，断言必须变红——只做前者等于把断言删了。
