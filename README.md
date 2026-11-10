@@ -2,7 +2,7 @@
 
 按地区、机构和来源浏览就诊线索，查看原文、出处与地图位置。使用 Next.js、React、高德 JS API 2.0 与 GSAP，构建为静态导出。
 
-当前唯一线索来源为[《就诊地图10.25》](https://www.kdocs.cn/l/crOlzFWeu2GY)，保留原文与附注。来源分类不代表诊断结论。
+当前唯一线索来源为[《副本就诊地图10.25repo添加中》](https://www.kdocs.cn/l/cp3b7ToQAl3J)（WPS 电子表格，cptsd / osdd-did / 人格障碍 三张工作表），保留原文与附注。来源分类不代表诊断结论。
 
 ## 本地运行
 

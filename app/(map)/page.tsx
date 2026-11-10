@@ -1,7 +1,7 @@
 import { MapApp } from '@/components/map/MapApp'
 import { formatPublishedAt, formatReportSource } from '@/lib/format'
 import { mapHospitalInputs } from '@/lib/map-coordinates'
-import locationEvidence from '@/data/evidence/locations/amap-2026-10-27.json'
+import locationEvidence from '@/data/evidence/locations/amap-2026-11-09.json'
 import {
   disorders,
   doctors,
@@ -30,7 +30,9 @@ export default function MapPage() {
           stage: report.stage,
           publishedAt: formatPublishedAt(report.published_at, report.published_at_precision),
           url: report.source_url,
+          fullText: report.evidence_full_text,
           doctorName: report.doctor_name_raw,
+          disorders: report.disorders,
         })),
     ]),
   )

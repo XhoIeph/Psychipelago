@@ -30,8 +30,10 @@ test('hospital matching excludes shops and does not erase institution-defining p
   assert.equal(selectPoi(target, [{ ...poi, name: '北京回龙观医院超市', typecode: '090601' }]).chosen, undefined)
   const base = { ...poi, name: '厦门大学附属中山医院', pname: '福建省', typecode: '090101' }
   assert.equal(selectPoi({ ...target, name: base.name }, [base, { ...base, id: 'SHOP', name: `${base.name}本部食堂` }]).chosen.id, 'B001')
-  const second = { ...poi, name: '兰州大学第二医院', pname: '甘肃省' }
-  assert.equal(selectPoi({ ...target, name: second.name }, [second, { ...second, id: 'OTHER', name: '兰州大学第一医院院本部' }]).chosen.id, 'B001')
+  // 与医院正名完全相同的候选优先于「…院本部/…院区」这类子科室点：
+  // 兰州大学第二医院本部生殖医学中心是一栋楼，不是这家医院。
+  const second = { ...poi, name: '兰州大学第二医院', pname: '甘肃省', cityname: '兰州市' }
+  assert.equal(selectPoi({ ...target, name: second.name, region: '甘肃' }, [second, { ...second, id: 'OTHER', name: '兰州大学第二医院本部生殖医学中心' }]).chosen.id, 'B001')
 })
 
 test('an explicit visiting hospital cannot use the employing hospital location', () => {
@@ -80,7 +82,7 @@ test('a successful empty search is a valid institution-level result', async () =
 
 test('linking changes only hospital_id, and rejects incomplete or stale source mappings', () => {
   const reports = [{ id: 'kdocs-test-p1-l1', hospital_name_raw: target.name, evidence_quote: '逐字原文', verification: { level: 'unverified' } }]
-  const run = { generated_at: '2026-10-27T00:00:00Z', source_url: 'https://www.kdocs.cn/l/crOlzFWeu2GY', requests: 1, results: [selectPoi(target, [poi])] }
+  const run = { generated_at: '2026-11-09T00:00:00Z', source_url: 'https://www.kdocs.cn/l/cp3b7ToQAl3J', requests: 1, results: [selectPoi(target, [poi])] }
   const linked = linkLocationReports(reports, run)
   assert.deepEqual(linked[0], { ...reports[0], hospital_id: 'kdocs-amap-b001' })
   assert.equal(reports[0].hospital_id, undefined)

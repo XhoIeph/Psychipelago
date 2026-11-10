@@ -24,6 +24,8 @@
  *   hasText       {selector, text:"这里还没定好"}  // 该元素（或其后代）的可见文本里必须含这句话
  *   前置的 click 若用 text 定位，会依次按 button / tab / link 找同名元素（侧栏栏目是 role=tab）。
  *   textEquals    {selector, from:"doctor"}      // 与前置 remember 记下的文本逐字相等（验证「照录」这类承诺）
+ *   numberEquals  {selector, pattern, from|expectSelector|expectCountSelector}  // 两边各抽一个数再比；expectCountSelector 用「可见元素个数」当右边（查「N 家」与行数）
+ *   sumEquals     {selector, pattern, sumSelector, sumPattern}  // 头部总数 = 若干可见行之和（空集合判不适用）
  *   count         {selector, expect:1}          // 元素个数（h1 唯一）
  *   uniqueText    {selector}                    // 命中的可见元素文本两两不同（查搜索结果里重复的行）
  *   focusOn       {selector, text}
@@ -285,16 +287,22 @@ function runChecks(checks) {
 
     // 属性文案：placeholder / aria-label 这类不进 textContent 的文字，只能用属性查。
     if (c.type === 'attr') {
-      const els = [...document.querySelectorAll(c.selector)].filter(e => {
+      // 属性断言的价值在属性本身：html[data-theme]、aria-* 这类承载元素常常没有盒子，
+      // 按可见性过滤会直接判失败。默认仍要求可见（挡住 display:none 的假绿），
+      // 只对显式声明 allowHidden 的条目退到全部匹配。
+      const allEls = [...document.querySelectorAll(c.selector)];
+      const visibleEls = allEls.filter(e => {
         const rc = e.getBoundingClientRect();
         return rc.width > 0 && rc.height > 0;
       });
+      const els = visibleEls.length ? visibleEls : (c.allowHidden ? allEls : []);
       const flat = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
       if (!els.length) {
         r.pass = c.skipIfMissing ? null : false;
         r.note = (c.skipIfMissing ? '本页没有该组件，断言不适用：' : '选择器没有可见元素：') + c.selector;
         out.push(r); continue;
       }
+      if (!visibleEls.length) r.evidence.push('元素无盒子（allowHidden），属性仍可读');
       const actual = flat(els[0].getAttribute(c.attr));
       const miss = [];
       if (c.contains && !actual.includes(c.contains)) miss.push(`应含「${c.contains}」`);
@@ -319,6 +327,121 @@ function runChecks(checks) {
       r.note = r.pass ? `与前置记下的「${c.from}」逐字一致` : `期望「${expect}」实际「${actual}」`;
       if (!r.pass) r.evidence.push(`取样 ${els[0].tagName.toLowerCase()}`);
       out.push(r); continue;
+    }
+
+
+    // 两个元素（或「前置记下的文本」与一个元素）各抽一个数再比。
+    // 用来验「同一屏里两处说法必须一致」：列表说 1 条线索，详情不能说 4 条。
+    // pattern 是正则串，取第 1 个捕获组；没有捕获组就取整个匹配。数字比较，不比字符串（「1 条」「1条」「1 条线索」都算 1）。
+    if (c.type === 'numberEquals') {
+      const flat = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
+      const vis = (el) => {
+        const rc = el.getBoundingClientRect();
+        return rc.width > 0 && rc.height > 0;
+      };
+      const pick = (sel, match) => {
+        const list = [...document.querySelectorAll(String(sel))].filter(vis);
+        if (!match) return list[0] || null;
+        return list.find((e) => flat(e.textContent).includes(String(match))) || null;
+      };
+      const num = (text, pat) => {
+        const raw = String(text == null ? '' : text);
+        if (!pat) {
+          const m = raw.match(/-?\d+(?:\.\d+)?/);
+          return m ? Number(m[0]) : null;
+        }
+        const m = new RegExp(String(pat)).exec(raw);
+        if (!m) return null;
+        const v = m[1] != null ? m[1] : m[0];
+        const n = Number(v);
+        return Number.isFinite(n) ? n : null;
+      };
+      const left = pick(c.selector, c.match);
+      if (!left) {
+        r.pass = false;
+        r.note = '选择器没有可见元素：' + c.selector;
+        out.push(r);
+        continue;
+      }
+      const leftText = flat(left.textContent);
+      const rightCount = c.expectCountSelector
+        ? [...document.querySelectorAll(String(c.expectCountSelector))].filter(vis).length
+        : null;
+      const rightEl = c.expectSelector ? pick(c.expectSelector, c.expectMatch) : null;
+      const rightText = rightCount != null ? String(rightCount) : rightEl ? flat(rightEl.textContent) : flat(c.memoValue);
+      if (rightCount == null && !rightEl && !rightText) {
+        r.pass = false;
+        r.note = c.expectSelector
+          ? '对照元素没有可见元素：' + c.expectSelector
+          : '前置没有记下「' + c.from + '」：检查 remember 是否写在那一步 click 上';
+        out.push(r);
+        continue;
+      }
+      const lv = num(leftText, c.pattern);
+      const rv = rightCount != null ? rightCount : num(rightText, c.expectPattern || c.pattern);
+      r.pass = lv != null && rv != null && lv === rv;
+      r.note = r.pass
+        ? '两边都是 ' + lv + '（「' + leftText.slice(0, 40) + '」对「' + rightText.slice(0, 40) + '」）'
+        : '左边「' + leftText.slice(0, 60) + '」→ ' + lv + '，右边「' + rightText.slice(0, 60) + '」→ ' + rv;
+      out.push(r);
+      continue;
+    }
+
+    // 一整块里的多处数字之和，必须等于这一块头部写着的总数。
+    // 用来拦「头部说 30 条线索、下面几行加起来只有 25」这种同屏打架。
+    // 只对当前可见的行取数：隐藏副本（另一档布局里留着的同样几行）不算。
+    // 没有可见行时记「不适用」，避免 0 = 0 的假绿。
+    if (c.type === 'sumEquals') {
+      const flat = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
+      const vis = (el) => {
+        const rc = el.getBoundingClientRect();
+        return rc.width > 0 && rc.height > 0;
+      };
+      const num = (text, pat) => {
+        const raw = String(text == null ? '' : text);
+        if (!pat) {
+          const m = raw.match(/-?\d+(?:\.\d+)?/);
+          return m ? Number(m[0]) : null;
+        }
+        const m = new RegExp(String(pat)).exec(raw);
+        if (!m) return null;
+        const v = m[1] != null ? m[1] : m[0];
+        const n = Number(v);
+        return Number.isFinite(n) ? n : null;
+      };
+      const head = [...document.querySelectorAll(String(c.selector))].filter(vis)[0] || null;
+      if (!head) {
+        r.pass = false;
+        r.note = '选择器没有可见元素：' + c.selector;
+        out.push(r);
+        continue;
+      }
+      const rows = [...document.querySelectorAll(String(c.sumSelector))].filter(vis);
+      if (rows.length < (c.minRows == null ? 1 : c.minRows)) {
+        r.pass = null;
+        r.note = '没有可求和的可见行（' + rows.length + ' 行），断言不适用：' + c.sumSelector;
+        out.push(r);
+        continue;
+      }
+      const total = num(flat(head.textContent), c.pattern);
+      let sum = 0;
+      let unparsed = 0;
+      const detail = [];
+      for (const el of rows) {
+        const v = num(flat(el.textContent), c.sumPattern || c.pattern);
+        if (v == null) { unparsed += 1; detail.push('?'); continue; }
+        sum += v;
+        detail.push(String(v));
+      }
+      r.pass = total != null && unparsed === 0 && total === sum;
+      r.note = r.pass
+        ? '头部 ' + total + ' = ' + rows.length + ' 行之和 ' + sum
+        : '头部「' + flat(head.textContent).slice(0, 50) + '」→ ' + total
+          + '，' + rows.length + ' 行之和 ' + sum + '（' + detail.join(' + ') + '）'
+          + (unparsed ? '，其中 ' + unparsed + ' 行没抽出数字' : '');
+      if (!r.pass) r.evidence.push('求和行：' + rows.length + ' 可见');
+      out.push(r);
+      continue;
     }
 
     if (c.type === 'uniqueText') {
@@ -434,6 +557,22 @@ function runChecks(checks) {
       r.note = `文档横向溢出 ${over}px`;
       out.push(r); continue;
     }
+    if (c.type === 'scrollFit') {
+      // 容器内不得横向溢出：scrollWidth 必须等于 clientWidth（差 1px 内算取整误差）。
+      const el = [...document.querySelectorAll(c.selector)].find(e => {
+        const rc = e.getBoundingClientRect();
+        return rc.width > 0 && rc.height > 0;
+      });
+      if (!el) {
+        r.pass = c.skipIfMissing ? null : false;
+        r.note = (c.skipIfMissing ? '本页没有该组件，断言不适用：' : '选择器没有可见元素：') + c.selector;
+        out.push(r); continue;
+      }
+      const over = el.scrollWidth - el.clientWidth;
+      r.pass = over <= 1;
+      r.note = `${c.selector} 横向溢出 ${over}px（scrollWidth ${el.scrollWidth} / clientWidth ${el.clientWidth}）`;
+      out.push(r); continue;
+    }
 
     r.pass = null;
     r.note = '未知 check 类型：' + c.type;
@@ -474,11 +613,337 @@ function shadowUses(color, shadow) {
   return new RegExp(`rgba?\\(\\s*${t[0]}\\s*,\\s*${t[1]}\\s*,\\s*${t[2]}\\b`, 'i').test(shadow);
 }
 
+// 省面高亮采集：挂 AMap.Polygon.setOptions，按下开/关各收一轮，最后还原原型。
+// 只记录 fillColor / fillOpacity —— 这两个值就是「命中省画成什么、未命中省压到多淡」。
+async function collectPolygonPaint(page, chipSel) {
+  return page.evaluate(async (chipSel) => {
+    const chip0 = document.querySelector(chipSel);
+    if (!chip0) return { missing: true };
+    if (!window.AMap || !window.AMap.Polygon || !window.AMap.Polygon.prototype.setOptions) {
+      return { noAmap: true };
+    }
+    const proto = window.AMap.Polygon.prototype;
+    const orig = proto.setOptions;
+    const tap = [];
+    proto.setOptions = function (opts) {
+      if (opts && (opts.fillColor || opts.fillOpacity != null)) {
+        tap.push({
+          fillColor: opts.fillColor ? String(opts.fillColor).toLowerCase() : null,
+          fillOpacity: opts.fillOpacity == null ? null : Number(opts.fillOpacity),
+        });
+      }
+      return orig.apply(this, arguments);
+    };
+    const headerText = () => (document.querySelector('.tc-sidebar') ? document.querySelector('.tc-sidebar').textContent : '').replace(/\s+/g, ' ').trim();
+    // 等这一轮上色停下来：tap 连续 240ms 不增长即认为画完（有上限，避免过渡卡住把整轮拖死）。
+    const settle = async (limitMs) => {
+      const t0 = Date.now();
+      let last = -1;
+      while (Date.now() - t0 < limitMs) {
+        await new Promise((r) => setTimeout(r, 120));
+        if (tap.length === last && tap.length > 0) return true;
+        last = tap.length;
+      }
+      return false;
+    };
+    const press = async (want) => {
+      const chip = document.querySelector(chipSel);
+      const isOn = chip.getAttribute('aria-pressed') === 'true';
+      if (isOn !== want) chip.click();
+      tap.length = 0;
+      const settled = await settle(4000);
+      await new Promise((r) => setTimeout(r, 200));
+      return {
+        pressed: document.querySelector(chipSel).getAttribute('aria-pressed'),
+        settled,
+        calls: tap.slice(),
+        header: headerText(),
+      };
+    };
+    const on = await press(true);
+    const off = await press(false);
+    proto.setOptions = orig;
+    return { on, off };
+  }, chipSel);
+}
+
 async function runSpecial(page, checks) {
   const out = [];
   for (const c of checks) {
     const r = { id: c.id || c.type, type: c.type, desc: c.desc || '', pass: null, note: '', evidence: [] };
     try {
+      // 省面高亮：phase=paint 判「勾选后命中省画成 #087f7b/.26、其余压到 ≤.05」，
+      // phase=clear 判「取消勾选后回到按密度着色（≥.5、多种颜色）、不留 #087f7b」。
+      if (c.type === 'polygonPaint') {
+        const chipSel = String(c.selector || 'button.tc-disorder-chip[data-disorder="cptsd"]');
+        const data = await collectPolygonPaint(page, chipSel);
+        if (data.missing) { r.pass = null; r.note = '本页没有病症开关，断言不适用：' + chipSel; out.push(r); continue; }
+        if (data.noAmap) { r.pass = null; r.note = '地图运行时未就绪（window.AMap 缺失），断言不适用'; out.push(r); continue; }
+        const phase = c.phase === 'clear' ? 'clear' : 'paint';
+        const snap = phase === 'clear' ? data.off : data.on;
+        const wantPressed = phase === 'clear' ? 'false' : 'true';
+        const calls = snap.calls || [];
+        const ok = [];
+        const bad = [];
+        const near = (a, b) => a != null && Math.abs(a - b) <= 0.005;
+        if (phase === 'paint') {
+          const hit = calls.filter((t) => t.fillColor === '#087f7b' && near(t.fillOpacity, 0.26));
+          const rest = calls.filter((t) => !(t.fillColor === '#087f7b' && near(t.fillOpacity, 0.26)));
+          const bleed = rest.filter((t) => t.fillOpacity == null || t.fillOpacity > 0.05);
+          const hitMin = Number(c.hitMin || 100);
+          const missMin = Number(c.missMin || 100);
+          (hit.length >= hitMin ? ok : bad).push(`命中省上色 ${hit.length} 次（需 ≥${hitMin}，fillColor #087f7b / .26）`);
+          (rest.length >= missMin ? ok : bad).push(`未命中省上色 ${rest.length} 次（需 ≥${missMin}）`);
+          (bleed.length === 0 ? ok : bad).push(`未命中省透明度全部 ≤.05（越界 ${bleed.length} 次）`);
+          for (const t of (c.headerIncludes || [])) {
+            (snap.header.includes(String(t)) ? ok : bad).push(`头部含「${t}」`);
+          }
+        } else {
+          const painted = calls.filter((t) => t.fillOpacity != null && t.fillOpacity >= 0.5);
+          const zero = calls.filter((t) => t.fillOpacity != null && t.fillOpacity <= 0.05);
+          const zeroAllowed = zero.filter((t) => t.fillColor === '#ffffff').length;
+          const paintedMin = Number(c.paintedMin || 100);
+          const colors = new Set(painted.map((t) => t.fillColor));
+          const stillHit = calls.filter((t) => t.fillColor === '#087f7b' && near(t.fillOpacity, 0.26));
+          (painted.length >= paintedMin ? ok : bad).push(`恢复密度着色 ${painted.length} 次（需 ≥${paintedMin}，透明度 ≥.5）`);
+          (colors.size >= Number(c.distinctColorsMin || 3) ? ok : bad).push(`密度色阶 ${colors.size} 种（需 ≥${Number(c.distinctColorsMin || 3)}）`);
+          (zero.length === zeroAllowed ? ok : bad).push(`近零透明仅留给 0 报告省（白底 ${zeroAllowed} 次，其余 ${zero.length - zeroAllowed} 次）`);
+          (stillHit.length === 0 ? ok : bad).push(`不再有 #087f7b/.26 残留（${stillHit.length} 次）`);
+        }
+        (snap.pressed === wantPressed ? ok : bad).push(`aria-pressed=${snap.pressed}（需 ${wantPressed}）`);
+        (snap.settled ? ok : bad).push('上色在 4s 内收敛');
+        r.evidence = [...ok.map((x) => '✓ ' + x), ...bad.map((x) => '❌ ' + x)];
+        r.pass = bad.length === 0;
+        r.note = `${phase}：采集 ${calls.length} 次 setOptions`;
+        out.push(r);
+        continue;
+      }
+      // 地图可拖：拖动前后读容器上的 AMap 实例取中心，判纬度/经度「明显变化」。角度按视口定，
+      // 只要求超过下限（实测 390 竖拖 200px，纬度 37.8 → 17.5），不写死具体值。
+      if (c.type === 'mapPan') {
+        const sel = String(c.selector || '.amap-container')
+        const read = () => page.evaluate((s) => {
+          const el = document.querySelector(s)
+          const map = el && (el.amap || el.__amap || el._amap)
+          if (!map || typeof map.getCenter !== 'function') return null
+          const p = map.getCenter()
+          return { lat: p.getLat(), lng: p.getLng(), zoom: map.getZoom() }
+        }, sel)
+        const before = await read()
+        if (!before) { r.pass = null; r.note = '地图运行时未就绪（容器上取不到 AMap 实例），断言不适用'; out.push(r); continue }
+        const box = await page.locator(sel).first().boundingBox().catch(() => null)
+        if (!box) { r.pass = false; r.note = '地图容器没有盒子：' + sel; out.push(r); continue }
+        const dx = Number(c.dx || 0)
+        const dy = Number(c.dy || 0)
+        const fx = c.from && c.from.x != null ? c.from.x : 0.5
+        const fy = c.from && c.from.y != null ? c.from.y : 0.3
+        const sx = box.x + box.width * fx
+        const sy = box.y + box.height * fy
+        const n = Math.max(4, Number(c.steps || 16))
+        await page.mouse.move(sx, sy)
+        await page.mouse.down()
+        for (let i = 1; i <= n; i += 1) {
+          await page.mouse.move(sx + (dx * i) / n, sy + (dy * i) / n)
+          await page.waitForTimeout(16)
+        }
+        await page.mouse.up()
+        await page.waitForTimeout(Number(c.settle || 900))
+        const after = await read()
+        if (!after) { r.pass = false; r.note = '拖动后再读不到地图实例'; out.push(r); continue }
+        const dLat = Math.abs(after.lat - before.lat)
+        const dLng = Math.abs(after.lng - before.lng)
+        const minLat = Number(c.minLat || 0)
+        const minLng = Number(c.minLng || 0)
+        const ok = []
+        const bad = []
+        if (minLat) (dLat >= minLat ? ok : bad).push(`纬度变化 ${dLat.toFixed(2)}°（需 ≥${minLat}°）`)
+        if (minLng) (dLng >= minLng ? ok : bad).push(`经度变化 ${dLng.toFixed(2)}°（需 ≥${minLng}°）`)
+        r.pass = bad.length === 0 && ok.length > 0
+        r.evidence = [
+          ...ok.map((x) => '✓ ' + x),
+          ...bad.map((x) => '❌ ' + x),
+          `中心 ${before.lat.toFixed(2)},${before.lng.toFixed(2)} → ${after.lat.toFixed(2)},${after.lng.toFixed(2)}`,
+          `zoom ${before.zoom}`,
+        ]
+        r.note = `拖动 ${dx},${dy}px`
+        out.push(r)
+        continue
+      }
+      // 卡名是否真的走省略号：注入一段长名字，量完立刻还原（同一 tick 内），不污染后续断言。
+      // 判 scrollWidth 与 clientWidth 的关系 + text-overflow + 行数；可附带判标签右缘与卡片内容右缘、卡高。
+      // 注入是为了不依赖「数据里恰好有超长姓名」，否则数据一改这条就悄悄失真。
+      if (c.type === 'textFits') {
+        const payload = {
+          q: String(c.selector),
+          mt: c.matchText ? String(c.matchText) : '',
+          expect: c.expect === 'fit' ? 'fit' : 'clip',
+          to: c.textOverflow ? String(c.textOverflow) : 'ellipsis',
+          maxLines: c.maxLines == null ? 1 : Number(c.maxLines),
+          inject: c.injectText ? String(c.injectText) : '',
+          sib: c.siblingSelector ? String(c.siblingSelector) : '',
+          tagMax: c.tagRightMax ? Number(c.tagRightMax) : 0.5,
+          hMin: c.cardHeight ? Number(c.cardHeight.min) : null,
+          hMax: c.cardHeight ? Number(c.cardHeight.max) : null,
+        }
+        const probe = ({ q, mt, expect, to, maxLines, inject, sib, tagMax, hMin, hMax }) => {
+          const visible = Array.from(document.querySelectorAll(q)).filter((el) => {
+            const b = el.getBoundingClientRect()
+            const cs = getComputedStyle(el)
+            return b.width > 0 && b.height > 0 && cs.display !== 'none' && cs.visibility !== 'hidden'
+          })
+          const el = mt ? visible.find((x) => (x.textContent || '').includes(mt)) : visible[0]
+          if (!el) return { missing: true, count: visible.length }
+          const original = el.textContent
+          if (inject) el.textContent = inject
+          try {
+            const cs = getComputedStyle(el)
+            const box = el.getBoundingClientRect()
+            const lh = parseFloat(cs.lineHeight)
+            const card = el.closest('.tc-doctor-card')
+            const cardCs = card ? getComputedStyle(card) : null
+            const cardBox = card ? card.getBoundingClientRect() : null
+            const tag = card && sib ? card.querySelector(sib) : null
+            return {
+              sw: el.scrollWidth,
+              cw: el.clientWidth,
+              overflow: el.scrollWidth > el.clientWidth,
+              textOverflow: cs.textOverflow,
+              lines: lh > 0 ? Math.round(box.height / lh) : null,
+              height: Math.round(box.height * 10) / 10,
+              lineHeight: cs.lineHeight,
+              text: (el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 40),
+              tagRight: tag ? Math.round(tag.getBoundingClientRect().right * 10) / 10 : null,
+              contentRight: cardBox && cardCs ? Math.round((cardBox.right - parseFloat(cardCs.paddingRight || '0')) * 10) / 10 : null,
+              cardH: cardBox ? Math.round(cardBox.height * 10) / 10 : null,
+            }
+          } finally {
+            if (inject) el.textContent = original
+          }
+        }
+        let snap = null
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          try {
+            snap = await page.evaluate(probe, payload)
+          } catch (e) {
+            snap = null
+          }
+          if (snap && !snap.missing) break
+          await page.waitForTimeout(400)
+        }
+        if (!snap) {
+          r.pass = false
+          r.note = '读取失败：' + payload.q
+          out.push(r)
+          continue
+        }
+        if (snap.missing) {
+          r.pass = false
+          r.note = '没有可见元素：' + payload.q + (payload.mt ? '（含「' + payload.mt + '」）' : '')
+          out.push(r)
+          continue
+        }
+        const ok = []
+        const bad = []
+        const wantOverflow = payload.expect === 'clip'
+        if (snap.overflow === wantOverflow) ok.push('scrollWidth ' + snap.sw + (snap.overflow ? ' > ' : ' = ') + 'clientWidth ' + snap.cw)
+        else bad.push('scrollWidth ' + snap.sw + (snap.overflow ? ' > ' : ' = ') + 'clientWidth ' + snap.cw + '（期望' + (wantOverflow ? '裁切' : '装得下') + '）')
+        if (snap.textOverflow === payload.to) ok.push('text-overflow ' + snap.textOverflow)
+        else bad.push('text-overflow ' + snap.textOverflow + '（期望 ' + payload.to + '）')
+        if (payload.maxLines) {
+          if (snap.lines != null && snap.lines <= payload.maxLines) ok.push('行数 ' + snap.lines + '（高 ' + snap.height + ' / 行高 ' + snap.lineHeight + '）')
+          else bad.push('行数 ' + snap.lines + '（高 ' + snap.height + ' / 行高 ' + snap.lineHeight + '，上限 ' + payload.maxLines + '）')
+        }
+        if (snap.tagRight != null && snap.contentRight != null) {
+          if (snap.tagRight <= snap.contentRight + payload.tagMax) ok.push('标签右缘 ' + snap.tagRight + ' ≤ 内容右缘 ' + snap.contentRight)
+          else bad.push('标签右缘 ' + snap.tagRight + ' > 内容右缘 ' + snap.contentRight)
+        }
+        if (payload.hMin != null && payload.hMax != null && snap.cardH != null) {
+          if (snap.cardH >= payload.hMin && snap.cardH <= payload.hMax) ok.push('卡高 ' + snap.cardH)
+          else bad.push('卡高 ' + snap.cardH + '（期望 ' + payload.hMin + '–' + payload.hMax + '）')
+        }
+        r.pass = bad.length === 0
+        r.evidence = ['「' + snap.text + '」', ...ok.map((x) => '✓ ' + x), ...bad.map((x) => '❌ ' + x)]
+        r.note = r.pass ? (wantOverflow ? '裁切' : '装得下') + '：' + snap.sw + '/' + snap.cw : '未达预期：' + bad.join('；')
+        out.push(r)
+        continue
+      }
+
+      // 排版一致：两处元素的读取与逐项比较都放在一次 page.evaluate 里完成。
+      // 一次往返避免两次读之间发生导航把执行上下文打掉；页面侧比较也避开 Node 侧的临时变量。
+      if (c.type === 'styleMatch') {
+        const payload = {
+          qa: String(c.selector),
+          qb: String(c.against || '.tc-quote'),
+          st: Array.isArray(c.styles) ? c.styles : ['fontSize', 'lineHeight', 'color', 'whiteSpace'],
+          rt: Array.isArray(c.rect) ? c.rect : ['left', 'width'],
+          tol: Number(c.tolerance == null ? 1 : c.tolerance),
+        }
+        const comparator = ({ qa, qb, st, rt, tol }) => {
+          const grab = (q) => {
+            const visible = Array.from(document.querySelectorAll(q)).filter((el) => {
+              const box = el.getBoundingClientRect()
+              const cs = getComputedStyle(el)
+              return box.width > 0 && box.height > 0 && cs.display !== 'none' && cs.visibility !== 'hidden'
+            })
+            const el = visible[0]
+            if (!el) return null
+            const cs = getComputedStyle(el)
+            const box = el.getBoundingClientRect()
+            return { el, cs, box, count: visible.length }
+          }
+          const A = grab(qa)
+          const B = grab(qb)
+          if (!A) return { missing: 'a' }
+          if (!B) return { missing: 'b' }
+          const ok = []
+          const bad = []
+          st.forEach((k) => {
+            const av = A.cs[k]
+            const bv = B.cs[k]
+            ;(av === bv ? ok : bad).push(k + ' ' + av + '（对照 ' + bv + '）')
+          })
+          rt.forEach((k) => {
+            const av = Math.round(A.box[k] * 100) / 100
+            const bv = Math.round(B.box[k] * 100) / 100
+            const diff = Math.round(Math.abs(av - bv) * 100) / 100
+            ;(diff <= tol ? ok : bad).push(k + ' ' + av + 'px（对照 ' + bv + 'px，差 ' + diff + '）')
+          })
+          return { ok, bad, aCount: A.count, bCount: B.count }
+        }
+        let snap = null
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          try {
+            snap = await page.evaluate(comparator, payload)
+          } catch (e) {
+            snap = null
+          }
+          if (snap && !snap.missing) break
+          await page.waitForTimeout(500)
+        }
+        if (!snap) {
+          r.pass = false
+          r.note = '读取失败（页面可能仍在导航）：' + payload.qa
+          out.push(r)
+          continue
+        }
+        if (snap.missing === 'a') {
+          r.pass = false
+          r.note = '没有可见元素：' + payload.qa
+          out.push(r)
+          continue
+        }
+        if (snap.missing === 'b') {
+          r.pass = false
+          r.note = '对照元素没有可见元素：' + payload.qb
+          out.push(r)
+          continue
+        }
+        r.pass = snap.bad.length === 0
+        r.evidence = [...snap.ok.map((x) => '✓ ' + x), ...snap.bad.map((x) => '❌ ' + x)]
+        r.note = '对照 ' + payload.qb + '（各 ' + snap.aCount + '/' + snap.bCount + ' 个可见匹配）'
+        out.push(r)
+        continue
+      }
       // 焦点陷阱：连按 Tab，焦点不许离开容器。抽屉、对话框这类「打开后接管焦点」的浮层用它。
       if (c.type === 'tabStaysWithin') {
         const within = String(c.selector);
@@ -502,6 +967,43 @@ async function runSpecial(page, checks) {
           ? `${presses} 次 Tab 都留在 ${within} 内`
           : `第 ${escapedAt} 次 Tab 落到 ${outside}，已离开 ${within}`;
         r.evidence = [{ presses, escapedAt }];
+        out.push(r); continue;
+      }
+      // Tab 顺序：从页面顶部连按 Tab，first 必须在 second 之前到达。
+      // 不写成「一直按到出现为止」——那把顺序改坏了也照样绿。
+      if (c.type === 'tabOrder') {
+        const first = String(c.first);
+        const second = String(c.second);
+        const presses = Number(c.presses || 60);
+        let idxFirst = -1;
+        let idxSecond = -1;
+        const seen = [];
+        await page.evaluate(() => {
+          const a = document.activeElement;
+          if (a && a.blur) a.blur();
+        }).catch(() => {});
+        for (let i = 1; i <= presses && (idxFirst < 0 || idxSecond < 0); i += 1) {
+          await page.keyboard.press('Tab');
+          const hit = await page.evaluate(({ f, g }) => {
+            const a = document.activeElement;
+            if (!a || a === document.body) return null;
+            const name = a.tagName.toLowerCase() + (typeof a.className === 'string' && a.className ? '.' + a.className.split(/\s+/)[0] : '');
+            return { isFirst: a.matches(f), isSecond: a.matches(g), name };
+          }, { f: first, g: second }).catch(() => null);
+          if (!hit) continue;
+          seen.push(hit.name);
+          if (hit.isFirst && idxFirst < 0) idxFirst = i;
+          if (hit.isSecond && idxSecond < 0) idxSecond = i;
+        }
+        r.pass = idxFirst > 0 && idxSecond > 0 && idxFirst < idxSecond;
+        r.note = idxFirst < 0
+          ? `按 Tab ${presses} 次没有到达 ${first}`
+          : idxSecond < 0
+            ? `按 Tab ${presses} 次没有到达 ${second}（${first} 在第 ${idxFirst} 次）`
+            : idxFirst < idxSecond
+              ? `${first} 在第 ${idxFirst} 次 Tab 到达，早于 ${second}（第 ${idxSecond} 次）`
+              : `${first} 在第 ${idxFirst} 次才到，晚于 ${second}（第 ${idxSecond} 次）`;
+        r.evidence = seen.slice(0, 12);
         out.push(r); continue;
       }
       if (c.type === 'focusRing') {
@@ -717,16 +1219,16 @@ async function runSpecial(page, checks) {
   return out;
 }
 
-// 断言的「前置状态」：写在断言文件的 precondition 里，只允许三种动作。
+// 断言的「前置状态」：写在断言文件的 precondition 里，只允许这里的几种动作。
 // 直接操作页面（不是参数化的全局开关），这样同一份文件就能说清「这条要在什么状态下量」。
-const PRECONDITION_ACTIONS = new Set(['fill', 'click', 'clickjs', 'wait', 'select', 'key', 'press', 'focus', 'expectfocus']);
+const PRECONDITION_ACTIONS = new Set(['fill', 'click', 'clickjs', 'clickat', 'wait', 'select', 'key', 'press', 'focus', 'expectfocus', 'reload', 'assertrect', 'drag']);
 
 async function applyPrecondition(page, steps) {
   const memo = {};
   for (const step of steps) {
     const action = String((step && step.action) || '').toLowerCase();
     if (!PRECONDITION_ACTIONS.has(action)) {
-      return { ok: false, note: `前置动作不认识：${action || '(空)'}，只支持 fill / click / wait / select / key（或 press）/ focus / expectFocus`, memo };
+      return { ok: false, note: `前置动作不认识：${action || '(空)'}，只支持 fill / click / clickjs / clickat / wait / select / key（或 press）/ focus / expectFocus / reload / assertRect / drag`, memo };
     }
     // key / press 没有选择器：直接往当前焦点元素敲键（Escape 关抽屉、Tab 走位这类）。
     // press 是 key 的别名，两个名字都收：断言作者按日常说法写的也能跑。
@@ -734,6 +1236,104 @@ async function applyPrecondition(page, steps) {
       if (!step.value) return { ok: false, note: `前置动作 ${action} 缺 value（例如 "Escape"）`, memo };
       await page.keyboard.press(String(step.value));
       if (step.afterMs) await page.waitForTimeout(Number(step.afterMs));
+      continue;
+    }
+    // clickat：按坐标点一下。高德只认真实指针序列，el.click() 派发的合成 click 它不接，
+    // 地图手势（点空白收档、拖动）只能靠这条前置。坐标有两种给法：
+    //   { x, y }                  绝对坐标，写死取景
+    //   { selector, dx, dy }      从元素 rect 推，换视口/换取景不用改数（推荐）
+    // expect 给一个选择器时，先校验这一点上确实是它：落在图钉、底卡或按钮上的「空白点」
+    // 是坐标漂移不是断言失败，要当场报出来，别默默点下去还给出结论。
+    if (action === 'clickat') {
+      let px, py;
+      if (step.selector) {
+        const box = await page.locator(step.selector).first().boundingBox();
+        if (!box) return { ok: false, note: `clickat 目标没有布局盒：${step.selector}`, memo };
+        px = Math.round(box.x + Number(step.dx || 0));
+        py = Math.round(box.y + Number(step.dy || 0));
+      } else {
+        if (typeof step.x !== 'number' || typeof step.y !== 'number') {
+          return { ok: false, note: 'clickat 需要 x/y，或 selector + dx/dy', memo };
+        }
+        px = Math.round(step.x);
+        py = Math.round(step.y);
+      }
+      const hit = await page.evaluate(([x, y]) => {
+        const el = document.elementFromPoint(x, y);
+        if (!el) return null;
+        const chain = [];
+        let n = el;
+        while (n && n.nodeType === 1 && chain.length < 6) {
+          chain.push('.' + String(n.className || n.tagName).split(/\s+/).filter(Boolean).join('.'));
+          n = n.parentElement;
+        }
+        return chain.join(' < ');
+      }, [px, py]).catch(() => null);
+      if (step.expect) {
+        const matches = await page.evaluate(([x, y, q]) => {
+          const el = document.elementFromPoint(x, y);
+          return Boolean(el && (el.matches(q) || el.closest(q)));
+        }, [px, py, step.expect]).catch(() => false);
+        if (!matches) {
+          return { ok: false, note: `clickat(${px},${py}) 命中的不是 ${step.expect}：${hit || '(空)'}`, memo };
+        }
+      }
+      await page.mouse.click(px, py);
+      // 点完要等：底卡收档是 340ms 的 height 过渡，立刻量会量到动画中间值（736 未收）。
+      await page.waitForTimeout(Number(step.afterMs || step.settle || 350));
+      continue;
+    }
+    if (action === 'assertrect') {
+      // 链中几何断言：某一步做完立刻量一次。失败即前置失败，note 带实测值，
+      // 这样「抬档没生效、后来被别的路径凑到目标高度」不会算绿。
+      // stepSelector 在后面才声明，这里按同一条口径自己算一次（窄屏才用 mobileSelector）。
+      const rectWidth = page.viewportSize()?.width ?? 0
+      const rectSel = rectWidth > 0 && rectWidth < 1000 && step.mobileSelector ? step.mobileSelector : step.selector
+      const got = await page.evaluate((s) => {
+        const els = [...document.querySelectorAll(s)].filter((e) => {
+          const r = e.getBoundingClientRect()
+          return r.width > 0 && r.height > 0
+        })
+        return els.length ? els[0].getBoundingClientRect().height : null
+      }, rectSel).catch(() => null)
+      if (got == null) return { ok: false, note: `assertRect 找不到可见元素：${rectSel}`, memo }
+      const lo = step.min && step.min.h
+      const hi = step.max && step.max.h
+      const label = step.label || rectSel
+      ;(memo.__rects || (memo.__rects = [])).push(`${label} ${got.toFixed(1)}px`)
+      if ((lo != null && got + 0.5 < lo) || (hi != null && got - 0.5 > hi)) {
+        const range = `${lo == null ? '−∞' : lo}–${hi == null ? '+∞' : hi}`
+        return { ok: false, note: `${label}：高度 ${got.toFixed(1)} 不在 ${range}`, memo }
+      }
+      continue
+    }
+    if (action === 'drag') {
+      // 地图与底卡都靠指针事件拖动：先按住元素上一点，再分步移动，最后抬起。
+      const sel = step.selector || '.amap-container'
+      const el = page.locator(sel).first()
+      const box = await el.boundingBox().catch(() => null)
+      if (!box) return { ok: false, note: `drag 找不到可见元素：${sel}`, memo }
+      const fx = step.from && step.from.x != null ? step.from.x : 0.5
+      const fy = step.from && step.from.y != null ? step.from.y : 0.5
+      const sx = box.x + box.width * fx
+      const sy = box.y + box.height * fy
+      const dx = Number(step.dx || 0)
+      const dy = Number(step.dy || 0)
+      const n = Math.max(4, Number(step.steps || 14))
+      await page.mouse.move(sx, sy)
+      await page.mouse.down()
+      for (let i = 1; i <= n; i += 1) {
+        await page.mouse.move(sx + (dx * i) / n, sy + (dy * i) / n)
+        await page.waitForTimeout(Number(step.stepMs || 16))
+      }
+      await page.mouse.up()
+      await page.waitForTimeout(Number(step.afterMs || 800))
+      continue
+    }
+    if (action === 'reload') {
+      // 刷新后 localStorage 仍在同一个浏览器上下文里，才验得出「记得住」。
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 45000 });
+      await page.waitForTimeout(Number(step.afterMs || step.settle || 2000));
       continue;
     }
     if (!step.selector && !step.text) return { ok: false, note: `前置动作 ${action} 缺 selector（或 text）`, memo };
@@ -873,7 +1473,7 @@ async function applyPrecondition(page, steps) {
     const applicable = CHECKS.filter(c => c.at == null || !vp.width || Math.abs(c.at - vp.width) < 1);
     // page.evaluate 只能跑"读当前状态"的断言。焦点环要真按 Tab，reduced-motion 要
     // 模拟媒体特性——这两类在 Node 侧做，页面上下文做不了。
-    const SPECIAL = new Set(['focusRing', 'focusBorder', 'focusNoColor', 'media', 'tabStaysWithin']);
+    const SPECIAL = new Set(['focusRing', 'focusBorder', 'focusNoColor', 'media', 'tabStaysWithin', 'tabOrder', 'polygonPaint', 'mapPan', 'styleMatch', 'textFits']);
 
     // 按 precondition 分组：不同前置状态必须各用一张干净页面，否则前一组点开的
     // 面板会串到下一组（比如筛选态漏进首屏断言）。
@@ -894,6 +1494,13 @@ async function applyPrecondition(page, steps) {
         try {
           await page.goto(URL_ARG, { waitUntil: 'domcontentloaded', timeout: 45000 });
           await page.waitForTimeout(1800);
+          // 持久化类断言（前置里有 reload）必须从干净存储起跑：同一 context 里上一组
+          // 切过的主题/拖过的宽度会留到下一组，起始态不对就会把「记得住」判成假红。
+          if (steps.some((st) => st && st.action === 'reload')) {
+            await page.evaluate(() => { try { localStorage.clear(); } catch {} });
+            await page.reload({ waitUntil: 'domcontentloaded', timeout: 45000 });
+            await page.waitForTimeout(2000);
+          }
         } catch (e) {
           navError = String(e.message || e).slice(0, 300);
         }
@@ -951,15 +1558,24 @@ async function applyPrecondition(page, steps) {
           await page.waitForTimeout(50);
         }
       }
+      // 同一断言在桌面与手机可能指向不同元素（都可见，但不是一个）。窄屏且显式写了
+      // mobileSelector 就用它，不写仍用 selector——与前置动作的取法保持一致。
+      const vpWidth = page.viewportSize()?.width ?? 0;
+      const forViewport = (c) => (vpWidth > 0 && vpWidth < 1000 && c.mobileSelector
+        ? Object.assign({}, c, { selector: c.mobileSelector })
+        : c);
       const simple = group
         .filter(c => !SPECIAL.has(c.type))
+        .map(forViewport)
         // textEquals / focusOn 要把前置记下的文本带进页面里比对。
-        .map(c => (c.type === 'textEquals' || c.type === 'focusOn'
+        .map(c => (c.type === 'textEquals' || c.type === 'focusOn' || c.type === 'numberEquals'
           ? Object.assign({}, c, { memoValue: c.from && pre.memo ? pre.memo[c.from] : null })
           : c));
-      const special = group.filter(c => SPECIAL.has(c.type));
+      const special = group.filter(c => SPECIAL.has(c.type)).map(forViewport);
       const got = [...await page.evaluate(runChecks, simple), ...await runSpecial(page, special)];
       got.forEach((r, j) => { results[idx[j]] = r; });
+      const rectLog = (pre.memo && pre.memo.__rects) || [];
+      if (rectLog.length) got.forEach((r) => { if (r) r.evidence = [...(r.evidence || []), ...rectLog]; });
     }
 
     report.viewports.push({

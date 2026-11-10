@@ -1,11 +1,12 @@
 'use client'
 
 import { useMemo } from 'react'
-import { FilterPanel } from '@/components/FilterPanel'
+import { ChevronRight } from 'lucide-react'
+import { DisorderChips } from '@/components/DisorderChips'
 import { hospitalRowMeta } from '@/lib/hospital-row'
 import type { Hospital, Province } from '@/lib/schema'
 
-/** 一个病症分组：筛选面板的一行，带上它命中的机构与线索数 */
+/** 一个病症分组：筛选条的一枚点位，带上它命中的机构与线索数 */
 export type DisorderGroup = {
   id: string
   label: string
@@ -20,6 +21,9 @@ export type ResultFilter = {
   hospitalIds: string[]
 }
 
+/** 省级行政区的固定分组顺序：空组不渲染。 */
+const REGION_ORDER = ['华北', '东北', '华东', '华中', '华南', '西南', '西北', '港澳台'] as const
+
 type Props = {
   hospitals: Hospital[]
   provinces: Province[]
@@ -30,14 +34,24 @@ type Props = {
   onSelectHospital?: (id: string) => void
   /** 省份列表行：进入该省概要（侧栏内） */
   onSelectProvince?: (adcode: string) => void
-  /** 面板里的病症分组 */
+  /** 筛选条里的病症分组 */
   disorderGroups: DisorderGroup[]
-  /** 已选病症（可多选，点同一行取消） */
+  /** 已选病症（可多选，点同一项取消） */
   selectedDisorders: string[]
   onToggleDisorder: (id: string) => void
   /** 选中病症时并集命中的线索条数（按条去重） */
   activeLeads?: number | null
+  /** 没有筛选时的全国线索总数（含没有对应机构的线索）。 */
+  totalLeads?: number
   resultFilter?: ResultFilter | null
+  /** 底卡头部已经报了总数，正文不再重复同一行。 */
+  hideHeading?: boolean
+  /** 手机底卡的筛选条挂在卡的搜索行下面，正文里不重复渲染。 */
+  hideChips?: boolean
+  /** 筛选后一个省都不剩时的清空入口。 */
+  onClearFilter?: () => void
+  /** sheet：手机底卡里的空态用无边框排版，桌面仍是 .tc-empty。 */
+  sheetEmpty?: boolean
 }
 
 export function HospitalExplorer({
@@ -51,7 +65,12 @@ export function HospitalExplorer({
   selectedDisorders,
   onToggleDisorder,
   activeLeads = null,
+  totalLeads = 0,
   resultFilter = null,
+  hideHeading = false,
+  hideChips = false,
+  onClearFilter,
+  sheetEmpty = false,
 }: Props) {
   const selectedSet = useMemo(() => new Set(selectedDisorders), [selectedDisorders])
   // 选完病症仍然是省份列表，只是收窄到有命中线索的省；多选取并集。
@@ -75,22 +94,33 @@ export function HospitalExplorer({
       .map((province) => ({
         adcode: province.adcode,
         name: province.short_name,
+        region: province.region,
         count: matchedByProvince.get(province.adcode) ?? 0,
       }))
       .filter((row) => row.count > 0)
   }, [hospitals, provinces, matched])
+
+  // 省名按大区分组：组内保持 adcode 顺序，空组不渲染。
+  const regionRows = useMemo(() => {
+    const byRegion = new Map<string, typeof provinceRows>()
+    for (const row of provinceRows) {
+      const list = byRegion.get(row.region) ?? []
+      list.push(row)
+      byRegion.set(row.region, list)
+    }
+    return REGION_ORDER
+      .map((region) => ({ region, rows: byRegion.get(region) ?? [] }))
+      .filter((group) => group.rows.length > 0)
+  }, [provinceRows])
 
   // 搜索命中话题时仍按命中集合列机构；病症不换页面。
   const searchList = selectedDisorders.length === 0 && resultFilter
     ? hospitals.filter((hospital) => resultFilter.hospitalIds.includes(hospital.id))
     : null
 
-  const selectedLabels = disorderGroups.filter((group) => selectedSet.has(group.id)).map((group) => group.label)
-  const toggleLabel = selectedLabels.length === 0
-    ? '按病症筛选'
-    : selectedLabels.length === 1
-      ? selectedLabels[0]
-      : `${selectedLabels.length} 个病症`
+  // 头部计数与列表同一份集合：医院数按省行加总，线索数跟着筛选走。
+  const hospitalCount = matched ? provinceRows.reduce((sum, row) => sum + row.count, 0) : hospitals.length
+  const leadCount = activeLeads ?? totalLeads
 
   if (hospitals.length === 0) {
     return (
@@ -100,7 +130,7 @@ export function HospitalExplorer({
     )
   }
 
-  // 筛选结果与省份详情里的机构行同一套：名称一行、城市与条数一行，行间 1px 分隔线。
+  // 机构行：名称一行、城市与条数一行，行尾一枚右箭头。
   const rows = (items: Hospital[]) => (
     <ul className="tc-hospital-list">
       {items.map((hospital) => (
@@ -111,8 +141,11 @@ export function HospitalExplorer({
             data-hospital-id={hospital.id}
             onClick={() => onSelectHospital?.(hospital.id)}
           >
-            <span className="tc-hospital-row-name">{hospital.name}</span>
-            <span className="tc-hospital-row-meta">{hospitalRowMeta(hospital.city, reportCounts[hospital.id] ?? 0)}</span>
+            <span className="tc-row-text">
+              <span className="tc-hospital-row-name">{hospital.name}</span>
+              <span className="tc-hospital-row-meta">{hospitalRowMeta(hospital.city, reportCounts[hospital.id] ?? 0)}</span>
+            </span>
+            <ChevronRight className="tc-row-chev" size={16} aria-hidden="true" />
           </button>
         </li>
       ))}
@@ -121,41 +154,26 @@ export function HospitalExplorer({
 
   return (
     <div className={variant === 'compact' ? 'tc-compact' : undefined}>
-      <div className="tc-results-heading" role="status" aria-live="polite">
-        {matched && activeLeads != null ? (
-          <span><strong>{provinceRows.reduce((sum, row) => sum + row.count, 0)}</strong> 家医院 · {activeLeads} 条线索</span>
-        ) : searchList ? (
-          <span><strong>{searchList.length}</strong> 家医院 · {resultFilter?.hint}</span>
-        ) : (
-          <>
-            <span><strong>{hospitals.length}</strong> 家医院</span>
-            <span>全国收录</span>
-          </>
-        )}
-      </div>
+      {!hideChips && (
+        <DisorderChips
+          groups={disorderGroups}
+          selected={selectedDisorders}
+          onToggle={onToggleDisorder}
+        />
+      )}
 
-      <FilterPanel
-        compact
-        label={toggleLabel}
-        hint={selectedLabels.length > 0 ? '已筛选' : '全部地区'}
-      >
-        <ul className="tc-disorder-options">
-          {disorderGroups.map((group) => (
-            <li key={group.id}>
-              <button
-                type="button"
-                className="tc-disorder-option"
-                data-disorder={group.id}
-                aria-pressed={selectedSet.has(group.id)}
-                onClick={() => onToggleDisorder(group.id)}
-              >
-                <span className="tc-disorder-name">{group.label}</span>
-                {selectedSet.has(group.id) && <span className="tc-disorder-check" aria-hidden="true" />}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </FilterPanel>
+      {!hideHeading && (
+        <header className="tc-level-head tc-level-head--country">
+          <h2 className="tc-detail-title" tabIndex={-1}>全国</h2>
+          <p className="tc-level-meta">
+            {searchList ? (
+              <><b>{searchList.length}</b> 家医院 · {resultFilter?.hint}</>
+            ) : (
+              <><b>{hospitalCount}</b> 家医院 · <b>{leadCount}</b> 条线索</>
+            )}
+          </p>
+        </header>
+      )}
 
       {searchList ? (
         searchList.length === 0 ? (
@@ -163,17 +181,46 @@ export function HospitalExplorer({
             <p>没有符合这个条件的医院记录。</p>
           </div>
         ) : rows(searchList)
+      ) : matched && provinceRows.length === 0 ? (
+        sheetEmpty ? (
+          <div className="empty">
+            <h3>这次筛选没有匹配的医院</h3>
+            <div className="acts">
+              <button type="button" className="btn acc" onClick={onClearFilter}>清除病症筛选</button>
+            </div>
+          </div>
+        ) : (
+          <div className="tc-empty">
+            <h3>这次筛选没有匹配的医院</h3>
+            <div className="tc-empty-acts">
+              <button type="button" className="tc-button tc-button--active" onClick={onClearFilter}>清除病症筛选</button>
+            </div>
+          </div>
+        )
       ) : (
-        <ul className="tc-province-list">
-          {provinceRows.map((row) => (
-            <li key={row.adcode}>
-              <button type="button" className="tc-province-row" data-province={row.adcode} onClick={() => onSelectProvince?.(row.adcode)}>
-                <span className="tc-province-name">{row.name}</span>
-                <span className="tc-province-count">{row.count} 家</span>
-              </button>
-            </li>
+        <div className="tc-regions">
+          {regionRows.map((group) => (
+            <section className="tc-region" key={group.region} aria-label={group.region}>
+              <h3 className="tc-region-label">{group.region}</h3>
+              <ul className="tc-province-list">
+                {group.rows.map((row) => (
+                  <li key={row.adcode}>
+                    <button
+                      type="button"
+                      className="tc-province-row"
+                      data-province={row.adcode}
+                      onClick={() => onSelectProvince?.(row.adcode)}
+                    >
+                      <span className="tc-province-name">{row.name}</span>
+                      <span className="tc-province-count">{row.count} 家</span>
+                      <ChevronRight className="tc-row-chev" size={16} aria-hidden="true" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   )
