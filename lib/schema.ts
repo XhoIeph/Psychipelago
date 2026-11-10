@@ -220,6 +220,8 @@ export const reportSchema = z.object({
   status: z.enum(['published', 'withheld', 'removed', 'unlinked']),
   /** status=unlinked 时写明机构为什么挂不上，便于后续人工补定位 */
   unlinked_reason: z.string().optional(),
+  /** status=withheld 时写明为什么这条原文不发布（例如姓名格写的是科室而不是医生） */
+  withheld_reason: z.string().optional(),
 })
 
 /* ------------------------------------------------------------------ 省级行政区 */

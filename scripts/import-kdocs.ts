@@ -300,7 +300,11 @@ export function reportsFromDocument(document: SourceDocument): Report[] {
         verification: { level: 'unverified' },
         extraction: { tool: 'kdocs-sheet-transcription', captured_at: document.captured_at.slice(0, 10) },
         flags: { contains_minor: false, contains_selfharm_detail: false, sensitive: false },
-        status: 'published',
+        // 姓名格写的是科室、课题组或团队时，这一行没有具体医生：
+        // 界面上会变成一张只有病症标签、点开找不到人的卡。原文留在 reports.json 备查，
+        // 但不发布、也不计入任何可见数字，等这些行有了确定的医生再改回 published。
+        status: row.label ? 'withheld' : 'published',
+        ...(row.label ? { withheld_reason: `姓名格不是医生：${row.label}` } : {}),
       })
     })
   }

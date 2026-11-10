@@ -30,8 +30,10 @@ test('hospital matching excludes shops and does not erase institution-defining p
   assert.equal(selectPoi(target, [{ ...poi, name: '北京回龙观医院超市', typecode: '090601' }]).chosen, undefined)
   const base = { ...poi, name: '厦门大学附属中山医院', pname: '福建省', typecode: '090101' }
   assert.equal(selectPoi({ ...target, name: base.name }, [base, { ...base, id: 'SHOP', name: `${base.name}本部食堂` }]).chosen.id, 'B001')
-  const second = { ...poi, name: '兰州大学第二医院', pname: '甘肃省' }
-  assert.equal(selectPoi({ ...target, name: second.name }, [second, { ...second, id: 'OTHER', name: '兰州大学第一医院院本部' }]).chosen.id, 'B001')
+  // 与医院正名完全相同的候选优先于「…院本部/…院区」这类子科室点：
+  // 兰州大学第二医院本部生殖医学中心是一栋楼，不是这家医院。
+  const second = { ...poi, name: '兰州大学第二医院', pname: '甘肃省', cityname: '兰州市' }
+  assert.equal(selectPoi({ ...target, name: second.name, region: '甘肃' }, [second, { ...second, id: 'OTHER', name: '兰州大学第二医院本部生殖医学中心' }]).chosen.id, 'B001')
 })
 
 test('an explicit visiting hospital cannot use the employing hospital location', () => {

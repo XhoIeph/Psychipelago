@@ -14,6 +14,18 @@ const reports = readJson('data/curated/reports.json').items
 const doctors = readJson('data/curated/doctors.json').items
 const expected = reportsWithLocations(document)
 
+/** 姓名格写的是科室/团队，这一行没有具体医生：原文留在库里，但不发布。 */
+const withheldIds = new Set([
+  'kdocs-cp3b7toqal3j-s1-r2',
+  'kdocs-cp3b7toqal3j-s1-r2-p2',
+  'kdocs-cp3b7toqal3j-s1-r2-p3',
+  'kdocs-cp3b7toqal3j-s1-r50',
+  'kdocs-cp3b7toqal3j-s3-r49',
+  'kdocs-cp3b7toqal3j-s3-r51',
+  'kdocs-cp3b7toqal3j-s3-r108',
+  'kdocs-cp3b7toqal3j-s3-r109',
+])
+
 /** 工作表里地区与医院名只在段首填写，其余行留空继承。 */
 const filledRow = (sheetIndex, excelRow) => {
   const values = document.sheets[sheetIndex - 1].values
@@ -127,13 +139,18 @@ test('工作表按病症分组，其他字段保持未知而不是编造', () =>
     assert.equal(report.verification.level, 'unverified')
     assert.equal(report.experience, null)
     assert.equal(report.evidence_source, 'article')
-    // 挂不上机构的线索保留原文但不进公开数字，其余正常发布。
-    if (report.hospital_id) {
-      assert.equal(report.status, 'published')
-      assert.equal(report.unlinked_reason, undefined)
-    } else {
+    // 挂不上机构的线索保留原文但不进公开数字；姓名格写的是科室/团队的行同样不发布
+    // （界面上会变成一张点开找不到人的卡），其余正常发布。
+    if (!report.hospital_id) {
       assert.equal(report.status, 'unlinked')
       assert.match(report.unlinked_reason, /^机构未定位：/u)
+    } else if (withheldIds.has(report.id)) {
+      assert.equal(report.status, 'withheld')
+      assert.match(report.withheld_reason, /^姓名格不是医生：/u)
+    } else {
+      assert.equal(report.status, 'published')
+      assert.equal(report.unlinked_reason, undefined)
+      assert.equal(report.withheld_reason, undefined)
     }
     if (report.disorders.includes('pd')) assert.deepEqual(report.source_topics, ['人格障碍'])
     else assert.equal(report.source_topics, undefined)
@@ -185,14 +202,16 @@ test('医生档案只由表格里的诊室、备注、评价生成，且都能�
   const shortEvaluation = doctors.filter((doctor) => doctor.evaluation && doctor.evaluation.replace(/\s+/gu, '').length < 20)
   assert.equal(shortEvaluation.length, 19)
   assert.ok(shortEvaluation.every((doctor) => doctor.evaluation_echoes_report === undefined))
-  // 无姓名的行仍然是医院线索，只是不进医生档案（人格障碍表多数行本就没写诊室）
+  // 无姓名的行是医院/科室级线索：姓名格空的行仍然发布，姓名格写科室或团队的进 withheld。
   const noName = reports.filter((report) => !report.doctor_name_raw)
   assert.equal(noName.length, 9)
   assert.ok(noName.every((report) => report.hospital_name_raw && report.hospital_region))
   assert.ok(noName.every((report) => report.evidence_quote.length > 0))
-  // 回龙观 24 条：13 行，其中 3 行没有姓名；没有姓名的行里同一位用户的发言仍各成一条
+  assert.deepEqual(noName.filter((report) => report.status === 'published').map((report) => report.id), ['kdocs-cp3b7toqal3j-s1-r43'])
+  // 回龙观：13 行共 24 条发言，其中 3 条来自姓名格写科室的那一行（已 withheld，不发医生卡）
   const huilongguan = reports.filter((report) => report.hospital_name_raw === '北京回龙观医院')
   assert.equal(huilongguan.length, 24)
+  assert.equal(huilongguan.filter((report) => report.status === 'published').length, 21)
   assert.equal(huilongguan.filter((report) => !report.doctor_name_raw).length, 3)
   // 合并过的线索记下合并前的发言条数，单条不写 1：只剩「两张表抄了同一句话」这一类
   const merged = reports.filter((report) => report.parts_count)

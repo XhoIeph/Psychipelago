@@ -1,8 +1,8 @@
 {
   "source_url": "https://www.kdocs.cn/l/cp3b7ToQAl3J",
-  "generated_at": "2026-11-09T16:21:47.901Z",
-  "requests": 1,
-  "requests_total": 59,
+  "generated_at": "2026-11-10T01:02:15.788Z",
+  "requests": 6,
+  "requests_total": 95,
   "results": [
     {
       "name": "北京回龙观医院",
@@ -293,32 +293,32 @@
         "kdocs-cp3b7toqal3j-s1-r16"
       ],
       "region": "甘肃",
+      "matched_name": "兰州大学第二医院",
       "status": "geocoded",
-      "reason": "复用上一轮同一机构的定位结果",
+      "reason": "按高德主体/本部及名称匹配选取机构代表位置",
       "candidates": [
         {
-          "id": "B0FFHX8HR2",
-          "name": "兰州大学第二医院本部生殖医学中心",
-          "address": "萃英门82-176号附近",
-          "location": "103.811915,36.060375",
+          "id": "B03A3032B3",
+          "name": "兰州大学第二医院",
+          "address": "萃英门82-176号(西关地铁站B口步行230米)",
+          "location": "103.812965,36.061106",
           "pname": "甘肃省",
           "cityname": "兰州市",
           "adcode": "",
           "typecode": "090101"
         }
       ],
+      "selection_rule": "base-name",
       "chosen": {
-        "id": "B0FFHX8HR2",
-        "name": "兰州大学第二医院本部生殖医学中心",
-        "address": "萃英门82-176号附近",
-        "location": "103.811915,36.060375",
+        "id": "B03A3032B3",
+        "name": "兰州大学第二医院",
+        "address": "萃英门82-176号(西关地铁站B口步行230米)",
+        "location": "103.812965,36.061106",
         "pname": "甘肃省",
         "cityname": "兰州市",
         "adcode": "",
         "typecode": "090101"
-      },
-      "matched_name": "兰州大学第二医院本部生殖医学中心",
-      "selection_rule": "base-name"
+      }
     },
     {
       "name": "银川市第一人民医院",
@@ -1402,8 +1402,9 @@
         "kdocs-cp3b7toqal3j-s3-r24"
       ],
       "region": "辽宁",
+      "matched_name": "中国医科大学附属盛京医院南湖院区",
       "status": "geocoded",
-      "reason": "复用上一轮同一机构的定位结果",
+      "reason": "按高德主体/本部及名称匹配选取机构代表位置",
       "candidates": [
         {
           "id": "B00180AHOX",
@@ -1416,6 +1417,7 @@
           "typecode": "090101"
         }
       ],
+      "selection_rule": "base-name",
       "chosen": {
         "id": "B00180AHOX",
         "name": "中国医科大学附属盛京医院南湖院区",
@@ -1425,9 +1427,7 @@
         "cityname": "沈阳市",
         "adcode": "",
         "typecode": "090101"
-      },
-      "matched_name": "中国医科大学附属盛京医院南湖院区",
-      "selection_rule": "base-name"
+      }
     },
     {
       "name": "大连市第七人民医院",
@@ -1568,32 +1568,32 @@
         "kdocs-cp3b7toqal3j-s2-r19"
       ],
       "region": "甘肃",
+      "matched_name": "兰州大学第二医院",
       "status": "geocoded",
-      "reason": "复用上一轮同一机构的定位结果",
+      "reason": "按高德主体/本部及名称匹配选取机构代表位置",
       "candidates": [
         {
-          "id": "B0FFHX8HR2",
-          "name": "兰州大学第二医院本部生殖医学中心",
-          "address": "萃英门82-176号附近",
-          "location": "103.811915,36.060375",
+          "id": "B03A3032B3",
+          "name": "兰州大学第二医院",
+          "address": "萃英门82-176号(西关地铁站B口步行230米)",
+          "location": "103.812965,36.061106",
           "pname": "甘肃省",
           "cityname": "兰州市",
           "adcode": "",
           "typecode": "090101"
         }
       ],
+      "selection_rule": "base-name",
       "chosen": {
-        "id": "B0FFHX8HR2",
-        "name": "兰州大学第二医院本部生殖医学中心",
-        "address": "萃英门82-176号附近",
-        "location": "103.811915,36.060375",
+        "id": "B03A3032B3",
+        "name": "兰州大学第二医院",
+        "address": "萃英门82-176号(西关地铁站B口步行230米)",
+        "location": "103.812965,36.061106",
         "pname": "甘肃省",
         "cityname": "兰州市",
         "adcode": "",
         "typecode": "090101"
-      },
-      "matched_name": "兰州大学第二医院本部生殖医学中心",
-      "selection_rule": "base-name"
+      }
     },
     {
       "name": "青岛市精神卫生中心（第七人民医院）",
@@ -2140,8 +2140,9 @@
         "kdocs-cp3b7toqal3j-s2-r54"
       ],
       "region": "江西",
+      "matched_name": "江西省精神卫生中心",
       "status": "geocoded",
-      "reason": "复用上一轮同一机构的定位结果",
+      "reason": "采用高德院内医疗建筑位置",
       "candidates": [
         {
           "id": "B0FFM9IDRI",
@@ -2154,6 +2155,7 @@
           "typecode": "090000"
         }
       ],
+      "selection_rule": "medical-building",
       "chosen": {
         "id": "B0FFM9IDRI",
         "name": "江西省精神卫生中心-综合门诊楼",
@@ -2163,9 +2165,7 @@
         "cityname": "南昌市",
         "adcode": "",
         "typecode": "090000"
-      },
-      "matched_name": "江西省精神卫生中心-综合门诊楼",
-      "selection_rule": "base-name"
+      }
     },
     {
       "name": "首都医科大学附属北京安定医院",
@@ -4607,32 +4607,32 @@
         "kdocs-cp3b7toqal3j-s3-r168"
       ],
       "region": "台湾",
+      "matched_name": "国立台湾大学医学院附设医院西址",
       "status": "geocoded",
-      "reason": "复用上一轮同一机构的定位结果",
+      "reason": "按高德主体/本部及名称匹配选取机构代表位置",
       "candidates": [
         {
-          "id": "B0LKXSLAM3",
-          "name": "国立台湾大学医学院附设医院癌医中心分院",
-          "address": "106台湾台北市大安区学府里基隆路三段155巷57号1楼",
-          "location": "121.548018,25.011747",
+          "id": "B0FFFUTP9B",
+          "name": "国立台湾大学医学院附设医院西址",
+          "address": "100黎明里常德街1号",
+          "location": "121.521222,25.038951",
           "pname": "台湾省",
           "cityname": "台北市",
           "adcode": "",
-          "typecode": "090200"
+          "typecode": "110200"
         }
       ],
+      "selection_rule": "base-name",
       "chosen": {
-        "id": "B0LKXSLAM3",
-        "name": "国立台湾大学医学院附设医院癌医中心分院",
-        "address": "106台湾台北市大安区学府里基隆路三段155巷57号1楼",
-        "location": "121.548018,25.011747",
+        "id": "B0FFFUTP9B",
+        "name": "国立台湾大学医学院附设医院西址",
+        "address": "100黎明里常德街1号",
+        "location": "121.521222,25.038951",
         "pname": "台湾省",
         "cityname": "台北市",
         "adcode": "",
-        "typecode": "090200"
-      },
-      "matched_name": "国立台湾大学医学院附设医院癌医中心分院",
-      "selection_rule": "base-name"
+        "typecode": "110200"
+      }
     },
     {
       "name": "台北荣民总医院",
@@ -4772,8 +4772,9 @@
         "kdocs-cp3b7toqal3j-s3-r173"
       ],
       "region": "台湾",
+      "matched_name": "长庚医疗财团法人林口长庚纪念医院",
       "status": "geocoded",
-      "reason": "复用上一轮同一机构的定位结果",
+      "reason": "按高德主体/本部及名称匹配选取机构代表位置",
       "candidates": [
         {
           "id": "B0L0SMIKHV",
@@ -4786,6 +4787,7 @@
           "typecode": "090000"
         }
       ],
+      "selection_rule": "base-name",
       "chosen": {
         "id": "B0L0SMIKHV",
         "name": "长庚医疗财团法人林口长庚纪念医院",
@@ -4795,9 +4797,7 @@
         "cityname": "桃园市",
         "adcode": "",
         "typecode": "090000"
-      },
-      "matched_name": "长庚医疗财团法人林口长庚纪念医院",
-      "selection_rule": "base-name"
+      }
     }
   ],
   "provider": "amap",

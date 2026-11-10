@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "updated_at": "2026-11-09",
+  "updated_at": "2026-11-10",
   "items": [
     {
       "id": "kdocs-doctor-1e5693808482",
@@ -289,9 +289,9 @@
       "note": "官方简介写擅长“应激与创伤相关障碍”的临床诊疗"
     },
     {
-      "id": "kdocs-doctor-ad945505bde7",
+      "id": "kdocs-doctor-e190a4f6e394",
       "name": "刘建斌",
-      "hospital_id": "kdocs-amap-b0ffhx8hr2",
+      "hospital_id": "kdocs-amap-b03a3032b3",
       "department": "心理卫生科二病区",
       "title": "",
       "credentials": [],
@@ -3287,9 +3287,9 @@
       "official_sources": []
     },
     {
-      "id": "kdocs-doctor-aadec61a5f49",
+      "id": "kdocs-doctor-585854232805",
       "name": "高淑芬",
-      "hospital_id": "kdocs-amap-b0lkxslam3",
+      "hospital_id": "kdocs-amap-b0fffutp9b",
       "department": "",
       "title": "",
       "credentials": [],

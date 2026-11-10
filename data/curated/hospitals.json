@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "updated_at": "2026-11-09",
+  "updated_at": "2026-11-10",
   "items": [
     {
       "id": "kdocs-amap-b000a0989a",
@@ -29,7 +29,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b000a2ef2c",
@@ -58,7 +58,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b000a9q0a3",
@@ -87,7 +87,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0fff90qnj",
@@ -117,7 +117,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffhyofx6",
@@ -146,7 +146,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffg369xg",
@@ -175,7 +175,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b03950291n",
@@ -204,7 +204,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b02140828v",
@@ -234,11 +234,11 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
-      "id": "kdocs-amap-b0ffhx8hr2",
-      "name": "兰州大学第二医院本部生殖医学中心",
+      "id": "kdocs-amap-b03a3032b3",
+      "name": "兰州大学第二医院",
       "aliases": [
         "兰州大学第二医院",
         "甘肃 兰州大学第二医院"
@@ -257,14 +257,14 @@
         "icd11_practice": "unknown",
         "evidence": []
       },
-      "address": "萃英门82-176号附近",
+      "address": "萃英门82-176号(西关地铁站B口步行230米)",
       "coordinates": {
-        "lat": 36.060657,
-        "lng": 103.809461
+        "lat": 36.061389,
+        "lng": 103.810513
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b03b700ee3",
@@ -293,7 +293,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b03e6002z0",
@@ -322,7 +322,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b03df060qx",
@@ -351,7 +351,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b03df04gda",
@@ -380,7 +380,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b00155kaoc",
@@ -409,7 +409,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b00155keix",
@@ -438,7 +438,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffgzngk5",
@@ -467,7 +467,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0fflch87i",
@@ -497,7 +497,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b00140hu1b",
@@ -528,7 +528,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b00140uerj",
@@ -557,7 +557,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffkc2ik8",
@@ -586,7 +586,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b025003yih",
@@ -616,7 +616,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffhijdbc",
@@ -645,7 +645,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b024f05ejn",
@@ -674,7 +674,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0303054bl",
@@ -703,7 +703,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0fff49imu",
@@ -732,7 +732,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b023b0by5o",
@@ -761,7 +761,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b00190b8c9",
@@ -790,7 +790,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffi2en48",
@@ -820,7 +820,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b001c05yg2",
@@ -849,7 +849,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffjaykfh",
@@ -878,7 +878,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b00170becf",
@@ -909,7 +909,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0353007b8",
@@ -938,7 +938,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffg7aa3a",
@@ -967,7 +967,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b036702a3e",
@@ -997,7 +997,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b037b00887",
@@ -1026,7 +1026,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b000a80zrg",
@@ -1056,7 +1056,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b015f0038d",
@@ -1085,7 +1085,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b001d0208c",
@@ -1114,7 +1114,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b001802fb0",
@@ -1143,7 +1143,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b00180ahox",
@@ -1172,7 +1172,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b019b01ad1",
@@ -1201,7 +1201,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b01c402231",
@@ -1230,7 +1230,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b01cb00xzt",
@@ -1259,7 +1259,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b03a30apul",
@@ -1288,7 +1288,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffhgd85n",
@@ -1317,7 +1317,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffgsrr97",
@@ -1346,7 +1346,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b001c7v2mo",
@@ -1376,7 +1376,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0fffv30j7",
@@ -1405,7 +1405,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b033f01ikc",
@@ -1434,7 +1434,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b001702698",
@@ -1463,7 +1463,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b038202b8m",
@@ -1493,7 +1493,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b023b0929x",
@@ -1522,7 +1522,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b023b02359",
@@ -1551,7 +1551,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b020004f0d",
@@ -1580,7 +1580,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffh0n5u4",
@@ -1609,7 +1609,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b020400b9x",
@@ -1638,7 +1638,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b035300vc0",
@@ -1667,11 +1667,11 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffm9idri",
-      "name": "江西省精神卫生中心-综合门诊楼",
+      "name": "江西省精神卫生中心",
       "aliases": [
         "江西省精神卫生中心（南昌）"
       ],
@@ -1696,7 +1696,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b000a9dpj4",
@@ -1725,7 +1725,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b000a82z2n",
@@ -1754,7 +1754,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0172004tq",
@@ -1783,7 +1783,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffi99oq6",
@@ -1812,7 +1812,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0mg2n0olu",
@@ -1841,7 +1841,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0k0yye61d",
@@ -1870,7 +1870,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b03aa0mxxt",
@@ -1899,7 +1899,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b01d701pti",
@@ -1928,7 +1928,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b01d7023h7",
@@ -1957,7 +1957,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b01d70106b",
@@ -1986,7 +1986,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b03b703cb6",
@@ -2015,7 +2015,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b03b7012b8",
@@ -2044,7 +2044,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b03e400drv",
@@ -2073,7 +2073,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b03df05bdu",
@@ -2102,7 +2102,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffidakp6",
@@ -2131,7 +2131,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b00155kt4w",
@@ -2160,7 +2160,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b00155ei82",
@@ -2189,7 +2189,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b00155ax6r",
@@ -2218,7 +2218,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b00140w7rp",
@@ -2247,7 +2247,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0fff5uy3v",
@@ -2276,7 +2276,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b00140226e",
@@ -2305,7 +2305,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b02f37veig",
@@ -2334,7 +2334,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b025002cf9",
@@ -2363,7 +2363,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffgrgjro",
@@ -2392,7 +2392,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0lamrcibh",
@@ -2421,7 +2421,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0303005fe",
@@ -2450,7 +2450,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0h32r5hhj",
@@ -2479,7 +2479,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffiufvdh",
@@ -2508,7 +2508,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b03070mw10",
@@ -2537,7 +2537,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b035301ev4",
@@ -2566,7 +2566,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffgg4mze",
@@ -2595,7 +2595,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffk54jcv",
@@ -2624,7 +2624,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffftfcbu",
@@ -2653,7 +2653,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b036b00twx",
@@ -2682,7 +2682,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b03050261f",
@@ -2711,7 +2711,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ffliuheg",
@@ -2740,7 +2740,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b033001020",
@@ -2769,7 +2769,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b001c7uu27",
@@ -2798,7 +2798,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ib2l08gg",
@@ -2827,7 +2827,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b00170l57q",
@@ -2856,7 +2856,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b001791t1i",
@@ -2885,7 +2885,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b00170914b",
@@ -2914,7 +2914,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b031d00l7w",
@@ -2943,7 +2943,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b031d00jpw",
@@ -2972,7 +2972,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b02db00b1e",
@@ -3001,7 +3001,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b02db03s87",
@@ -3030,7 +3030,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b02db03kph",
@@ -3059,7 +3059,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b03830ncek",
@@ -3088,7 +3088,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b03820oyol",
@@ -3117,7 +3117,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0fffglyoy",
@@ -3146,7 +3146,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b001c7wo02",
@@ -3175,7 +3175,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0fffx8hqy",
@@ -3204,7 +3204,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b073c02y5k",
@@ -3233,7 +3233,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b073c036vw",
@@ -3262,7 +3262,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b073c04aka",
@@ -3291,7 +3291,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b073c04t8h",
@@ -3320,7 +3320,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b073c03epg",
@@ -3349,7 +3349,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b073c04brq",
@@ -3378,7 +3378,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b073c04s0x",
@@ -3407,7 +3407,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b073d00dg3",
@@ -3436,7 +3436,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0g0a7x9db",
@@ -3465,7 +3465,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b073d00kf2",
@@ -3494,7 +3494,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0k2nu6cel",
@@ -3523,11 +3523,11 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
-      "id": "kdocs-amap-b0lkxslam3",
-      "name": "国立台湾大学医学院附设医院癌医中心分院",
+      "id": "kdocs-amap-b0fffutp9b",
+      "name": "国立台湾大学医学院附设医院西址",
       "aliases": [
         "台湾大学医学院附设医院"
       ],
@@ -3545,14 +3545,14 @@
         "icd11_practice": "unknown",
         "evidence": []
       },
-      "address": "106台湾台北市大安区学府里基隆路三段155巷57号1楼",
+      "address": "100黎明里常德街1号",
       "coordinates": {
-        "lat": 25.014644,
-        "lng": 121.544199
+        "lat": 25.041774,
+        "lng": 121.517321
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0l0zzdx92",
@@ -3581,7 +3581,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0ma3rzcf4",
@@ -3610,7 +3610,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0l0fnub1k",
@@ -3639,7 +3639,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0l0fyxuhl",
@@ -3668,7 +3668,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     },
     {
       "id": "kdocs-amap-b0l0smikhv",
@@ -3697,7 +3697,7 @@
       },
       "coordinates_source": "geocoded",
       "official_sources": [],
-      "last_verified_at": "2026-11-09"
+      "last_verified_at": "2026-11-10"
     }
   ]
 }

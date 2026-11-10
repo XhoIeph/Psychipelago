@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-11-09T16:21:49.712Z",
+  "generated_at": "2026-11-10T01:02:56.004Z",
   "totals": {
-    "reports": 326,
+    "reports": 318,
     "reports_unlocated": 0,
     "hospitals": 127,
     "doctors": 245,
@@ -12,13 +12,13 @@
   "items": [
     {
       "adcode": "110000",
-      "reports_total": 46,
+      "reports_total": 43,
       "reports_by_disorder": {
-        "cptsd": 24,
+        "cptsd": 21,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 46
+        "web": 43
       },
       "hospitals_total": 6,
       "hospitals_with_service_evidence": 0,
@@ -26,7 +26,7 @@
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 46
+        "unverified": 43
       }
     },
     {
@@ -160,13 +160,13 @@
     },
     {
       "adcode": "310000",
-      "reports_total": 36,
+      "reports_total": 34,
       "reports_by_disorder": {
         "cptsd": 16,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 36
+        "web": 34
       },
       "hospitals_total": 7,
       "hospitals_with_service_evidence": 0,
@@ -174,7 +174,7 @@
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 36
+        "unverified": 34
       }
     },
     {
@@ -234,13 +234,13 @@
     },
     {
       "adcode": "350000",
-      "reports_total": 16,
+      "reports_total": 15,
       "reports_by_disorder": {
         "cptsd": 4,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 16
+        "web": 15
       },
       "hospitals_total": 5,
       "hospitals_with_service_evidence": 0,
@@ -248,7 +248,7 @@
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 16
+        "unverified": 15
       }
     },
     {
@@ -424,13 +424,13 @@
     },
     {
       "adcode": "510000",
-      "reports_total": 26,
+      "reports_total": 24,
       "reports_by_disorder": {
-        "cptsd": 2,
+        "cptsd": 1,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 26
+        "web": 24
       },
       "hospitals_total": 9,
       "hospitals_with_service_evidence": 0,
@@ -438,7 +438,7 @@
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 26
+        "unverified": 24
       }
     },
     {

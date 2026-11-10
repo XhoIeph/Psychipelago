@@ -189,13 +189,30 @@ async function main() {
         reply = await searchAmap(key, searchName(target.name), searchCity(target), countedFetch)
       } catch (error) {
         const message = (error as Error).message
-        // 高德业务拒绝（如境外机构超出 key 权限）只影响这一家，其余机构照常完成。
+        // 高德对「省级行政区当 city」会间歇性返回 10045（USER_ABROAD_DAILY_QUERY_OVER_LIMIT，
+        // 与境外额度无关）；不传 city 时同样的查询能正常返回。退一步不带 city 再问一次，
+        // 仍在 results 里按 pname 限定在原文地区，不会跑到别的省。
         const infocode = message.match(/infocode=(\d+)/u)?.[1]
-        if (!infocode) throw error
-        run.results[index] = { ...target, status: 'not_found', reason: `高德接口拒绝查询（${infocode}）`, candidates: [] }
-        console.log(`${index + 1}/${targets.length} not_found ${target.name} -> 接口拒绝 ${infocode}`)
-        writeJson(rawPath, run)
-        continue
+        if (infocode === '10045' && searchCity(target)) {
+          await new Promise(resolve => setTimeout(resolve, 2500))
+          try {
+            reply = await searchAmap(key, searchName(target.name), '', countedFetch)
+          } catch (retryError) {
+            const retryCode = (retryError as Error).message.match(/infocode=(\d+)/u)?.[1]
+            if (!retryCode) throw retryError
+            run.results[index] = { ...target, status: 'not_found', reason: `高德接口拒绝查询（${retryCode}）`, candidates: [] }
+            console.log(`${index + 1}/${targets.length} not_found ${target.name} -> 接口拒绝 ${retryCode}`)
+            writeJson(rawPath, run)
+            continue
+          }
+        } else {
+          // 高德业务拒绝（如境外机构超出 key 权限）只影响这一家，其余机构照常完成。
+          if (!infocode) throw error
+          run.results[index] = { ...target, status: 'not_found', reason: `高德接口拒绝查询（${infocode}）`, candidates: [] }
+          console.log(`${index + 1}/${targets.length} not_found ${target.name} -> 接口拒绝 ${infocode}`)
+          writeJson(rawPath, run)
+          continue
+        }
       }
       run.results[index] = selectPoi(target, reply.pois)
       const result = run.results[index]

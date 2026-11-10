@@ -112,7 +112,9 @@ const SOURCE_NAME_EXPANSIONS: Record<string, string> = {
   '广西北海市人民医院（银滩院区）': '北海市人民医院（银滩院区）',
   '南京泰康仙林鼓楼医院': '泰康仙林鼓楼医院',
   '浙江省荣军康复医院': '宁波大学附属民康医院',
-  '江西省精神卫生中心（南昌）': '江西省精神病院',
+  // 高德没有江西省精神卫生中心的机构级正名，只有院内「综合门诊楼」（090000）；
+  // 另有江西省精神卫生研究所（141300）与江西省心理康复中心两个相关实体，都不在原文名下。
+  '江西省精神卫生中心（南昌）': '江西省精神卫生中心',
   '上海市精卫': '上海交通大学医学院附属精神卫生中心',
   '四川省精神卫生中心（绵阳三医院）': '绵阳市第三人民医院',
   '海南医学院第一附属医院': '海南医科大学第一附属医院',
@@ -120,20 +122,26 @@ const SOURCE_NAME_EXPANSIONS: Record<string, string> = {
   '澳门科技大学医院': '科大医院',
   '港安医院': '香港港安医院',
   '苏州广济医院（在吴中人民医院出诊）': '苏州市吴中人民医院',
+  // 高德只收录高雄医学大学中和纪念医院，与附设医院同址。
   '高雄医学大学附设医院': '高雄医学大学中和纪念医院',
-  '长庚医院': '长庚纪念医院',
+  // 原文只写「长庚医院」，高德只收林口长庚这一个候选；长庚另有台北/桃园/高雄院区。
+  '长庚医院': '长庚医疗财团法人林口长庚纪念医院',
   '河南省郑州大学第一附属医院东区': '郑州大学第一附属医院东区',
   '陕西省宝鸡市康复医院': '宝鸡市康复医院',
-  '辽宁省中国医科大学附属盛京医院': '中国医科大学附属盛京医院',
+  // 盛京医院有南湖/滑翔/沈北三院区，原文没写院区，取南湖（三好街36号，本部）。
+  '辽宁省中国医科大学附属盛京医院': '中国医科大学附属盛京医院南湖院区',
   '贵州省贵阳正宇铁路医院（私立）': '贵阳正宇铁路医院',
   '四川省成都第四人民医院': '成都市第四人民医院',
   '四川省宜宾第四人民医院': '宜宾市第四人民医院',
   '广州白云区心理医院': '白云心理医院',
   '内蒙古自治区第三医院': '内蒙古第三医院',
+  // 福州市第四医院即福州市神经精神病防治院，现名福州市第二总医院神经精神病防治院。
   '福州第四医院': '福州市第二总医院神经精神病防治院',
   '赣南医学院第一附属医院': '赣南医科大学第一附属医院',
   '湖南省立第二人民医院/脑科医院': '湖南省脑科医院',
-  '台湾大学医学院附设医院': '台大医院',
+  // 高德没有「台大医院」总院机构级条目；西址（常德街1号）是总院所在，
+  // 写「台大医院」会落到 7 公里外的癌医中心分院。
+  '台湾大学医学院附设医院': '国立台湾大学医学院附设医院西址',
   '山西医科大学第一附属医院': '山西医科大学第一医院',
   '成功大学医学院附设医院': '国立成功大学医学院附设医院',
   '广州市惠爱医院': '广州医科大学附属脑科医院',
@@ -141,8 +149,12 @@ const SOURCE_NAME_EXPANSIONS: Record<string, string> = {
   // 旧源同一批行也把它记作「山东省青岛精神卫生中心」，挂在高新院区名下。
   '山东省精卫（青岛）': '青岛市精神卫生中心高新院区',
   '山东省青岛精神卫生中心': '青岛市精神卫生中心高新院区',
+  // 广东省精神卫生中心挂靠在广东省人民医院，高德收录的是惠福分院（惠福西路123号）。
   '广东省精神卫生中心': '广东省人民医院惠福分院',
+  // 这家在高德只有英文名 POI，五权路499号与中文名同址。
   '中国医药大学附设医院': 'China Medical University Hospital',
+  // 高德没有「澳门大学心理学系诊所」这个医疗条目，取心理学系所在的社科楼（横琴校区，
+  // POI 的 pname 写广东省、typecode 是学校，链路上为这一条放行了省界校验）。
   '澳门大学心理学系诊所': '澳门大学社会科学学院',
   '澳门心理卫生中心': '澳門心理衛生中心',
   // 以下四家原文名与高德收录名不一致，按原表字面查不到，属名称差异而非机构缺失。
@@ -172,6 +184,10 @@ export function searchCity(target: LocationTarget): string {
     '苏州广济医院（在吴中人民医院出诊）': '苏州市',
     // 来源把桂林写进了云南那一栏，机构本身在桂林市。
     '云南 桂林医学院附属医院': '桂林市',
+    // 带省级 city 查「兰州大学第二医院」时，历史证据里落下的是「本部生殖医学中心」；
+    // 指定兰州市后首条即医院正名（萃英门82-176号）。
+    '兰州大学第二医院': '兰州市',
+    '甘肃 兰州大学第二医院': '兰州市',
   }
   // 港澳台不能传 city，否则一律 INSUFFICIENT_ABROAD_PRIVILEGES；结果仍按 pname 限定在本地。
   if (ABROAD_REGIONS.has(searchRegion(target))) return ''
@@ -223,7 +239,9 @@ export function selectPoi(target: LocationTarget, pois: Poi[]): LocationResult {
     return Math.min(50, common * 6)
   }
   const score = (poi: Poi) => Math.max(...names.map(name => scoreName(normalizedName(poi.name), name)))
-  const candidates = siteCandidates(located).filter(poi => !/医院|附院/u.test(target.name) || poi.typecode.startsWith('09'))
+  // 高德把「国立台湾大学医学院附设医院西址」这类总院门牌点归在 110200（政务/门牌类），
+  // 按「医院名必须是 09 医疗类」一刀切会把唯一的正址筛掉。名字与原文完全相等的候选不再按类别排除。
+  const candidates = siteCandidates(located).filter(poi => !/医院|附院/u.test(target.name) || poi.typecode.startsWith('09') || normalizedName(poi.name) === wanted)
   const ranked = candidates.map(poi => ({ poi, score: score(poi) })).filter(item => item.score >= 25).sort((a, b) => b.score - a.score)
   const campusSpecified = /院区|分院|医院[东西南北]区$/u.test(target.name) || /芳村/u.test(target.name)
   const exact = ranked.find(item => item.score === 100)
@@ -235,14 +253,16 @@ export function selectPoi(target: LocationTarget, pois: Poi[]): LocationResult {
     const chosen = exact ?? ranked.find(item => campus && normalizedName(item.poi.name).includes(campus))
     return chosen ? { ...base, status: 'geocoded', reason: '匹配原文指定院区', selection_rule: 'explicit-campus', chosen: chosen.poi } : { ...base, reason: '高德候选未匹配到指定院区' }
   }
-  const primary = ranked.find(item => item.score >= 85 && /总院|院本部|主院区/u.test(item.poi.name))
-  const selected = primary ?? exact ?? ranked[0]
+  // 名字与原文完全相等时直接采用：这是最强证据，不能被「带院本部字样的子科室」抢走
+  // （「兰州大学第二医院本部生殖医学中心」里也有「院本部」，但它是一栋生殖中心，不是医院本体）。
+  const primary = ranked.find(item => item.score >= 85 && /(?:总院|院本部|主院区)$/u.test(normalizedName(item.poi.name)))
+  const selected = exact ?? primary ?? ranked[0]
   if (!selected) {
     const building = located.find(poi => (!/医院|附院/u.test(target.name) || poi.typecode.startsWith('09')) && !AUXILIARY.test(poi.name) && names.some(name => normalizedName(poi.name).startsWith(name)))
     return building ? { ...base, status: 'geocoded', reason: '采用高德院内医疗建筑位置', selection_rule: 'medical-building', chosen: building } : base
   }
   if (target.name === '澳门大学心理学系诊所') return { ...base, status: 'geocoded', reason: '采用心理学系所在社会科学学院建筑点', selection_rule: 'institution-building', chosen: selected.poi }
-  const rule = /在.+出诊/u.test(target.name) ? 'visit-site' : primary ? 'main-campus' : exact ? 'base-name' : 'best-score'
+  const rule = /在.+出诊/u.test(target.name) ? 'visit-site' : selected === exact ? 'base-name' : selected === primary ? 'main-campus' : 'best-score'
   return { ...base, status: 'geocoded', reason: rule === 'visit-site' ? '匹配原文出诊地点' : '按高德主体/本部及名称匹配选取机构代表位置', selection_rule: rule, chosen: selected.poi }
 }
 
