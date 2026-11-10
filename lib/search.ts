@@ -10,11 +10,19 @@ export function matchesSearch(text: string, query: string): boolean {
   return terms.every(term => haystack.includes(term))
 }
 
-export function hospitalSearchText(hospital: Hospital, reports: Report[]): string {
+/** 命中层级：0 名称 / 别名，1 省份 / 城市，2 科室、服务说明、病症，3 只有线索原文。数字越小越相关。 */
+export function searchTier(query: string, tiers: readonly string[]): number {
+  const index = tiers.findIndex((text) => matchesSearch(text, query))
+  return index === -1 ? tiers.length : index
+}
+
+/** 医院检索文本按相关性分四层，供搜索结果排序；顺序与 searchTier 的层级一致。 */
+export function hospitalSearchTiers(hospital: Hospital, reports: Report[]): string[] {
   const related = reports.filter(report => report.hospital_id === hospital.id)
-  return normalizeSearch([
-    hospital.name, ...hospital.aliases, hospital.province, hospital.city,
-    ...hospital.departments, ...hospital.trauma_service.evidence,
-    ...related.flatMap(report => [report.evidence_quote, report.evidence_full_text ?? '', report.doctor_name_raw ?? '', ...report.disorders]),
-  ].join(' '))
+  return [
+    [hospital.name, ...hospital.aliases].join(' '),
+    [hospital.province, hospital.city].join(' '),
+    [...hospital.departments, ...hospital.trauma_service.evidence].join(' '),
+    related.flatMap(report => [report.evidence_quote, report.evidence_full_text ?? '', report.doctor_name_raw ?? '', ...report.disorders]).join(' '),
+  ]
 }

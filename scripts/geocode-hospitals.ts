@@ -12,7 +12,12 @@ import { doctorsWithLocations, markUnlinked, reportsFromDocument, SOURCE_CAPTURE
 import type { SourceDocument } from './import-kdocs.ts'
 import { LOCATION_EVIDENCE, locationTargets, searchName, searchCity, selectPoi, searchAmap, linkLocationReports } from './lib/amap.ts'
 import type { LocationRun, Poi } from './lib/amap.ts'
+import { pickCandidate, queryLocation, readManualLocations, resolveTarget, upsertManualLocation } from './lib/locations.ts'
 import { CURATED_FILES, readJson, writeJson } from './lib/paths.ts'
+import { applyStoredOverrides } from './lib/overrides.ts'
+
+/** 选点是人做的决定，记在谁名下就写谁，不写跑脚本那台机器的用户名。 */
+const PICKED_BY = '小雨'
 
 function loadEnvKey(): string {
   if (!existsSync('.env.local')) throw new Error('.env.local 不存在')
@@ -104,9 +109,9 @@ export function applyRun(reports: Report[], run: LocationRun, document: SourceDo
   const linked = markUnlinked(linkLocationReports(reports, run), run)
   const hospitals = hospitalsFromRun(run)
   const updated_at = run.generated_at.slice(0, 10)
-  const hospitalFile = hospitalsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: hospitals })
-  const reportFile = reportsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: linked })
-  const doctorFile = doctorsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: doctorsWithLocations(document, linked) })
+  const hospitalFile = hospitalsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: applyStoredOverrides('hospitals', hospitals) })
+  const reportFile = reportsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: applyStoredOverrides('reports', linked) })
+  const doctorFile = doctorsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: applyStoredOverrides('doctors', doctorsWithLocations(document, linked)) })
   // Keep public provenance minimal; the full candidate inventory stays in ignored raw storage.
   writeJson(LOCATION_EVIDENCE, { ...run, provider: 'amap', endpoint: 'https://restapi.amap.com/v3/place/text', source_crs: 'GCJ-02', stored_crs: 'WGS84', conversion: 'three-iteration approximate inverse', results: run.results.map(result => ({ ...result, candidates: result.chosen ? [result.chosen] : [] })) })
   writeJson(CURATED_FILES.hospitals, hospitalFile)
@@ -135,6 +140,41 @@ async function main() {
     return
   }
   const key = loadEnvKey()
+  // 单条查询：源表里没有的机构（控制台新增的医院）走这条，一次只问一家。
+  // 高德经常给出多条同城候选，这里只把原样返回摆出来，选哪一条由人定，
+  // 不让打分规则替人决定——历史上挂错机构就是自动选定造成的。
+  if (args.includes('--query') || args.includes('--pick')) {
+    const hospitals = applyStoredOverrides('hospitals', readJson<{ items: Hospital[] }>(CURATED_FILES.hospitals).items)
+    if (args.includes('--pick')) {
+      const index = args.indexOf('--pick')
+      const hospitalId = args[index + 1]
+      const poiId = args[index + 2]
+      if (!hospitalId || !poiId) throw new Error('--pick 需要「机构 id 候选 id」两个参数')
+      const existing = readManualLocations().find(entry => entry.hospital_id === hospitalId)
+      if (!existing) throw new Error(`还没有为 ${hospitalId} 查过坐标，先跑 --query`)
+      const picked = pickCandidate(existing, poiId, { by: PICKED_BY })
+      upsertManualLocation(picked)
+      console.log(`已选定 ${hospitalId} → ${picked.chosen!.name}（${picked.chosen!.location}）`)
+      return
+    }
+    const target = resolveTarget(hospitals, args[args.indexOf('--query') + 1] ?? '')
+    if (!target.name) throw new Error('--query 需要一家机构的 id 或名称')
+    // 没有 id 的记录合不进坐标表：图钉是按医院 id 挂的，先让这家机构进库。
+    if (!target.hospital_id) {
+      throw new Error(`找不到机构 ${target.name}：先在控制台为它新增条目拿到 id，再用 id 查坐标`)
+    }
+    const previous = readManualLocations().find(entry => entry.hospital_id === target.hospital_id || entry.name === target.name)
+    const entry = await queryLocation(key, target, previous)
+    upsertManualLocation(entry)
+    console.log(`${entry.name}：查询「${entry.query.keywords}」 city=${entry.query.city || '(不带)'}，${entry.candidates.length} 条候选`)
+    for (const poi of entry.candidates) {
+      const mark = poi.id === entry.chosen?.id ? '✓' : entry.shortlist.includes(poi.id) ? '·' : ' '
+      console.log(`  ${mark} ${poi.id}  ${poi.name}  ${poi.pname}${poi.cityname} ${poi.address}  typecode=${poi.typecode}`)
+    }
+    if (entry.status === 'geocoded') console.log(`沿用之前的选定：${entry.chosen!.name}（不在候选里就换，用 --pick）`)
+    else console.log(`用 node scripts/geocode-hospitals.ts --pick ${entry.hospital_id || '<机构 id>'} <候选 id> 选定`)
+    return
+  }
   if (args.includes('--probe')) {
     console.log(`${new Date().toISOString()} 高德单次诊断：${reports[0].hospital_name_raw}`)
     const params = new URLSearchParams({ key, keywords: reports[0].hospital_name_raw!, offset: '1', page: '1' })

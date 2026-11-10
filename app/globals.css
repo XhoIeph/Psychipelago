@@ -762,7 +762,14 @@ body.tc-sidebar-resizing { cursor:col-resize; user-select:none; }
    卡身固定三行：组头医生名 + 标签、诊室、备注；后两行各占一行、超出截断。 */
 .tc-doctor-card { display:grid; gap:8px; margin:0 0 12px; padding:14px 16px 12px; border:1px solid var(--tc-v3-card-line); border-radius:14px; background:var(--tc-surface); box-shadow:0 1px 2px rgba(25,59,56,.05); }
 .tc-doctor-card:last-child { margin-bottom:0; }
-.tc-doctor-card > .tc-lead-doctor { margin:0; }
+/* 卡头是 nowrap 的流内文本：网格列必须允许收缩，名字自己吃省略号，标签完整留在名字后。 */
+.tc-doctor-card { grid-template-columns: minmax(0, 1fr); }
+.tc-doctor-card > .tc-lead-doctor { display:flex; align-items:baseline; gap:8px; min-width:0; white-space:nowrap; }
+.tc-lead-doctor > .tc-doctor-link { flex:0 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* 名字是 span 里包着 button：省略号必须落在 button 自己身上，否则字被硬切、末尾没有「…」。 */
+.tc-lead-doctor > span { display:flex; min-width:0; }
+.tc-lead-doctor > span > .tc-doctor-link { display:block; min-width:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.tc-lead-doctor .tc-lead-tag { flex:0 0 auto; margin-left:0; }
 .tc-doctor-card-dept,
 .tc-doctor-card-note { margin:0; font-size:15px; font-weight:500; line-height:1.5; color:var(--tc-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .tc-doctor-card-dept.is-empty,

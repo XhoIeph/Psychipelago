@@ -5,6 +5,9 @@
 import type { Doctor, Hospital, Province, Report } from '../lib/schema.ts'
 import { matchProvinceAdcode } from '../lib/region.ts'
 import { CURATED_FILES, GENERATED_DIR, readJson, writeJson } from './lib/paths.ts'
+import { LOCATION_EVIDENCE } from './lib/amap.ts'
+import type { LocationResult } from './lib/amap.ts'
+import { GENERATED_LOCATIONS, buildLocationIndex, readManualLocations } from './lib/locations.ts'
 import { resolve } from 'node:path'
 
 const provinces = readJson<{ items: Province[] }>(CURATED_FILES.provinces).items
@@ -91,6 +94,15 @@ const output = {
 
 writeJson(resolve(GENERATED_DIR, 'province-stats.json'), output)
 
+// 页面出图用的坐标表：冻结的证据结果 + 控制台为源表里没有的机构查到的坐标。
+// 证据文件本身不改，它记录的是那一天问了高德什么；这里只做合成。
+const locationEvidence = readJson<{ results: LocationResult[] }>(LOCATION_EVIDENCE)
+const locations = buildLocationIndex(hospitals, locationEvidence.results, readManualLocations())
+writeJson(GENERATED_LOCATIONS, locations)
+
 console.log(
   `✓ 聚合完成：已发布线索 ${output.totals.reports}（未定位 ${unlocated}）、医院 ${output.totals.hospitals}、医生 ${output.totals.doctors}、有线索省份 ${output.totals.provinces_with_reports}`,
+)
+console.log(
+  `✓ 坐标合成：${locations.results.length} 家机构（证据 ${locations.results.filter((r) => r.provenance === 'evidence').length}、控制台新增 ${locations.results.filter((r) => r.provenance === 'manual').length}）`,
 )

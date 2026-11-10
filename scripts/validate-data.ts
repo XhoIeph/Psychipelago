@@ -17,6 +17,8 @@ import { existsSync } from 'node:fs'
 import { LOCATION_EVIDENCE } from './lib/amap.ts'
 import type { LocationRun } from './lib/amap.ts'
 import { hospitalsFromRun } from './geocode-hospitals.ts'
+import { applyOverrides, loadOverrides } from './lib/overrides.ts'
+import type { OverrideKind } from './lib/overrides.ts'
 import type { Hospital, Report } from '../lib/schema.ts'
 
 const errors: string[] = []
@@ -84,14 +86,24 @@ const sourceStructureValid = Array.isArray(sourceDocument.sheets) &&
 if (!sourceStructureValid) {
   errors.push('来源转写必须按工作表顺序包含表头与全部数据行')
 }
+// 覆盖层：人工改动只能经由 data/overrides 表达。比对基准因此是「源推导结果 + 覆盖层」，
+// 判据一点没松——覆盖层之外多出来的差异，仍然是手改。
+const overrides = loadOverrides()
+errors.push(...overrides.errors)
+function withOverrides<T extends Record<string, unknown>>(kind: OverrideKind, items: T[]): T[] {
+  const applied = applyOverrides(kind, items, overrides.byKind[kind])
+  errors.push(...applied.errors)
+  return applied.items as T[]
+}
+
 // 转写结构不成立时无法重放解析，只报结构错误，避免用残缺来源继续比对。
-if (sourceStructureValid && reports && !isDeepStrictEqual(reports.items, reportsWithLocations(sourceDocument))) {
+if (sourceStructureValid && reports && !isDeepStrictEqual(reports.items, withOverrides('reports', reportsWithLocations(sourceDocument)))) {
   errors.push('reports.json 与主线表格转写不一致；请运行 node scripts/import-kdocs.ts，不能恢复旧源或手改引文')
 }
 const expectedHospitals = existsSync(LOCATION_EVIDENCE) ? hospitalsFromRun(readJson<LocationRun>(LOCATION_EVIDENCE)) : []
-if (hospitals && !isDeepStrictEqual(hospitals.items, expectedHospitals)) errors.push('hospitals.json 与本轮高德定位依据不一致，不能恢复退役机构或手改坐标')
+if (hospitals && !isDeepStrictEqual(hospitals.items, withOverrides('hospitals', expectedHospitals))) errors.push('hospitals.json 与本轮高德定位依据不一致，不能恢复退役机构或手改坐标')
 if (sourceStructureValid && doctors && reports &&
-  !isDeepStrictEqual(doctors.items, doctorsWithLocations(sourceDocument, reports.items as Report[]))) {
+  !isDeepStrictEqual(doctors.items, withOverrides('doctors', doctorsWithLocations(sourceDocument, reports.items as Report[])))) {
   errors.push('doctors.json 与主线表格里的诊室、备注、评价不一致；请运行 node scripts/import-kdocs.ts，不能手改医生档案')
 }
 

@@ -2,7 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import Link from 'next/link'
-import { hospitalSearchText, matchesSearch } from '@/lib/search'
+import { hospitalSearchTiers, matchesSearch, searchTier } from '@/lib/search'
 import { knownText } from '@/lib/hospital-row'
 import { aggregateDoctorLeads, splitDoctorNames } from '@/lib/doctor-leads'
 import { displayDisorderLabels, disorderDisplayLabel, disorderDisplayRank, DISORDER_FILTER_GROUPS } from '@/lib/disorder-labels'
@@ -631,29 +631,33 @@ export function MapApp(props: Props) {
       ? reports.filter((report) => report.hospital_id === hospitalId && hitLeadIds.has(report.id)).length
       : propsRef.current.reportCounts[hospitalId] ?? 0
 
-    const hospitals: SearchResult[] = []
+    const hospitals: { result: SearchResult; tier: number; count: number }[] = []
     for (const hospital of propsRef.current.hospitals) {
-      const haystack = hospitalSearchText(hospital, propsRef.current.reports)
-      if (matchesSearch(haystack, q)) {
-        const count = leadCountOf(hospital.id)
-        // 命中 0 条的机构在筛选态下不出现在结果里，与省份列表同一规则。
-        if (!hitLeadIds || count > 0) {
-          hospitals.push({
-            key: `hospital-${hospital.id}`,
-            group: '医院',
-            label: hospital.name,
-            sub: `${provinceShortName(propsRef.current.provinces, hospital.adcode)} · 线索 ${count} 条`,
-            run: () => selectHospital(hospital.id),
-          })
-        }
-      }
-      if (hospitals.length >= 4) break
+      const tier = searchTier(q, hospitalSearchTiers(hospital, propsRef.current.reports))
+      if (tier >= 4) continue
+      const count = leadCountOf(hospital.id)
+      // 命中 0 条的机构在筛选态下不出现在结果里，与省份列表同一规则。
+      if (hitLeadIds && count === 0) continue
+      hospitals.push({
+        result: {
+          key: `hospital-${hospital.id}`,
+          group: '医院',
+          label: hospital.name,
+          sub: `${provinceShortName(propsRef.current.provinces, hospital.adcode)} · 线索 ${count} 条`,
+          run: () => selectHospital(hospital.id),
+        },
+        tier,
+        count,
+      })
     }
-    results.push(...hospitals)
+    // 相关性优先：名称命中 > 省市命中 > 科室/服务说明 > 只有原文，同级按线索数、再按名称。
+    hospitals.sort((a, b) => a.tier - b.tier || b.count - a.count || a.result.label.localeCompare(b.result.label, 'zh-Hans-CN'))
 
     // Share doctor aggregation with both browsing surfaces.
-    const doctors: SearchResult[] = []
+    const doctors: { result: SearchResult; tier: number; count: number }[] = []
     const doctorKeys = new Set<string>()
+    const doctorReportById = new Map(reports.map((report) => [report.id, report]))
+    const hospitalById = new Map(propsRef.current.hospitals.map((hospital) => [hospital.id, hospital]))
     for (const group of aggregateDoctorLeads(propsRef.current.hospitals, propsRef.current.reports, q)) {
       for (const entry of group.entries) {
         const hitReportIds = hitLeadIds
@@ -662,31 +666,43 @@ export function MapApp(props: Props) {
         if (!hitReportIds.length) continue
         const key = `doctor-${entry.hospitalId ?? entry.hospitalName}-${entry.name}`
         if (doctorKeys.has(key)) continue
+        const hospital = entry.hospitalId ? hospitalById.get(entry.hospitalId) : undefined
+        // 医生同样按相关性排：姓名 > 所属医院/城市 > 只有线索原文。
+        const tier = searchTier(q, [
+          entry.name,
+          [entry.hospitalName, hospital?.city ?? '', hospital?.province ?? ''].join(' '),
+          entry.reportIds.flatMap((id) => {
+            const report = doctorReportById.get(id)
+            return report ? [report.evidence_quote, report.evidence_full_text ?? ''] : []
+          }).join(' '),
+        ])
         doctorKeys.add(key)
         doctors.push({
-          key,
-          group: '医生',
-          label: entry.name,
-          sub: `${entry.hospitalName} · ${group.label} · 线索 ${hitReportIds.length} 条`,
-          run: () => {
-            if (entry.hospitalId) {
-              focusDetailRef.current = true
-              selectHospital(entry.hospitalId)
-              setSelectedDoctor({ hospitalId: entry.hospitalId, name: entry.name })
-              return
-            }
-            // A lead without a linked record resolves to the institutions that carry its name.
-            const hospitalIds = propsRef.current.hospitals
-              .filter((hospital) => hospital.name === entry.hospitalName)
-              .map((hospital) => hospital.id)
-            enterFilter({ label: entry.name, hint: `线索 ${hitReportIds.length} 条`, hospitalIds }, [])
+          result: {
+            key,
+            group: '医生',
+            label: entry.name,
+            sub: `${entry.hospitalName} · ${group.label} · 线索 ${hitReportIds.length} 条`,
+            run: () => {
+              if (entry.hospitalId) {
+                focusDetailRef.current = true
+                selectHospital(entry.hospitalId)
+                setSelectedDoctor({ hospitalId: entry.hospitalId, name: entry.name })
+                return
+              }
+              // A lead without a linked record resolves to the institutions that carry its name.
+              const hospitalIds = propsRef.current.hospitals
+                .filter((hospital) => hospital.name === entry.hospitalName)
+                .map((hospital) => hospital.id)
+              enterFilter({ label: entry.name, hint: `线索 ${hitReportIds.length} 条`, hospitalIds }, [])
+            },
           },
+          tier,
+          count: hitReportIds.length,
         })
-        if (doctors.length >= 2) break
       }
-      if (doctors.length >= 2) break
     }
-    results.push(...doctors)
+    doctors.sort((a, b) => a.tier - b.tier || b.count - a.count || a.result.label.localeCompare(b.result.label, 'zh-Hans-CN'))
 
     // 病症按显示标签分组：源文档只有 cptsd / osdd-did / 人格障碍 三段，osdd 与 did 合成一行。
     const disorderBuckets = new Map<string, { label: string; ids: string[]; haystack: string[] }>()
@@ -737,7 +753,12 @@ export function MapApp(props: Props) {
     }
     // Every group keeps a slot so a disorder or source-topic hit is always reachable.
     const provinceHits = results.filter((item) => item.group === '省份').slice(0, 2)
-    return [...provinceHits, ...hospitals.slice(0, 4), ...doctors.slice(0, 2), ...disorders.slice(0, 2)]
+    return [
+      ...provinceHits,
+      ...hospitals.slice(0, 4).map((item) => item.result),
+      ...doctors.slice(0, 2).map((item) => item.result),
+      ...disorders.slice(0, 2),
+    ]
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, activeDisorderIds])
 

@@ -7,12 +7,17 @@ import { evaluationComments, reportsFromDocument, reportsWithLocations, doctorsW
 import { doctorsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import { LOCATION_EVIDENCE } from '../scripts/lib/amap.ts'
 import { hospitalsFromRun } from '../scripts/geocode-hospitals.ts'
+import { applyStoredOverrides } from '../scripts/lib/overrides.ts'
 
 const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'))
 const document = readJson(SOURCE_CAPTURE)
 const reports = readJson('data/curated/reports.json').items
 const doctors = readJson('data/curated/doctors.json').items
-const expected = reportsWithLocations(document)
+// curated 是「源转写 + 覆盖层」的结果，比对也得走同一条路，否则控制台改一个字这条就红。
+const expected = applyStoredOverrides('reports', reportsWithLocations(document))
+// 控制台新增的线索 id 带 local- 前缀，它们不在表格里。凡是「表格每一行都进了库」这类
+// 断言只数源转写；curated 与「源 + 覆盖层」的整份比对仍然用 reports，多一条少一条都红。
+const sourceReports = reports.filter((report) => !report.id.startsWith('local-'))
 
 /** 姓名格不是人名、或姓名格空着的行：它们照样是线索，名称取姓名格原文（姓名格空时取诊室那一格）。 */
 const subjectIds = new Set([
@@ -46,15 +51,16 @@ test('三张工作表与每一行有内容的记录都进了库', () => {
   assert.deepEqual(document.sheets.map((sheet) => sheet.values.length), [57, 55, 184])
   const perSheet = Object.fromEntries(document.sheets.map((sheet, index) => [
     index + 1,
-    reports.filter((report) => report.id.includes(`-s${index + 1}-`)).length,
+    sourceReports.filter((report) => report.id.includes(`-s${index + 1}-`)).length,
   ]))
   // 线索单位是「一条发言」：备注单独一条，评价里每位署名的用户各一条；
   // 无名分的多行仍在同一格里属同一条长评。跨行、跨表一律不合并。
   assert.deepEqual(perSheet, { 1: 90, 2: 63, 3: 174 })
-  assert.equal(reports.length, 327)
+  assert.equal(sourceReports.length, 327)
   assert.equal(reportsFromDocument(document).length, 327)
   // 合并必须可重放：同一份文档跑两遍得到同一组 id，定位表与断言样本才不会抖。
-  assert.deepEqual(reportsFromDocument(document).map((report) => report.id), reports.map((report) => report.id))
+  assert.deepEqual(reportsFromDocument(document).map((report) => report.id), sourceReports.map((report) => report.id))
+  // 整份 curated 必须等于「源转写 + 覆盖层」，多一条少一条都是覆盖层没烘焙。
   assert.deepEqual(reports, expected)
   assert.equal(reportsFileSchema.safeParse(readJson('data/curated/reports.json')).success, true)
   assert.equal(doctorsFileSchema.safeParse(readJson('data/curated/doctors.json')).success, true)
@@ -81,7 +87,8 @@ test('每条线索都能回溯到同一张表的同一单元格', () => {
       corpus.set(key, [corpus.get(key), cells[3], cells[4], cells[5]].filter(Boolean).join('\n'))
     }
   }
-  for (const report of reports) {
+  // 只核对源转写：控制台新增的线索没有表格单元格可回溯，它们由覆盖层的 insert 校验管。
+  for (const report of sourceReports) {
     assert.equal(report.source_url, SOURCE_URL)
     assert.equal(report.source_post_id, 'cp3b7ToQAl3J')
     assert.equal(report.evidence_context.note_title, document.title)
@@ -127,15 +134,16 @@ test('每条线索都能回溯到同一张表的同一单元格', () => {
 })
 
 test('工作表按病症分组，其他字段保持未知而不是编造', () => {
+  // 病症分布说的是表格本身，控制台新增的线索不参与计数。
   const byDisorder = Object.fromEntries(['cptsd', 'osdd/did', 'pd'].map((group) => [
     group,
-    reports.filter((report) => report.disorders.join('/') === group).length,
+    sourceReports.filter((report) => report.disorders.join('/') === group).length,
   ]))
   // 一条线索最多只带一个病症组合，跨表同引文合并会带上另一张表的病症标签。
   assert.deepEqual(byDisorder, { cptsd: 84, 'osdd/did': 59, pd: 174 })
-  assert.equal(reports.filter((report) => report.disorders.includes('cptsd')).length, 90)
-  assert.equal(reports.filter((report) => report.disorders.includes('pd')).length, 183)
-  for (const report of reports) {
+  assert.equal(sourceReports.filter((report) => report.disorders.includes('cptsd')).length, 90)
+  assert.equal(sourceReports.filter((report) => report.disorders.includes('pd')).length, 183)
+  for (const report of sourceReports) {
     assert.equal(report.stage, 'unknown')
     assert.equal(report.published_at, undefined)
     assert.equal(report.published_at_precision, 'unknown')
@@ -159,11 +167,11 @@ test('工作表按病症分组，其他字段保持未知而不是编造', () =>
 })
 
 test('姓名格不是人名的行照原文当名称上卡，状态附注与整段介绍不冒充名称', () => {
-  const quotes = reports.map((report) => `${report.evidence_quote}\n${report.evidence_full_text ?? ''}`).join('\n')
+  const quotes = sourceReports.map((report) => `${report.evidence_quote}\n${report.evidence_full_text ?? ''}`).join('\n')
   for (const note of ['触发风险', '目前进修中', '挂号要挂特需', '只会英语和德语', '首诊只有潘梁两位主任才能下诊断', '课题组', '团队']) {
     assert.ok(quotes.includes(note), note)
   }
-  for (const report of reports) {
+  for (const report of sourceReports) {
     // 状态附注（「（特需）」「（退休）」）仍然剥掉：那是这一行的状态，不是名称的一部分。
     assert.doesNotMatch(report.doctor_name_raw ?? '', /触发风险|离职|退休|进修|特需/u)
     assert.equal(report.doctor_title_raw, undefined)
@@ -193,7 +201,7 @@ test('姓名格不是人名的行照原文当名称上卡，状态附注与整�
 test('医生档案只由表格里的诊室、备注、评价生成，且都能落到已定位机构', () => {
   const hospitalIds = new Set(readJson('data/curated/hospitals.json').items.map((item) => item.id))
   assert.equal(doctors.length, 252)
-  assert.deepEqual(doctors, doctorsWithLocations(document, expected))
+  assert.deepEqual(doctors, applyStoredOverrides('doctors', doctorsWithLocations(document, expected)))
   for (const doctor of doctors) {
     assert.match(doctor.id, /^kdocs-doctor-[0-9a-f]{12}$/)
     assert.ok(hospitalIds.has(doctor.hospital_id), doctor.hospital_id)
@@ -219,15 +227,15 @@ test('医生档案只由表格里的诊室、备注、评价生成，且都能�
   assert.ok(shortEvaluation.every((doctor) => doctor.evaluation_echoes_report === undefined))
   // 姓名格空着的行也发布：名称取同一格的诊室（武汉二七院区那条），否则这条反馈挂不上任何卡片。
   // 现在每条线索都有名称，没有无主的线索了。
-  const noName = reports.filter((report) => !report.doctor_name_raw)
+  const noName = sourceReports.filter((report) => !report.doctor_name_raw)
   assert.equal(noName.length, 0)
   // 回龙观：13 行共 24 条发言，全部发布；其中 3 条的名称是姓名格写的「创伤后应激障碍专病门诊」。
-  const huilongguan = reports.filter((report) => report.hospital_name_raw === '北京回龙观医院')
+  const huilongguan = sourceReports.filter((report) => report.hospital_name_raw === '北京回龙观医院')
   assert.equal(huilongguan.length, 24)
   assert.equal(huilongguan.filter((report) => report.status === 'published').length, 24)
   assert.equal(huilongguan.filter((report) => report.doctor_name_raw === '创伤后应激障碍专病门诊').length, 3)
   // 合并过的线索记下合并前的发言条数，单条不写 1：只剩「两张表抄了同一句话」这一类
-  const merged = reports.filter((report) => report.parts_count)
+  const merged = sourceReports.filter((report) => report.parts_count)
   assert.equal(merged.length, 11)
   assert.ok(merged.every((report) => report.parts_count >= 2))
   assert.equal(merged.reduce((total, report) => total + report.parts_count, 0), 22)
@@ -242,14 +250,32 @@ test('医生档案只由表格里的诊室、备注、评价生成，且都能�
   // 梁红那一行有四位用户各说一段，加上备注共五条线索
   const liang = reports.filter((report) => /-s1-r4(?:-p\d+)?$/u.test(report.id))
   assert.deepEqual(liang.map((report) => report.id.slice(-6)), ['-s1-r4', '-r4-p2', '-r4-p3', '-r4-p4', '-r4-p5'])
-  assert.equal(reports.filter((report) => (report.doctor_name_raw ?? '').split('、').includes('潘伟刚')).length, 1)
+  assert.equal(sourceReports.filter((report) => (report.doctor_name_raw ?? '').split('、').includes('潘伟刚')).length, 1)
   const pan = doctors.find((doctor) => doctor.name === '潘伟刚')
   assert.ok(pan)
   assert.doesNotMatch(pan.evaluation ?? '', /挂了梁红的/u)
 })
 
-test('机构清单等于本轮定位依据，未定位的 1 条线索保留院名而不编造坐标', () => {
-  assert.deepEqual(readJson('data/curated/hospitals.json').items, existsSync(LOCATION_EVIDENCE) ? hospitalsFromRun(readJson(LOCATION_EVIDENCE)) : [])
+test('已发布线索点到的每个名称，在那家医院都有卡可点开', () => {
+  const cards = new Set(doctors.map((doctor) => `${doctor.hospital_id}\u0000${doctor.name}`))
+  const missing = []
+  for (const report of reports) {
+    if (report.status !== 'published' || !report.hospital_id) continue
+    for (const name of (report.doctor_name_raw ?? '').split(/[、,，]/u).map((part) => part.trim()).filter(Boolean)) {
+      if (!cards.has(`${report.hospital_id}\u0000${name}`)) missing.push(`${report.id} → ${name}`)
+    }
+  }
+  assert.deepEqual(missing, [])
+})
+
+test('机构清单等于本轮定位依据加覆盖层，未定位的 1 条线索保留院名而不编造坐标', () => {
+  // 控制台新增的医院只存在覆盖层里，所以比对基准是「定位依据 + 覆盖层」，与 validate-data 一致。
+  assert.deepEqual(
+    readJson('data/curated/hospitals.json').items,
+    existsSync(LOCATION_EVIDENCE)
+      ? applyStoredOverrides('hospitals', hospitalsFromRun(readJson(LOCATION_EVIDENCE)))
+      : [],
+  )
   assert.equal(readJson('data/curated/hospitals.json').items.length, 127)
   const unlocated = reports.filter((report) => !report.hospital_id)
   assert.equal(unlocated.length, 1)
@@ -260,7 +286,8 @@ test('机构清单等于本轮定位依据，未定位的 1 条线索保留院�
   assert.ok(!existsSync('data/evidence/xiaohongshu'))
   assert.deepEqual(existsSync('data/runs') ? readdirSync('data/runs') : [], [])
   for (const report of reports) {
-    assert.match(report.id, /^kdocs-cp3b7toqal3j-/)
+    // 源转写的 id 来自 kdocs；控制台新增的按约定带 local- 前缀，两种都算合法来源。
+    assert.match(report.id, /^(?:kdocs-cp3b7toqal3j-|local-)/)
     if (report.hospital_id) assert.match(report.hospital_id, /^kdocs-amap-/)
     assert.doesNotMatch(JSON.stringify(report), /xiaohongshu|xsec_token|author_|parent_author|reply_to_author|ip_location|retired-2026/u)
   }
@@ -282,6 +309,8 @@ test('校验器拒绝私人标识与改动过的引文，并拒绝结构不成�
   const fixture = mkdtempSync(resolve('tmp/data-source-'))
   try {
     cpSync('data/curated', resolve(fixture, 'data/curated'), { recursive: true })
+    // 覆盖层也得一起搬：curated 是「源转写 + 覆盖层」烘焙出来的，只搬一半校验器必然对不上。
+    if (existsSync('data/overrides')) cpSync('data/overrides', resolve(fixture, 'data/overrides'), { recursive: true })
     mkdirSync(resolve(fixture, SOURCE_CAPTURE, '..'), { recursive: true })
     cpSync(SOURCE_CAPTURE, resolve(fixture, SOURCE_CAPTURE))
     if (existsSync(LOCATION_EVIDENCE)) {

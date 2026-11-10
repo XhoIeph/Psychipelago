@@ -11,6 +11,7 @@ import { doctorsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import { CURATED_FILES, readJson, writeJson } from './lib/paths.ts'
 import { LOCATION_EVIDENCE, linkLocationReports } from './lib/amap.ts'
 import type { LocationRun } from './lib/amap.ts'
+import { applyStoredOverrides } from './lib/overrides.ts'
 
 export const SOURCE_URL = 'https://www.kdocs.cn/l/cp3b7ToQAl3J'
 export const SOURCE_TITLE = '副本就诊地图10.25repo添加中'
@@ -512,13 +513,13 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   if (document.url !== SOURCE_URL || document.sheets.length === 0 || document.sheets.some(sheet => sheet.values.length < 2)) {
     throw new Error('来源链接或工作表结构不符')
   }
-  const items = reportsWithLocations(document)
+  const items = applyStoredOverrides('reports', reportsWithLocations(document))
   const updatedAt = document.captured_at.slice(0, 10)
   const reportFile = reportsFileSchema.parse({ schema_version: '1.0.0', updated_at: updatedAt, items })
   const doctorFile = doctorsFileSchema.parse({
     schema_version: '1.0.0',
     updated_at: updatedAt,
-    items: doctorsWithLocations(document, items),
+    items: applyStoredOverrides('doctors', doctorsWithLocations(document, items)),
   })
   writeJson(CURATED_FILES.reports, reportFile)
   writeJson(CURATED_FILES.doctors, doctorFile)
