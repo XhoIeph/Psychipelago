@@ -11,12 +11,8 @@ import {
 } from '../lib/schema.ts'
 import { CURATED_FILES, readJson } from './lib/paths.ts'
 import { isDeepStrictEqual } from 'node:util'
-import { reportsWithLocations, doctorsWithLocations, SOURCE_CAPTURE, SOURCE_TITLE, SOURCE_URL } from './import-kdocs.ts'
+import { reportsWithLocations, doctorsWithLocations, hospitalsWithOverrides, SOURCE_CAPTURE, SOURCE_TITLE, SOURCE_URL } from './import-kdocs.ts'
 import type { SourceDocument } from './import-kdocs.ts'
-import { existsSync } from 'node:fs'
-import { LOCATION_EVIDENCE } from './lib/amap.ts'
-import type { LocationRun } from './lib/amap.ts'
-import { hospitalsFromRun } from './geocode-hospitals.ts'
 import { applyOverrides, loadOverrides } from './lib/overrides.ts'
 import type { OverrideKind } from './lib/overrides.ts'
 import type { Hospital, Report } from '../lib/schema.ts'
@@ -103,8 +99,10 @@ function withOverrides<T extends Record<string, unknown>>(kind: OverrideKind, it
 if (sourceStructureValid && reports && !isDeepStrictEqual(reports.items, withOverrides('reports', reportsWithLocations(sourceDocument)))) {
   errors.push('reports.json 与主线表格转写不一致；请运行 node scripts/import-kdocs.ts，不能恢复旧源或手改引文')
 }
-const expectedHospitals = existsSync(LOCATION_EVIDENCE) ? hospitalsFromRun(readJson<LocationRun>(LOCATION_EVIDENCE)) : []
-if (hospitals && !isDeepStrictEqual(hospitals.items, withOverrides('hospitals', expectedHospitals))) errors.push('hospitals.json 与本轮高德定位依据不一致，不能恢复退役机构或手改坐标')
+// 机构清单与烘焙走同一个函数：覆盖层之后还要补人工选定的坐标，
+// 两边各拼一次迟早会漂，漂出来的差异会伪装成「有人手改数据」。
+const expectedHospitals = hospitalsWithOverrides(items => withOverrides('hospitals', items)) ?? []
+if (hospitals && !isDeepStrictEqual(hospitals.items, expectedHospitals)) errors.push('hospitals.json 与本轮高德定位依据不一致，不能恢复退役机构或手改坐标')
 if (sourceStructureValid && doctors && reports &&
   !isDeepStrictEqual(doctors.items, withOverrides('doctors', doctorsWithLocations(sourceDocument, reports.items as Report[])))) {
   errors.push('doctors.json 与主线表格里的诊室、备注、评价不一致；请运行 node scripts/import-kdocs.ts，不能手改医生档案')

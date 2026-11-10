@@ -11,8 +11,9 @@ import { doctorsFileSchema, hospitalsFileSchema, reportsFileSchema } from '../li
 import { CURATED_FILES, readJson, writeJson } from './lib/paths.ts'
 import { LOCATION_EVIDENCE, linkLocationReports } from './lib/amap.ts'
 import type { LocationRun } from './lib/amap.ts'
-import { hospitalsFromRun } from './lib/hospitals.ts'
+import { hospitalsFromRun, withManualCoordinates } from './lib/hospitals.ts'
 import { applyStoredOverrides } from './lib/overrides.ts'
+import { readManualLocations } from './lib/locations.ts'
 
 export const SOURCE_URL = 'https://www.kdocs.cn/l/cp3b7ToQAl3J'
 export const SOURCE_TITLE = '副本就诊地图10.25repo添加中'
@@ -515,10 +516,17 @@ export function doctorsWithLocations(document: SourceDocument, reports: Report[]
  * 拿现有 hospitals.json 当基准会让 `source_value` 变成自我比对——改过的值再比一次永远相等。
  * 从定位依据起底，`validate` 与这里用的是同一个派生值，覆盖失效才真会红。
  */
-export function hospitalsWithOverrides(root?: string): Hospital[] | undefined {
+export function hospitalsWithOverrides(
+  apply: (items: Hospital[]) => Hospital[] = items => applyStoredOverrides('hospitals', items),
+  root?: string,
+): Hospital[] | undefined {
   const run = locationRun()
   if (!run) return undefined
-  return applyStoredOverrides('hospitals', hospitalsFromRun(run), root)
+  // 顺序不能反：覆盖层的 insert 会带 `coordinates: null`，先把覆盖层套上、再补人工坐标，
+  // 否则刚补上的落点会被新增记录里的 null 盖回去。
+  // `apply` 可替换是为了让 `validate` 走同一条合成路径、但把它自己的错误收集留着
+  // （那边出错要连同其它数据问题一起报，不能就地抛断）。
+  return withManualCoordinates(apply(hospitalsFromRun(run)), readManualLocations(root))
 }
 
 function locationRun(): LocationRun | undefined {

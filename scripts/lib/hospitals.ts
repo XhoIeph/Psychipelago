@@ -5,6 +5,7 @@
 import type { Hospital } from '../../lib/schema.ts'
 import { CURATED_FILES, readJson } from './paths.ts'
 import type { LocationRun } from './amap.ts'
+import type { ManualLocation } from './locations.ts'
 
 const GCJ_A = 6378245
 const GCJ_EE = 0.00669342162296594323
@@ -51,6 +52,33 @@ export function gcj02ToWgs84(lng: number, lat: number): [number, number] {
     throw new Error(`GCJ->WGS 转换结果异常：gcj=(${lng},${lat}) wgs=(${wgsLng},${wgsLat})`)
   }
   return [Number(wgsLng.toFixed(6)), Number(wgsLat.toFixed(6))]
+}
+
+/**
+ * 覆盖层新增的机构没有源表行，也就没有定位依据，`coordinates` 一直是 null，
+ * 于是在地图上永远没有图钉。人工用 `--query`/`--pick` 选定的落点记在
+ * `amap-manual.json`，这里把它补回机构记录：只要人工表里有一条已选定的落点，这家机构就上图。
+ *
+ * 补在这一层而不是只补在烘焙里：`validate` 拿同一份结果做比对基准，
+ * 只在写盘前补的话，curated 有坐标、基准还是 null，那条红会指向「有人手改数据」，方向是错的。
+ * 高德返回的落点是 GCJ-02，机构记录存 WGS84，转换必须走同一次逆算。
+ */
+export function withManualCoordinates(hospitals: Hospital[], manual: ManualLocation[]): Hospital[] {
+  const picked = new Map<string, ManualLocation>()
+  for (const entry of manual) {
+    if (!entry.hospital_id || entry.status !== 'geocoded' || !entry.chosen) continue
+    picked.set(entry.hospital_id, entry)
+  }
+  if (picked.size === 0) return hospitals
+  return hospitals.map(hospital => {
+    if (hospital.coordinates) return hospital
+    const entry = picked.get(hospital.id)
+    if (!entry?.chosen) return hospital
+    const values = entry.chosen.location.split(',').map(Number)
+    if (values.length !== 2 || !values.every(Number.isFinite)) throw new Error(`人工选定的坐标无效：${entry.name}`)
+    const [lng, lat] = gcj02ToWgs84(values[0], values[1])
+    return { ...hospital, coordinates: { lat, lng }, coordinates_source: 'manual' as const }
+  })
 }
 
 export function hospitalsFromRun(run: LocationRun): Hospital[] {

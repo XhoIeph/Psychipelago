@@ -2,7 +2,7 @@
 
 `node --test tests/*.test.mjs` 只跑 `*.test.mjs`。下面这些脚本文件名不带 `.test`，是给你在怀疑某条链断了、或者要回报实测结果时手动跑的。它们都会自己写覆盖层、跑烘焙、再还原，可以重复跑。
 
-跑之前确认工作区干净：`git status data/` 只应该有 `?? data/generated/locations.json`（生成物）。跑完如果剩下 `data/overrides/` 或 `data/curated` 有改动，说明脚本中途出错，用 `git checkout -- data/curated` 加 `rm -r data/overrides` 收拾。
+跑之前确认工作区干净：`git status data/` 应该是空的。跑完如果剩下 `data/overrides/`、`data/evidence/locations/amap-manual.json`，或者 `data/curated`、`data/generated` 有改动，说明脚本中途出错，用 `git checkout -- data/curated data/generated` 加 `rm -r data/overrides`、删掉 `amap-manual.json` 收拾。
 
 ## 覆盖层保存闸门的两列表
 
@@ -45,3 +45,13 @@ node tests/map-leads-invariant-probe.mjs
 ```
 
 `tests/map-coordinates.test.mjs` 里那条断言现在是派生的：图上各点的 `leads` 之和要等于「已发布且挂了机构」的线索条数，不写死 326。控制台撤下一条线索是合法操作，写死的常数一定过期，所以这里验的是「撤下后仍然成立」（326 → 325 后依旧绿）。反向那一半固定在测试体里：同一份数据少给一条 `leads`，断言必须变红——只做前者等于把断言删了。
+
+## 新增机构能不能上图
+
+```
+node tests/overrides-manual-coordinate-probe.mjs
+```
+
+控制台建的新机构一开始没有坐标。跑 `geocode-hospitals.ts --query/--pick` 在图上选定落点后，`amap-manual.json` 里就有这条记录；烘焙时 `withManualCoordinates()` 会把它的 GCJ-02 值转回 WGS84 写进 `hospitals.json`（`coordinates_source: 'manual'`），`build-aggregates.ts` 再合成 `data/generated/locations.json`。这个脚本把整条链走一遍，打印「新增机构在库但 coordinates 为 null」「选定后 coordinates 与 coordinates_source」「locations.json 里的 manual 条目」「validate 结果」四段，最后还原。
+
+坐标不是手写进 `hospitals.json` 的：`validate-data.ts` 用和烘焙同一个函数算比对基准，手写会被判成「与本轮高德定位依据不一致」。
