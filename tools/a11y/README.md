@@ -4,7 +4,7 @@
 
 | 文件 | 原件位置 | 快照 sha256（前 16 位） | 字节 |
 | --- | --- | --- | --- |
-| `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `cc71e3944ba77af0` | 87926 |
+| `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `4576230f2aad4665` | 89910 |
 | `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `10f43ab871bdd3e1` | 229505 |
 
 `ui-spec.json` 是从 `docs/` 原件的逐字节拷贝，只改名不改内容；`spec.cjs` 同样逐字节拷贝（skill 目录那份也已同步成这一版）。换行统一成 LF 后再算 sha 与字节数（工作流里打印的也是这个）；这一版原件与快照同为 LF，两个文件逐字节相同。
@@ -13,7 +13,7 @@
 
 V3-02 那五条（选中钉橙色 / 光圈 / 标签 / 其余钉不压透明度 / 手机同款）的前置必须是「点省 → 点 `.tc-cluster-pin` 展开 → 点 `.tc-hospital-pin` → 等 `.tc-pin--selected`」。聚合钉的类名是 `tc-cluster-pin` 而不是 `tc-cluster`，写成 `.tc-map-node:not(.tc-cluster)` 会抓到聚合钉、点了只展开不选中，五条会一直「前置没跑成」。选中后 canvas 加 `tc-mapapp-canvas--pinned`、标签 `display:block`、其余钉 `opacity: 1`（`v3.css:17` 走 `--tc-nodes-opacity`）。
 
-**当前被测身份**：`out/index.html` **2026-11-10 22:13:26 / 865,726 B / sha256 前 16 `B7F54AE1046B5ADA`**（`app/globals.css` 22:12:33 早于产物；数据 17:12:33 未动：127 家医院 / 326 条线索已发布 / 252 位医生）；配断言表 301 条 / `10f43ab871bdd3e1`（229,505 B）。四档实跑与报告路径见本节末尾。
+**当前被测身份**：`out/index.html` **2026-11-10 22:13:26 / 865,726 B / sha256 前 16 `B7F54AE1046B5ADA`**（`app/globals.css` 22:12:33 早于产物；数据 17:12:33 未动：127 家医院 / 326 条线索已发布 / 252 位医生）；配断言表 301 条 / `3043fb6d80e2ee2b`（230,295 B，2026-11-11 换哨兵后的版本；上一版 `10f43ab871bdd3e1` 是上线发布记录里的身份）。差别只在等待与门控，判据一字未动：61 条前置的 `wait .amap-layers` 换成 `wait .tc-mapapp-canvas`，甲类 14 条保留 `.amap-layers` + `envGate: amap`，4 条 `mapPan` 与 2 条 `polygonPaint` 用 `wait .tc-mapapp-canvas .amap-logo` + 门控（共 21 条带门控）。四档实跑与报告路径见本节末尾。
 
 **第十二轮：数据换到 326 条、搜索排序、卡数 13**。界面读数：全国「127 家医院 · 326 条线索」、cptsd「35 家医院 · 90 条线索」、cptsd＋人格障碍「111 家医院 · 267 条线索」、回龙观 24 条 / 13 张卡（首卡以原文串「创伤后应激障碍专病门诊」当卡名，含 3 条线索）。跟着改的写死数：`v3.chip-union` → 111 家 / 267 条；`v3.d-filter-paints-provinces-1440` 的 `headerIncludes` → 35 家 / 90 条；八条卡身计数 12 → 13；`base185.json` 的并集文案同步 267。`doctor.note-empty`（原判「没有备注时写『无』」）在换轮后第一条 `.tc-doctor-link` 指向了带备注的卡，样本改指**潘伟刚**（回龙观里备注为空的一位），判据不动。新加两条搜索排序断言（1440 / 390 各一）：搜「武汉」时医院结果首行必须含「湖北」——`v3.d-search-wuhan-first-1440` 判 `li[role="group"][aria-label="医院"] ul.tc-plainlist > li:first-child .tc-mapapp-result`，`v3.m-search-wuhan-first-390` 判手机底卡 `.sheet-search > div:first-of-type > .sr-row:first-of-type`（手机不渲染 `.tc-mapapp-result`，先点 `.sheet .grab` 再用 `.sfield input`）。省行家数不变量（`v3.d-province-count-matches-rows-1440`）保持一般表述：当前数据 127 家全部有线索，0 条分支没有样本、未覆盖。
 
@@ -145,7 +145,54 @@ node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json --viewpo
 - 绝对坐标适合写死取景；`selector + dx/dy` 从元素 rect 推，换视口不用改数。
 - `expect` 先校验这一点上确实是它（`elementFromPoint` 命中或 `closest`），落在图钉、底卡、版权条上的「空白点」会当场报失败并附命中链，不会静默点下去再给结论。
 - 点完等 `afterMs`，缺省 350ms：底卡收档是 340ms 的 height 过渡，立刻量会量到收档前的 736。
-- 依赖地图的用例在 `clickat` 前加一条 `{ "action": "wait", "selector": ".amap-layers", "envGate": "amap" }`：CI 里没有高德运行时，这条等不到就把整组记不适用，而不是「点了没反应」判红。
+- **哨兵怎么选**：默认等 `.tc-mapapp-canvas`（无地图时容器也在，见下节），只有真吃地图运行时的用例才等 `.amap-layers` + `envGate: "amap"`。
+
+### 哨兵：`.tc-mapapp-canvas` 与 `.amap-layers` 的分工（2026-11-11）
+
+CI 的 build 没带 `NEXT_PUBLIC_AMAP_JS_KEY` 时，SDK 请求根本不发，`.amap-layers` 永远不出现。旧表里 59 条前置等的是 `.amap-layers` 却没有门控，四档 CI 的红数 34+23+1+1 = 59 与它完全相等——红的是哨兵，不是断言。
+
+现在的分工（`D:\DeepseekHarness\cptsd_web\.botharness\amap-sentinel-plan.md` 是清单原件）：
+
+| 类 | 条数 | 前置 | 理由 |
+| --- | --- | --- | --- |
+| 甲 | 14（`a11y.mapclick-*` 7 + `v3.pin-*` 7） | `wait .amap-layers` + `envGate: amap` | 点地图、量图钉，真依赖 SDK |
+| 乙 | 61 | `wait .tc-mapapp-canvas` | 只依赖画布容器与页面数据层 |
+| 地图运行时检查 | 4 `mapPan` + 2 `polygonPaint` | `wait .tc-mapapp-canvas .amap-logo` + `envGate: amap` | 要容器上的 AMap 实例 / `AMap.Polygon` 原型 |
+
+合计带门控 21 条（甲 14 + mapPan 4 + polygonPaint 2 + 原有 `desktop.scale-present` 1）。阻断 amap 时预期就是 21 条不适用、0 失败；换成别的地图故障时这 21 条会记不适用而不是假装通过。
+
+**门控哨兵不能只等画布容器**：这 6 条第一版写成 `wait .tc-mapapp-canvas` + `envGate`，实测阻断 amap 时门控**不触发**（容器照样存在），它们是走到检查内部、被 runner 的运行时检测记成不适用的——那样表上写的门控就是空的。改成 `.tc-mapapp-canvas .amap-logo`（只有运行时挂了才有的子节点）后，阻断时由门控触发，报告里显示 `运行时未就绪（envGate=amap）：前置没跑成（wait .tc-mapapp-canvas .amap-logo）`。
+
+阻断实测（`probe-blocked-amap-2.cjs`，`page.route(/amap\.com/)`）：`window.AMap` = undefined、`.amap-layers` 0、`.amap-container` 上没有 `amap` 实例，但 `.tc-mapapp-canvas` 1 个且 1440×900 可见、`.tc-province-row` 30 行、头部「127 家医院 · 326 条线索」——哨兵成立。
+
+两处容易改错的来源：`a11y.marker-tabindex-390` 的前置来自 `retire.cjs` 的 `REPATH`（不是 `base185.json`），`doctor.clinic-empty` 在 `base185.json` 里。改哨兵时两处都要动，否则重建后仍有一条等 `.amap-layers`。
+
+### `--no-map`：没有地图 key 时怎么办（2026-11-11）
+
+CI 的 build 可能拿不到 `NEXT_PUBLIC_AMAP_JS_KEY`（fork 来的 PR 就是这样）。workflow 在跑之前就把状态定下来：
+
+- 有 key：不传参，`mapState = auto`，照常跑。
+- 没 key：传 `--no-map`，并把 `A11Y_MAP_STATE=absent` 放进进程环境。两者取或——命令行走丢了、环境在，照样按 absent 跑。
+
+absent 时不启动这些断言，直接记不适用，note 写 `地图状态 absent（A11Y_MAP_STATE=absent）：该断言依赖地图运行时，记不适用`。判定口径写在表里，不靠 15 秒超时兜：条目带 `absentOk`，或者前置里任一步带 `envGate`。
+
+报告顶层写 `mapState`，Markdown 头部也有一行「地图状态：…」。
+
+**absent 时 runner 会真的把高德请求拦掉**（`page.route(/amap\.com|_AMapService/)`）。只靠表里门控跳过不够：本机地图还在线，`skipIfMissing` 的图钉守卫会照样跑到、甚至判过，数字与 CI 对不上。拦掉之后两边的现象一致：`window.AMap` undefined、`.amap-layers` 0、图钉不存在。
+
+实测（表 `3043fb6d80e2ee2b`、构建 23:02:31 / 865,726 B，同机同表）：
+
+| 视口 | absent | 正常 |
+| --- | --- | --- |
+| 1440 | **172 / 0 / 12** | 184 / 0 / 0 |
+| 390 | **99 / 0 / 14** | 110 / 0 / 1 |
+
+1440 的 12 条 = 门控 10（`desktop.scale-present`、5 条 `v3.pin-*`、2 条 `polygonPaint`、2 条 `mapPan`）+ 2 条图钉守卫（`a11y.marker-tabindex-1440`、`a11y.no-marker-tabbable-1440`，无图钉即不适用）。390 的 14 条 = 门控 12（7 条 `a11y.mapclick-*`、2 条 `v3.pin-*`、2 条 `v3.m-map-drag-*`、`mobile.scale-hidden`）+ `s5-disabled-opacity`（缩放控件不存在）+ `a11y.marker-tabindex-390`。
+
+375 / 320 不带地图断言，absent 与正常只差 `s5-disabled-opacity` 一条：13 / 0 / 1 与 10 / 0 / 1。
+
+**不适用清单按各档实际读数报，别用 21 去减。** `s5-disabled-opacity` 与 `mobile.scale-hidden` 都带 `absentOk`，无地图时按地图域记不适用——它们本来就依赖地图控件，只是控件不在时「缺席」这件事没有验证价值。
+
 
 ## 桌面侧栏把手（1440）
 
@@ -233,6 +280,15 @@ CI 的机器上起不来高德地图：没有渲染运行时，标记（`.tc-map
 - `a11y.escape-province-peek`：整轮里读到 `179.8`（要求 151–163），重跑是 157。直接复现该链路（点 `.grab` → 点「北京」→ Esc）采样：150ms 时 170.9，300ms 后稳定 157，所以 179.8 是过渡中的读数。下一轮把这条 `key` 的 `afterMs` 从 450 提到 700。
 - 两条都只影响一次读数、不影响判据；本轮锚点与断言表已锁定，不改表，记录在此供下一轮落。
 
+## 取样等待动效收敛（2026-11-11）
+
+`computed` 类断言的取色/取字号现在会**先等页面上的 WAAPI 动效跑完**再读，最多等 1.2 秒；需要「此刻就取样」的条目写 `"sampleNow": true` 跳过。
+
+起因是 `v3.chip-pressed` 与 `a11y.mapclick-large-collapses` 同一类病：按下态的底色有 200ms 过渡，整轮跑到这里时采样落在中间帧，读到 `rgb(12,106,99)` 对 `rgb(9,104,97)`（约 1.3% 混色）就判红，单独重跑又全过。靠重跑销红等于把假红留在表里——假红多了，真红就没人看。现在的做法是把判据挪到稳定之后：断言仍写「按下态是 X」，不加重试、不挂门控。
+
+实现细节：`document.getAnimations()` 里 `playState === 'running'` 的条目逐个等 `finished`（超时用 `Promise.race` 兜住，无限动画不会把断言拖成超时）。跑完再读一次，取样值就是稳态值。
+
+
 ## 第十二轮（2026-11-10）：搜索排序、省行家数不变量与数据换轮
 
 小雨报「搜『武汉』第一条是郑州的医院」：`lib/search.ts` 把线索原文也算命中，`MapApp.tsx` 又按数据顺序取前四，没有相关性排序。小镜按「名字 > 城市 > 科室/病症 > 只有原文提到」分层后，本轮加两条排序断言（1440 / 390 各一）：搜「武汉」时结果首条必须是本地医院。判据选「首行文本含『湖北』」——武汉的医院都在湖北，所以「省份是湖北」与「名称含武汉」在这份数据里同真，没必要为二选一去扩 runner。
@@ -249,3 +305,10 @@ CI 的机器上起不来高德地图：没有渲染运行时，标记（`.tc-map
 样本选福建（5 家，含 0 条线索那行）；实测「5 家医院 · 15 条线索」对「5」，两边都是 5。
 
 四档（锚点 13:35:33，跑前跑后时间/字节/sha 一致）：1440 **183/0/0**、390 **110/0/1**、375 **12/0/1**、320 **9/0/1** = **314 通过 / 0 失败 / 3 不适用**（三处同为 `s5-disabled-opacity`）；分母 183 / 111 / 13 / 10 = 317。报告在 `a11y-reports/lock-133533-<视口>/`。搜索排序那条在 13:35:33 之前的构建上是红的（首条「郑州大学第一附属医院(东院区) 河南 · 线索 7 条」），换版后转绿——它确实咬住了排序缺陷，不是恒真。
+
+## 2026-11-11 哨兵换到画布容器后的实测
+
+- 阻断 `webapi.amap.com` 的 1440 整档：**172 通过 / 0 失败 / 12 不适用**（适用 184 条）；报告 `.botharness/mobile-v3-accept/a11y-reports/blocked-amap/blocked-amap-1440/spec-report.json`。
+- 12 条不适用：甲类 5 条图钉链前置超时、`desktop.scale-present` 的 `.amap-logo` 超时、两条 `skipIfMissing` 的 marker 守卫、`polygonPaint` 2 条与 `mapPan` 2 条（1440 条目）。失败清单为空。
+- 这轮没跑四档：表仍在改，等 CI 回来定稿。发布记录里的表身份仍是 `10F43AB871BDD3E1`。
+
