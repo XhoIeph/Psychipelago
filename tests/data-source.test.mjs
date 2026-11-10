@@ -14,11 +14,12 @@ const reports = readJson('data/curated/reports.json').items
 const doctors = readJson('data/curated/doctors.json').items
 const expected = reportsWithLocations(document)
 
-/** 姓名格写的是科室/团队，这一行没有具体医生：原文留在库里，但不发布。 */
-const withheldIds = new Set([
+/** 姓名格不是人名、或姓名格空着的行：它们照样是线索，名称取姓名格原文（姓名格空时取诊室那一格）。 */
+const subjectIds = new Set([
   'kdocs-cp3b7toqal3j-s1-r2',
   'kdocs-cp3b7toqal3j-s1-r2-p2',
   'kdocs-cp3b7toqal3j-s1-r2-p3',
+  'kdocs-cp3b7toqal3j-s1-r43',
   'kdocs-cp3b7toqal3j-s1-r50',
   'kdocs-cp3b7toqal3j-s3-r49',
   'kdocs-cp3b7toqal3j-s3-r51',
@@ -91,7 +92,10 @@ test('每条线索都能回溯到同一张表的同一单元格', () => {
     const { region, hospital, cells } = filledRow(sheetIndex, excelRow)
     assert.equal(report.hospital_name_raw, hospital)
     if (region) assert.equal(report.hospital_region, region)
-    if (cells[2]) assert.equal(report.department, cells[2])
+    // 诊室只跟具体医生走：姓名格不是人名时，C 列那句话是这个主体的名称或科室归属，
+    // 不再写进 department，界面才按「无」显示。
+    if (subjectIds.has(report.id.replace(/-p\d+$/u, ''))) assert.equal(report.department, undefined)
+    else if (cells[2]) assert.equal(report.department, cells[2])
     // 同一段话在两张表里各抄了一遍时，会被合成一条、姓名栏写成「甲、乙」，
     // 名字可能来自同院另一行，所以要逐个核对，而不是整串出现在这一格里。
     if (cells[3] && report.doctor_name_raw) {
@@ -139,14 +143,11 @@ test('工作表按病症分组，其他字段保持未知而不是编造', () =>
     assert.equal(report.verification.level, 'unverified')
     assert.equal(report.experience, null)
     assert.equal(report.evidence_source, 'article')
-    // 挂不上机构的线索保留原文但不进公开数字；姓名格写的是科室/团队的行同样不发布
-    // （界面上会变成一张点开找不到人的卡），其余正常发布。
+    // 只有挂不上机构的线索不发布；姓名格写科室、团队、整段科室介绍的行也照样发布，
+    // 名称用姓名格那串原文（见 m04980：它和具体医生一样上卡，诊室显示「无」）。
     if (!report.hospital_id) {
       assert.equal(report.status, 'unlinked')
       assert.match(report.unlinked_reason, /^机构未定位：/u)
-    } else if (withheldIds.has(report.id)) {
-      assert.equal(report.status, 'withheld')
-      assert.match(report.withheld_reason, /^姓名格不是医生：/u)
     } else {
       assert.equal(report.status, 'published')
       assert.equal(report.unlinked_reason, undefined)
@@ -157,27 +158,41 @@ test('工作表按病症分组，其他字段保持未知而不是编造', () =>
   }
 })
 
-test('姓名的状态附注与团队行不冒充医生，备注和评价仍留在原文里', () => {
+test('姓名格不是人名的行照原文当名称上卡，状态附注与整段介绍不冒充名称', () => {
   const quotes = reports.map((report) => `${report.evidence_quote}\n${report.evidence_full_text ?? ''}`).join('\n')
   for (const note of ['触发风险', '目前进修中', '挂号要挂特需', '只会英语和德语', '首诊只有潘梁两位主任才能下诊断', '课题组', '团队']) {
     assert.ok(quotes.includes(note), note)
   }
   for (const report of reports) {
-    assert.doesNotMatch(report.doctor_name_raw ?? '', /门诊|会诊|团队|课题组|医生|触发风险|离职|退休|进修/u)
+    // 状态附注（「（特需）」「（退休）」）仍然剥掉：那是这一行的状态，不是名称的一部分。
+    assert.doesNotMatch(report.doctor_name_raw ?? '', /触发风险|离职|退休|进修|特需/u)
     assert.equal(report.doctor_title_raw, undefined)
     assert.equal(report.cost_cny, undefined)
     assert.equal(report.doctor_id, undefined)
   }
-  // 姓名格被写成整段科室介绍的行不进医生档案
-  const team = doctors.filter((doctor) => /团队|课题组|专家会诊/u.test(doctor.name))
-  assert.deepEqual(team, [])
+  // 姓名格写的是专病门诊、课题组、团队、专家会诊：这串原文就是这一行的名称，和医生一样上卡。
+  const named = (id) => reports.find((report) => report.id === `kdocs-cp3b7toqal3j-${id}`)?.doctor_name_raw
+  assert.equal(named('s1-r2'), '创伤后应激障碍专病门诊')
+  assert.equal(named('s1-r43'), '临床心理科/创伤专病门诊')
+  assert.equal(named('s1-r50'), '朱鸿儒 课题组')
+  assert.equal(named('s3-r49'), '专家会诊')
+  assert.equal(named('s3-r51'), '黄佳团队')
+  assert.equal(named('s3-r108'), '郑重 团队')
+  // 整段科室介绍：名称取首个分句，整段原文仍在这条线索里，一个字都没丢。
   const intro = reports.find((report) => report.id === 'kdocs-cp3b7toqal3j-s3-r109')
-  assert.equal(intro.doctor_name_raw, undefined)
+  assert.equal(intro.doctor_name_raw, '心身疾病一科设有“人格障碍专业组”')
+  assert.match(intro.evidence_quote, /^心身疾病一科设有“人格障碍专业组”，官网写明/u)
+  // 这九条都该有对应档案，诊室留空走「无」。
+  for (const name of ['创伤后应激障碍专病门诊', '临床心理科/创伤专病门诊', '朱鸿儒 课题组', '专家会诊', '黄佳团队', '郑重 团队', intro.doctor_name_raw]) {
+    const profile = doctors.find((doctor) => doctor.name === name)
+    assert.ok(profile, name)
+    assert.equal(profile.department, '')
+  }
 })
 
 test('医生档案只由表格里的诊室、备注、评价生成，且都能落到已定位机构', () => {
   const hospitalIds = new Set(readJson('data/curated/hospitals.json').items.map((item) => item.id))
-  assert.equal(doctors.length, 245)
+  assert.equal(doctors.length, 252)
   assert.deepEqual(doctors, doctorsWithLocations(document, expected))
   for (const doctor of doctors) {
     assert.match(doctor.id, /^kdocs-doctor-[0-9a-f]{12}$/)
@@ -188,31 +203,29 @@ test('医生档案只由表格里的诊室、备注、评价生成，且都能�
     // 整批导入日不是逐人核对日，没有依据就不写日期
     assert.equal(doctor.last_verified_at, undefined)
   }
-  assert.equal(doctors.filter((doctor) => !doctor.department).length, 125)
+  assert.equal(doctors.filter((doctor) => !doctor.department).length, 132)
   assert.equal(new Set(doctors.map((doctor) => doctor.id)).size, doctors.length)
-  assert.equal(doctors.filter((doctor) => doctor.evaluation).length, 59)
-  assert.equal(doctors.filter((doctor) => doctor.note).length, 62)
+  assert.equal(doctors.filter((doctor) => doctor.evaluation).length, 64)
+  assert.equal(doctors.filter((doctor) => doctor.note).length, 63)
   // 评价是不是某条线索原文的复制：前端只拿到 200 字预览，比对会漏判，所以判定放在数据层。
-  // 有评价的 59 位里 40 位评价够长（≥20 字），最长连续共享片段都达到评价长度的 70% 以上。
+  // 有评价的 64 位里 43 位评价够长（≥20 字），最长连续共享片段都达到评价长度的 70% 以上。
   const longEvaluation = doctors.filter((doctor) => (doctor.evaluation ?? '').replace(/\s+/gu, '').length >= 20)
-  assert.equal(longEvaluation.length, 40)
-  assert.equal(longEvaluation.filter((doctor) => doctor.evaluation_echoes_report === true).length, 40)
+  assert.equal(longEvaluation.length, 43)
+  assert.equal(longEvaluation.filter((doctor) => doctor.evaluation_echoes_report === true).length, 43)
   assert.equal(longEvaluation.filter((doctor) => doctor.evaluation_echoes_report !== true).length, 0)
   // 太短的评价不参与判定，也就不写这个键：整段都在原文里也只是短语撞车，不该吞掉真实评价
   const shortEvaluation = doctors.filter((doctor) => doctor.evaluation && doctor.evaluation.replace(/\s+/gu, '').length < 20)
-  assert.equal(shortEvaluation.length, 19)
+  assert.equal(shortEvaluation.length, 21)
   assert.ok(shortEvaluation.every((doctor) => doctor.evaluation_echoes_report === undefined))
-  // 无姓名的行是医院/科室级线索：姓名格空的行仍然发布，姓名格写科室或团队的进 withheld。
+  // 姓名格空着的行也发布：名称取同一格的诊室（武汉二七院区那条），否则这条反馈挂不上任何卡片。
+  // 现在每条线索都有名称，没有无主的线索了。
   const noName = reports.filter((report) => !report.doctor_name_raw)
-  assert.equal(noName.length, 9)
-  assert.ok(noName.every((report) => report.hospital_name_raw && report.hospital_region))
-  assert.ok(noName.every((report) => report.evidence_quote.length > 0))
-  assert.deepEqual(noName.filter((report) => report.status === 'published').map((report) => report.id), ['kdocs-cp3b7toqal3j-s1-r43'])
-  // 回龙观：13 行共 24 条发言，其中 3 条来自姓名格写科室的那一行（已 withheld，不发医生卡）
+  assert.equal(noName.length, 0)
+  // 回龙观：13 行共 24 条发言，全部发布；其中 3 条的名称是姓名格写的「创伤后应激障碍专病门诊」。
   const huilongguan = reports.filter((report) => report.hospital_name_raw === '北京回龙观医院')
   assert.equal(huilongguan.length, 24)
-  assert.equal(huilongguan.filter((report) => report.status === 'published').length, 21)
-  assert.equal(huilongguan.filter((report) => !report.doctor_name_raw).length, 3)
+  assert.equal(huilongguan.filter((report) => report.status === 'published').length, 24)
+  assert.equal(huilongguan.filter((report) => report.doctor_name_raw === '创伤后应激障碍专病门诊').length, 3)
   // 合并过的线索记下合并前的发言条数，单条不写 1：只剩「两张表抄了同一句话」这一类
   const merged = reports.filter((report) => report.parts_count)
   assert.equal(merged.length, 11)

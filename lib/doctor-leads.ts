@@ -27,8 +27,14 @@ export const DOCTOR_LEAD_DISORDER_ORDER: readonly DisorderId[] = [
 /** 分组标题与界面标签同源：cptsd / osdd-did / 人格障碍，见 lib/disorder-labels.ts */
 export const DOCTOR_LEAD_DISORDER_LABELS: Record<DisorderId, string> = { ...DISORDER_DISPLAY_LABELS }
 
-/** 同一条线索里多条医生姓名的分隔符 */
-const DOCTOR_NAME_SEPARATOR = /[、,，/]/
+/**
+ * 同一条线索里多个名称的分隔符。
+ *
+ * 只认顿号与逗号：主线表格用「、」并排列出同一行的几位医生，生成器也只写这一种。
+ * 斜杠不再当分隔符——姓名格空着、名称取自诊室那一格时（武汉二七院区「临床心理科/创伤专病门诊」），
+ * 斜杠是名称本身的一部分，拆开会在医院页并排出两张卡，而且两张都找不到对应档案。
+ */
+const DOCTOR_NAME_SEPARATOR = /[、,，]/
 
 /** 组织：一家机构的线索分组 */
 export type DoctorLeadGroup = {
@@ -80,7 +86,7 @@ function disordersOf(report: Report): DisorderId[] {
   return ids.length ? ids : ['other']
 }
 
-/** 按 `[、,，/]` 拆分 `doctor_name_raw`，trim 后去空、去重（同名只保留首次出现） */
+/** 按 `[、,，]` 拆分 `doctor_name_raw`，trim 后去空、去重（同名只保留首次出现） */
 export function splitDoctorNames(raw: string | undefined | null): string[] {
   if (!raw) return []
   const names: string[] = []

@@ -148,6 +148,17 @@ function splitName(cell: string): { name: string; annotations: string[] } {
   return { name, annotations }
 }
 
+/**
+ * 姓名格里写的不是人名时（专病门诊、课题组、团队、会诊、整段科室介绍），
+ * 它仍然是这一行的主体名称，照原文上卡；写得像一句话时取首个分句，最多 40 字。
+ * 整段原文另行留在该行的线索里，不因为取名而丢字。
+ */
+function subjectName(text: string): string {
+  const trimmed = text.replace(/\s+/gu, ' ').trim()
+  const head = trimmed.split(/[。；，、]/u)[0]?.trim() ?? ''
+  return clip(head || trimmed, 40)
+}
+
 export type SourceRow = {
   reportId: string
   sheet: string
@@ -155,12 +166,13 @@ export type SourceRow = {
   row: number
   region: string
   hospital: string
+  /** 诊室：只对具体医生写；姓名格不是人名时留空，界面按「无」呈现 */
   department: string
-  /** 姓名格里的个人姓名，非个人条目为空 */
+  /** 这一行的主体名称：姓名格里的个人姓名，或姓名格写的那串原文（专病门诊、课题组、团队、会诊） */
   doctor: string
-  /** 这条线索应记的全部医生姓名：默认就是姓名格里的人，人工修正行会补上被评价点到的人 */
+  /** 这条线索应记的全部名称：默认就是姓名格里的内容，人工修正行会补上被评价点到的人 */
   doctors: string[]
-  /** 姓名格里不是个人的内容（团队、专家会诊、科室介绍），保留为原文 */
+  /** 姓名格原文。不是人名时它既是主体名称也是这一行的原文，整段留在线索里 */
   label: string
   /** 姓名格里的状态附注（「（特需）」「（退休）」），单独存放，切段时挂到同一行的发言上 */
   annotation: string
@@ -212,11 +224,20 @@ export function sourceRows(document: SourceDocument): SourceRow[] {
       else if (inherited(1)) region = inherited(1)
       if (cells[1]) hospital = cells[1]
       else if (inherited(2)) hospital = inherited(2)
-      const department = cells[2] || inherited(3)
+      const departmentCell = cells[2] || inherited(3)
       const nameCell = cells[3] ?? ''
       const { name, annotations } = splitName(nameCell)
       const isPerson = !!name && name.length <= 24 && !SENTENCE.test(name) &&
-        !NON_PERSON.test(name) && name !== department
+        !NON_PERSON.test(name) && name !== departmentCell
+      // 姓名格写的不是人名时（专病门诊、课题组、团队、会诊、整段科室介绍），
+      // 它在这一行里就是「谁」的位置：照原文当名称上卡，不因为是科室或团队就丢掉这条反馈。
+      // 姓名格空着而 C 列有诊室时（武汉二七院区那一行），这一行的「谁」就是那句诊室，
+      // 否则这条反馈挂不上任何卡片。
+      const subjectCell = name || departmentCell
+      const entity = isPerson ? name : subjectCell ? subjectName(subjectCell) : ''
+      // 诊室只跟着具体医生填。姓名格没有具体医生时，C 列那句话要么就是这个名称本身，
+      // 要么是这一行的科室归属，写成「门诊」会让读者以为找到了能挂号的门诊。
+      const department = isPerson ? departmentCell : ''
       const annotation = annotations.length ? `（${annotations.join('，')}）` : ''
       const reportId = `kdocs-cp3b7toqal3j-s${sheet.index + 1}-r${index + 1}`
       rows.push({
@@ -226,9 +247,9 @@ export function sourceRows(document: SourceDocument): SourceRow[] {
         region,
         hospital,
         department,
-        doctor: isPerson ? name : '',
-        doctors: isPerson ? [name] : [],
-        // 团队、专家会诊、科室介绍不是医生，但姓名格里是原文，要留在这一行的线索里。
+        doctor: entity,
+        doctors: entity ? [entity] : [],
+        // 姓名格原文：整段科室介绍被截成名称后，原文仍留在这一行的线索里。
         label: isPerson ? '' : name,
         annotation,
         note: (cells[4] ?? '').trim(),
@@ -252,6 +273,7 @@ export function sourceRows(document: SourceDocument): SourceRow[] {
  * 它们挂在第一条线索前，既不丢原文，也不各自占一条内容单薄的线索。
  */
 function rowLeads(row: SourceRow): string[] {
+  // 姓名格原文（团队名、专病门诊、整段科室介绍）就是这一行主体的名称，整段进线索。
   const subject = [row.label, row.annotation].filter(Boolean).join('')
   const leads: string[] = []
   const note = row.note.trim()
@@ -260,8 +282,8 @@ function rowLeads(row: SourceRow): string[] {
   if (!leads.length) {
     // 没有备注和评价时，行本身（机构、诊室、姓名）就是可核对的原文。
     const fallback = [row.hospital, row.department, row.doctor].filter(Boolean).join(' · ')
-    if (fallback) leads.push(fallback)
-    else if (subject) leads.push(subject)
+    const text = subject || fallback
+    if (text) leads.push(text)
     return leads
   }
   if (subject) leads[0] = `${subject} ${leads[0]}`
@@ -300,11 +322,10 @@ export function reportsFromDocument(document: SourceDocument): Report[] {
         verification: { level: 'unverified' },
         extraction: { tool: 'kdocs-sheet-transcription', captured_at: document.captured_at.slice(0, 10) },
         flags: { contains_minor: false, contains_selfharm_detail: false, sensitive: false },
-        // 姓名格写的是科室、课题组或团队时，这一行没有具体医生：
-        // 界面上会变成一张只有病症标签、点开找不到人的卡。原文留在 reports.json 备查，
-        // 但不发布、也不计入任何可见数字，等这些行有了确定的医生再改回 published。
-        status: row.label ? 'withheld' : 'published',
-        ...(row.label ? { withheld_reason: `姓名格不是医生：${row.label}` } : {}),
+        // 姓名格写的是专病门诊、课题组、团队、专家会诊或整段科室介绍时，这一行照样是线索：
+        // 姓名格那串原文就是它的名称，按原文上卡；诊室留空（界面显示「无」），
+        // 免得把 C 列那句话又说成一处可以挂号的「门诊」。
+        status: 'published',
       })
     })
   }

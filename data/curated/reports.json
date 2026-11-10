@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "updated_at": "2026-11-10",
+  "updated_at": "2026-11-09",
   "items": [
     {
       "id": "kdocs-cp3b7toqal3j-s1-r2",
@@ -12,7 +12,7 @@
       "hospital_region": "北京",
       "hospital_id": "kdocs-amap-b000a0989a",
       "hospital_name_raw": "北京回龙观医院",
-      "department": "创伤后应激障碍专病门诊",
+      "doctor_name_raw": "创伤后应激障碍专病门诊",
       "disorders": [
         "cptsd"
       ],
@@ -37,8 +37,7 @@
         "contains_selfharm_detail": false,
         "sensitive": false
       },
-      "status": "withheld",
-      "withheld_reason": "姓名格不是医生：创伤后应激障碍专病门诊"
+      "status": "published"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s1-r2-p2",
@@ -50,7 +49,7 @@
       "hospital_region": "北京",
       "hospital_id": "kdocs-amap-b000a0989a",
       "hospital_name_raw": "北京回龙观医院",
-      "department": "创伤后应激障碍专病门诊",
+      "doctor_name_raw": "创伤后应激障碍专病门诊",
       "disorders": [
         "cptsd"
       ],
@@ -75,8 +74,7 @@
         "contains_selfharm_detail": false,
         "sensitive": false
       },
-      "status": "withheld",
-      "withheld_reason": "姓名格不是医生：创伤后应激障碍专病门诊"
+      "status": "published"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s1-r2-p3",
@@ -88,7 +86,7 @@
       "hospital_region": "北京",
       "hospital_id": "kdocs-amap-b000a0989a",
       "hospital_name_raw": "北京回龙观医院",
-      "department": "创伤后应激障碍专病门诊",
+      "doctor_name_raw": "创伤后应激障碍专病门诊",
       "disorders": [
         "cptsd"
       ],
@@ -113,8 +111,7 @@
         "contains_selfharm_detail": false,
         "sensitive": false
       },
-      "status": "withheld",
-      "withheld_reason": "姓名格不是医生：创伤后应激障碍专病门诊"
+      "status": "published"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s1-r3",
@@ -2820,7 +2817,7 @@
       "hospital_region": "湖北",
       "hospital_id": "kdocs-amap-b0fff49imu",
       "hospital_name_raw": "武汉市精神卫生中心（二七院区）",
-      "department": "临床心理科/创伤专病门诊",
+      "doctor_name_raw": "临床心理科/创伤专病门诊",
       "disorders": [
         "cptsd"
       ],
@@ -3201,7 +3198,7 @@
       "hospital_region": "四川",
       "hospital_id": "kdocs-amap-b001c05yg2",
       "hospital_name_raw": "四川大学华西医院",
-      "department": "心理卫生中心",
+      "doctor_name_raw": "朱鸿儒 课题组",
       "disorders": [
         "cptsd"
       ],
@@ -3226,8 +3223,7 @@
         "contains_selfharm_detail": false,
         "sensitive": false
       },
-      "status": "withheld",
-      "withheld_reason": "姓名格不是医生：朱鸿儒 课题组"
+      "status": "published"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s1-r51",
@@ -7784,6 +7780,7 @@
       "hospital_region": "上海",
       "hospital_id": "kdocs-amap-b0ffgzngk5",
       "hospital_name_raw": "上海市精神卫生中心",
+      "doctor_name_raw": "专家会诊",
       "disorders": [
         "pd"
       ],
@@ -7811,8 +7808,7 @@
         "contains_selfharm_detail": false,
         "sensitive": false
       },
-      "status": "withheld",
-      "withheld_reason": "姓名格不是医生：专家会诊"
+      "status": "published"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s3-r50",
@@ -7864,6 +7860,7 @@
       "hospital_region": "上海",
       "hospital_id": "kdocs-amap-b0ffgzngk5",
       "hospital_name_raw": "上海市精神卫生中心",
+      "doctor_name_raw": "黄佳团队",
       "disorders": [
         "pd"
       ],
@@ -7872,7 +7869,7 @@
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "上海市精神卫生中心",
+      "evidence_quote": "黄佳团队（住院）",
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "人格障碍 · 第51行",
@@ -7891,8 +7888,7 @@
         "contains_selfharm_detail": false,
         "sensitive": false
       },
-      "status": "withheld",
-      "withheld_reason": "姓名格不是医生：黄佳团队"
+      "status": "published"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s3-r52",
@@ -8441,7 +8437,7 @@
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "广州医科大学附属脑科医院（芳村） · 苗国栋",
+      "evidence_quote": "（退休）",
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "人格障碍 · 第64行",
@@ -10216,6 +10212,7 @@
       "hospital_region": "四川",
       "hospital_id": "kdocs-amap-b0ffliuheg",
       "hospital_name_raw": "四川大学华西厦门医院",
+      "doctor_name_raw": "郑重 团队",
       "disorders": [
         "pd"
       ],
@@ -10243,8 +10240,7 @@
         "contains_selfharm_detail": false,
         "sensitive": false
       },
-      "status": "withheld",
-      "withheld_reason": "姓名格不是医生：郑重 团队"
+      "status": "published"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s3-r109",
@@ -10256,6 +10252,7 @@
       "hospital_region": "四川",
       "hospital_id": "kdocs-amap-b033001020",
       "hospital_name_raw": "四川省精神卫生中心（绵阳三医院）",
+      "doctor_name_raw": "心身疾病一科设有“人格障碍专业组”",
       "disorders": [
         "pd"
       ],
@@ -10264,7 +10261,7 @@
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "四川省精神卫生中心（绵阳三医院）",
+      "evidence_quote": "心身疾病一科设有“人格障碍专业组”，官网写明“在国内较早开展辩证行为疗法及移情焦点治疗……对边缘型人格障碍、自伤自杀等人群疗效显著，已居国内前列”。",
       "evidence_context": {
         "note_title": "副本就诊地图10.25repo添加中",
         "index_in_capture": "人格障碍 · 第109行",
@@ -10283,8 +10280,7 @@
         "contains_selfharm_detail": false,
         "sensitive": false
       },
-      "status": "withheld",
-      "withheld_reason": "姓名格不是医生：心身疾病一科设有“人格障碍专业组”，官网写明“在国内较早开展辩证行为疗法及移情焦点治疗……对边缘型人格障碍、自伤自杀等人群疗效显著，已居国内前列”。"
+      "status": "published"
     },
     {
       "id": "kdocs-cp3b7toqal3j-s3-r110",

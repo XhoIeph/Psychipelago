@@ -1,7 +1,31 @@
 {
   "schema_version": "1.0.0",
-  "updated_at": "2026-11-10",
+  "updated_at": "2026-11-09",
   "items": [
+    {
+      "id": "kdocs-doctor-0d6561982a9f",
+      "name": "创伤后应激障碍专病门诊",
+      "hospital_id": "kdocs-amap-b000a0989a",
+      "department": "",
+      "title": "",
+      "credentials": [],
+      "profile_urls": [],
+      "specialties": [],
+      "official_sources": [],
+      "note": "首诊只有潘梁两位主任才能下诊断",
+      "evaluation": "去年六月我在北京回龙观看过一次，我和医生说我有cptsd，他让我别说那么多名词，而且因为我状态不错他觉得我根本没病，还有这个医院到处都是安保，我觉得自己好像被时刻盯着的有攻击性的精神病人一样\n\n反馈一下，回龙观医院，科室>医生，想看cptsd相关不要挂医生的普通门诊号，直接去挂创伤应激门诊的号，普通门诊一天看40个，应激障碍门诊一天看15个。我分不清自己是焦虑还是cptsd，加上我自己的时间安排问题，我就挂的医生的普通门诊号，去医院我容易紧张，听见她说这个我就有点乱了，我实际说的东西跟我想说的差别很大（我的问题），说我焦虑比较重先做检查开药了",
+      "evaluation_items": [
+        {
+          "text": "去年六月我在北京回龙观看过一次，我和医生说我有cptsd，他让我别说那么多名词，而且因为我状态不错他觉得我根本没病，还有这个医院到处都是安保，我觉得自己好像被时刻盯着的有攻击性的精神病人一样",
+          "source": "cptsd · 第2行"
+        },
+        {
+          "text": "反馈一下，回龙观医院，科室>医生，想看cptsd相关不要挂医生的普通门诊号，直接去挂创伤应激门诊的号，普通门诊一天看40个，应激障碍门诊一天看15个。我分不清自己是焦虑还是cptsd，加上我自己的时间安排问题，我就挂的医生的普通门诊号，去医院我容易紧张，听见她说这个我就有点乱了，我实际说的东西跟我想说的差别很大（我的问题），说我焦虑比较重先做检查开药了",
+          "source": "cptsd · 第2行"
+        }
+      ],
+      "evaluation_echoes_report": true
+    },
     {
       "id": "kdocs-doctor-1e5693808482",
       "name": "潘伟刚",
@@ -738,6 +762,25 @@
       ]
     },
     {
+      "id": "kdocs-doctor-0c7cf69c4453",
+      "name": "临床心理科/创伤专病门诊",
+      "hospital_id": "kdocs-amap-b0fff49imu",
+      "department": "",
+      "title": "",
+      "credentials": [],
+      "profile_urls": [],
+      "specialties": [],
+      "official_sources": [],
+      "evaluation": "昨天在武汉精卫创伤科得到口头诊断cptsd",
+      "evaluation_items": [
+        {
+          "text": "昨天在武汉精卫创伤科得到口头诊断cptsd",
+          "source": "cptsd · 第43行"
+        }
+      ],
+      "evaluation_echoes_report": true
+    },
+    {
       "id": "kdocs-doctor-413f391186ed",
       "name": "陈静",
       "hospital_id": "kdocs-amap-b0fff49imu",
@@ -820,6 +863,25 @@
       "profile_urls": [],
       "specialties": [],
       "official_sources": []
+    },
+    {
+      "id": "kdocs-doctor-9d047700506e",
+      "name": "朱鸿儒 课题组",
+      "hospital_id": "kdocs-amap-b001c05yg2",
+      "department": "",
+      "title": "",
+      "credentials": [],
+      "profile_urls": [],
+      "specialties": [],
+      "official_sources": [],
+      "evaluation": "有反馈在住院时得到诊断，也有反馈不看这个",
+      "evaluation_items": [
+        {
+          "text": "有反馈在住院时得到诊断，也有反馈不看这个",
+          "source": "cptsd · 第50行"
+        }
+      ],
+      "evaluation_echoes_report": true
     },
     {
       "id": "kdocs-doctor-a7e07465df8c",
@@ -2042,6 +2104,35 @@
       "official_sources": []
     },
     {
+      "id": "kdocs-doctor-91c5c255ce65",
+      "name": "专家会诊",
+      "hospital_id": "kdocs-amap-b0ffgzngk5",
+      "department": "",
+      "title": "",
+      "credentials": [],
+      "profile_urls": [],
+      "specialties": [],
+      "official_sources": [],
+      "evaluation": "有反馈得到bpd/npd/aspd诊断",
+      "evaluation_items": [
+        {
+          "text": "有反馈得到bpd/npd/aspd诊断",
+          "source": "人格障碍 · 第49行"
+        }
+      ]
+    },
+    {
+      "id": "kdocs-doctor-48b07fd7dd4e",
+      "name": "黄佳团队",
+      "hospital_id": "kdocs-amap-b0ffgzngk5",
+      "department": "",
+      "title": "",
+      "credentials": [],
+      "profile_urls": [],
+      "specialties": [],
+      "official_sources": []
+    },
+    {
       "id": "kdocs-doctor-e61a157d9fb9",
       "name": "徐一峰",
       "hospital_id": "kdocs-amap-b0ffgzngk5",
@@ -2630,6 +2721,35 @@
       "specialties": [],
       "official_sources": [],
       "note": "官网擅长写明“焦虑障碍，抑郁障碍，双相障碍，人格障碍，适应障碍……”"
+    },
+    {
+      "id": "kdocs-doctor-541874b914ce",
+      "name": "郑重 团队",
+      "hospital_id": "kdocs-amap-b0ffliuheg",
+      "department": "",
+      "title": "",
+      "credentials": [],
+      "profile_urls": [],
+      "specialties": [],
+      "official_sources": [],
+      "evaluation": "有反馈得到bpd/npd诊断",
+      "evaluation_items": [
+        {
+          "text": "有反馈得到bpd/npd诊断",
+          "source": "人格障碍 · 第108行"
+        }
+      ]
+    },
+    {
+      "id": "kdocs-doctor-4a1c61ed417b",
+      "name": "心身疾病一科设有“人格障碍专业组”",
+      "hospital_id": "kdocs-amap-b033001020",
+      "department": "",
+      "title": "",
+      "credentials": [],
+      "profile_urls": [],
+      "specialties": [],
+      "official_sources": []
     },
     {
       "id": "kdocs-doctor-5cd9383f347d",

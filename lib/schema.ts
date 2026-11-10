@@ -216,11 +216,13 @@ export const reportSchema = z.object({
    * published 之外的线索都不进公开站点。
    * unlinked 表示原文确有其事、但机构尚未确定：保留整条原文备查，不计入任何可见数字，
    * 免得全国头行、省份合计、医院页三处各算一个数。
+   * withheld / removed 留给涉及未成年人、自伤细节或来源失效的原文，与「姓名格写的是科室」无关：
+   * 后者按姓名格原文当名称照常发布，诊室留空。
    */
   status: z.enum(['published', 'withheld', 'removed', 'unlinked']),
   /** status=unlinked 时写明机构为什么挂不上，便于后续人工补定位 */
   unlinked_reason: z.string().optional(),
-  /** status=withheld 时写明为什么这条原文不发布（例如姓名格写的是科室而不是医生） */
+  /** status=withheld 时写明为什么不发布（涉及未成年人、含自伤细节、来源失效） */
   withheld_reason: z.string().optional(),
 })
 
