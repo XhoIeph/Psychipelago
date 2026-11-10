@@ -38,12 +38,30 @@ jobs:
 
       - run: npm ci
 
-      # 与 deploy-pages.yml 对齐：地图 Key 是构建期内联的，缺了它 lib/amap-loader.ts 会直接 reject，
-      # 页面上根本不会出现 window.AMap —— 之前四档的地图类断言全红就是这个原因，不是出网也不是白名单。
+      # 地图 Key 与 deploy-pages.yml 用同一个仓库 secret。两条路径必须在跑之前分开，不靠「跑了失败再判」：
+      # - present（同仓 PR / push）：secret 在。缺了它 lib/amap-loader.ts 直接 reject，页面根本没有 window.AMap，
+      #   所以这里 `:?` 硬失败——配置缺了要响，不能静默变成一堆不适用。
+      # - absent（fork PR 拿不到 secret）：先定 A11Y_MAP_STATE=absent 并打警告，地图断言按不适用计，
+      #   非地图断言照旧全跑且必须全绿。这一支不参与 na-budget 的白名单判定（见文件末尾那个 job）。
+      - name: Resolve map key state
+        run: |
+          if [ -n "${NEXT_PUBLIC_AMAP_JS_KEY:-}" ]; then
+            echo "A11Y_MAP_STATE=present" >> "$GITHUB_ENV"
+            echo "地图状态：present（key 已注入，地图断言会真跑）" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "A11Y_MAP_STATE=absent" >> "$GITHUB_ENV"
+            echo "地图状态：absent（无 key，地图相关断言记不适用）" >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::未拿到 NEXT_PUBLIC_AMAP_JS_KEY（fork PR 或 secret 缺失）：地图断言记不适用，非地图断言照旧全跑"
+          fi
+        env:
+          NEXT_PUBLIC_AMAP_JS_KEY: ${{ secrets.NEXT_PUBLIC_AMAP_JS_KEY }}
+
       # 这里不设 NEXT_PUBLIC_AMAP_SERVICE_HOST：留空时 bundle 走 127.0.0.1 的 /_AMapService，正由下个 step 的 preview.ts 代跑。
       - name: Build static site
         run: |
-          : "${NEXT_PUBLIC_AMAP_JS_KEY:?缺少 NEXT_PUBLIC_AMAP_JS_KEY 仓库 secret；没有它 a11y 永远拿不到地图}"
+          if [ "$A11Y_MAP_STATE" = present ]; then
+            : "${NEXT_PUBLIC_AMAP_JS_KEY:?present 分支要求 NEXT_PUBLIC_AMAP_JS_KEY 已注入；secret 缺失就不能假装在验地图}"
+          fi
           npm run build
         env:
           GITHUB_PAGES: 'true'
@@ -134,8 +152,11 @@ jobs:
             done
           fi
           mkdir -p reports/a11y
+          # absent 分支把「没有 key」显式交给 runner：报告头部写地图状态，地图域断言记不适用。
+          args=''
+          if [ "$A11Y_MAP_STATE" = absent ]; then args='--no-map'; fi
           node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json \
-            --viewports ${{ matrix.viewport }} --out reports/a11y --name ${{ matrix.slug }}
+            --viewports ${{ matrix.viewport }} --out reports/a11y --name ${{ matrix.slug }} $args
 
       - name: Upload reports
         if: always()
@@ -144,3 +165,22 @@ jobs:
           name: a11y-spec-${{ matrix.viewport }}
           path: reports/a11y
           if-no-files-found: warn
+
+  # 不适用白名单闸：地图真掉下来时，断言会从「过」变成「不适用」，在其它 job 里看起来和全绿一模一样。
+  # 两条判据分别对应两种路径，别混：
+  # - present（有 key）：不适用只允许已知客观缺失（见 tools/a11y/na-budget.cjs 的 ALLOWED），多一条就红。
+  # - absent（无 key）：地图域断言本来就会不适用，不参与白名单；但白名单之外仍然一条 NA 都不许多。
+  na-budget:
+    name: NA budget
+    needs: spec
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Check NA allowlist
+        run: node tools/a11y/na-budget.cjs artifacts
