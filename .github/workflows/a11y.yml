@@ -282,3 +282,46 @@ jobs:
       - name: Check absent drill numbers
         # 演练只跑 1440 + 390：显式声明，缺档才算错。正式 PR 上不带 --viewports，四档一个都不能少。
         run: node tools/a11y/na-budget.cjs artifacts --viewports 1440x900,390x844
+
+  # 演练是 advisory，红了不拦任何人。每周自动跑一次，没人看的话红一个月也没人知道。
+  # 所以失败时在仓库里开一条 issue，恢复时在原 issue 上留一句——账在仓库自己身上，
+  # 不依赖谁记得去翻 Actions。
+  drill-triage:
+    name: Drill triage
+    needs: [spec-absent, na-budget-absent]
+    if: always() && (github.event_name == 'schedule' || inputs.mode == 'absent')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Report failure as issue
+        if: contains(needs.*.result, 'failure')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh label create a11y-drill --repo "$GITHUB_REPOSITORY" --color B60205 \
+            --description "每周无 key 演练" --force >/dev/null 2>&1 || true
+          open=$(gh issue list --repo "$GITHUB_REPOSITORY" --label a11y-drill \
+            --state open --json number --jq '.[0].number')
+          if [ -n "$open" ]; then
+            gh issue comment "$open" --repo "$GITHUB_REPOSITORY" \
+              --body "同一套演练又红了：$RUN_URL"
+            exit 0
+          fi
+          gh issue create --repo "$GITHUB_REPOSITORY" --label a11y-drill \
+            --title "a11y 无 key 演练红了：$(date -u +%Y-%m-%d)" \
+            --body "每周一的无 key 演练失败，失败的 job 见 $RUN_URL 。"
+
+      - name: Note recovery
+        if: ${{ !contains(needs.*.result, 'failure') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          open=$(gh issue list --repo "$GITHUB_REPOSITORY" --label a11y-drill \
+            --state open --json number --jq '.[0].number')
+          [ -z "$open" ] && exit 0
+          gh issue comment "$open" --repo "$GITHUB_REPOSITORY" \
+            --body "这次演练恢复正常：$RUN_URL 。确认无误后关掉这条。"
