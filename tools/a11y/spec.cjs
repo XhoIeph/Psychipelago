@@ -24,7 +24,7 @@
  *   hasText       {selector, text:"这里还没定好"}  // 该元素（或其后代）的可见文本里必须含这句话
  *   前置的 click 若用 text 定位，会依次按 button / tab / link 找同名元素（侧栏栏目是 role=tab）。
  *   textEquals    {selector, from:"doctor"}      // 与前置 remember 记下的文本逐字相等（验证「照录」这类承诺）
- *   numberEquals  {selector, pattern, from|expectSelector}  // 两边各抽一个数再比（同类数据在两处必须一致）
+ *   numberEquals  {selector, pattern, from|expectSelector|expectCountSelector}  // 两边各抽一个数再比；expectCountSelector 用「可见元素个数」当右边（查「N 家」与行数）
  *   sumEquals     {selector, pattern, sumSelector, sumPattern}  // 头部总数 = 若干可见行之和（空集合判不适用）
  *   count         {selector, expect:1}          // 元素个数（h1 唯一）
  *   uniqueText    {selector}                    // 命中的可见元素文本两两不同（查搜索结果里重复的行）
@@ -364,9 +364,12 @@ function runChecks(checks) {
         continue;
       }
       const leftText = flat(left.textContent);
+      const rightCount = c.expectCountSelector
+        ? [...document.querySelectorAll(String(c.expectCountSelector))].filter(vis).length
+        : null;
       const rightEl = c.expectSelector ? pick(c.expectSelector, c.expectMatch) : null;
-      const rightText = rightEl ? flat(rightEl.textContent) : flat(c.memoValue);
-      if (!rightEl && !rightText) {
+      const rightText = rightCount != null ? String(rightCount) : rightEl ? flat(rightEl.textContent) : flat(c.memoValue);
+      if (rightCount == null && !rightEl && !rightText) {
         r.pass = false;
         r.note = c.expectSelector
           ? '对照元素没有可见元素：' + c.expectSelector
@@ -375,7 +378,7 @@ function runChecks(checks) {
         continue;
       }
       const lv = num(leftText, c.pattern);
-      const rv = num(rightText, c.expectPattern || c.pattern);
+      const rv = rightCount != null ? rightCount : num(rightText, c.expectPattern || c.pattern);
       r.pass = lv != null && rv != null && lv === rv;
       r.note = r.pass
         ? '两边都是 ' + lv + '（「' + leftText.slice(0, 40) + '」对「' + rightText.slice(0, 40) + '」）'

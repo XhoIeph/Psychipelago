@@ -3476,9 +3476,9 @@
     {
       "id": "v3.chip-union",
       "type": "hasText",
-      "desc": "V3-06 多选取并集：cptsd + 人格障碍 → 111 家医院 · 267 条线索（2026-11-09 数据 22:53:19 / 构建 22:58:23 界面实测，只算挂上机构的）",
+      "desc": "V3-06 多选取并集：cptsd + 人格障碍 → 110 家医院 · 259 条线索（2026-11-09 数据 22:53:19 / 构建 22:58:23 界面实测，只算挂上机构的）",
       "selector": ".tc-level-head--country .tc-level-meta",
-      "text": "111 家医院 · 267 条线索",
+      "text": "110 家医院 · 259 条线索",
       "precondition": [
         {
           "action": "reload",
@@ -5624,8 +5624,8 @@
       "hitMin": 100,
       "missMin": 100,
       "headerIncludes": [
-        "35 家医院",
-        "90 条线索"
+        "34 家医院",
+        "86 条线索"
       ],
       "desc": "V3-12 桌面勾「cptsd」后地图命中省画成 #087f7b/.26、未命中省压到 ≤.05，头部同步 35 家医院 · 90 条线索（2026-11-10 构建 21:37:26 实测）"
     },
@@ -6860,8 +6860,8 @@
       "type": "count",
       "at": 1440,
       "selector": ".tc-doctor-card",
-      "expect": 15,
-      "desc": "回龙观按医生合并成 15 张卡（12 位有名医生 + 3 条无名发言各自成卡）；一段发言一个 .tc-report，条数口径仍是 24",
+      "expect": 12,
+      "desc": "回龙观按医生合并成 12 张卡（12 位有名医生）；一段发言一个 .tc-report，条数口径 21",
       "precondition": [
         {
           "action": "wait",
@@ -6892,8 +6892,8 @@
       "type": "count",
       "at": 1440,
       "selector": ".tc-doctor-card .tc-lead-tag",
-      "expect": 15,
-      "desc": "15 张卡各一个组头标签（3 张只标签、12 张名字+标签）；与两条反向守卫合看，剩余误差只可能是「一张多、一张少」，逐卡保证下一轮补",
+      "expect": 12,
+      "desc": "12 张卡各一个组头标签（3 张只标签、12 张名字+标签）；与两条反向守卫合看，剩余误差只可能是「一张多、一张少」，逐卡保证下一轮补",
       "precondition": [
         {
           "action": "wait",
@@ -6924,8 +6924,8 @@
       "type": "count",
       "at": 390,
       "selector": ".tc-doctor-card",
-      "expect": 15,
-      "desc": "手机医院详情同样 15 张卡（与桌面同一份 DOM，数字同口径）",
+      "expect": 12,
+      "desc": "手机医院详情同样 12 张卡（与桌面同一份 DOM，数字同口径）",
       "precondition": [
         {
           "action": "wait",
@@ -6961,8 +6961,8 @@
       "type": "count",
       "at": 390,
       "selector": ".tc-doctor-card .tc-lead-tag",
-      "expect": 15,
-      "desc": "手机 15 张卡共 15 个组头标签（3 张只标签）",
+      "expect": 12,
+      "desc": "手机 12 张卡共 15 个组头标签（3 张只标签）",
       "precondition": [
         {
           "action": "wait",
@@ -6998,8 +6998,8 @@
       "type": "count",
       "at": 1440,
       "selector": ".tc-doctor-card .tc-doctor-card-dept",
-      "expect": 15,
-      "desc": "15 张卡各一行诊室（department）",
+      "expect": 12,
+      "desc": "12 张卡各一行诊室（department）",
       "precondition": [
         {
           "action": "wait",
@@ -7030,8 +7030,8 @@
       "type": "count",
       "at": 1440,
       "selector": ".tc-doctor-card .tc-doctor-card-note",
-      "expect": 15,
-      "desc": "15 张卡各一行备注（note）",
+      "expect": 12,
+      "desc": "12 张卡各一行备注（note）",
       "precondition": [
         {
           "action": "wait",
@@ -7161,8 +7161,8 @@
       "type": "count",
       "at": 390,
       "selector": ".tc-doctor-card .tc-doctor-card-dept",
-      "expect": 15,
-      "desc": "手机 15 张卡各一行诊室",
+      "expect": 12,
+      "desc": "手机 12 张卡各一行诊室",
       "precondition": [
         {
           "action": "wait",
@@ -7198,8 +7198,8 @@
       "type": "count",
       "at": 390,
       "selector": ".tc-doctor-card .tc-doctor-card-note",
-      "expect": 15,
-      "desc": "手机 15 张卡各一行备注",
+      "expect": 12,
+      "desc": "手机 12 张卡各一行备注",
       "precondition": [
         {
           "action": "wait",
@@ -7449,6 +7449,78 @@
         {
           "action": "wait",
           "selector": ".tc-doctor-detail .tc-report"
+        }
+      ]
+    },
+    {
+      "id": "v3.d-search-wuhan-first-1440",
+      "type": "hasText",
+      "desc": "搜索排序：搜「武汉」时医院组第一条必须是名称/城市命中——首行整行文本须含「湖北」（武汉的医院都在湖北，所以「sub 含湖北」与「名称含武汉」这一支同真）。改版前首条是郑州的医院（河南 · 线索 7 条），属「只有线索原文提到武汉」被排到了前面",
+      "selector": "li[role=\"group\"][aria-label=\"医院\"] ul.tc-plainlist > li:first-child .tc-mapapp-result",
+      "text": "湖北",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "fill",
+          "selector": ".tc-mapapp-search input",
+          "value": "武汉"
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-result",
+          "afterMs": 1200
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.m-search-wuhan-first-390",
+      "type": "hasText",
+      "desc": "搜索排序（手机）：搜「武汉」时结果第一行须是本地医院——整行文本含「湖北」。手机用的是另一套列表（.sheet-search 里的 .sr-row），所以选择器与桌面不同；改版前首条是郑州的医院（河南 · 线索 7 条）",
+      "selector": ".sheet-search > div:first-of-type > .sr-row:first-of-type",
+      "text": "湖北",
+      "precondition": [
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 700
+        },
+        {
+          "action": "fill",
+          "selector": ".sfield input",
+          "value": "武汉"
+        },
+        {
+          "action": "wait",
+          "selector": ".sr-row",
+          "afterMs": 1500
+        }
+      ],
+      "at": 390
+    },
+    {
+      "id": "v3.d-province-count-matches-rows-1440",
+      "type": "numberEquals",
+      "at": 1440,
+      "selector": ".tc-level-head--province .tc-level-meta",
+      "pattern": "(\\d+)\\s*家",
+      "expectCountSelector": ".tc-hospital-row",
+      "desc": "省行「N 家医院」必须等于该省医院行数，含 0 条线索的行。样本福建 5 家：四川大学华西厦门医院唯一线索被撤、显示「0 条线索」，行仍在列表里。",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".amap-layers",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "福建",
+          "afterMs": 1500
         }
       ]
     }

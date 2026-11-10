@@ -4,16 +4,16 @@
 
 | 文件 | 原件位置 | 快照 sha256（前 16 位） | 字节 |
 | --- | --- | --- | --- |
-| `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `d4e1ca8c42662111` | 82051 |
-| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `2cd513fc00ac2244` | 219372 |
+| `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `7738bee1bd6034d9` | 82372 |
+| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `fc5738efc2aefa76` | 221956 |
 
 `ui-spec.json` 是从 `docs/` 原件的逐字节拷贝，只改名不改内容；`spec.cjs` 同样逐字节拷贝（skill 目录那份也已同步成这一版）。换行统一成 LF 后再算 sha 与字节数（工作流里打印的也是这个）；这一版原件与快照同为 LF，两个文件逐字节相同。
 
-**v3 版（2026-11-07 起，当前）**：**293 条断言**（唯一 id 292 个；另有 109 条退役），按视口生效 1440 = 181 条、390 = 110 条、375 = 13 条、320 = 10 条（7 条不标视口，计入每一档）。**2026-11-09 追加两批**：第一批三条——一条手机「医院↔医生互跳保持当前档」（390）、两条桌面「筛选联动省面高亮 / 取消后回到密度着色」（1440）；第二批 27 条——筛选抽屉 7、夜间模式 14、卡头拖拽 2、地图拖动 4；第三批 2 条——筛选下「列表行条数 = 详情条数」（医院、医生各一条），并把三条 `key`/`Escape` 的等待窗放到 700、卡头下拖从 400px 改成 600px（判据未动）。见下面「手机详情互跳保档与桌面筛选联动」与「手机筛选抽屉、夜间模式与拖拽」两节。**2026-11-08 的「进详情抬起来」当晚被小雨撤回**（Kiwi 改判：医院/医生详情一律停 medium 424），所以 `v3.m-hospital-medium` 回到在跑状态、`v3.m-hospital-can-peek` 仍按一次 ↓（424 → peek），分流用的 `v3.m-hospital-large-from-list` / `v3.m-hospital-medium-from-pin` 已删除；11-08 那版与当晚冻结的 `7669370b` 逐字节相同；11-09 追加三条后不再相同。比参考跑（129+2 / 65+8 / 12+1 / 9+1）多的是：两条图钉前置守卫（`v3.pin-selected-guard` / `-390`，不带 `skipIfMissing`，前置跑不成就算失败而不是静默记不适用），以及四条「返回后焦点别丢」的断言 —— 手机两条判 `.sheet .head-title`（`v3.m-back-focus-title-390` / `-country-390`），桌面两条判被点的那一行（`v3.d-back-focus-row-1440` 判 `button.tc-hospital-row`、`v3.d-back-focus-row-country-1440` 判 `button.tc-province-row`）。落点按布局定：手机回退后列表整页重渲染、落标题才不会把人扔到某一行上；桌面是分栏、行还在列表里，落回触发行才能接着 Tab 往下看（Kiwi 2026-11-07 定的这条口径，见下面 1440 段）。1440 那 16 条是桌面侧栏把手的（Kiwi 2026-11-08 追加，选择器见下一节）：存在、`role=separator`、命中带 ≥10px、Tab 顺序在页签之前、`End`/`Home`/`Enter` 各判「盒子宽 ±2 + `aria-valuenow` 同步」、刷新后记住 456（键 `tc.sidebar.width`）、顶栏 `transform` 与「侧栏右缘到顶栏左缘 ≥20px」、`.tc-sidebar-body` 在 280/520 不横向溢出。这一版不能手改：由 `assertions/build-spec.cjs` 从 **基线 `11767be` 的 185 条**（kept 115，其中 23 条 repath）+ `v3-checks.cjs` 的 145 条生成，新增退役 70 条。重生成时先把基线取回来、不能带 BOM —— `git show 11767be:tools/a11y/ui-spec.json` 用 PowerShell 的 `Out-File -Encoding utf8` 会写出 BOM，`JSON.parse` 直接失败；用 node 落盘、归 LF 后再跑 `build-spec.cjs`，跑完把 docs 原件拷回本快照。**别用 PowerShell 的 `Get-Content -Raw` + `WriteAllText` 改这几个含中文的文件**：PS 会按 GBK 读入再写回，整份中文被写坏（2026-11-07 踩过一次，靠生成好的 spec 反推恢复，产物逐字节一致）；要改用 edit/write 工具或 node 脚本。
+**v3 版（2026-11-07 起，当前）**：**296 条断言**（唯一 id 295 个；另有 109 条退役），按视口生效 1440 = 183 条、390 = 111 条、375 = 13 条、320 = 10 条（7 条不标视口，计入每一档）。**2026-11-09 追加两批**：第一批三条——一条手机「医院↔医生互跳保持当前档」（390）、两条桌面「筛选联动省面高亮 / 取消后回到密度着色」（1440）；第二批 27 条——筛选抽屉 7、夜间模式 14、卡头拖拽 2、地图拖动 4；第三批 2 条——筛选下「列表行条数 = 详情条数」（医院、医生各一条），并把三条 `key`/`Escape` 的等待窗放到 700、卡头下拖从 400px 改成 600px（判据未动）。见下面「手机详情互跳保档与桌面筛选联动」与「手机筛选抽屉、夜间模式与拖拽」两节。**2026-11-08 的「进详情抬起来」当晚被小雨撤回**（Kiwi 改判：医院/医生详情一律停 medium 424），所以 `v3.m-hospital-medium` 回到在跑状态、`v3.m-hospital-can-peek` 仍按一次 ↓（424 → peek），分流用的 `v3.m-hospital-large-from-list` / `v3.m-hospital-medium-from-pin` 已删除；11-08 那版与当晚冻结的 `7669370b` 逐字节相同；11-09 追加三条后不再相同。比参考跑（129+2 / 65+8 / 12+1 / 9+1）多的是：两条图钉前置守卫（`v3.pin-selected-guard` / `-390`，不带 `skipIfMissing`，前置跑不成就算失败而不是静默记不适用），以及四条「返回后焦点别丢」的断言 —— 手机两条判 `.sheet .head-title`（`v3.m-back-focus-title-390` / `-country-390`），桌面两条判被点的那一行（`v3.d-back-focus-row-1440` 判 `button.tc-hospital-row`、`v3.d-back-focus-row-country-1440` 判 `button.tc-province-row`）。落点按布局定：手机回退后列表整页重渲染、落标题才不会把人扔到某一行上；桌面是分栏、行还在列表里，落回触发行才能接着 Tab 往下看（Kiwi 2026-11-07 定的这条口径，见下面 1440 段）。1440 那 16 条是桌面侧栏把手的（Kiwi 2026-11-08 追加，选择器见下一节）：存在、`role=separator`、命中带 ≥10px、Tab 顺序在页签之前、`End`/`Home`/`Enter` 各判「盒子宽 ±2 + `aria-valuenow` 同步」、刷新后记住 456（键 `tc.sidebar.width`）、顶栏 `transform` 与「侧栏右缘到顶栏左缘 ≥20px」、`.tc-sidebar-body` 在 280/520 不横向溢出。这一版不能手改：由 `assertions/build-spec.cjs` 从 **基线 `11767be` 的 185 条**（kept 115，其中 23 条 repath）+ `v3-checks.cjs` 的 145 条生成，新增退役 70 条。重生成时先把基线取回来、不能带 BOM —— `git show 11767be:tools/a11y/ui-spec.json` 用 PowerShell 的 `Out-File -Encoding utf8` 会写出 BOM，`JSON.parse` 直接失败；用 node 落盘、归 LF 后再跑 `build-spec.cjs`，跑完把 docs 原件拷回本快照。**别用 PowerShell 的 `Get-Content -Raw` + `WriteAllText` 改这几个含中文的文件**：PS 会按 GBK 读入再写回，整份中文被写坏（2026-11-07 踩过一次，靠生成好的 spec 反推恢复，产物逐字节一致）；要改用 edit/write 工具或 node 脚本。
 
 V3-02 那五条（选中钉橙色 / 光圈 / 标签 / 其余钉不压透明度 / 手机同款）的前置必须是「点省 → 点 `.tc-cluster-pin` 展开 → 点 `.tc-hospital-pin` → 等 `.tc-pin--selected`」。聚合钉的类名是 `tc-cluster-pin` 而不是 `tc-cluster`，写成 `.tc-map-node:not(.tc-cluster)` 会抓到聚合钉、点了只展开不选中，五条会一直「前置没跑成」。选中后 canvas 加 `tc-mapapp-canvas--pinned`、标签 `display:block`、其余钉 `opacity: 1`（`v3.css:17` 走 `--tc-nodes-opacity`）。
 
-**当前被测身份**：`out/index.html` **2026-11-10 08:12:10 / 860,993 B / sha256 前 16 `F297BF1E6162AE7A`**（数据 00:21:49：127 家医院 / 326 条线索已发布 / 245 位医生）；配断言表 293 条 / `2cd513fc00ac2244`（219,372 B）。四档实跑与报告路径见本节末尾。
+**当前被测身份**：`out/index.html` **2026-11-10 13:35:33 / 847,046 B / sha256 前 16 `4C5CBF38673606A1`**（数据 09:02:25：127 家医院 / 318 条线索已发布 / 245 位医生）；配断言表 296 条 / `fc5738efc2aefa76`（221,956 B）。四档实跑与报告路径见本节末尾。
 
 **上一轮被锁定的身份**：`out/index.html` **2026-11-09 09:41:38 / 390,514 B / sha256 前 16 `0C3A1F663952ED8F`**，配断言表 258 条 / `00435191f7a96285`（表未动）。这一版由 Kiwi 在小镜停手后锁定，九条在同一哈希上跑三门。被它取代的 09:17:50（`5BD36C2F6EEC62FF`）只改了医生详情三行网格的 CSS，但 hover 的 `::before` 压住文字——几何探针量不出来、只有截图看得见，所以修好后又重出了一版。留档：09:17:50 只改医生详情三行网格；08:58:42（`21372E9E73D51527`，已取代）把手势判定抽成 `lib/sheet-drag.ts` 并补 `tests/sheet-drag.test.mjs`（`test:map-layout` 22 条），纯重构、不进 a11y 分母；08:41:30（`96AB29EFE033FD3E`，已被本版取代）把相机约束从「中国全境留在框内」换成 `constrainChinaCenter`——中国至少留 48px 在屏内、中心可自由移动，`chinaCameraBounds` 已删，`lib/amap-runtime.ts` 的 `move()` 改调 `constrainChinaCenter({ ...camera, getZoom: () => zoom }, point, 48)`；同版让 `.searchrow` 挂上 `dragProps`（输入框移出拖拽排除名单，`beginDrag` 按下即 `setPointerCapture`，6px 只决定写不写高度）；03:02:36（`2A040FB3FB07CD8E`）加了手机筛选按钮抽屉（`.chipbtn` + `.chipdrawer`）、夜间模式（`.theme-toggle`，键 `tc.theme`）、卡头与地图拖拽，并修了深色下侧栏滚动条与比例尺的对比度；00:43:56（`BB221CE6142956BB`）改了 `components/map/MapApp.tsx` 两处——手机医院↔医生互跳保住当前档位（large 留 large、medium 留 medium，peek 例外仍抬 medium），桌面筛选开始联动地图、与手机共用 `paintProvince()`；22:57:29（`1383CD09566589F1`）是把 `Sidebar.tsx` 的宽度把手从 `<aside>` 末尾挪到最前（绝对定位、视觉不变），Tab 顺序因此从「…省行 → 把手」变成「关于 → 把手 → 品牌 → 页签」。`tabOrder` 一类断言在更早的构建上会假红，对身份要连改动文件一起看。
 
@@ -222,3 +222,20 @@ CI 的机器上起不来高德地图：没有渲染运行时，标记（`.tc-map
 - `v3.m-sheet-drag-down-390`：在 09:17:50 的整轮里读到 `424`（要求 148–162），同一构建单独重跑一轮就绿。用 runner 相同参数（24 步、每步 16ms、`afterMs` 800）连跑三轮是 154 → 736 → 154，另跑 400 / 500 / 600px 下拖六次全是 154——动作本身没问题。缺口在起点档位取决于上一组残留，而 400px 正好落在「速度项能顶到 736 / 纯位移只到 424」两个吸附区间之间。两条拖拽现已都改成 600px：154 + 600 到顶、736 − 600 到底，纯位移就够（上拖那条 2026-11-10 落表，见上一条）。
 - `a11y.escape-province-peek`：整轮里读到 `179.8`（要求 151–163），重跑是 157。直接复现该链路（点 `.grab` → 点「北京」→ Esc）采样：150ms 时 170.9，300ms 后稳定 157，所以 179.8 是过渡中的读数。下一轮把这条 `key` 的 `afterMs` 从 450 提到 700。
 - 两条都只影响一次读数、不影响判据；本轮锚点与断言表已锁定，不改表，记录在此供下一轮落。
+
+## 第十二轮（2026-11-10）：搜索排序、省行家数不变量与数据换轮
+
+小雨报「搜『武汉』第一条是郑州的医院」：`lib/search.ts` 把线索原文也算命中，`MapApp.tsx` 又按数据顺序取前四，没有相关性排序。小镜按「名字 > 城市 > 科室/病症 > 只有原文提到」分层后，本轮加两条排序断言（1440 / 390 各一）：搜「武汉」时结果首条必须是本地医院。判据选「首行文本含『湖北』」——武汉的医院都在湖北，所以「省份是湖北」与「名称含武汉」在这份数据里同真，没必要为二选一去扩 runner。
+
+同时数据换了轮（09:02:25）：姓名格不是医生的行撤了发布，全国从 127/326 变成 **127/318**，cptsd **34/86**、cptsd＋人格障碍 **110/259**，回龙观 21 条 / 12 张医生卡（筛 cptsd 13/5、加人格障碍 19/10）。写死的数字按这套换；回龙观那条只走 `numberEquals`（行 ↔ 详情），不写死。
+
+**新增不变量**：Kiwi 定「医院收录与线索发布是两件事」，四川大学华西厦门医院唯一一条线索被撤后仍留在列表里、显示「0 条线索」，所以省行的「N 家」要等于该省医院行数（含 0 条线索的行）。为此给 runner 的 `numberEquals` 加了 `expectCountSelector`——右边取「可见元素个数」而不是抽文本里的数字：
+
+```json
+{"type":"numberEquals","selector":".tc-level-head--province .tc-level-meta","pattern":"(\\d+)\\s*家",
+ "expectCountSelector":".tc-hospital-row"}
+```
+
+样本选福建（5 家，含 0 条线索那行）；实测「5 家医院 · 15 条线索」对「5」，两边都是 5。
+
+四档（锚点 13:35:33，跑前跑后时间/字节/sha 一致）：1440 **183/0/0**、390 **110/0/1**、375 **12/0/1**、320 **9/0/1** = **314 通过 / 0 失败 / 3 不适用**（三处同为 `s5-disabled-opacity`）；分母 183 / 111 / 13 / 10 = 317。报告在 `a11y-reports/lock-133533-<视口>/`。搜索排序那条在 13:35:33 之前的构建上是红的（首条「郑州大学第一附属医院(东院区) 河南 · 线索 7 条」），换版后转绿——它确实咬住了排序缺陷，不是恒真。
