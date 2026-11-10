@@ -6,11 +6,12 @@ import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 import { existsSync } from 'node:fs'
 import { createHash } from 'node:crypto'
-import type { Doctor, Report } from '../lib/schema.ts'
-import { doctorsFileSchema, reportsFileSchema } from '../lib/schema.ts'
+import type { Doctor, Hospital, Report } from '../lib/schema.ts'
+import { doctorsFileSchema, hospitalsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import { CURATED_FILES, readJson, writeJson } from './lib/paths.ts'
 import { LOCATION_EVIDENCE, linkLocationReports } from './lib/amap.ts'
 import type { LocationRun } from './lib/amap.ts'
+import { hospitalsFromRun } from './lib/hospitals.ts'
 import { applyStoredOverrides } from './lib/overrides.ts'
 
 export const SOURCE_URL = 'https://www.kdocs.cn/l/cp3b7ToQAl3J'
@@ -508,6 +509,46 @@ export function doctorsWithLocations(document: SourceDocument, reports: Report[]
   return doctorsFromDocument(document, reports)
 }
 
+/**
+ * hospitals.json 只有一条推导路径：高德定位依据 `hospitalsFromRun` 打底，再叠覆盖层。
+ * 控制台新增的医院不在源表里、改名的医院也不在源表里，两条都靠覆盖层落地；
+ * 拿现有 hospitals.json 当基准会让 `source_value` 变成自我比对——改过的值再比一次永远相等。
+ * 从定位依据起底，`validate` 与这里用的是同一个派生值，覆盖失效才真会红。
+ */
+export function hospitalsWithOverrides(root?: string): Hospital[] | undefined {
+  const run = locationRun()
+  if (!run) return undefined
+  return applyStoredOverrides('hospitals', hospitalsFromRun(run), root)
+}
+
+function locationRun(): LocationRun | undefined {
+  if (!existsSync(LOCATION_EVIDENCE)) return undefined
+  const run = readJson<LocationRun>(LOCATION_EVIDENCE)
+  if (run.source_url !== SOURCE_URL) throw new Error('定位依据必须对应当前主线来源')
+  return run
+}
+
+/**
+ * 撤下一家机构之前先看有没有东西还挂在它上面。
+ * 直接写下去会得到一份指向不存在机构的数据：医院页没了，线索和医生卡还指着它，
+ * 校验能报出来却报不出该怎么修，等于让人自己推断。这里把条数和处理办法一次说清。
+ */
+export function removalConflicts(base: Hospital[], kept: Hospital[], reports: Report[], doctors: Doctor[]): string[] {
+  const keptIds = new Set(kept.map(hospital => hospital.id))
+  const messages: string[] = []
+  for (const hospital of base) {
+    if (keptIds.has(hospital.id)) continue
+    const leads = reports.filter(report => report.hospital_id === hospital.id).length
+    const cards = doctors.filter(doctor => doctor.hospital_id === hospital.id).length
+    if (!leads && !cards) continue
+    messages.push(
+      `撤下 ${hospital.name}（${hospital.id}）前先处理指向它的 ${leads} 条线索与 ${cards} 位医生卡：` +
+        '给线索改挂别的机构，或连同这些记录一起撤下，再撤机构',
+    )
+  }
+  return messages
+}
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const document = readJson<SourceDocument>(resolve(SOURCE_CAPTURE))
   if (document.url !== SOURCE_URL || document.sheets.length === 0 || document.sheets.some(sheet => sheet.values.length < 2)) {
@@ -516,12 +557,24 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const items = applyStoredOverrides('reports', reportsWithLocations(document))
   const updatedAt = document.captured_at.slice(0, 10)
   const reportFile = reportsFileSchema.parse({ schema_version: '1.0.0', updated_at: updatedAt, items })
-  const doctorFile = doctorsFileSchema.parse({
-    schema_version: '1.0.0',
-    updated_at: updatedAt,
-    items: applyStoredOverrides('doctors', doctorsWithLocations(document, items)),
-  })
+  const doctors = applyStoredOverrides('doctors', doctorsWithLocations(document, items))
+  const doctorFile = doctorsFileSchema.parse({ schema_version: '1.0.0', updated_at: updatedAt, items: doctors })
+  // 医院同样在这一步入库：新增、改名、撤下一律由覆盖层决定，基准是定位依据。
+  // 没有覆盖层影响时 hospitalsWithOverrides 的结果与现有文件逐字相同，不写盘、不动 updated_at，
+  // 免得把定位流程写下的日期改成一个与定位无关的日子。
+  const hospitals = hospitalsWithOverrides()
+  const run = locationRun()
+  const conflicts = hospitals && run ? removalConflicts(hospitalsFromRun(run), hospitals, items, doctors) : []
+  if (conflicts.length) {
+    throw new Error(`撤下机构前还有记录指向它，未写入：\n${conflicts.map(item => `  - ${item}`).join('\n')}`)
+  }
   writeJson(CURATED_FILES.reports, reportFile)
   writeJson(CURATED_FILES.doctors, doctorFile)
+  if (hospitals && existsSync(CURATED_FILES.hospitals)) {
+    const hospitalFile = readJson<{ schema_version: string; updated_at: string; items: Hospital[] }>(CURATED_FILES.hospitals)
+    if (JSON.stringify(hospitals) !== JSON.stringify(hospitalFile.items)) {
+      writeJson(CURATED_FILES.hospitals, hospitalsFileSchema.parse({ ...hospitalFile, items: hospitals }))
+    }
+  }
   console.log(`✓ 新源表格入库：${document.sheets.length} 张工作表，${reportFile.items.length} 条线索，${doctorFile.items.length} 位医生，保留 ${items.filter(report => report.hospital_id).length} 条定位关联`)
 }

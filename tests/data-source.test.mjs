@@ -19,6 +19,23 @@ const expected = applyStoredOverrides('reports', reportsWithLocations(document))
 // 断言只数源转写；curated 与「源 + 覆盖层」的整份比对仍然用 reports，多一条少一条都红。
 const sourceReports = reports.filter((report) => !report.id.startsWith('local-'))
 
+// 保真类断言（stage 必须是 unknown、院名与姓名照抄单元格、引文能回溯）只对被覆盖的
+// 那个字段让路：人工修正的定义就是偏离表格，两者不可能同时成立。让路依据只有覆盖层
+// 文件本身——测试里不写名单，覆盖文件删了，curated 与「源 + 覆盖层」的整份比对就会红。
+// 质量类断言（医生卡存在、已发布线索挂到机构）跑合并后的数据，一律不让路。
+const OVERRIDES_DIR = 'data/overrides/reports'
+const reportOverrides = existsSync(OVERRIDES_DIR)
+  ? readdirSync(OVERRIDES_DIR).filter((file) => file.endsWith('.json')).map((file) => readJson(resolve(OVERRIDES_DIR, file)))
+  : []
+const reportOverrideFields = new Map(reportOverrides.map((record) => [
+  record.id,
+  new Set([...Object.keys(record.set ?? {}), ...(record.clear ?? [])]),
+]))
+const patchedIds = reportOverrides.filter((record) => record.action === 'patch').map((record) => record.id)
+const overridden = (id, field) => reportOverrideFields.get(id)?.has(field) ?? false
+/** 全局计数（病症分布、回龙观条数、某个名字的条数）只数这个字段没被覆盖的记录。 */
+const faithful = (field) => sourceReports.filter((report) => !overridden(report.id, field))
+
 /** 姓名格不是人名、或姓名格空着的行：它们照样是线索，名称取姓名格原文（姓名格空时取诊室那一格）。 */
 const subjectIds = new Set([
   'kdocs-cp3b7toqal3j-s1-r2',
@@ -97,15 +114,17 @@ test('每条线索都能回溯到同一张表的同一单元格', () => {
     const sheet = document.sheets[sheetIndex - 1]
     assert.equal(report.evidence_context.index_in_capture, `${sheet.name} · 第${excelRow}行`)
     const { region, hospital, cells } = filledRow(sheetIndex, excelRow)
-    assert.equal(report.hospital_name_raw, hospital)
-    if (region) assert.equal(report.hospital_region, region)
+    if (!overridden(report.id, 'hospital_name_raw')) assert.equal(report.hospital_name_raw, hospital)
+    if (region && !overridden(report.id, 'hospital_region')) assert.equal(report.hospital_region, region)
     // 诊室只跟具体医生走：姓名格不是人名时，C 列那句话是这个主体的名称或科室归属，
     // 不再写进 department，界面才按「无」显示。
-    if (subjectIds.has(report.id.replace(/-p\d+$/u, ''))) assert.equal(report.department, undefined)
+    if (overridden(report.id, 'department')) {
+      // 人工改过诊室，表格那一格不再是判定依据
+    } else if (subjectIds.has(report.id.replace(/-p\d+$/u, ''))) assert.equal(report.department, undefined)
     else if (cells[2]) assert.equal(report.department, cells[2])
     // 同一段话在两张表里各抄了一遍时，会被合成一条、姓名栏写成「甲、乙」，
     // 名字可能来自同院另一行，所以要逐个核对，而不是整串出现在这一格里。
-    if (cells[3] && report.doctor_name_raw) {
+    if (cells[3] && report.doctor_name_raw && !overridden(report.id, 'doctor_name_raw')) {
       for (const name of report.doctor_name_raw.split('、')) {
         const known = cells[3].includes(name) || [...corpus.entries()].some(([key, text]) => key.startsWith(`${hospital}\u0000`) && text.includes(name))
         assert.ok(known, `${report.id} 姓名对不上：${name}`)
@@ -121,7 +140,9 @@ test('每条线索都能回溯到同一张表的同一单元格', () => {
     ].join('\n').replace(/\s+/gu, '')
     // 该行没有备注也没有评价时，正文由姓名格、院名、诊室兜底拼接，不来自发言单元格。
     if (!cells[4] && !cells[5]) continue
-    for (const line of (report.evidence_full_text ?? report.evidence_quote).split('\n')) {
+    // 引文被人工改过时它本来就不再逐字来自单元格；改过的字样由 source_value 逐字对账守住。
+    const quotePatched = overridden(report.id, 'evidence_quote') || overridden(report.id, 'evidence_full_text')
+    for (const line of quotePatched ? [] : (report.evidence_full_text ?? report.evidence_quote).split('\n')) {
       const plain = line.replace(/^（[^）]*）/u, '').replace(/…$/u, '').replace(/\s+/gu, '').trim()
       if (plain.length < 2) continue
       // 该行没有备注也没有评价时，正文由院名 · 诊室 · 姓名兜底拼接，不来自任何单元格。
@@ -134,17 +155,20 @@ test('每条线索都能回溯到同一张表的同一单元格', () => {
 })
 
 test('工作表按病症分组，其他字段保持未知而不是编造', () => {
-  // 病症分布说的是表格本身，控制台新增的线索不参与计数。
+  // 病症分布说的是表格本身，控制台新增的线索不参与计数；被覆盖过病症的少数几条也不参与，
+  // 否则人工改一条就把整组数字带偏。
+  const grouped = faithful('disorders')
   const byDisorder = Object.fromEntries(['cptsd', 'osdd/did', 'pd'].map((group) => [
     group,
-    sourceReports.filter((report) => report.disorders.join('/') === group).length,
+    grouped.filter((report) => report.disorders.join('/') === group).length,
   ]))
   // 一条线索最多只带一个病症组合，跨表同引文合并会带上另一张表的病症标签。
   assert.deepEqual(byDisorder, { cptsd: 84, 'osdd/did': 59, pd: 174 })
-  assert.equal(sourceReports.filter((report) => report.disorders.includes('cptsd')).length, 90)
-  assert.equal(sourceReports.filter((report) => report.disorders.includes('pd')).length, 183)
+  assert.equal(grouped.filter((report) => report.disorders.includes('cptsd')).length, 90)
+  assert.equal(grouped.filter((report) => report.disorders.includes('pd')).length, 183)
   for (const report of sourceReports) {
-    assert.equal(report.stage, 'unknown')
+    // stage 只在没被覆盖时必须是 unknown：人工改过阶段就是层里那个值。
+    if (!overridden(report.id, 'stage')) assert.equal(report.stage, 'unknown')
     assert.equal(report.published_at, undefined)
     assert.equal(report.published_at_precision, 'unknown')
     assert.equal(report.diagnosis_claimed, undefined)
@@ -153,9 +177,12 @@ test('工作表按病症分组，其他字段保持未知而不是编造', () =>
     assert.equal(report.evidence_source, 'article')
     // 只有挂不上机构的线索不发布；姓名格写科室、团队、整段科室介绍的行也照样发布，
     // 名称用姓名格那串原文（见 m04980：它和具体医生一样上卡，诊室显示「无」）。
+    // 作者要求拿掉某一条时改的是 status，那条不再算 published——这是发布与否的唯一出口。
     if (!report.hospital_id) {
       assert.equal(report.status, 'unlinked')
       assert.match(report.unlinked_reason, /^机构未定位：/u)
+    } else if (overridden(report.id, 'status')) {
+      assert.equal(report.unlinked_reason, undefined)
     } else {
       assert.equal(report.status, 'published')
       assert.equal(report.unlinked_reason, undefined)
@@ -173,25 +200,44 @@ test('姓名格不是人名的行照原文当名称上卡，状态附注与整�
   }
   for (const report of sourceReports) {
     // 状态附注（「（特需）」「（退休）」）仍然剥掉：那是这一行的状态，不是名称的一部分。
-    assert.doesNotMatch(report.doctor_name_raw ?? '', /触发风险|离职|退休|进修|特需/u)
+    if (!overridden(report.id, 'doctor_name_raw')) {
+      assert.doesNotMatch(report.doctor_name_raw ?? '', /触发风险|离职|退休|进修|特需/u)
+    }
     assert.equal(report.doctor_title_raw, undefined)
     assert.equal(report.cost_cny, undefined)
     assert.equal(report.doctor_id, undefined)
   }
   // 姓名格写的是专病门诊、课题组、团队、专家会诊：这串原文就是这一行的名称，和医生一样上卡。
   const named = (id) => reports.find((report) => report.id === `kdocs-cp3b7toqal3j-${id}`)?.doctor_name_raw
-  assert.equal(named('s1-r2'), '创伤后应激障碍专病门诊')
-  assert.equal(named('s1-r43'), '临床心理科/创伤专病门诊')
-  assert.equal(named('s1-r50'), '朱鸿儒 课题组')
-  assert.equal(named('s3-r49'), '专家会诊')
-  assert.equal(named('s3-r51'), '黄佳团队')
-  assert.equal(named('s3-r108'), '郑重 团队')
+  if (!overridden('kdocs-cp3b7toqal3j-s1-r2', 'doctor_name_raw')) assert.equal(named('s1-r2'), '创伤后应激障碍专病门诊')
+  if (!overridden('kdocs-cp3b7toqal3j-s1-r43', 'doctor_name_raw')) assert.equal(named('s1-r43'), '临床心理科/创伤专病门诊')
+  if (!overridden('kdocs-cp3b7toqal3j-s1-r50', 'doctor_name_raw')) assert.equal(named('s1-r50'), '朱鸿儒 课题组')
+  if (!overridden('kdocs-cp3b7toqal3j-s3-r49', 'doctor_name_raw')) assert.equal(named('s3-r49'), '专家会诊')
+  if (!overridden('kdocs-cp3b7toqal3j-s3-r51', 'doctor_name_raw')) assert.equal(named('s3-r51'), '黄佳团队')
+  if (!overridden('kdocs-cp3b7toqal3j-s3-r108', 'doctor_name_raw')) assert.equal(named('s3-r108'), '郑重 团队')
   // 整段科室介绍：名称取首个分句，整段原文仍在这条线索里，一个字都没丢。
   const intro = reports.find((report) => report.id === 'kdocs-cp3b7toqal3j-s3-r109')
-  assert.equal(intro.doctor_name_raw, '心身疾病一科设有“人格障碍专业组”')
-  assert.match(intro.evidence_quote, /^心身疾病一科设有“人格障碍专业组”，官网写明/u)
-  // 这九条都该有对应档案，诊室留空走「无」。
-  for (const name of ['创伤后应激障碍专病门诊', '临床心理科/创伤专病门诊', '朱鸿儒 课题组', '专家会诊', '黄佳团队', '郑重 团队', intro.doctor_name_raw]) {
+  if (!overridden(intro.id, 'doctor_name_raw')) assert.equal(intro.doctor_name_raw, '心身疾病一科设有“人格障碍专业组”')
+  if (!overridden(intro.id, 'evidence_quote')) {
+    assert.match(intro.evidence_quote, /^心身疾病一科设有“人格障碍专业组”，官网写明/u)
+  }
+  // 这九条都该有对应档案，诊室留空走「无」。名称被人工改过的记录按改后的名字查卡：
+  // 「有没有卡」是质量断言，不因覆盖而免除，只是比对的名字换成库里那条。
+  const expecting = [
+    ['s1-r2', '创伤后应激障碍专病门诊'],
+    ['s1-r43', '临床心理科/创伤专病门诊'],
+    ['s1-r50', '朱鸿儒 课题组'],
+    ['s3-r49', '专家会诊'],
+    ['s3-r51', '黄佳团队'],
+    ['s3-r108', '郑重 团队'],
+    ['s3-r109', intro.doctor_name_raw],
+  ]
+  for (const [id, expectedName] of expecting) {
+    const reportId = `kdocs-cp3b7toqal3j-${id}`
+    const name = overridden(reportId, 'doctor_name_raw')
+      ? reports.find((report) => report.id === reportId)?.doctor_name_raw
+      : expectedName
+    assert.ok(name, reportId)
     const profile = doctors.find((doctor) => doctor.name === name)
     assert.ok(profile, name)
     assert.equal(profile.department, '')
@@ -230,10 +276,15 @@ test('医生档案只由表格里的诊室、备注、评价生成，且都能�
   const noName = sourceReports.filter((report) => !report.doctor_name_raw)
   assert.equal(noName.length, 0)
   // 回龙观：13 行共 24 条发言，全部发布；其中 3 条的名称是姓名格写的「创伤后应激障碍专病门诊」。
-  const huilongguan = sourceReports.filter((report) => report.hospital_name_raw === '北京回龙观医院')
+  // 按转写行归组，不按当前 hospital_id：院名可被人工改，机构退役时线索会被改挂别处，
+  // 但「表格里这 24 行属于回龙观」是转写事实，不该随关联漂移。看到数字变小先查改挂，不是断言错。
+  const huilongguan = reportsWithLocations(document).filter((report) => report.hospital_id === 'kdocs-amap-b000a0989a')
   assert.equal(huilongguan.length, 24)
   assert.equal(huilongguan.filter((report) => report.status === 'published').length, 24)
-  assert.equal(huilongguan.filter((report) => report.doctor_name_raw === '创伤后应激障碍专病门诊').length, 3)
+  assert.equal(
+    faithful('doctor_name_raw').filter((report) => report.doctor_name_raw === '创伤后应激障碍专病门诊').length,
+    3,
+  )
   // 合并过的线索记下合并前的发言条数，单条不写 1：只剩「两张表抄了同一句话」这一类
   const merged = sourceReports.filter((report) => report.parts_count)
   assert.equal(merged.length, 11)
@@ -246,14 +297,31 @@ test('医生档案只由表格里的诊室、备注、评价生成，且都能�
   }
   // 评价里点到别的医生，不改变这一行属于谁：梁红那行就是梁红，潘伟刚只在自己那行出现一次。
   // 曾经按人工表把这行补成「潘伟刚、梁红」，结果同一个人在医院页并排两张卡。
-  assert.equal(reports.find((report) => report.id === 'kdocs-cp3b7toqal3j-s1-r4').doctor_name_raw, '梁红')
+  if (!overridden('kdocs-cp3b7toqal3j-s1-r4', 'doctor_name_raw')) {
+    assert.equal(reports.find((report) => report.id === 'kdocs-cp3b7toqal3j-s1-r4').doctor_name_raw, '梁红')
+  }
   // 梁红那一行有四位用户各说一段，加上备注共五条线索
   const liang = reports.filter((report) => /-s1-r4(?:-p\d+)?$/u.test(report.id))
   assert.deepEqual(liang.map((report) => report.id.slice(-6)), ['-s1-r4', '-r4-p2', '-r4-p3', '-r4-p4', '-r4-p5'])
-  assert.equal(sourceReports.filter((report) => (report.doctor_name_raw ?? '').split('、').includes('潘伟刚')).length, 1)
+  assert.equal(faithful('doctor_name_raw').filter((report) => (report.doctor_name_raw ?? '').split('、').includes('潘伟刚')).length, 1)
   const pan = doctors.find((doctor) => doctor.name === '潘伟刚')
   assert.ok(pan)
   assert.doesNotMatch(pan.evaluation ?? '', /挂了梁红的/u)
+})
+
+test('保真断言的让路只发给覆盖层里真实存在的字段', () => {
+  // 让路是绕过保真断言的唯一通道，所以它必须能被对账：每条 patch 覆盖都要命中一条真线索，
+  // 每条被让路的记录都要有一份覆盖文件。少一份就说明名单与实际脱节了。
+  for (const record of reportOverrides) {
+    assert.ok(
+      reports.some((report) => report.id === record.id),
+      `覆盖层指向了不存在的线索：${record.id}`,
+    )
+    if (record.action !== 'patch') continue
+    assert.ok(reportOverrideFields.get(record.id).size > 0, `${record.id} 的 patch 没有任何字段`)
+  }
+  const skipped = patchedIds.filter((id) => reportOverrideFields.get(id).size > 0)
+  assert.equal(skipped.length, reportOverrides.filter((record) => record.action === 'patch').length)
 })
 
 test('已发布线索点到的每个名称，在那家医院都有卡可点开', () => {
@@ -276,7 +344,28 @@ test('机构清单等于本轮定位依据加覆盖层，未定位的 1 条线�
       ? applyStoredOverrides('hospitals', hospitalsFromRun(readJson(LOCATION_EVIDENCE)))
       : [],
   )
-  assert.equal(readJson('data/curated/hospitals.json').items.length, 127)
+  // 机构数从两个互相独立的来源对账：左边是烘焙产物（curated/hospitals.json），
+  // 右边是定位依据里的机构数减去覆盖层的 remove 墓碑（各自读各自的文件）。
+  // 两边读同一个派生值就成了自证，所以这里刻意不拿 applyStoredOverrides 的结果当基准。
+  const evidenceHospitals = existsSync(LOCATION_EVIDENCE) ? hospitalsFromRun(readJson(LOCATION_EVIDENCE)) : []
+  assert.equal(evidenceHospitals.length, 127)
+  const removedHospitals = existsSync('data/overrides/hospitals')
+    ? readdirSync('data/overrides/hospitals')
+      .filter((file) => file.endsWith('.json'))
+      .map((file) => readJson(resolve('data/overrides/hospitals', file)))
+      .filter((record) => record.action === 'remove')
+      .map((record) => record.id)
+    : []
+  assert.deepEqual(
+    removedHospitals.filter((id) => !evidenceHospitals.some((hospital) => hospital.id === id)),
+    [],
+    '墓碑指向了定位依据里不存在的机构',
+  )
+  // 控制台新增的医院带 local- 前缀，另行计数：它们不在定位依据里。
+  assert.equal(
+    readJson('data/curated/hospitals.json').items.filter((item) => !item.id.startsWith('local-')).length,
+    evidenceHospitals.length - removedHospitals.length,
+  )
   const unlocated = reports.filter((report) => !report.hospital_id)
   assert.equal(unlocated.length, 1)
   assert.ok(unlocated.every((report) => report.hospital_name_raw && report.hospital_region))

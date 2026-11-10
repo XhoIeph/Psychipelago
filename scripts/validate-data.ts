@@ -22,6 +22,9 @@ import type { OverrideKind } from './lib/overrides.ts'
 import type { Hospital, Report } from '../lib/schema.ts'
 
 const errors: string[] = []
+// 覆盖层的问题单独一栏并先打印：一个写坏的覆盖文件会让后面所有「与转写不一致」的比对一起红，
+// 那些红是它的回声，不是新问题。先让人修这一处，比在一长串输出里找它有用。
+const overrideErrors: string[] = []
 const warnings: string[] = []
 
 function parseOrReport<T extends { safeParse: (value: unknown) => { success: boolean; error?: unknown; data?: unknown } }>(
@@ -89,10 +92,10 @@ if (!sourceStructureValid) {
 // 覆盖层：人工改动只能经由 data/overrides 表达。比对基准因此是「源推导结果 + 覆盖层」，
 // 判据一点没松——覆盖层之外多出来的差异，仍然是手改。
 const overrides = loadOverrides()
-errors.push(...overrides.errors)
+overrideErrors.push(...overrides.errors)
 function withOverrides<T extends Record<string, unknown>>(kind: OverrideKind, items: T[]): T[] {
   const applied = applyOverrides(kind, items, overrides.byKind[kind])
-  errors.push(...applied.errors)
+  overrideErrors.push(...applied.errors)
   return applied.items as T[]
 }
 
@@ -221,6 +224,11 @@ if (disorders && hospitals && doctors && reports && provinces) {
   )
 }
 
+if (overrideErrors.length > 0) {
+  console.error(`\n✗ 覆盖层有 ${overrideErrors.length} 个问题，先修这些再跑校验：`)
+  for (const error of overrideErrors) console.error(`  - ${error}`)
+}
+
 if (warnings.length > 0) {
   console.log(`\n⚠ ${warnings.length} 条提醒：`)
   for (const warning of warnings) console.log(`  - ${warning}`)
@@ -229,5 +237,6 @@ if (warnings.length > 0) {
 if (errors.length > 0) {
   console.error(`\n✗ 发现 ${errors.length} 个错误：`)
   for (const error of errors) console.error(`  - ${error}`)
-  process.exit(1)
 }
+
+if (errors.length > 0 || overrideErrors.length > 0) process.exit(1)
