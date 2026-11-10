@@ -280,4 +280,5 @@ jobs:
           path: artifacts
 
       - name: Check absent drill numbers
-        run: node tools/a11y/na-budget.cjs artifacts
+        # 演练只跑 1440 + 390：显式声明，缺档才算错。正式 PR 上不带 --viewports，四档一个都不能少。
+        run: node tools/a11y/na-budget.cjs artifacts --viewports 1440x900,390x844
