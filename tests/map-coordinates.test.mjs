@@ -4,18 +4,18 @@ import { readFileSync } from 'node:fs'
 import { mapHospitalInputs, wgs84ToGcj02, gcjCoordinateTree } from '../lib/map-coordinates.ts'
 import { gcj02ToWgs84 } from '../scripts/geocode-hospitals.ts'
 import { MAP_MAX_ZOOM, MapPoint, project, unproject, fitMapBounds } from '../lib/map-camera.ts'
-import { chinaCameraBounds } from '../lib/map-sidebar.ts'
+import { constrainChinaCenter } from '../lib/map-sidebar.ts'
 
 const read = path => JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'))
 const hospitals = read('../data/curated/hospitals.json').items
 const reports = read('../data/curated/reports.json').items.filter(report => report.status === 'published')
-const saved = read('../data/evidence/locations/amap-2026-10-27.json').results
+const saved = read('../data/evidence/locations/amap-2026-11-09.json').results
 
-test('123 个地图位置直接使用已保存 GCJ-02，159 条关联不变且不修改业务 WGS84', () => {
+test('127 个地图位置直接使用已保存 GCJ-02，326 条已发布关联不变且不修改业务 WGS84', () => {
   const before = structuredClone(hospitals)
   const points = mapHospitalInputs(hospitals, reports, saved)
-  assert.equal(points.length, 123)
-  assert.equal(points.reduce((sum, point) => sum + point.leads, 0), 159)
+  assert.equal(points.length, 127)
+  assert.equal(points.reduce((sum, point) => sum + point.leads, 0), 326)
   for (const point of points) {
     const source = saved.find(result => result.status === 'geocoded' && `kdocs-amap-${result.chosen.id.toLowerCase()}` === point.id)
     assert.deepEqual([point.lng, point.lat], source.chosen.location.split(',').map(Number))
@@ -57,8 +57,15 @@ test('全国构图装入桌面与窄屏，边界约束不产生反向区间', ()
       assert.ok(screen.x >= inset+15 && screen.x <= width-15)
       assert.ok(screen.y >= 79 && screen.y <= height-135)
     }
-    const [nw,se] = chinaCameraBounds(camera,inset)
-    assert.ok(nw.lng < se.lng && nw.lat > se.lat)
+    // 取景约束只要求中国至少留 48px 在屏内，往四个方向拖到极限都不能把中国整个推出去。
+    const nw = project({ lat: bounds[1].lat, lng: bounds[0].lng }, frame.zoom)
+    const se = project({ lat: bounds[0].lat, lng: bounds[1].lng }, frame.zoom)
+    for (const target of [{ lat: 35, lng: 0 }, { lat: 35, lng: 180 }, { lat: 0, lng: 105 }, { lat: 70, lng: 105 }]) {
+      const mid = project(constrainChinaCenter(camera, target, 48), frame.zoom)
+      const visibleW = Math.min(width, se.x - (mid.x - width / 2)) - Math.max(0, nw.x - (mid.x - width / 2))
+      const visibleH = Math.min(height, se.y - (mid.y - height / 2)) - Math.max(0, nw.y - (mid.y - height / 2))
+      assert.ok(visibleW >= 47.9 && visibleH >= 47.9, `${width}×${height} 拖到 ${target.lat},${target.lng} 后中国只剩 ${visibleW}×${visibleH}`)
+    }
   }
 })
 

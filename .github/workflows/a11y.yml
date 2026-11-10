@@ -107,6 +107,36 @@ jobs:
           node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json \
             --viewports 390x844 --out reports/a11y --name ci-390
 
+      - name: Spec at 375x812
+        if: always()
+        env:
+          NODE_PATH: ${{ github.workspace }}/.ci/node_modules
+        run: |
+          if ! curl -fsS http://127.0.0.1:4177/ > /dev/null; then
+            nohup setsid node scripts/preview.ts --port 4177 > /tmp/preview.log 2>&1 &
+            for attempt in $(seq 1 40); do
+              curl -fsS http://127.0.0.1:4177/ > /dev/null && break
+              sleep 1
+            done
+          fi
+          node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json \
+            --viewports 375x812 --out reports/a11y --name ci-375
+
+      - name: Spec at 320x568
+        if: always()
+        env:
+          NODE_PATH: ${{ github.workspace }}/.ci/node_modules
+        run: |
+          if ! curl -fsS http://127.0.0.1:4177/ > /dev/null; then
+            nohup setsid node scripts/preview.ts --port 4177 > /tmp/preview.log 2>&1 &
+            for attempt in $(seq 1 40); do
+              curl -fsS http://127.0.0.1:4177/ > /dev/null && break
+              sleep 1
+            done
+          fi
+          node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json \
+            --viewports 320x568 --out reports/a11y --name ci-320
+
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4

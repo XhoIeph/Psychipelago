@@ -22,7 +22,7 @@ docs(readme): shorten setup and contribution entry points
 
 ## 数据与隐私
 
-唯一线索来源为[《就诊地图10.25》](https://www.kdocs.cn/l/crOlzFWeu2GY)。引文保留原文与上下文，分类不改写为确诊，不恢复退役采集的线索、截图与去标识记录。
+唯一线索来源为[《副本就诊地图10.25repo添加中》](https://www.kdocs.cn/l/cp3b7ToQAl3J)（WPS 电子表格，按 cptsd / osdd-did / 人格障碍 三张工作表逐行转写）。引文保留原文与上下文，分类不改写为确诊，不恢复退役采集的线索、截图与去标识记录。
 
 提交前核对暂存差异，纳入被引用的新文件，排除 `.env.local`、凭据、登录态、`data/raw/`、`tmp/`、依赖与构建缓存。不擅自改写远端历史。
 

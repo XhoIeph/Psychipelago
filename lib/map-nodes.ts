@@ -1,6 +1,7 @@
 import type { MapHospital } from '../components/map/types'
 
-export const NODE_SPACING = 76
+/** 合并阈值按钉身宽度取 40；中心距小于它，两枚钉就会叠住。 */
+export const NODE_SPACING = 40
 
 export type MapNodeGroup = {
   x: number

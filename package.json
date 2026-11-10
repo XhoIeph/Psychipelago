@@ -13,7 +13,7 @@
     "serve": "node scripts/preview.ts",
     "typecheck": "tsc --noEmit",
     "test:map-wheel": "node --test tests/map-wheel-zoom.test.mjs",
-    "test:map-layout": "node --test tests/map-layout.test.mjs",
+    "test:map-layout": "node --test tests/map-layout.test.mjs tests/sheet-drag.test.mjs",
     "test:geo": "node --test tests/amap-geocode.test.mjs",
     "prebuild": "node scripts/validate-data.ts && node scripts/build-aggregates.ts",
     "geo:fetch": "node scripts/fetch-geo.ts",
