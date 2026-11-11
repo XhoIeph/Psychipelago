@@ -121,7 +121,12 @@ jobs:
       - name: Install playwright for the spec runner
         run: |
           npm i --no-save --prefix .ci playwright@1.63.0
-          .ci/node_modules/.bin/playwright install --with-deps chromium
+          # 系统依赖走 apt，runner 侧 DNS 一坏就会卡几分钟甚至挂到超时。
+          # 所以给 apt 三分钟上限，装不上只记一条 warning 继续：ubuntu-latest 自带
+          # chromium 需要的共享库和常用字体，浏览器本身从 playwright CDN 下，不经 apt。
+          timeout 180 .ci/node_modules/.bin/playwright install-deps chromium \
+            || echo "::warning::系统依赖没装全（apt 慢或不可达），继续只下浏览器"
+          .ci/node_modules/.bin/playwright install chromium
 
       # sha 是用来对表的，所以写进 job summary（日志要人翻，summary 在 PR 页面上直接可见）。
       # 四档并行会各写一遍同样的表，只在 1440 那个 job 写一次。
@@ -243,7 +248,12 @@ jobs:
       - name: Install playwright for the spec runner
         run: |
           npm i --no-save --prefix .ci playwright@1.63.0
-          .ci/node_modules/.bin/playwright install --with-deps chromium
+          # 系统依赖走 apt，runner 侧 DNS 一坏就会卡几分钟甚至挂到超时。
+          # 所以给 apt 三分钟上限，装不上只记一条 warning 继续：ubuntu-latest 自带
+          # chromium 需要的共享库和常用字体，浏览器本身从 playwright CDN 下，不经 apt。
+          timeout 180 .ci/node_modules/.bin/playwright install-deps chromium \
+            || echo "::warning::系统依赖没装全（apt 慢或不可达），继续只下浏览器"
+          .ci/node_modules/.bin/playwright install chromium
 
       # 只跑两档：1440 与 390 是不适用条数最多、集合最不一样的两档，375 / 320 各 1 条已由 present 路径覆盖。
       - name: Spec at 1440 and 390 without map
@@ -283,49 +293,5 @@ jobs:
         # 演练只跑 1440 + 390：显式声明，缺档才算错。正式 PR 上不带 --viewports，四档一个都不能少。
         run: node tools/a11y/na-budget.cjs artifacts --viewports 1440x900,390x844
 
-  # 演练是 advisory，红了不拦任何人。每周自动跑一次，没人看的话红一个月也没人知道。
-  # 所以失败时在仓库里开一条 issue，恢复时在原 issue 上留一句——账在仓库自己身上，
-  # 不依赖谁记得去翻 Actions。
-  drill-triage:
-    name: Drill triage
-    needs: [spec-absent, na-budget-absent]
-    if: always() && (github.event_name == 'schedule' || inputs.mode == 'absent')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      issues: write
-    steps:
-      - name: Report failure as issue
-        if: contains(needs.*.result, 'failure')
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          # --force 是幂等的：标签已存在只会更新。所以这一步失败就说明权限或 API 真有问题，
-          # 让它红，比把红盖住更好——账要落在能看见的地方。
-          gh label create a11y-drill --repo "$GITHUB_REPOSITORY" --color B60205 \
-            --description "每周无 key 演练" --force >/dev/null
-          open=$(gh issue list --repo "$GITHUB_REPOSITORY" --label a11y-drill \
-            --state open --json number --jq '.[0].number')
-          if [ -n "$open" ]; then
-            gh issue comment "$open" --repo "$GITHUB_REPOSITORY" \
-              --body "同一套演练又红了：$RUN_URL"
-            exit 0
-          fi
-          gh issue create --repo "$GITHUB_REPOSITORY" --label a11y-drill \
-            --title "a11y 无 key 演练红了：$(date -u +%Y-%m-%d)" \
-            --body "每周一的无 key 演练失败，失败的 job 见 $RUN_URL 。"
-
-      - name: Note recovery and close the issue
-        if: ${{ !contains(needs.*.result, 'failure') }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          open=$(gh issue list --repo "$GITHUB_REPOSITORY" --label a11y-drill \
-            --state open --json number --jq '.[0].number')
-          [ -z "$open" ] && exit 0
-          gh issue comment "$open" --repo "$GITHUB_REPOSITORY" \
-            --body "这次演练恢复正常：$RUN_URL 。"
-          # 关账由这里做：红的是它开的，绿了也该它关。不留「等人手动关」的悬空状态。
-          gh issue close "$open" --repo "$GITHUB_REPOSITORY" --reason completed
+  # 演练是 advisory，红了不拦任何人；每周一自动跑一次，红了就是红的，靠看运行不靠开 issue。
+  # 2026-11-11 起不再自动开 issue：仓库里只留 PR，不产生由机器人写的问题单。
