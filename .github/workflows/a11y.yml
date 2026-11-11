@@ -4,6 +4,17 @@ name: A11y spec (advisory)
 # 在 pull_request 上跑：改动合并前就能看见红项；合并后不再重复跑，发布仍由 deploy-pages 负责。
 on:
   pull_request:
+  # absent 分支在正常 PR 里永远跑不到：有了 key，CI 每轮都是 present，12 / 13 那套条数只是躺在代码里。
+  # 留两个入口，让无 key 那套每周真跑一次，条数或门控漂了才看得见。
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'absent = 故意不给 key，验地图缺席那套；present = 照常跑四档'
+        type: choice
+        options: [absent, present]
+        default: absent
+  schedule:
+    - cron: '0 3 * * 1'
 
 permissions:
   contents: read
@@ -11,6 +22,8 @@ permissions:
 jobs:
   spec:
     name: spec (${{ matrix.viewport }})
+    # 定期或手动 absent 演练时不跑这一支，免得同一轮里一边给 key 一边不给。
+    if: github.event_name == 'pull_request' || inputs.mode == 'present'
     runs-on: ubuntu-latest
     # 单档约 10 分钟（build 3–4 分钟 + 装 chromium + 跑断言）。这里的 25 分钟是「每个 job 自己的保险丝」，
     # 不是把原来 20 分钟的总门槛放宽：一个 job 只跑一档，保险丝挡的是单档卡死；
@@ -173,7 +186,7 @@ jobs:
   na-budget:
     name: NA budget
     needs: spec
-    if: always()
+    if: always() && (github.event_name == 'pull_request' || inputs.mode == 'present')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -184,3 +197,135 @@ jobs:
 
       - name: Check NA allowlist
         run: node tools/a11y/na-budget.cjs artifacts
+
+  # absent 演练：故意不给 key，跑 1440 与 390 两档，验「地图缺席」那套条数（12 / 13）与 fail=0。
+  # 它验的不是地图，是闸本身还认不认得出该有的缺口——地图域或门控漂了，这里第一个红。
+  spec-absent:
+    name: spec absent (1440 + 390)
+    if: github.event_name == 'schedule' || inputs.mode == 'absent'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # key 显式留空：这一支要的就是「没有 key」的现实。只要有 key，地图会起来，
+      # 12 / 13 那套条数就永远验不到，闸里那条分支也就没人看着。
+      - name: Build without map key
+        run: |
+          echo "A11Y_MAP_STATE=absent" >> "$GITHUB_ENV"
+          echo "地图状态：absent（演练，故意不给 key）" >> "$GITHUB_STEP_SUMMARY"
+          npm run build
+        env:
+          GITHUB_PAGES: 'true'
+          NEXT_PUBLIC_BASE_PATH: ''
+          NEXT_PUBLIC_AMAP_JS_KEY: ''
+
+      - name: Serve out/ on 4177
+        run: |
+          nohup setsid node scripts/preview.ts --port 4177 > /tmp/preview.log 2>&1 &
+          for attempt in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:4177/ > /dev/null; then
+              echo "preview up after ${attempt}s"
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/preview.log
+          exit 1
+
+      - name: Install playwright for the spec runner
+        run: |
+          npm i --no-save --prefix .ci playwright@1.63.0
+          .ci/node_modules/.bin/playwright install --with-deps chromium
+
+      # 只跑两档：1440 与 390 是不适用条数最多、集合最不一样的两档，375 / 320 各 1 条已由 present 路径覆盖。
+      - name: Spec at 1440 and 390 without map
+        env:
+          NODE_PATH: ${{ github.workspace }}/.ci/node_modules
+        run: |
+          mkdir -p reports/a11y
+          for pair in 1440x900:absent-1440 390x844:absent-390; do
+            vp=${pair%%:*}
+            name=${pair##*:}
+            node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json \
+              --viewports "$vp" --out reports/a11y --name "$name" --no-map
+          done
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a11y-absent
+          path: reports/a11y
+          if-no-files-found: warn
+
+  na-budget-absent:
+    name: NA budget (absent drill)
+    needs: spec-absent
+    if: always() && (github.event_name == 'schedule' || inputs.mode == 'absent')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: a11y-absent
+          path: artifacts
+
+      - name: Check absent drill numbers
+        # 演练只跑 1440 + 390：显式声明，缺档才算错。正式 PR 上不带 --viewports，四档一个都不能少。
+        run: node tools/a11y/na-budget.cjs artifacts --viewports 1440x900,390x844
+
+  # 演练是 advisory，红了不拦任何人。每周自动跑一次，没人看的话红一个月也没人知道。
+  # 所以失败时在仓库里开一条 issue，恢复时在原 issue 上留一句——账在仓库自己身上，
+  # 不依赖谁记得去翻 Actions。
+  drill-triage:
+    name: Drill triage
+    needs: [spec-absent, na-budget-absent]
+    if: always() && (github.event_name == 'schedule' || inputs.mode == 'absent')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Report failure as issue
+        if: contains(needs.*.result, 'failure')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # --force 是幂等的：标签已存在只会更新。所以这一步失败就说明权限或 API 真有问题，
+          # 让它红，比把红盖住更好——账要落在能看见的地方。
+          gh label create a11y-drill --repo "$GITHUB_REPOSITORY" --color B60205 \
+            --description "每周无 key 演练" --force >/dev/null
+          open=$(gh issue list --repo "$GITHUB_REPOSITORY" --label a11y-drill \
+            --state open --json number --jq '.[0].number')
+          if [ -n "$open" ]; then
+            gh issue comment "$open" --repo "$GITHUB_REPOSITORY" \
+              --body "同一套演练又红了：$RUN_URL"
+            exit 0
+          fi
+          gh issue create --repo "$GITHUB_REPOSITORY" --label a11y-drill \
+            --title "a11y 无 key 演练红了：$(date -u +%Y-%m-%d)" \
+            --body "每周一的无 key 演练失败，失败的 job 见 $RUN_URL 。"
+
+      - name: Note recovery and close the issue
+        if: ${{ !contains(needs.*.result, 'failure') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          open=$(gh issue list --repo "$GITHUB_REPOSITORY" --label a11y-drill \
+            --state open --json number --jq '.[0].number')
+          [ -z "$open" ] && exit 0
+          gh issue comment "$open" --repo "$GITHUB_REPOSITORY" \
+            --body "这次演练恢复正常：$RUN_URL 。"
+          # 关账由这里做：红的是它开的，绿了也该它关。不留「等人手动关」的悬空状态。
+          gh issue close "$open" --repo "$GITHUB_REPOSITORY" --reason completed

@@ -1477,7 +1477,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -1615,13 +1615,21 @@
     {
       "id": "mobile.scale-hidden",
       "type": "computed",
-      "desc": "§6 手机端不显示比例尺（控件压根没创建时等同不显示；正向由 desktop.scale-present 兜）",
+      "desc": "§6 手机端不显示比例尺（地图在、控件没画＝通过；地图不在＝不适用，由 envGate 前置识别。正向由 desktop.scale-present 兜）",
       "selector": ".tc-mapapp-canvas .amap-scalecontrol",
       "props": {
         "display": "none"
       },
       "at": 390,
-      "absentOk": true
+      "absentOk": true,
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas .amap-logo",
+          "envGate": "amap",
+          "afterMs": 400
+        }
+      ]
     },
     {
       "id": "mobile.about-above-sheet",
@@ -1871,8 +1879,8 @@
         },
         {
           "action": "wait",
-          "selector": ".tc-map-node",
-          "envGate": "amap"
+          "selector": ".sheet .tc-hospital-row",
+          "settle": 600
         }
       ],
       "repathedIn": "v3-2026-11-07"
@@ -3609,7 +3617,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -4905,8 +4913,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
-          "envGate": "amap"
+          "selector": ".tc-mapapp-canvas"
         },
         {
           "action": "click",
@@ -4943,8 +4950,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
-          "envGate": "amap"
+          "selector": ".tc-mapapp-canvas"
         },
         {
           "action": "click",
@@ -5619,6 +5625,14 @@
     {
       "id": "v3.d-filter-paints-provinces-1440",
       "type": "polygonPaint",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas .amap-logo",
+          "settle": 400,
+          "envGate": "amap"
+        }
+      ],
       "phase": "paint",
       "at": 1440,
       "selector": "button.tc-disorder-chip[data-disorder=\"cptsd\"]",
@@ -5633,6 +5647,14 @@
     {
       "id": "v3.d-filter-clear-restores-density-1440",
       "type": "polygonPaint",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas .amap-logo",
+          "settle": 400,
+          "envGate": "amap"
+        }
+      ],
       "phase": "clear",
       "at": 1440,
       "selector": "button.tc-disorder-chip[data-disorder=\"cptsd\"]",
@@ -5671,7 +5693,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -5692,7 +5714,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -5714,7 +5736,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -5744,7 +5766,7 @@
         },
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -5791,7 +5813,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -5812,7 +5834,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -5834,7 +5856,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -5864,7 +5886,7 @@
         },
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -5910,7 +5932,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1000
         },
         {
@@ -5935,7 +5957,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1000
         },
         {
@@ -5962,7 +5984,8 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas .amap-logo",
+          "envGate": "amap",
           "settle": 1200
         }
       ],
@@ -5982,7 +6005,8 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas .amap-logo",
+          "envGate": "amap",
           "settle": 1200
         }
       ],
@@ -6002,7 +6026,8 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas .amap-logo",
+          "envGate": "amap",
           "settle": 1200
         }
       ],
@@ -6022,7 +6047,8 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas .amap-logo",
+          "envGate": "amap",
           "settle": 1200
         }
       ],
@@ -6042,7 +6068,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1000
         },
         {
@@ -6086,7 +6112,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6129,7 +6155,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6181,7 +6207,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6221,7 +6247,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6247,7 +6273,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6277,7 +6303,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6304,7 +6330,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6371,7 +6397,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1400
         },
         {
@@ -6392,7 +6418,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1400
         },
         {
@@ -6411,7 +6437,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1400
         },
         {
@@ -6435,7 +6461,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1400
         },
         {
@@ -6459,7 +6485,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1400
         },
         {
@@ -6506,7 +6532,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6596,7 +6622,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6616,7 +6642,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6659,7 +6685,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6692,7 +6718,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6729,7 +6755,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6766,7 +6792,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6800,7 +6826,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6833,7 +6859,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6866,7 +6892,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6898,7 +6924,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6930,7 +6956,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -6967,7 +6993,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7004,7 +7030,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7036,7 +7062,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7070,7 +7096,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7104,7 +7130,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7135,7 +7161,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7167,7 +7193,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7204,7 +7230,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7243,7 +7269,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7282,7 +7308,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7318,7 +7344,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7462,7 +7488,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7514,7 +7540,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7545,7 +7571,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7596,7 +7622,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7647,7 +7673,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7698,7 +7724,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7740,7 +7766,7 @@
       "precondition": [
         {
           "action": "wait",
-          "selector": ".amap-layers",
+          "selector": ".tc-mapapp-canvas",
           "settle": 1200
         },
         {
@@ -7768,6 +7794,53 @@
           "action": "wait",
           "selector": ".tc-doctor-card",
           "afterMs": 800
+        }
+      ]
+    },
+    {
+      "id": "v3.m-title-no-focus-ring-390",
+      "type": "focusRingCdp",
+      "at": 390,
+      "selector": ".sheet .head-title",
+      "controlSelector": ".sheet .chipbtn",
+      "desc": "省份标题不该有焦点环（Safari 对脚本 focus 也画 :focus-visible）。用 CDP 强制 [focus, focus-visible] 后读 computed，期望 outline-style=none；对照组 .sheet .chipbtn 强制后必须 solid / 2px / rgb(25,59,56)，证明强制真的生效、选择器没写错。",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 700
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        }
+      ]
+    },
+    {
+      "id": "v3.d-title-no-focus-ring-1440",
+      "type": "focusRingCdp",
+      "at": 1440,
+      "selector": ".tc-level-head .tc-detail-title",
+      "controlSelector": ".tc-level-head .tc-detail-back",
+      "desc": "省份标题不该有焦点环（Safari 对脚本 focus 也画 :focus-visible）。用 CDP 强制 [focus, focus-visible] 后读 computed，期望 outline-style=none；对照组返回按钮 .tc-level-head .tc-detail-back 强制后必须 solid / 2px / rgb(25,59,56)。",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1400
         }
       ]
     }
