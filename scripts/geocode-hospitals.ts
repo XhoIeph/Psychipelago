@@ -8,7 +8,8 @@ import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 import { doctorsFileSchema, hospitalsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import type { Hospital, Report } from '../lib/schema.ts'
-import { doctorsWithLocations, markUnlinked, reportsFromDocument, SOURCE_CAPTURE, SOURCE_URL } from './import-kdocs.ts'
+import { acceptsManualCoordinate, hospitalsFromRun, withManualCoordinates } from './lib/hospitals.ts'
+import { doctorsWithLocations, hospitalsWithOverrides, markUnlinked, reportsFromDocument, SOURCE_CAPTURE, SOURCE_URL } from './import-kdocs.ts'
 import type { SourceDocument } from './import-kdocs.ts'
 import { LOCATION_EVIDENCE, locationTargets, searchName, searchCity, selectPoi, searchAmap, linkLocationReports } from './lib/amap.ts'
 import type { LocationRun, Poi } from './lib/amap.ts'
@@ -28,88 +29,18 @@ function loadEnvKey(): string {
   throw new Error('.env.local 缺少 AMAP_WEB_SERVICE_KEY')
 }
 
-const GCJ_A = 6378245
-const GCJ_EE = 0.00669342162296594323
-
-function transformLat(x: number, y: number): number {
-  let ret = -100 + 2 * x + 3 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x))
-  ret += ((20 * Math.sin(6 * x * Math.PI) + 20 * Math.sin(2 * x * Math.PI)) * 2) / 3
-  ret += ((20 * Math.sin(y * Math.PI) + 40 * Math.sin((y / 3) * Math.PI)) * 2) / 3
-  ret += ((160 * Math.sin((y / 12) * Math.PI) + 320 * Math.sin((y * Math.PI) / 30)) * 2) / 3
-  return ret
-}
-
-function transformLng(x: number, y: number): number {
-  let ret = 300 + x + 2 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x))
-  ret += ((20 * Math.sin(6 * x * Math.PI) + 20 * Math.sin(2 * x * Math.PI)) * 2) / 3
-  ret += ((20 * Math.sin(x * Math.PI) + 40 * Math.sin((x / 3) * Math.PI)) * 2) / 3
-  ret += ((150 * Math.sin((x / 12) * Math.PI) + 300 * Math.sin((x / 30) * Math.PI)) * 2) / 3
-  return ret
-}
-
-function gcjDelta(lng: number, lat: number): [number, number] {
-  let dLat = transformLat(lng - 105, lat - 35)
-  let dLng = transformLng(lng - 105, lat - 35)
-  const radLat = (lat / 180) * Math.PI
-  let magic = Math.sin(radLat)
-  magic = 1 - GCJ_EE * magic * magic
-  const sqrtMagic = Math.sqrt(magic)
-  dLat = (dLat * 180) / ((GCJ_A * (1 - GCJ_EE)) / (magic * sqrtMagic) * Math.PI)
-  dLng = (dLng * 180) / ((GCJ_A / sqrtMagic) * Math.cos(radLat) * Math.PI)
-  return [dLng, dLat]
-}
-
-export function gcj02ToWgs84(lng: number, lat: number): [number, number] {
-  if (lng < 72.004 || lng > 137.8347 || lat < 0.8293 || lat > 55.8271) return [lng, lat]
-  let wgsLng = lng
-  let wgsLat = lat
-  for (let i = 0; i < 3; i++) {
-    const [dLng, dLat] = gcjDelta(wgsLng, wgsLat)
-    wgsLng = lng - dLng
-    wgsLat = lat - dLat
-  }
-  const offset = Math.max(Math.abs(wgsLng - lng), Math.abs(wgsLat - lat))
-  if (!Number.isFinite(offset) || offset > 0.02) {
-    throw new Error(`GCJ->WGS 转换结果异常：gcj=(${lng},${lat}) wgs=(${wgsLng},${wgsLat})`)
-  }
-  return [Number(wgsLng.toFixed(6)), Number(wgsLat.toFixed(6))]
-}
-
-export function hospitalsFromRun(run: LocationRun): Hospital[] {
-  const provinces = readJson<{ items: Array<{ name: string; adcode: string }> }>(CURATED_FILES.provinces).items
-  const hospitals = new Map<string, Hospital>()
-  for (const result of run.results) {
-    if (result.status !== 'geocoded' || !result.chosen) continue
-    const poi = result.chosen
-    const id = `kdocs-amap-${poi.id.toLowerCase()}`
-    if (hospitals.has(id)) {
-      hospitals.get(id)!.aliases.push(result.name)
-      continue
-    }
-    const values = poi.location.split(',').map(Number)
-    if (values.length !== 2 || !values.every(Number.isFinite)) throw new Error(`高德坐标无效：${result.name}`)
-    const [lng, lat] = gcj02ToWgs84(values[0], values[1])
-    // The Hengqin campus is administered by Macao even when the POI labels the land as Zhuhai.
-    const macauManaged = result.region === '澳门' && /由澳门特别行政区.*管辖/u.test(`${poi.name}${poi.address}`)
-    const province = provinces.find(province => province.name === (macauManaged ? '澳门特别行政区' : poi.pname))
-    if (!province) throw new Error(`高德省级归属不在行政区字典：${poi.name} / ${poi.pname}`)
-    hospitals.set(id, {
-      id, name: /building$/u.test(result.selection_rule ?? '') || !/[\u4e00-\u9fff]/u.test(poi.name) ? result.name.replace(/（[^）]*）/gu, '') : poi.name, aliases: [result.name], adcode: province.adcode,
-      province: province.name, city: macauManaged ? province.name : poi.cityname || poi.pname, level: '未知', category: '其他', departments: ['未录入'],
-      trauma_service: { cptsd_assessment: 'unknown', cptsd_bpd_diagnosis: 'unknown', icd11_practice: 'unknown', evidence: [] },
-      address: poi.address, coordinates: { lat, lng }, coordinates_source: 'geocoded',
-      official_sources: [], last_verified_at: run.generated_at.slice(0, 10),
-    })
-  }
-  return [...hospitals.values()]
-}
+// 坐标换算与「定位结果 -> 机构记录」的推导放在 lib/hospitals.ts：
+// import-kdocs 也要用同一条推导重建 hospitals.json，两份复制迟早会漂。
+export { hospitalsFromRun, gcj02ToWgs84 } from './lib/hospitals.ts'
 
 export function applyRun(reports: Report[], run: LocationRun, document: SourceDocument) {
   if (run.source_url !== SOURCE_URL || run.results.some(result => result.status === 'not_queried')) throw new Error('定位报告来源不符或尚未完成查询')
   const linked = markUnlinked(linkLocationReports(reports, run), run)
-  const hospitals = hospitalsFromRun(run)
+  // 与烘焙同一条合成：派生集 → 覆盖层 → 人工确定的坐标。少补最后一步，
+  // 这里写出的 hospitals.json 就与 validate 的比对基准差一批坐标，那份红会指向「有人手改数据」。
+  const hospitals = withManualCoordinates(applyStoredOverrides('hospitals', hospitalsFromRun(run)), readManualLocations())
   const updated_at = run.generated_at.slice(0, 10)
-  const hospitalFile = hospitalsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: applyStoredOverrides('hospitals', hospitals) })
+  const hospitalFile = hospitalsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: hospitals })
   const reportFile = reportsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: applyStoredOverrides('reports', linked) })
   const doctorFile = doctorsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: applyStoredOverrides('doctors', doctorsWithLocations(document, linked)) })
   // Keep public provenance minimal; the full candidate inventory stays in ignored raw storage.
@@ -144,7 +75,9 @@ async function main() {
   // 高德经常给出多条同城候选，这里只把原样返回摆出来，选哪一条由人定，
   // 不让打分规则替人决定——历史上挂错机构就是自动选定造成的。
   if (args.includes('--query') || args.includes('--pick')) {
-    const hospitals = applyStoredOverrides('hospitals', readJson<{ items: Hospital[] }>(CURATED_FILES.hospitals).items)
+    // 基准必须是「覆盖层之前」的派生集。拿已烘焙的 hospitals.json 当基准，新增的机构
+    // 在里面已经有了，叠同一条 insert 就是「已是源记录」——第一次烘焙之后这条路自我否定。
+    const hospitals = hospitalsWithOverrides() ?? []
     if (args.includes('--pick')) {
       const index = args.indexOf('--pick')
       const hospitalId = args[index + 1]
@@ -152,9 +85,19 @@ async function main() {
       if (!hospitalId || !poiId) throw new Error('--pick 需要「机构 id 候选 id」两个参数')
       const existing = readManualLocations().find(entry => entry.hospital_id === hospitalId)
       if (!existing) throw new Error(`还没有为 ${hospitalId} 查过坐标，先跑 --query`)
+      // 先判再写：自动定位过的机构不覆盖，人工表就一个字节都不动。
+      // 写进去再「不生效」会留一个废点躺在 amap-manual.json 里——将来这家机构的来源
+      // 一旦变了（重定位失败降级、人工重置），几周前的落点会突然生效，没人想得起它。
+      const hospital = hospitals.find(item => item.id === hospitalId)
+      if (hospital && !acceptsManualCoordinate(hospital)) {
+        console.error(`  该机构已有自动定位坐标（${hospital.coordinates_source ?? '未标注来源'}），人工选点不覆盖，amap-manual.json 未改动`)
+        process.exitCode = 1
+        return
+      }
       const picked = pickCandidate(existing, poiId, { by: PICKED_BY })
       upsertManualLocation(picked)
       console.log(`已选定 ${hospitalId} → ${picked.chosen!.name}（${picked.chosen!.location}）`)
+      console.log('  再跑 node scripts/import-kdocs.ts 让这条坐标进库')
       return
     }
     const target = resolveTarget(hospitals, args[args.indexOf('--query') + 1] ?? '')

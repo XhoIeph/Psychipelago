@@ -11,17 +11,16 @@ import {
 } from '../lib/schema.ts'
 import { CURATED_FILES, readJson } from './lib/paths.ts'
 import { isDeepStrictEqual } from 'node:util'
-import { reportsWithLocations, doctorsWithLocations, SOURCE_CAPTURE, SOURCE_TITLE, SOURCE_URL } from './import-kdocs.ts'
+import { reportsWithLocations, doctorsWithLocations, hospitalsWithOverrides, SOURCE_CAPTURE, SOURCE_TITLE, SOURCE_URL } from './import-kdocs.ts'
 import type { SourceDocument } from './import-kdocs.ts'
-import { existsSync } from 'node:fs'
-import { LOCATION_EVIDENCE } from './lib/amap.ts'
-import type { LocationRun } from './lib/amap.ts'
-import { hospitalsFromRun } from './geocode-hospitals.ts'
 import { applyOverrides, loadOverrides } from './lib/overrides.ts'
 import type { OverrideKind } from './lib/overrides.ts'
 import type { Hospital, Report } from '../lib/schema.ts'
 
 const errors: string[] = []
+// 覆盖层的问题单独一栏并先打印：一个写坏的覆盖文件会让后面所有「与转写不一致」的比对一起红，
+// 那些红是它的回声，不是新问题。先让人修这一处，比在一长串输出里找它有用。
+const overrideErrors: string[] = []
 const warnings: string[] = []
 
 function parseOrReport<T extends { safeParse: (value: unknown) => { success: boolean; error?: unknown; data?: unknown } }>(
@@ -89,10 +88,10 @@ if (!sourceStructureValid) {
 // 覆盖层：人工改动只能经由 data/overrides 表达。比对基准因此是「源推导结果 + 覆盖层」，
 // 判据一点没松——覆盖层之外多出来的差异，仍然是手改。
 const overrides = loadOverrides()
-errors.push(...overrides.errors)
+overrideErrors.push(...overrides.errors)
 function withOverrides<T extends Record<string, unknown>>(kind: OverrideKind, items: T[]): T[] {
   const applied = applyOverrides(kind, items, overrides.byKind[kind])
-  errors.push(...applied.errors)
+  overrideErrors.push(...applied.errors)
   return applied.items as T[]
 }
 
@@ -100,8 +99,10 @@ function withOverrides<T extends Record<string, unknown>>(kind: OverrideKind, it
 if (sourceStructureValid && reports && !isDeepStrictEqual(reports.items, withOverrides('reports', reportsWithLocations(sourceDocument)))) {
   errors.push('reports.json 与主线表格转写不一致；请运行 node scripts/import-kdocs.ts，不能恢复旧源或手改引文')
 }
-const expectedHospitals = existsSync(LOCATION_EVIDENCE) ? hospitalsFromRun(readJson<LocationRun>(LOCATION_EVIDENCE)) : []
-if (hospitals && !isDeepStrictEqual(hospitals.items, withOverrides('hospitals', expectedHospitals))) errors.push('hospitals.json 与本轮高德定位依据不一致，不能恢复退役机构或手改坐标')
+// 机构清单与烘焙走同一个函数：覆盖层之后还要补人工选定的坐标，
+// 两边各拼一次迟早会漂，漂出来的差异会伪装成「有人手改数据」。
+const expectedHospitals = hospitalsWithOverrides(items => withOverrides('hospitals', items)) ?? []
+if (hospitals && !isDeepStrictEqual(hospitals.items, expectedHospitals)) errors.push('hospitals.json 与本轮高德定位依据不一致，不能恢复退役机构或手改坐标')
 if (sourceStructureValid && doctors && reports &&
   !isDeepStrictEqual(doctors.items, withOverrides('doctors', doctorsWithLocations(sourceDocument, reports.items as Report[])))) {
   errors.push('doctors.json 与主线表格里的诊室、备注、评价不一致；请运行 node scripts/import-kdocs.ts，不能手改医生档案')
@@ -221,6 +222,11 @@ if (disorders && hospitals && doctors && reports && provinces) {
   )
 }
 
+if (overrideErrors.length > 0) {
+  console.error(`\n✗ 覆盖层有 ${overrideErrors.length} 个问题，先修这些再跑校验：`)
+  for (const error of overrideErrors) console.error(`  - ${error}`)
+}
+
 if (warnings.length > 0) {
   console.log(`\n⚠ ${warnings.length} 条提醒：`)
   for (const warning of warnings) console.log(`  - ${warning}`)
@@ -229,5 +235,6 @@ if (warnings.length > 0) {
 if (errors.length > 0) {
   console.error(`\n✗ 发现 ${errors.length} 个错误：`)
   for (const error of errors) console.error(`  - ${error}`)
-  process.exit(1)
 }
+
+if (errors.length > 0 || overrideErrors.length > 0) process.exit(1)

@@ -11,16 +11,23 @@ const hospitals = read('../data/curated/hospitals.json').items
 const reports = read('../data/curated/reports.json').items.filter(report => report.status === 'published')
 const saved = read('../data/evidence/locations/amap-2026-11-09.json').results
 
-test('127 个地图位置直接使用已保存 GCJ-02，326 条已发布关联不变且不修改业务 WGS84', () => {
+test('每个有坐标的机构在地图上恰好一个点，点的线索数总和等于库里的已发布关联数', () => {
   const before = structuredClone(hospitals)
   const points = mapHospitalInputs(hospitals, reports, saved)
-  assert.equal(points.length, 127)
-  assert.equal(points.reduce((sum, point) => sum + point.leads, 0), 326)
+  const located = hospitals.filter(hospital => hospital.coordinates).map(hospital => hospital.id).sort()
+  assert.deepEqual(points.map(point => point.id).sort(), located, '有坐标的机构与地图点必须一一对应')
+  // 不写死数字：控制台撤下一条线索会让已发布数从 326 变 325，常数一定过期。
+  const publishedWithHospital = reports.filter(report => report.hospital_id).length
+  assert.equal(points.reduce((sum, point) => sum + point.leads, 0), publishedWithHospital)
   for (const point of points) {
     const source = saved.find(result => result.status === 'geocoded' && `kdocs-amap-${result.chosen.id.toLowerCase()}` === point.id)
     assert.deepEqual([point.lng, point.lat], source.chosen.location.split(',').map(Number))
   }
   assert.deepEqual(hospitals, before)
+  // 成对回归：同一份数据少一条线索，断言必须变红。少了这一条，上面两行就可能两边一起自动
+  // 跟着变、等于没断言。
+  const dropped = mapHospitalInputs(hospitals, reports.slice(1), saved).reduce((sum, point) => sum + point.leads, 0)
+  assert.notEqual(dropped, publishedWithHospital, '少一条线索时线索总数必须对不上')
 })
 
 test('省界只在地图适配层转 GCJ-02，与已有逆转换相符', () => {
