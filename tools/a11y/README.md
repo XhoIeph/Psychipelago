@@ -133,6 +133,16 @@ node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json --viewpo
 
 `playwright` 装在 `.ci/node_modules`（工作流里同样这么做，不污染根 `package.json`），首次需要 `npm i --no-save --prefix .ci playwright@1.63.0` 和 `.ci/node_modules/.bin/playwright install chromium`。
 
+### 先确认端口伺服的是当前构建
+
+同机常有好几个预览进程，端口记错就会拿旧产物跑出一堆假红或假绿。跑之前先比字节：
+
+```powershell
+node -e "const h=require('http').get('http://127.0.0.1:4177/',r=>{let n=0;r.on('data',d=>n+=d.length);r.on('end',()=>console.log('bytes',n))})"
+```
+
+v3 是 **865,726 B**（2026-11-10 起的产物）。见到的若是 407,788 B 之类，说明那个端口挂的是 v3 之前的旧预览，结论不能用。`4177` 与 `4178` / `4179` / `4186` 可能是不同进程，别按端口号猜。
+
 ## 用 clickat 点地图
 
 `clickat` 是前置动作里唯一能点地图的方式：高德只认真实指针序列，`clickjs` 或 `el.click()` 派发的合成 click 它不接。
