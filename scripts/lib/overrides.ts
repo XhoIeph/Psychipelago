@@ -147,8 +147,9 @@ function readRecord(root: string, kind: OverrideKind, file: string): { record?: 
   if (record.action === 'insert' && record.source_value !== undefined) {
     errors.push(`${where}: insert 不写 source_value（它没有源值可比）`)
   }
-  if (record.action !== 'insert' && (record.set === undefined && record.clear === undefined)) {
-    errors.push(`${where}: ${String(record.action)} 需要 set 或 clear`)
+  // `remove` 是墓碑：它只表达「这条不要再出现」，没有 set/clear 可说。
+  if (record.action === 'patch' && record.set === undefined && record.clear === undefined) {
+    errors.push(`${where}: patch 需要 set 或 clear`)
   }
   if (record.set !== undefined && (typeof record.set !== 'object' || Array.isArray(record.set))) {
     errors.push(`${where}: set 必须是一个对象`)
