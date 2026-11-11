@@ -120,19 +120,12 @@ jobs:
 
       - name: Install playwright for the spec runner
         run: |
-          # runner 侧 DNS 抖动会让 apt 拉系统依赖失败（Temporary failure resolving 'security.ubuntu.com'），
-          # 一次失败就红会被当成断言本身有问题，所以先带依赖重试三次。
           npm i --no-save --prefix .ci playwright@1.63.0
-          for i in 1 2 3; do
-            if .ci/node_modules/.bin/playwright install --with-deps chromium; then
-              exit 0
-            fi
-            echo "::warning::Playwright 带系统依赖安装第 $i 次失败（多为 runner 侧 DNS 或 apt 源），30 秒后重试"
-            sleep 30
-          done
-          # apt 这条路走不通时退回只下浏览器：ubuntu-latest 自带 chromium 需要的共享库。
-          # 字体可能少几套，文字度量相关的断言若因此红，日志里会有这行 warning 可对。
-          echo "::warning::apt 装系统依赖失败，退回只下浏览器（字体可能不齐）"
+          # 系统依赖走 apt，runner 侧 DNS 一坏就会卡几分钟甚至挂到超时。
+          # 所以给 apt 三分钟上限，装不上只记一条 warning 继续：ubuntu-latest 自带
+          # chromium 需要的共享库和常用字体，浏览器本身从 playwright CDN 下，不经 apt。
+          timeout 180 .ci/node_modules/.bin/playwright install-deps chromium \
+            || echo "::warning::系统依赖没装全（apt 慢或不可达），继续只下浏览器"
           .ci/node_modules/.bin/playwright install chromium
 
       # sha 是用来对表的，所以写进 job summary（日志要人翻，summary 在 PR 页面上直接可见）。
@@ -254,19 +247,12 @@ jobs:
 
       - name: Install playwright for the spec runner
         run: |
-          # runner 侧 DNS 抖动会让 apt 拉系统依赖失败（Temporary failure resolving 'security.ubuntu.com'），
-          # 一次失败就红会被当成断言本身有问题，所以先带依赖重试三次。
           npm i --no-save --prefix .ci playwright@1.63.0
-          for i in 1 2 3; do
-            if .ci/node_modules/.bin/playwright install --with-deps chromium; then
-              exit 0
-            fi
-            echo "::warning::Playwright 带系统依赖安装第 $i 次失败（多为 runner 侧 DNS 或 apt 源），30 秒后重试"
-            sleep 30
-          done
-          # apt 这条路走不通时退回只下浏览器：ubuntu-latest 自带 chromium 需要的共享库。
-          # 字体可能少几套，文字度量相关的断言若因此红，日志里会有这行 warning 可对。
-          echo "::warning::apt 装系统依赖失败，退回只下浏览器（字体可能不齐）"
+          # 系统依赖走 apt，runner 侧 DNS 一坏就会卡几分钟甚至挂到超时。
+          # 所以给 apt 三分钟上限，装不上只记一条 warning 继续：ubuntu-latest 自带
+          # chromium 需要的共享库和常用字体，浏览器本身从 playwright CDN 下，不经 apt。
+          timeout 180 .ci/node_modules/.bin/playwright install-deps chromium \
+            || echo "::warning::系统依赖没装全（apt 慢或不可达），继续只下浏览器"
           .ci/node_modules/.bin/playwright install chromium
 
       # 只跑两档：1440 与 390 是不适用条数最多、集合最不一样的两档，375 / 320 各 1 条已由 present 路径覆盖。
