@@ -740,6 +740,68 @@ async function runSpecial(page, checks) {
         out.push(r);
         continue;
       }
+      // 标题不该画焦点环：Chrome 里脚本 focus 不匹配 :focus-visible，直接读 computed 天然是 none，
+      // 会假绿。这里用 CDP 强制 ['focus','focus-visible'] 再读——未修复时 style=solid/2px。
+      // 同时给对照组（真实控件）强制同一组伪类，期望 solid + 2px 墨色：没有它，选择器写错也会绿。
+      if (c.type === 'focusRingCdp') {
+        const forced = ['focus', 'focus-visible'];
+        let cdp = null;
+        const readForced = async (selector) => {
+          const { root } = await cdp.send('DOM.getDocument', { depth: -1 });
+          const { nodeId } = await cdp.send('DOM.querySelector', { nodeId: root.nodeId, selector });
+          if (!nodeId) return { missing: true, selector };
+          await cdp.send('CSS.forcePseudoState', { nodeId, forcedPseudoClasses: forced });
+          const val = await page.evaluate((sel) => {
+            const els = [...document.querySelectorAll(sel)].filter((e) => {
+              const rc = e.getBoundingClientRect();
+              return rc.width > 0 && rc.height > 0;
+            });
+            const el = els[0];
+            if (!el) return null;
+            const cs = getComputedStyle(el);
+            return { text: (el.textContent || '').trim().slice(0, 16), style: cs.outlineStyle, width: cs.outlineWidth, color: cs.outlineColor };
+          }, selector);
+          await cdp.send('CSS.forcePseudoState', { nodeId, forcedPseudoClasses: [] });
+          return val ? Object.assign({ selector }, val) : { hidden: true, selector };
+        };
+        try {
+          cdp = await page.context().newCDPSession(page);
+          await cdp.send('DOM.enable');
+          await cdp.send('CSS.enable');
+          const target = await readForced(String(c.selector));
+          const control = c.controlSelector ? await readForced(String(c.controlSelector)) : null;
+          const ok = [];
+          const bad = [];
+          if (target.missing || target.hidden) {
+            bad.push('找不到可见的标题元素：' + c.selector);
+          } else if (target.style === 'none') {
+            ok.push('标题 outline-style=none（宽度 ' + target.width + ' 是 UA 默认值，style=none 不画）');
+          } else {
+            bad.push('标题仍有描边：outline-style=' + target.style + '、' + target.width + '、' + target.color);
+          }
+          if (control) {
+            const wantW = String(c.controlWidth || '2px');
+            const wantC = c.controlColor || 'rgb(25, 59, 56)';
+            if (control.missing || control.hidden) {
+              bad.push('对照组找不到可见元素：' + c.controlSelector);
+            } else if (control.style === 'solid' && control.width === wantW && (!c.controlColor || control.color === wantC)) {
+              ok.push('对照组 ' + c.controlSelector + ' outline=solid ' + control.width + ' ' + control.color);
+            } else {
+              bad.push('对照组未画出预期焦点环：' + control.style + ' / ' + control.width + ' / ' + control.color + '（需 solid / ' + wantW + ' / ' + wantC + '）');
+            }
+          }
+          r.evidence = [...ok.map((x) => '✓ ' + x), ...bad.map((x) => '❌ ' + x)];
+          r.pass = bad.length === 0 && ok.length > 0;
+          r.note = 'CDP 强制 :focus/:focus-visible 后读 computed';
+        } catch (e) {
+          r.pass = null;
+          r.note = 'CDP 强制伪类不可用：' + String((e && e.message) || e).slice(0, 120);
+        } finally {
+          if (cdp) { try { await cdp.detach(); } catch (e) {} }
+        }
+        out.push(r);
+        continue;
+      }
       // 地图可拖：拖动前后读容器上的 AMap 实例取中心，判纬度/经度「明显变化」。角度按视口定，
       // 只要求超过下限（实测 390 竖拖 200px，纬度 37.8 → 17.5），不写死具体值。
       if (c.type === 'mapPan') {
@@ -1500,7 +1562,7 @@ async function applyPrecondition(page, steps) {
     const applicable = CHECKS.filter(c => c.at == null || !vp.width || Math.abs(c.at - vp.width) < 1);
     // page.evaluate 只能跑"读当前状态"的断言。焦点环要真按 Tab，reduced-motion 要
     // 模拟媒体特性——这两类在 Node 侧做，页面上下文做不了。
-    const SPECIAL = new Set(['focusRing', 'focusBorder', 'focusNoColor', 'media', 'tabStaysWithin', 'tabOrder', 'polygonPaint', 'mapPan', 'styleMatch', 'textFits']);
+    const SPECIAL = new Set(['focusRing', 'focusBorder', 'focusNoColor', 'media', 'tabStaysWithin', 'tabOrder', 'polygonPaint', 'mapPan', 'styleMatch', 'textFits', 'focusRingCdp']);
 
     // 按 precondition 分组：不同前置状态必须各用一张干净页面，否则前一组点开的
     // 面板会串到下一组（比如筛选态漏进首屏断言）。
