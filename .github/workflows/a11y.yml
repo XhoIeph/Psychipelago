@@ -121,17 +121,19 @@ jobs:
       - name: Install playwright for the spec runner
         run: |
           # runner 侧 DNS 抖动会让 apt 拉系统依赖失败（Temporary failure resolving 'security.ubuntu.com'），
-          # 一次失败就红会被当成本身断言有问题，所以重试三次，仍失败才红。
+          # 一次失败就红会被当成断言本身有问题，所以先带依赖重试三次。
+          npm i --no-save --prefix .ci playwright@1.63.0
           for i in 1 2 3; do
-            if npm i --no-save --prefix .ci playwright@1.63.0 \
-              && .ci/node_modules/.bin/playwright install --with-deps chromium; then
+            if .ci/node_modules/.bin/playwright install --with-deps chromium; then
               exit 0
             fi
-            echo "::warning::Playwright 安装第 $i 次失败（多为 runner 侧 DNS），30 秒后重试"
+            echo "::warning::Playwright 带系统依赖安装第 $i 次失败（多为 runner 侧 DNS 或 apt 源），30 秒后重试"
             sleep 30
           done
-          echo "::error::Playwright 安装重试三次仍失败"
-          exit 1
+          # apt 这条路走不通时退回只下浏览器：ubuntu-latest 自带 chromium 需要的共享库。
+          # 字体可能少几套，文字度量相关的断言若因此红，日志里会有这行 warning 可对。
+          echo "::warning::apt 装系统依赖失败，退回只下浏览器（字体可能不齐）"
+          .ci/node_modules/.bin/playwright install chromium
 
       # sha 是用来对表的，所以写进 job summary（日志要人翻，summary 在 PR 页面上直接可见）。
       # 四档并行会各写一遍同样的表，只在 1440 那个 job 写一次。
@@ -253,17 +255,19 @@ jobs:
       - name: Install playwright for the spec runner
         run: |
           # runner 侧 DNS 抖动会让 apt 拉系统依赖失败（Temporary failure resolving 'security.ubuntu.com'），
-          # 一次失败就红会被当成本身断言有问题，所以重试三次，仍失败才红。
+          # 一次失败就红会被当成断言本身有问题，所以先带依赖重试三次。
+          npm i --no-save --prefix .ci playwright@1.63.0
           for i in 1 2 3; do
-            if npm i --no-save --prefix .ci playwright@1.63.0 \
-              && .ci/node_modules/.bin/playwright install --with-deps chromium; then
+            if .ci/node_modules/.bin/playwright install --with-deps chromium; then
               exit 0
             fi
-            echo "::warning::Playwright 安装第 $i 次失败（多为 runner 侧 DNS），30 秒后重试"
+            echo "::warning::Playwright 带系统依赖安装第 $i 次失败（多为 runner 侧 DNS 或 apt 源），30 秒后重试"
             sleep 30
           done
-          echo "::error::Playwright 安装重试三次仍失败"
-          exit 1
+          # apt 这条路走不通时退回只下浏览器：ubuntu-latest 自带 chromium 需要的共享库。
+          # 字体可能少几套，文字度量相关的断言若因此红，日志里会有这行 warning 可对。
+          echo "::warning::apt 装系统依赖失败，退回只下浏览器（字体可能不齐）"
+          .ci/node_modules/.bin/playwright install chromium
 
       # 只跑两档：1440 与 390 是不适用条数最多、集合最不一样的两档，375 / 320 各 1 条已由 present 路径覆盖。
       - name: Spec at 1440 and 390 without map
