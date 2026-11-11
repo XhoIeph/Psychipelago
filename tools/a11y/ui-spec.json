@@ -7796,6 +7796,53 @@
           "afterMs": 800
         }
       ]
+    },
+    {
+      "id": "v3.m-title-no-focus-ring-390",
+      "type": "focusRingCdp",
+      "at": 390,
+      "selector": ".sheet .head-title",
+      "controlSelector": ".sheet .chipbtn",
+      "desc": "省份标题不该有焦点环（Safari 对脚本 focus 也画 :focus-visible）。用 CDP 强制 [focus, focus-visible] 后读 computed，期望 outline-style=none；对照组 .sheet .chipbtn 强制后必须 solid / 2px / rgb(25,59,56)，证明强制真的生效、选择器没写错。",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .grab",
+          "afterMs": 700
+        },
+        {
+          "action": "click",
+          "selector": ".sheet .tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        }
+      ]
+    },
+    {
+      "id": "v3.d-title-no-focus-ring-1440",
+      "type": "focusRingCdp",
+      "at": 1440,
+      "selector": ".tc-level-head .tc-detail-title",
+      "controlSelector": ".tc-level-head .tc-detail-back",
+      "desc": "省份标题不该有焦点环（Safari 对脚本 focus 也画 :focus-visible）。用 CDP 强制 [focus, focus-visible] 后读 computed，期望 outline-style=none；对照组返回按钮 .tc-level-head .tc-detail-back 强制后必须 solid / 2px / rgb(25,59,56)。",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1400
+        }
+      ]
     }
   ],
   "appliesTo": [

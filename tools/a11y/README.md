@@ -4,12 +4,12 @@
 
 | 文件 | 原件位置 | 快照 sha256（前 16 位） | 字节 |
 | --- | --- | --- | --- |
-| `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `4576230f2aad4665` | 89910 |
-| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `10f43ab871bdd3e1` | 229505 |
+| `spec.cjs` | `C:\Users\Lenovo\.dsh\skills\design-audit\scripts\spec.cjs` | `6e8e4a94acd29fd3` | 93553 |
+| `ui-spec.json` | `docs/departments/designer/assertions/ui-spec.traumacompass.json`（`docs/` 被 `.gitignore` 排除） | `14016ae451f208f2` | 232251 |
 
 `ui-spec.json` 是从 `docs/` 原件的逐字节拷贝，只改名不改内容；`spec.cjs` 同样逐字节拷贝（skill 目录那份也已同步成这一版）。换行统一成 LF 后再算 sha 与字节数（工作流里打印的也是这个）；这一版原件与快照同为 LF，两个文件逐字节相同。
 
-**v3 版（2026-11-07 起，当前）**：**301 条断言**（唯一 id 300 个；本轮新增退役计数 81），按视口生效 1440 = 184 条、390 = 113 条、375 = 14 条、320 = 11 条（7 条不标视口，计入每一档）。**2026-11-09 追加两批**：第一批三条——一条手机「医院↔医生互跳保持当前档」（390）、两条桌面「筛选联动省面高亮 / 取消后回到密度着色」（1440）；第二批 27 条——筛选抽屉 7、夜间模式 14、卡头拖拽 2、地图拖动 4；第三批 2 条——筛选下「列表行条数 = 详情条数」（医院、医生各一条），并把三条 `key`/`Escape` 的等待窗放到 700、卡头下拖从 400px 改成 600px（判据未动）。见下面「手机详情互跳保档与桌面筛选联动」与「手机筛选抽屉、夜间模式与拖拽」两节。**2026-11-08 的「进详情抬起来」当晚被小雨撤回**（Kiwi 改判：医院/医生详情一律停 medium 424），所以 `v3.m-hospital-medium` 回到在跑状态、`v3.m-hospital-can-peek` 仍按一次 ↓（424 → peek），分流用的 `v3.m-hospital-large-from-list` / `v3.m-hospital-medium-from-pin` 已删除；11-08 那版与当晚冻结的 `7669370b` 逐字节相同；11-09 追加三条后不再相同。比参考跑（129+2 / 65+8 / 12+1 / 9+1）多的是：两条图钉前置守卫（`v3.pin-selected-guard` / `-390`，不带 `skipIfMissing`，前置跑不成就算失败而不是静默记不适用），以及四条「返回后焦点别丢」的断言 —— 手机两条判 `.sheet .head-title`（`v3.m-back-focus-title-390` / `-country-390`），桌面两条判被点的那一行（`v3.d-back-focus-row-1440` 判 `button.tc-hospital-row`、`v3.d-back-focus-row-country-1440` 判 `button.tc-province-row`）。落点按布局定：手机回退后列表整页重渲染、落标题才不会把人扔到某一行上；桌面是分栏、行还在列表里，落回触发行才能接着 Tab 往下看（Kiwi 2026-11-07 定的这条口径，见下面 1440 段）。1440 那 16 条是桌面侧栏把手的（Kiwi 2026-11-08 追加，选择器见下一节）：存在、`role=separator`、命中带 ≥10px、Tab 顺序在页签之前、`End`/`Home`/`Enter` 各判「盒子宽 ±2 + `aria-valuenow` 同步」、刷新后记住 456（键 `tc.sidebar.width`）、顶栏 `transform` 与「侧栏右缘到顶栏左缘 ≥20px」、`.tc-sidebar-body` 在 280/520 不横向溢出。这一版不能手改：由 `assertions/build-spec.cjs` 从 **基线 `11767be` 的 185 条**（kept 115，其中 23 条 repath）+ `v3-checks.cjs` 的 145 条生成，新增退役 70 条。重生成时先把基线取回来、不能带 BOM —— `git show 11767be:tools/a11y/ui-spec.json` 用 PowerShell 的 `Out-File -Encoding utf8` 会写出 BOM，`JSON.parse` 直接失败；用 node 落盘、归 LF 后再跑 `build-spec.cjs`，跑完把 docs 原件拷回本快照。**别用 PowerShell 的 `Get-Content -Raw` + `WriteAllText` 改这几个含中文的文件**：PS 会按 GBK 读入再写回，整份中文被写坏（2026-11-07 踩过一次，靠生成好的 spec 反推恢复，产物逐字节一致）；要改用 edit/write 工具或 node 脚本。
+**v3 版（2026-11-07 起，当前）**：**303 条断言**（唯一 id 302 个；本轮新增退役计数 81），按视口生效 1440 = 185 条、390 = 114 条、375 = 14 条、320 = 11 条（7 条不标视口，计入每一档）。**2026-11-09 追加两批**：第一批三条——一条手机「医院↔医生互跳保持当前档」（390）、两条桌面「筛选联动省面高亮 / 取消后回到密度着色」（1440）；第二批 27 条——筛选抽屉 7、夜间模式 14、卡头拖拽 2、地图拖动 4；第三批 2 条——筛选下「列表行条数 = 详情条数」（医院、医生各一条），并把三条 `key`/`Escape` 的等待窗放到 700、卡头下拖从 400px 改成 600px（判据未动）。见下面「手机详情互跳保档与桌面筛选联动」与「手机筛选抽屉、夜间模式与拖拽」两节。**2026-11-08 的「进详情抬起来」当晚被小雨撤回**（Kiwi 改判：医院/医生详情一律停 medium 424），所以 `v3.m-hospital-medium` 回到在跑状态、`v3.m-hospital-can-peek` 仍按一次 ↓（424 → peek），分流用的 `v3.m-hospital-large-from-list` / `v3.m-hospital-medium-from-pin` 已删除；11-08 那版与当晚冻结的 `7669370b` 逐字节相同；11-09 追加三条后不再相同。比参考跑（129+2 / 65+8 / 12+1 / 9+1）多的是：两条图钉前置守卫（`v3.pin-selected-guard` / `-390`，不带 `skipIfMissing`，前置跑不成就算失败而不是静默记不适用），以及四条「返回后焦点别丢」的断言 —— 手机两条判 `.sheet .head-title`（`v3.m-back-focus-title-390` / `-country-390`），桌面两条判被点的那一行（`v3.d-back-focus-row-1440` 判 `button.tc-hospital-row`、`v3.d-back-focus-row-country-1440` 判 `button.tc-province-row`）。落点按布局定：手机回退后列表整页重渲染、落标题才不会把人扔到某一行上；桌面是分栏、行还在列表里，落回触发行才能接着 Tab 往下看（Kiwi 2026-11-07 定的这条口径，见下面 1440 段）。1440 那 16 条是桌面侧栏把手的（Kiwi 2026-11-08 追加，选择器见下一节）：存在、`role=separator`、命中带 ≥10px、Tab 顺序在页签之前、`End`/`Home`/`Enter` 各判「盒子宽 ±2 + `aria-valuenow` 同步」、刷新后记住 456（键 `tc.sidebar.width`）、顶栏 `transform` 与「侧栏右缘到顶栏左缘 ≥20px」、`.tc-sidebar-body` 在 280/520 不横向溢出。这一版不能手改：由 `assertions/build-spec.cjs` 从 **基线 `11767be` 的 185 条**（kept 115，其中 23 条 repath）+ `v3-checks.cjs` 的 145 条生成，新增退役 70 条。重生成时先把基线取回来、不能带 BOM —— `git show 11767be:tools/a11y/ui-spec.json` 用 PowerShell 的 `Out-File -Encoding utf8` 会写出 BOM，`JSON.parse` 直接失败；用 node 落盘、归 LF 后再跑 `build-spec.cjs`，跑完把 docs 原件拷回本快照。**别用 PowerShell 的 `Get-Content -Raw` + `WriteAllText` 改这几个含中文的文件**：PS 会按 GBK 读入再写回，整份中文被写坏（2026-11-07 踩过一次，靠生成好的 spec 反推恢复，产物逐字节一致）；要改用 edit/write 工具或 node 脚本。
 
 V3-02 那五条（选中钉橙色 / 光圈 / 标签 / 其余钉不压透明度 / 手机同款）的前置必须是「点省 → 点 `.tc-cluster-pin` 展开 → 点 `.tc-hospital-pin` → 等 `.tc-pin--selected`」。聚合钉的类名是 `tc-cluster-pin` 而不是 `tc-cluster`，写成 `.tc-map-node:not(.tc-cluster)` 会抓到聚合钉、点了只展开不选中，五条会一直「前置没跑成」。选中后 canvas 加 `tc-mapapp-canvas--pinned`、标签 `display:block`、其余钉 `opacity: 1`（`v3.css:17` 走 `--tc-nodes-opacity`）。
 
@@ -63,7 +63,7 @@ V3-02 那五条（选中钉橙色 / 光圈 / 标签 / 其余钉不压透明度 /
 
 这一版还清掉了最后 4 条 `at:999` 的断言（`s5-tab-min-height-999`、`s6-drawer-closed-999`、`s6-drawer-top-104`、`s6-drawer-width-999`）：v3 之后 ≤999px 不渲染 `.tc-sidebar`，而 999 宽度又不在矩阵里，它们从来不会执行。改成 1440 会变成拿桌面侧栏去判手机规则，等于把断言换成另一件事，所以退役并在 `retired.why` 里写明各自被哪条接住。
 
-`spec.cjs` 相对 skill 旧快照多了十个前置/断言能力，判据一处没改：`clickat`（点地图，见下）、`reload`（刷新页面，验持久化；含 `reload` 的前置组会先清 `localStorage` 再重载，否则上一组留下的主题或宽度会把起点带偏）、`scrollFit`（容器内不得横向溢出，判 `scrollWidth = clientWidth`）、`tabOrder`（真按 Tab 判两个元素的先后，`first` 必须先于 `second` 到达——不写成「一直按到出现为止」，那样顺序坏了也会绿）、`assertrect`（前置动作，量当前元素高度并判区间，实测值进证据，用来锁住「这一步必须已经到 736」）、`polygonPaint`（挂 `AMap.Polygon.prototype.setOptions` 采集省面上色参数，判完还原原型）、`drag`（按下—分步移动—抬起，真实鼠标序列，用来测卡头与地图拖动）、`mapPan`（读 `.amap-container` 上 `el.amap.getCenter()/getZoom()`，判拖动后地图中心确实移了）、`styleMatch`（两处元素逐项比 `fontSize`/`lineHeight`/`color`/`whiteSpace` 与 `left`/`width`，容差 1px；读与比必须在一次 `page.evaluate` 里做完，分两次会撞 `Execution context was destroyed`）。、`textFits`（判一段文本的 `scrollWidth` 与 `clientWidth`、`text-overflow`、行数；可先用 `injectText` 注入长名/短名，量完在同一个 `evaluate` 的 `finally` 里还原；另可附带判兄弟元素右缘不越过卡片内容右缘、卡片高度区间）`attr` 另有 `allowHidden`：`html` 这类零尺寸元素按可见性过滤会全红，显式打开后取全部匹配，证据里标「元素无盒子」。
+`spec.cjs` 相对 skill 旧快照多了十一个前置/断言能力（最近一个是 `focusRingCdp`：对节点强制 `:focus-visible` 后读 outline，见文末），判据一处没改：`clickat`（点地图，见下）、`reload`（刷新页面，验持久化；含 `reload` 的前置组会先清 `localStorage` 再重载，否则上一组留下的主题或宽度会把起点带偏）、`scrollFit`（容器内不得横向溢出，判 `scrollWidth = clientWidth`）、`tabOrder`（真按 Tab 判两个元素的先后，`first` 必须先于 `second` 到达——不写成「一直按到出现为止」，那样顺序坏了也会绿）、`assertrect`（前置动作，量当前元素高度并判区间，实测值进证据，用来锁住「这一步必须已经到 736」）、`polygonPaint`（挂 `AMap.Polygon.prototype.setOptions` 采集省面上色参数，判完还原原型）、`drag`（按下—分步移动—抬起，真实鼠标序列，用来测卡头与地图拖动）、`mapPan`（读 `.amap-container` 上 `el.amap.getCenter()/getZoom()`，判拖动后地图中心确实移了）、`styleMatch`（两处元素逐项比 `fontSize`/`lineHeight`/`color`/`whiteSpace` 与 `left`/`width`，容差 1px；读与比必须在一次 `page.evaluate` 里做完，分两次会撞 `Execution context was destroyed`）。、`textFits`（判一段文本的 `scrollWidth` 与 `clientWidth`、`text-overflow`、行数；可先用 `injectText` 注入长名/短名，量完在同一个 `evaluate` 的 `finally` 里还原；另可附带判兄弟元素右缘不越过卡片内容右缘、卡片高度区间）`attr` 另有 `allowHidden`：`html` 这类零尺寸元素按可见性过滤会全红，显式打开后取全部匹配，证据里标「元素无盒子」。
 
 其中 `mobile.scale-hidden` 带 `absentOk`：元素不存在时记 pass 并标 `absent`。它解决的是 CI runner 起不来 AMap、比例尺控件压根不进 DOM 的误报；配的正向是 `desktop.scale-present`（1440 档要求控件真渲染，带 `skipIfMissing`，CI 里记不适用）。所以 CI 的结果是「通过 / 失败 / 不适用」三态，不适用不等于验过。
 
@@ -132,6 +132,16 @@ node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json --viewpo
 ```
 
 `playwright` 装在 `.ci/node_modules`（工作流里同样这么做，不污染根 `package.json`），首次需要 `npm i --no-save --prefix .ci playwright@1.63.0` 和 `.ci/node_modules/.bin/playwright install chromium`。
+
+### 先确认端口伺服的是当前构建
+
+同机常有好几个预览进程，端口记错就会拿旧产物跑出一堆假红或假绿。跑之前先比字节：
+
+```powershell
+node -e "const h=require('http').get('http://127.0.0.1:4177/',r=>{let n=0;r.on('data',d=>n+=d.length);r.on('end',()=>console.log('bytes',n))})"
+```
+
+v3 是 **865,726 B**（2026-11-10 起的产物）。见到的若是 407,788 B 之类，说明那个端口挂的是 v3 之前的旧预览，结论不能用。`4177` 与 `4178` / `4179` / `4186` 可能是不同进程，别按端口号猜。
 
 ## 用 clickat 点地图
 
@@ -312,3 +322,13 @@ CI 的机器上起不来高德地图：没有渲染运行时，标记（`.tc-map
 - 12 条不适用：甲类 5 条图钉链前置超时、`desktop.scale-present` 的 `.amap-logo` 超时、两条 `skipIfMissing` 的 marker 守卫、`polygonPaint` 2 条与 `mapPan` 2 条（1440 条目）。失败清单为空。
 - 这轮没跑四档：表仍在改，等 CI 回来定稿。发布记录里的表身份仍是 `10F43AB871BDD3E1`。
 
+## 2026-11-11 标题不画焦点环（CDP 强制伪类）
+
+Chrome 里指针操作过之后 `:focus-visible` 不再匹配，把焦点给标题时 `outlineStyle` 本来就是 `none`——直接读 computed，修复前后都绿，是假绿。这条改成对节点强制伪类再看：
+
+- `page.context().newCDPSession(page)` → `DOM.enable` / `CSS.enable` → `DOM.getDocument{depth:-1}` → `DOM.querySelector` → `CSS.forcePseudoState{forcedPseudoClasses:['focus','focus-visible']}` → 读 `outlineStyle/Width/Color` → 清空强制，再对对照组做一遍。
+- 判 `outline-style`，不判宽度：修复后宽度是 UA 默认 3px，只判宽度会把结论判反。
+- 两条：`v3.m-title-no-focus-ring-390`（`.sheet .head-title`，对照 `.sheet .chipbtn`）、`v3.d-title-no-focus-ring-1440`（`.tc-level-head .tc-detail-title`，对照 `.tc-level-head .tc-detail-back`）。手机不用 `.tc-detail-back`：它在手机上是 0×0，真返回是 `.sheet .head-back .back-btn`，而省份层没有这个按钮。
+- 实测：390 标题 `none` / 3px，对照 `.chipbtn` `solid` / 2px / `rgb(25, 59, 56)`；1440 标题 `none` / 3px，对照返回按钮 `solid` / 2px / `rgb(25, 59, 56)`。
+- 反证：把 1440 的 `selector` 指向返回按钮，结果为「❌ 标题仍有描边：outline-style=solid、2px、rgb(25, 59, 56)」——不是选择器写错也能绿的空断言。
+- 身份：表 303 条（唯一 302）/ 232,251 B / `14016ae451f208f2`；runner 93,553 B / `6e8e4a94acd29fd3`；相对上一版只多这两条，`retired` 109 条逐字节未变。
