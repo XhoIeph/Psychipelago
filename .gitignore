@@ -16,7 +16,7 @@ data/raw/
 /scripts/collect/
 /data/queries/
 
-# internal collaboration material: handoffs, department docs, agent rules (local only)
+# local working notes, not part of the published site
 /docs/
 /HANDOFF.md
 /AGENTS.md
