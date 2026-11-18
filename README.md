@@ -40,10 +40,6 @@ npm run typecheck
 
 数据与地图另有 `test:data`、`test:geo`、`test:map-layout`、`test:map-wheel`、`test:amap`。提交规范见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
-## 线索提交、更正与撤下
-
-站点的「提交线索」页调用仓库 Issue 模板 `lead.yml`、`correction.yml`、`takedown.yml`。仓库当前为私有，模板链接对未登录访客不可用；改为公开提交前需要仓库可访问。
-
 ## 许可
 
 代码与数据结构采用 [Apache-2.0](LICENSE)。引用保留原来源。
