@@ -6,7 +6,7 @@ import { FileText } from 'lucide-react'
 /**
  * 线索原文与出处。
  *
- * 折叠态固定 3 行（小雨 11-09 的要求），卡片高度不再随原文长短变化；
+ * 折叠态固定 3 行，卡片高度不随原文长短变化；
  * 只有内容真的被截断、或另有更长的 fullText 时才出现「展开原文」。
  * 用 ResizeObserver 量 scrollHeight 而不是按字数猜，窄屏换行多也能判准。
  */

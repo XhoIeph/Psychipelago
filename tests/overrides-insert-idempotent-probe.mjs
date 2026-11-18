@@ -32,7 +32,7 @@ write(`data/overrides/hospitals/${ID}.json`, {
   id: ID,
   action: 'insert',
   reason: '诊断：新增机构的幂等',
-  by: '小雨',
+  by: 'manual',
   at: '2026-11-11',
   set: {
     id: ID,

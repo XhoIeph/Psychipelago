@@ -16,7 +16,7 @@
  *     "id": "kdocs-s1-r43",         // 必须等于文件名（去掉 .json）
  *     "action": "patch",            // patch | insert | remove
  *     "reason": "原作者确认这行看的是创伤专病门诊",
- *     "by": "小雨",
+ *     "by": "manual",
  *     "at": "2026-11-12",
  *     "source_value": { "doctor_name_raw": "临床心理科/创伤专病门诊" },
  *     "set": { "doctor_name_raw": "创伤专病门诊" },

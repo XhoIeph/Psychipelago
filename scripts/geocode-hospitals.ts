@@ -17,8 +17,8 @@ import { pickCandidate, queryLocation, readManualLocations, resolveTarget, upser
 import { CURATED_FILES, readJson, writeJson } from './lib/paths.ts'
 import { applyStoredOverrides } from './lib/overrides.ts'
 
-/** 选点是人做的决定，记在谁名下就写谁，不写跑脚本那台机器的用户名。 */
-const PICKED_BY = '小雨'
+/** 选点是人做的决定，覆盖层里统一记 manual，不写跑脚本那台机器的用户名。 */
+const PICKED_BY = 'manual'
 
 function loadEnvKey(): string {
   if (!existsSync('.env.local')) throw new Error('.env.local 不存在')

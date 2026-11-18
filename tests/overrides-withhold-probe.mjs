@@ -24,7 +24,7 @@ writeFileSync(
     id: target.id,
     action: 'patch',
     reason: '实测：这条不再发布',
-    by: '小雨',
+    by: 'manual',
     at: '2026-11-11',
     source_value: { status: target.status },
     set: { status: 'withheld' },
