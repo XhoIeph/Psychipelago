@@ -43,12 +43,12 @@ const doctors = readCurated('doctors').filter((item) => item.hospital_id === HOS
 console.log(`回龙观名下：${reports.length} 条线索、${doctors.length} 位医生卡`)
 
 // 第一步：只撤机构，其余不动——应当被拦住。
-write('hospitals', { schema_version: '1.0.0', kind: 'hospitals', id: HOSPITAL_ID, action: 'remove', reason: '实测：只撤机构', by: '小雨', at: '2026-11-11' })
+write('hospitals', { schema_version: '1.0.0', kind: 'hospitals', id: HOSPITAL_ID, action: 'remove', reason: '实测：只撤机构', by: 'manual', at: '2026-11-11' })
 report('只撤机构（还应挂着线索，应当被拦住）')
 
 // 第二步：只把线索也撤下——医生卡是从线索推出来的，线索撤空后它们自己就没有归属了，
 // 不需要另写墓碑（写了会报「目标记录不存在」）。
-for (const item of reports) write('reports', { schema_version: '1.0.0', kind: 'reports', id: item.id, action: 'remove', reason: '实测：随机构一起撤下', by: '小雨', at: '2026-11-11' })
+for (const item of reports) write('reports', { schema_version: '1.0.0', kind: 'reports', id: item.id, action: 'remove', reason: '实测：随机构一起撤下', by: 'manual', at: '2026-11-11' })
 report('连同名下线索一起撤（应当通过）')
 
 spawnSync('git', ['checkout', '--', 'data/curated'], { cwd: ROOT, encoding: 'utf8' })

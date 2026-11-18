@@ -55,13 +55,13 @@ for (const item of reports) {
     id: item.id,
     action: 'patch',
     reason: '实测：把线索改挂到另一家机构',
-    by: '小雨',
+    by: 'manual',
     at: '2026-11-11',
     source_value: { hospital_id: item.hospital_id },
     set: { hospital_id: TO },
   })
 }
-write('hospitals', { schema_version: '1.0.0', kind: 'hospitals', id: FROM, action: 'remove', reason: '实测：名下已无线索后撤下', by: '小雨', at: '2026-11-11' })
+write('hospitals', { schema_version: '1.0.0', kind: 'hospitals', id: FROM, action: 'remove', reason: '实测：名下已无线索后撤下', by: 'manual', at: '2026-11-11' })
 report('线索改挂后撤下原机构（应当通过）')
 
 spawnSync('git', ['checkout', '--', 'data/curated'], { cwd: ROOT, encoding: 'utf8' })

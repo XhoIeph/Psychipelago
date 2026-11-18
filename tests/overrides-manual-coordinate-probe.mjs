@@ -52,7 +52,7 @@ write(`data/overrides/hospitals/${HOSPITAL_ID}.json`, {
   id: HOSPITAL_ID,
   action: 'insert',
   reason: '诊断：控制台新增一家机构',
-  by: '小雨',
+  by: 'manual',
   at: '2026-11-11',
   set: {
     id: HOSPITAL_ID,
@@ -94,7 +94,7 @@ write('data/evidence/locations/amap-manual.json', {
       candidates: [POI],
       shortlist: [POI.id],
       chosen: POI,
-      picked: { by: '小雨', at: '2026-11-11', reason: '诊断：人工从候选里选定' },
+      picked: { by: 'manual', at: '2026-11-11', reason: '诊断：人工从候选里选定' },
     },
   ],
 })

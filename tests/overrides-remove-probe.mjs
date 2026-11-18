@@ -12,7 +12,7 @@ for (const kind of ['reports', 'doctors', 'hospitals']) mkdirSync(resolve(OVERRI
 const hospital = JSON.parse(spawnSync(process.execPath, ['-e', "process.stdout.write(JSON.stringify(require('./data/curated/hospitals.json').items[0]))"], { cwd: ROOT, encoding: 'utf8' }).stdout)
 writeFileSync(
   resolve(OVERRIDES, 'hospitals', `${hospital.id}.json`),
-  `${JSON.stringify({ schema_version: '1.0.0', kind: 'hospitals', id: hospital.id, action: 'remove', reason: '实测 remove 一家医院', by: '小雨', at: '2026-11-10' }, null, 2)}\n`,
+  `${JSON.stringify({ schema_version: '1.0.0', kind: 'hospitals', id: hospital.id, action: 'remove', reason: '实测 remove 一家医院', by: 'manual', at: '2026-11-10' }, null, 2)}\n`,
   'utf8',
 )
 console.log(`撤下 ${hospital.id}（${hospital.name}）`)

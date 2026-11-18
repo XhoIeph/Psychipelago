@@ -29,7 +29,7 @@ export function DoctorDetail({
     return trimmed ? { text: trimmed, empty: false } : { text: '无', empty: true }
   }
   // 「评价」一律渲染：有评价显示原文，没有写「无」；与线索原文重复时两处文本相同，
-  // 这是小雨要的（不能让评价节凭空消失）。数据侧的 evaluation_echoes_report 只留作分析，不在渲染里读。
+  // 评价节不能凭空消失。数据侧的 evaluation_echoes_report 只留作分析，不在渲染里读。
   const clinic = field(profile?.department)
   const note = field(profile?.note)
   // `evaluation_items` 是纯增量字段（没评价的医生没有这个键），每位医生可能有多条评价。

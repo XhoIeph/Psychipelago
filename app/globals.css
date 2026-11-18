@@ -731,7 +731,7 @@ body.tc-sidebar-resizing { cursor:col-resize; user-select:none; }
    延迟 200ms 是为了先播完收起的过渡，展开时立刻可见。 */
 .sheet .chipdrawer-inner { transition:visibility 0s linear; }
 .sheet .chipdrawer:not(.is-open) .chipdrawer-inner { visibility:hidden; transition-delay:200ms; }
-/* 桌面夜间按钮常态只留图标，hover 才出轮廓（小雨 11-09 定）；手机那列是并成一整块贴地图的，不动。 */
+/* 桌面夜间按钮常态只留图标，hover 才出轮廓；手机那列并成一整块贴地图，不单独处理。 */
 @media (min-width:1000px) {
   .theme-toggle { background:transparent; border-color:transparent; box-shadow:none; color:var(--tc-text-muted); }
   .theme-toggle:hover { background:var(--tc-surface); border-color:var(--tc-border); color:var(--tc-text); }
@@ -745,7 +745,7 @@ body.tc-sidebar-resizing { cursor:col-resize; user-select:none; }
 }
 :root[data-theme="dark"] .tc-button--active:hover { background:rgba(79,209,176,.18); }
 
-/* 线索原文折叠 3 行 + 病症标签（小雨 11-09 的可读性要求）。
+/* 线索原文折叠 3 行，另附病症标签，卡片高度不随原文长短变化。
    折叠只靠 CSS；展开按钮由 LeadEvidence 量出真截断后再给，不按字数猜。 */
 .tc-quote.is-clamped { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; }
 .tc-quote-toggle { display:block; min-height:44px; padding:0; border:0; background:transparent; color:var(--tc-accent-strong); font:inherit; font-size:13px; line-height:1.4; text-align:left; cursor:pointer; }
@@ -775,7 +775,7 @@ body.tc-sidebar-resizing { cursor:col-resize; user-select:none; }
 .tc-doctor-card-note { margin:0; font-size:15px; font-weight:500; line-height:1.5; color:var(--tc-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .tc-doctor-card-dept.is-empty,
 .tc-doctor-card-note.is-empty { color:var(--tc-text-faint); font-weight:400; }
-/* 手机端卡头医生名比桌面小 1px（小雨要「稍微调大」：15→16），行高 1.35 收住，卡不被撑开。 */
+/* 手机端卡头医生名 16px、行高 1.35：比桌面大 1px，卡不被撑开。 */
 @media (max-width:999px) {
   .tc-lead-doctor { font-size:16px; line-height:1.35; }
 }

@@ -39,7 +39,7 @@ function groupLeadsByDoctor(leads: MapLead[]): LeadGroup[] {
     const tags = disorderLabelsOf(lead)
 
     if (!name) {
-      // 没有医生名时各自成卡（2026-11-10 00:56 Kiwi 定：不按原帖合并）。
+      // 没有医生名时各自成卡（不按原帖合并）。
       groups.push({ key: `anon:${lead.id}`, names: [], tags, leads: [lead] })
       continue
     }

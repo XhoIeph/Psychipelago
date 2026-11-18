@@ -103,7 +103,7 @@ for (const [label, field, value] of cases) {
     id: target.id,
     action: 'patch',
     reason: `实测 patch ${field}`,
-    by: '小雨',
+    by: 'manual',
     at: '2026-11-10',
     source_value: { [field]: target[field] },
     set: { [field]: value },
@@ -118,7 +118,7 @@ write('reports', {
   id: 'local-probe-1',
   action: 'insert',
   reason: '实测 insert 一条线索',
-  by: '小雨',
+  by: 'manual',
   at: '2026-11-10',
   set: { ...target, id: 'local-probe-1', evidence_quote: '本地新增：回龙观首诊由潘伟刚主任评估，当场给了 cptsd 方向', stage: 'diagnosed' },
 })
@@ -131,7 +131,7 @@ write('hospitals', {
   id: 'local-probe-hosp',
   action: 'insert',
   reason: '实测 insert 一家医院',
-  by: '小雨',
+  by: 'manual',
   at: '2026-11-10',
   set: {
     id: 'local-probe-hosp',
@@ -160,7 +160,7 @@ write('hospitals', {
   id: hospital.id,
   action: 'patch',
   reason: '实测 patch 医院名称',
-  by: '小雨',
+  by: 'manual',
   at: '2026-11-10',
   source_value: { name: hospital.name },
   set: { name: `${hospital.name}（本部）` },
@@ -174,7 +174,7 @@ write('hospitals', {
   id: hospital.id,
   action: 'remove',
   reason: '实测 remove 一家医院',
-  by: '小雨',
+  by: 'manual',
   at: '2026-11-10',
 })
 report(`remove 医院 ${hospital.name}（它还有线索，撤下应当被拦住）`, [])

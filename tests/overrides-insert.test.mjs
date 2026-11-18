@@ -14,7 +14,7 @@ const insert = {
   id: 'local-test-insert',
   action: 'insert',
   reason: '测试：新增机构',
-  by: '小雨',
+  by: 'manual',
   at: '2026-11-11',
   set: {
     id: 'local-test-insert',

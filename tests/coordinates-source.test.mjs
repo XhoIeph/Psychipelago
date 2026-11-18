@@ -28,7 +28,7 @@ function pick(poiId, location, hospital = geocoded) {
       adcode: '110000',
       typecode: '090100',
     },
-    picked: { by: '小雨', at: '2026-11-11' },
+    picked: { by: 'manual', at: '2026-11-11' },
   }
 }
 
