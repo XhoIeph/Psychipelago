@@ -1,4 +1,4 @@
-# TraumaCompass
+# 群岛Psychipelago
 
 按地区、机构和来源浏览就诊线索，查看原文、出处与地图位置。使用 Next.js、React、高德 JS API 2.0 与 GSAP，构建为静态导出。
 
