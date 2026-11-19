@@ -64,6 +64,13 @@ function clip(text: string, limit: number): string {
  */
 const NOT_A_NAME = /^(?:回复|补充|补一个|补个|更新|说明|repo|搬运|转发|来源|前言|前提|费用|价格|挂号|诊断|结论|时间|地址|电话|注意|提示|备注)/iu
 
+/**
+ * 「补一个费用前提：……」「回复 momo : ……」这类自带标注的行：不是署名，但常用来另起一段。
+ * 当成署名会切出假评价，完全并进上一段又会把一段独立的经历埋进全文里——`cptsd` 第 33 行的费用段
+ * 就是这么消失的。所以它既不当人名，也不丢，只作为新一段的起点，文字照原样留在段首。
+ */
+const ANNOTATION_LINE = /^(?:回复|补充|补一个|补个|更新|说明|repo|搬运|转发|来源|前言|前提|费用|价格|挂号|诊断|结论|时间|地址|电话|注意|提示|备注)[^：:\n]{0,20}[：:]/u
+
 /** 一行开头的「昵称:」：署名。剥掉名字，只留正文。 */
 function splitSpeaker(line: string): { speaker: string; rest: string } | null {
   const match = line.match(/^([^\s：:][^：:]{0,23})\s*[：:]\s*(.*)$/u)
@@ -131,7 +138,7 @@ export function evaluationComments(raw: string): string[] {
   const leadingName = isBareSpeaker(trimmed[0]) && trimmed.slice(1).some(line => /^[^\r\n]{1,24}[：:]/u.test(line))
   const lines = leadingName ? trimmed.slice(1) : trimmed
   if (!lines.length) return []
-  const marked = lines.some(line => splitSpeaker(line))
+  const marked = lines.some(line => splitSpeaker(line) || ANNOTATION_LINE.test(line))
   // 没有署名的一格就是一条，保持原样（多行仍属同一条长评）
   if (!marked) return [cleanCommentText(lines.join('\n'))].filter(Boolean)
 
@@ -153,6 +160,12 @@ export function evaluationComments(raw: string): string[] {
     if (head) {
       current = blockFor(head.speaker)
       if (head.rest) current.lines.push(head.rest)
+      continue
+    }
+    // 标注行另起一段；整格开头的标注（current 还空）不算分段，它本来就是那一段的正文。
+    if (ANNOTATION_LINE.test(line) && current && current.lines.length) {
+      current = blockFor(null)
+      current.lines.push(line)
       continue
     }
     const tail: { head: string; speaker: string; rest: string } | null = current ? splitTrailingSpeaker(line) : null

@@ -2141,8 +2141,42 @@
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "来repo一下。彭红军医生停诊了去挂了广脑李爱凤医生的号，已拿下BPD确诊+C-PTSD口头确诊。按李爱凤医生说法广脑貌似都不能下纸质诊断，BPD可以在C-PTSD的同时检查并下诊断，光检查无医保大概五百出头，意外地没有很贵。我广脑初诊是罗新妮医生，但是她不太倾向开BPD诊断也没有让我检查，只让我查一下BPD相关经验贴自行调理不要多想。希望能提供一点帮助[抽泣R]C-PTSD没办法下纸质诊断。…",
-      "evidence_full_text": "来repo一下。彭红军医生停诊了去挂了广脑李爱凤医生的号，已拿下BPD确诊+C-PTSD口头确诊。按李爱凤医生说法广脑貌似都不能下纸质诊断，BPD可以在C-PTSD的同时检查并下诊断，光检查无医保大概五百出头，意外地没有很贵。我广脑初诊是罗新妮医生，但是她不太倾向开BPD诊断也没有让我检查，只让我查一下BPD相关经验贴自行调理不要多想。希望能提供一点帮助[抽泣R]C-PTSD没办法下纸质诊断。\n补一个费用前提：我在广脑前面做过一些检查可以沿用，这次是只检查了C-PTSD及BPD相关所以五百多。初诊的话我不确定",
+      "evidence_quote": "来repo一下。彭红军医生停诊了去挂了广脑李爱凤医生的号，已拿下BPD确诊+C-PTSD口头确诊。按李爱凤医生说法广脑貌似都不能下纸质诊断，BPD可以在C-PTSD的同时检查并下诊断，光检查无医保大概五百出头，意外地没有很贵。我广脑初诊是罗新妮医生，但是她不太倾向开BPD诊断也没有让我检查，只让我查一下BPD相关经验贴自行调理不要多想。希望能提供一点帮助[抽泣R]C-PTSD没办法下纸质诊断。",
+      "evidence_context": {
+        "index_in_capture": "cptsd · 第33行",
+        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
+      },
+      "evidence_source": "article",
+      "verification": {
+        "level": "unverified"
+      },
+      "extraction": {
+        "tool": "kdocs-sheet-transcription",
+        "captured_at": "2026-11-09"
+      },
+      "flags": {
+        "contains_minor": false,
+        "contains_selfharm_detail": false,
+        "sensitive": false
+      },
+      "status": "published"
+    },
+    {
+      "id": "kdocs-s1-r33-p2",
+      "platform": "web",
+      "source_channel": "browser_session",
+      "published_at_precision": "unknown",
+      "hospital_region": "广东",
+      "hospital_id": "kdocs-amap-b00140hu1b",
+      "hospital_name_raw": "广州医科大学附属脑科医院",
+      "department": "普通精神科门诊(江村)",
+      "doctor_name_raw": "李爱凤",
+      "disorders": [
+        "cptsd"
+      ],
+      "stage": "unknown",
+      "experience": null,
+      "evidence_quote": "补一个费用前提：我在广脑前面做过一些检查可以沿用，这次是只检查了C-PTSD及BPD相关所以五百多。初诊的话我不确定",
       "evidence_context": {
         "index_in_capture": "cptsd · 第33行",
         "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
