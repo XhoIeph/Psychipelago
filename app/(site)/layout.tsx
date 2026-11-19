@@ -20,7 +20,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
 
       <footer className="tc-footer">
         <div className="tc-container">
-          <p>© 2026 TraumaCompass. All rights reserved.</p>
+          <p>© 2026 群岛 Psychipelago. All rights reserved.</p>
         </div>
       </footer>
     </div>

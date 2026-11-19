@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'TraumaCompass｜创伤知情就诊地图',
+  title: '群岛 Psychipelago',
   description:
-    '基于《就诊地图10.25》社区整理版表格的就诊资源与线索地图。',
+    '把社区整理的就诊资源与线索放回地图上：按省份找医院，按医生看线索，附量表自评。',
 }
 
 // 首帧前定主题：手动选过以 tc.theme 为准，否则跟随系统偏好。
