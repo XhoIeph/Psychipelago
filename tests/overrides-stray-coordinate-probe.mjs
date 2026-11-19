@@ -79,11 +79,25 @@ function writeInsert(extra) {
   })
 }
 
-function restore() {
+function restore(baseline) {
   clean()
+  // 不能只靠 `git checkout`：这份脚本可能在副本里跑、可能没有 .git，而 spawnSync 失败是静默的，
+  // 结果就是覆盖层和人工表都清了、库里那个 local-* 还留着。清空之后重跑一次烘焙，脏数据自然消失。
+  const bake = run(['scripts/import-kdocs.ts'])
+  const aggregate = run(['scripts/build-aggregates.ts'])
+  // 生成的 updated_at / generated_at 与提交里的不同，有 git 就顺手还原，没有的话数据本身也已经是对的。
   spawnSync('git', ['checkout', '--', 'data/curated', 'data/generated'], { cwd: ROOT })
+  const items = read('data/curated/hospitals.json').items
+  return {
+    bake,
+    aggregate,
+    count: items.length,
+    baseline,
+    strays: items.filter(item => item.id.startsWith('local-')).map(item => item.id),
+  }
 }
 
+const baseline = read('data/curated/hospitals.json').items.length
 clean()
 
 writeInsert({ coordinates: STRAY, coordinates_source: 'manual' })
@@ -134,6 +148,7 @@ console.log(`  出处守卫红：${/有坐标但证据集与 amap-manual\.json �
 console.log(`  点名机构：${orphan.text.includes(HOSPITAL_ID) ? '是' : '否'}`)
 console.log(`  只报一处就漏了：${/hospitals\.json 与本轮高德定位依据不一致/u.test(orphan.text) && /有坐标但证据集与 amap-manual\.json 里都没有/u.test(orphan.text) ? '两处都红，符合预期' : '只有一处红，查基准是不是没跟 manual 走'}`)
 
-restore()
-const restored = read('data/curated/hospitals.json')
-console.log(`已还原：${restored.items.some(item => item.id === HOSPITAL_ID) ? '失败，测试机构还在库里' : '通过'}；amap-manual.json ${existsSync(manualFile) ? '还在' : '已清'}`)
+const restored = restore(baseline)
+const status = spawnSync('git', ['status', '--porcelain', 'data/'], { cwd: ROOT, encoding: 'utf8' })
+console.log(`已还原：${restored.count} 家（基线 ${restored.baseline}）、残留 local-* ${restored.strays.length} 个、烘焙 ${restored.bake.code}、聚合 ${restored.aggregate.code}、校验 ${run(['scripts/validate-data.ts']).code}`)
+console.log(`  data/ ${status.status === 0 && !status.stdout.trim() ? '干净' : '有改动（生成的 updated_at / generated_at 与提交不同，属正常）'}；amap-manual.json ${existsSync(manualFile) ? '还在' : '已清'}`)

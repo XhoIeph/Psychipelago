@@ -80,6 +80,8 @@ node tests/overrides-stray-coordinate-probe.mjs
 
 探针跑三条：自带坐标被拒、不带坐标能过且人工选定后来源是 `manual`、把人工表那条删掉后 `data:validate` 红。第三条预期两处同时红——比对基准里已经带了 `withManualCoordinates`；只红一处说明基准没跟人工表走。
 
+省级近似这条死路已经拆了：`scripts/place-hospitals.ts` 会把省中心（`coordinates_source: 'province-centroid'`）写进 `hospitals.json`，而那份坐标在证据集和人工表里都没有出处，`hospitalsWithOverrides()` 的比对基准给不出来、`buildLocationIndex()` 也找不到落点，两条都会红——它能写出来的状态本来就过不了门。脚本已删，`province-centroid` 这个枚举值留在 schema 里：将来真有别的来源写它，`acceptsManualCoordinate()` 仍按「可被人工点覆盖」处理，语义没变。机构坐标因此只有两个出处：那轮高德证据，和人工选定的点。
+
 ## 哪些机构的人工选点会生效
 
 ```
@@ -89,7 +91,7 @@ node tests/overrides-pick-refusal-probe.mjs
 `coordinates_source` 有三个值，人工选点的权限不一样：
 
 - `geocoded`：高德按机构地址查到的点。人工选点**不覆盖**，`--pick` 打出「人工选点不覆盖」并以 exit 1 结束，`amap-manual.json` 一个字节都不写——不留下一个等着将来生效的废点。
-- `province-centroid`：`place-hospitals.js` 填的省中心近似值，本来就等着被精确值替换。人工选点会覆盖它，来源改成 `manual`。
+- `province-centroid`：省中心近似占位值。写它的 `place-hospitals.ts` 已退役（原因见上一节），枚举值留着。人工选点会覆盖它，来源改成 `manual`。
 - `manual` / 没有坐标：接受，重选以新的为准。
 
 这条探针拿一家 geocoded 机构跑一遍 `--pick`，检查输出里能看出「被拒绝」而不是无声跳过、人工表逐字节没变，再烘焙核对坐标没变。上面那张三值表由 `tests/coordinates-source.test.mjs` 逐条断言（`acceptsManualCoordinate()`）；盘上现在没有 province-centroid 的机构，那条路径只在单元测试里覆盖。

@@ -42,6 +42,10 @@ function run(args) {
 
 function restore() {
   clean()
+  // 覆盖层与人工表清空后重跑烘焙，库里那个 local-* 才会消失。只靠 `git checkout` 在副本里
+  // 会静默失败（没有 .git），把脏数据留在 data/curated 里，这正是这份脚本以前的毛病。
+  spawnSync(process.execPath, ['scripts/import-kdocs.ts'], { cwd: ROOT })
+  spawnSync(process.execPath, ['scripts/build-aggregates.ts'], { cwd: ROOT })
   spawnSync('git', ['checkout', '--', 'data/curated', 'data/generated'], { cwd: ROOT })
 }
 
@@ -122,4 +126,5 @@ console.log(`五、原有机构 ${untouched.length} 家，坐标与改动前一�
 
 restore()
 const restored = read('data/curated/hospitals.json')
-console.log(`已还原：${restored.items.some(item => item.id === HOSPITAL_ID) ? '失败，测试机构还在库里' : '通过'}；amap-manual.json ${existsSync(manualFile) ? '还在' : '已清'}`)
+const strays = restored.items.filter(item => item.id.startsWith('local-')).map(item => item.id)
+console.log(`已还原：${restored.items.length} 家、残留 local-* ${strays.length} 个（期望 0）；amap-manual.json ${existsSync(manualFile) ? '还在' : '已清'}`)
