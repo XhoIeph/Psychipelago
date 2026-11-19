@@ -1,13 +1,13 @@
 name: 核对主线线索
-description: 提交《就诊地图10.25》中待核对的条目
+description: 提交待核对的条目
 title: '[线索] '
 labels: ['lead']
 body:
   - type: markdown
     attributes:
       value: |
-        当前唯一主线为 https://www.kdocs.cn/l/crOlzFWeu2GY 。
-        请提供文档中的位置与原文，不填写个人隐私。
+        线索来自维护者持有的原始表格。
+        请提供表格中的位置与原文，不填写个人隐私。
   - type: input
     id: location
     attributes:
