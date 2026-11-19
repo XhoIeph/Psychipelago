@@ -8,13 +8,15 @@
 
 ```text
 fix(map): constrain dragging before drawing the camera
-data(source): replace retired leads with the Kdocs source
+data(source): replace retired leads with verified records
 docs(readme): shorten setup and contribution entry points
 ```
 
-一次提交对应一个完整目的，包含必要的调用、测试与文档。正文记录原因、验证结果和实际缺口，区分本地提交、远端推送、CI 与部署。
+一次提交对应一个完整目的，包含必要的调用、测试与文档。
 
-工作分支使用 `codex/<任务短名>`。保存进度不等于发布；推送 `main` 会触发 Pages 部署，发布前需完成验收。
+标题一行写完，正文最多三行：为什么改、验过什么、还剩什么。不贴长清单、不抄逐条日志、不做过程复盘——细节留在 PR 里，PR 里也只写 Summary、Files changed、Validation 三节。
+
+工作分支使用 `feat/<任务短名>`、`fix/<任务短名>`、`docs/<任务短名>`。保存进度不等于发布；推送 `main` 会触发 Pages 部署，发布前需完成验收。
 
 ## 验证
 
