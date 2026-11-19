@@ -49,6 +49,29 @@ function restore() {
   spawnSync('git', ['checkout', '--', 'data/curated', 'data/generated'], { cwd: ROOT })
 }
 
+// 探针会重写 data/curated 下三份 JSON 再重跑烘焙，还原靠「清空 + 重放」。开工时树里要是有别人
+// 未提交的数据改动，重放就把它们一起抹掉，而且抹得看不出是谁干的——所以先看 data/ 干不干净。
+function requireCleanData() {
+  const force = process.argv.includes('--force')
+  const status = spawnSync('git', ['status', '--short', 'data/'], { cwd: ROOT, encoding: 'utf8' })
+  if (status.status !== 0) {
+    console.warn('读不到 git 状态（可能不在 git 树里），无法判断 data/ 有没有未提交改动；跑完按烘焙结果重放。')
+    return
+  }
+  const lines = status.stdout.split('\n').map(line => line.trimEnd()).filter(Boolean)
+  if (lines.length === 0) return
+  if (force) {
+    console.warn(`data/ 有 ${lines.length} 处未提交改动，按 --force 继续，还原时会一并抹掉：`)
+    for (const line of lines) console.warn(`  ${line}`)
+    return
+  }
+  console.error(`data/ 有 ${lines.length} 处未提交改动，探针会把它一起抹掉：`)
+  for (const line of lines) console.error(`  ${line}`)
+  console.error('先提交或 stash 再跑；确实要抹掉就带 --force。')
+  process.exit(2)
+}
+
+requireCleanData()
 clean()
 write(`data/overrides/hospitals/${HOSPITAL_ID}.json`, {
   schema_version: '1.0.0',

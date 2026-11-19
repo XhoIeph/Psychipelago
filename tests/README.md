@@ -82,6 +82,10 @@ node tests/overrides-stray-coordinate-probe.mjs
 
 省级近似这条死路已经拆了：`scripts/place-hospitals.ts` 会把省中心（`coordinates_source: 'province-centroid'`）写进 `hospitals.json`，而那份坐标在证据集和人工表里都没有出处，`hospitalsWithOverrides()` 的比对基准给不出来、`buildLocationIndex()` 也找不到落点，两条都会红——它能写出来的状态本来就过不了门。脚本已删，`province-centroid` 这个枚举值留在 schema 里：将来真有别的来源写它，`acceptsManualCoordinate()` 仍按「可被人工点覆盖」处理，语义没变。机构坐标因此只有两个出处：那轮高德证据，和人工选定的点。
 
+## 跑探针之前先看 data/ 干不干净
+
+上面两个探针都会重写 `data/curated` 再重跑烘焙，还原靠「清空 + 重放」。所以开工前它们先看 `git status --short data/`：有输出就 exit 2 并列出那些文件，因为还原会把它们一起抹掉。确实要抹掉时带 `--force`，它会先把要抹的清单打出来。不在 git 树里（副本、导出的目录）读不到状态，会提示一句再照常跑完。
+
 ## 哪些机构的人工选点会生效
 
 ```
