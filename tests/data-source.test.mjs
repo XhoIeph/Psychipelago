@@ -73,9 +73,9 @@ test('三张工作表与每一行有内容的记录都进了库', () => {
   ]))
   // 线索单位是「一条发言」：备注单独一条，评价里每位署名的用户各一条；
   // 无名分的多行仍在同一格里属同一条长评。跨行、跨表一律不合并。
-  assert.deepEqual(perSheet, { 1: 90, 2: 63, 3: 174 })
-  assert.equal(sourceReports.length, 327)
-  assert.equal(reportsFromDocument(document).length, 327)
+  assert.deepEqual(perSheet, { 1: 87, 2: 63, 3: 174 })
+  assert.equal(sourceReports.length, 324)
+  assert.equal(reportsFromDocument(document).length, 324)
   // 合并必须可重放：同一份文档跑两遍得到同一组 id，定位表与断言样本才不会抖。
   assert.deepEqual(reportsFromDocument(document).map((report) => report.id), sourceReports.map((report) => report.id))
   // 整份 curated 必须等于「源转写 + 覆盖层」，多一条少一条都是覆盖层没烘焙。
@@ -164,8 +164,8 @@ test('工作表按病症分组，其他字段保持未知而不是编造', () =>
     grouped.filter((report) => report.disorders.join('/') === group).length,
   ]))
   // 一条线索最多只带一个病症组合，跨表同引文合并会带上另一张表的病症标签。
-  assert.deepEqual(byDisorder, { cptsd: 84, 'osdd/did': 59, pd: 174 })
-  assert.equal(grouped.filter((report) => report.disorders.includes('cptsd')).length, 90)
+  assert.deepEqual(byDisorder, { cptsd: 81, 'osdd/did': 59, pd: 174 })
+  assert.equal(grouped.filter((report) => report.disorders.includes('cptsd')).length, 87)
   assert.equal(grouped.filter((report) => report.disorders.includes('pd')).length, 183)
   for (const report of sourceReports) {
     // stage 只在没被覆盖时必须是 unknown：人工改过阶段就是层里那个值。
@@ -435,4 +435,21 @@ test('校验器拒绝私人标识与改动过的引文，并拒绝结构不成�
     assert.ok(fixture.startsWith(`${resolve('tmp')}/`) || fixture.startsWith(`${resolve('tmp')}\\`))
     rmSync(fixture, { recursive: true })
   }
+})
+
+test('昵称独占一行时剥掉，标注前缀不当成第二个人', () => {
+  // 原表里常有一格写成「昵称 / 换行 / repo：正文」：昵称不带冒号，正文开头是标注。
+  // 以前把「短词 + 冒号」一律当署名，会切出一条只剩昵称的假评价（页面上就是一张只有两个字的卡）。
+  assert.deepEqual(
+    evaluationComments('尘尘\nrepo：厦门仙岳医院吴为阁医生对创伤有了解\n09-16\n治疗方法倾向于CBT'),
+    ['repo：厦门仙岳医院吴为阁医生对创伤有了解\n09-16\n治疗方法倾向于CBT'],
+  )
+  assert.deepEqual(
+    evaluationComments('兰因\n回复 momo : 我只去了一次心理咨询'),
+    ['回复 momo : 我只去了一次心理咨询'],
+  )
+  // 正文中间冒出来的「补一个费用前提：」是同一格的补充，不是换了个人
+  assert.equal(evaluationComments('鲸鲸小冰\n来repo一下。\n补一个费用前提：前面做过检查可以沿用').length, 1)
+  // 一格里真有两个人说话，仍然按署名分开
+  assert.deepEqual(evaluationComments('alice：我去了\nbob：我也去过'), ['我去了', '我也去过'])
 })

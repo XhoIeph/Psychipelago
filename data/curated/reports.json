@@ -907,7 +907,7 @@
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "我因为看到推荐去见过郭慧荣，她非常非常糟糕，听完我基本情况（我是cptsd）之后要我去做将近三千块钱的药物基因检测，和推荐我去一个院外机构做什么脑循环治疗（她给每个患者都推荐了，我等叫号的时候有听到），我说我今天没空两个都不做，她脸一黑直接把我赶出诊室了！千万别去找她。。。她就是只想着赚钱。那个脑循环治疗根本就是骗钱的，我在武汉精卫看了5年从来没听过\n└",
+      "evidence_quote": "Aspen N:\n我因为看到推荐去见过郭慧荣，她非常非常糟糕，听完我基本情况（我是cptsd）之后要我去做将近三千块钱的药物基因检测，和推荐我去一个院外机构做什么脑循环治疗（她给每个患者都推荐了，我等叫号的时候有听到），我说我今天没空两个都不做，她脸一黑直接把我赶出诊室了！千万别去找她。。。她就是只想着赚钱。那个脑循环治疗根本就是骗钱的，我在武汉精卫看了5年从来没听过\n└",
       "evidence_context": {
         "index_in_capture": "cptsd · 第11行",
         "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
@@ -2036,42 +2036,7 @@
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "兰因",
-      "evidence_context": {
-        "index_in_capture": "cptsd · 第30行",
-        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
-      },
-      "evidence_source": "article",
-      "verification": {
-        "level": "unverified"
-      },
-      "extraction": {
-        "tool": "kdocs-sheet-transcription",
-        "captured_at": "2026-11-09"
-      },
-      "flags": {
-        "contains_minor": false,
-        "contains_selfharm_detail": false,
-        "sensitive": false
-      },
-      "status": "published"
-    },
-    {
-      "id": "kdocs-s1-r30-p3",
-      "platform": "web",
-      "source_channel": "browser_session",
-      "published_at_precision": "unknown",
-      "hospital_region": "广东",
-      "hospital_id": "kdocs-amap-b00140hu1b",
-      "hospital_name_raw": "广州医科大学附属脑科医院",
-      "department": "临床心理科",
-      "doctor_name_raw": "彭红军",
-      "disorders": [
-        "cptsd"
-      ],
-      "stage": "unknown",
-      "experience": null,
-      "evidence_quote": "我只去了一次心理咨询，只是确认了一下情况。他给我一种我只是一个普通的病人的感觉，而不是精神病患者。总之他的态度很平和，也很有经验",
+      "evidence_quote": "回复 momo : 我只去了一次心理咨询，只是确认了一下情况。他给我一种我只是一个普通的病人的感觉，而不是精神病患者。总之他的态度很平和，也很有经验",
       "evidence_context": {
         "index_in_capture": "cptsd · 第30行",
         "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
@@ -2176,43 +2141,8 @@
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "鲸鲸小冰\n来repo一下。彭红军医生停诊了去挂了广脑李爱凤医生的号，已拿下BPD确诊+C-PTSD口头确诊。按李爱凤医生说法广脑貌似都不能下纸质诊断，BPD可以在C-PTSD的同时检查并下诊断，光检查无医保大概五百出头，意外地没有很贵。我广脑初诊是罗新妮医生，但是她不太倾向开BPD诊断也没有让我检查，只让我查一下BPD相关经验贴自行调理不要多想。希望能提供一点帮助[抽泣R]C-PTSD没办法下纸…",
-      "evidence_full_text": "鲸鲸小冰\n来repo一下。彭红军医生停诊了去挂了广脑李爱凤医生的号，已拿下BPD确诊+C-PTSD口头确诊。按李爱凤医生说法广脑貌似都不能下纸质诊断，BPD可以在C-PTSD的同时检查并下诊断，光检查无医保大概五百出头，意外地没有很贵。我广脑初诊是罗新妮医生，但是她不太倾向开BPD诊断也没有让我检查，只让我查一下BPD相关经验贴自行调理不要多想。希望能提供一点帮助[抽泣R]C-PTSD没办法下纸质诊断。",
-      "evidence_context": {
-        "index_in_capture": "cptsd · 第33行",
-        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
-      },
-      "evidence_source": "article",
-      "verification": {
-        "level": "unverified"
-      },
-      "extraction": {
-        "tool": "kdocs-sheet-transcription",
-        "captured_at": "2026-11-09"
-      },
-      "flags": {
-        "contains_minor": false,
-        "contains_selfharm_detail": false,
-        "sensitive": false
-      },
-      "status": "published"
-    },
-    {
-      "id": "kdocs-s1-r33-p2",
-      "platform": "web",
-      "source_channel": "browser_session",
-      "published_at_precision": "unknown",
-      "hospital_region": "广东",
-      "hospital_id": "kdocs-amap-b00140hu1b",
-      "hospital_name_raw": "广州医科大学附属脑科医院",
-      "department": "普通精神科门诊(江村)",
-      "doctor_name_raw": "李爱凤",
-      "disorders": [
-        "cptsd"
-      ],
-      "stage": "unknown",
-      "experience": null,
-      "evidence_quote": "我在广脑前面做过一些检查可以沿用，这次是只检查了C-PTSD及BPD相关所以五百多。初诊的话我不确定",
+      "evidence_quote": "来repo一下。彭红军医生停诊了去挂了广脑李爱凤医生的号，已拿下BPD确诊+C-PTSD口头确诊。按李爱凤医生说法广脑貌似都不能下纸质诊断，BPD可以在C-PTSD的同时检查并下诊断，光检查无医保大概五百出头，意外地没有很贵。我广脑初诊是罗新妮医生，但是她不太倾向开BPD诊断也没有让我检查，只让我查一下BPD相关经验贴自行调理不要多想。希望能提供一点帮助[抽泣R]C-PTSD没办法下纸质诊断。…",
+      "evidence_full_text": "来repo一下。彭红军医生停诊了去挂了广脑李爱凤医生的号，已拿下BPD确诊+C-PTSD口头确诊。按李爱凤医生说法广脑貌似都不能下纸质诊断，BPD可以在C-PTSD的同时检查并下诊断，光检查无医保大概五百出头，意外地没有很贵。我广脑初诊是罗新妮医生，但是她不太倾向开BPD诊断也没有让我检查，只让我查一下BPD相关经验贴自行调理不要多想。希望能提供一点帮助[抽泣R]C-PTSD没办法下纸质诊断。\n补一个费用前提：我在广脑前面做过一些检查可以沿用，这次是只检查了C-PTSD及BPD相关所以五百多。初诊的话我不确定",
       "evidence_context": {
         "index_in_capture": "cptsd · 第33行",
         "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
@@ -2423,42 +2353,7 @@
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "尘尘",
-      "evidence_context": {
-        "index_in_capture": "cptsd · 第39行",
-        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
-      },
-      "evidence_source": "article",
-      "verification": {
-        "level": "unverified"
-      },
-      "extraction": {
-        "tool": "kdocs-sheet-transcription",
-        "captured_at": "2026-11-09"
-      },
-      "flags": {
-        "contains_minor": false,
-        "contains_selfharm_detail": false,
-        "sensitive": false
-      },
-      "status": "published"
-    },
-    {
-      "id": "kdocs-s1-r39-p2",
-      "platform": "web",
-      "source_channel": "browser_session",
-      "published_at_precision": "unknown",
-      "hospital_region": "福建",
-      "hospital_id": "kdocs-amap-b025003yih",
-      "hospital_name_raw": "厦门仙岳医院",
-      "department": "心理咨询科 / 儿童青少年心理科",
-      "doctor_name_raw": "吴为阁",
-      "disorders": [
-        "cptsd"
-      ],
-      "stage": "unknown",
-      "experience": null,
-      "evidence_quote": "厦门仙岳医院吴为阁医生对创伤方面也有一定了解，今天问询有没有必要去广脑评估一下他说他就能看，两份问卷费用可能一百左右，根据人表现和量表得出结论明显存在可能，口头确诊慢性创伤应激。\n09-16\n治疗方法倾向于CBT认知训练，有医院一次400元版和网络五个月每天共2000元版本",
+      "evidence_quote": "repo：厦门仙岳医院吴为阁医生对创伤方面也有一定了解，今天问询有没有必要去广脑评估一下他说他就能看，两份问卷费用可能一百左右，根据人表现和量表得出结论明显存在可能，口头确诊慢性创伤应激。\n09-16\n治疗方法倾向于CBT认知训练，有医院一次400元版和网络五个月每天共2000元版本",
       "evidence_context": {
         "index_in_capture": "cptsd · 第39行",
         "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"

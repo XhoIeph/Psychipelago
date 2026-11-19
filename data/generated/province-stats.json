@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-11-19T21:49:00.891Z",
+  "generated_at": "2026-11-19T22:07:15.187Z",
   "totals": {
-    "reports": 326,
+    "reports": 323,
     "reports_unlocated": 0,
     "hospitals": 127,
     "doctors": 252,
@@ -234,13 +234,13 @@
     },
     {
       "adcode": "350000",
-      "reports_total": 16,
+      "reports_total": 15,
       "reports_by_disorder": {
-        "cptsd": 4,
+        "cptsd": 3,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 16
+        "web": 15
       },
       "hospitals_total": 5,
       "hospitals_with_service_evidence": 0,
@@ -248,7 +248,7 @@
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 16
+        "unverified": 15
       }
     },
     {
@@ -348,13 +348,13 @@
     },
     {
       "adcode": "440000",
-      "reports_total": 36,
+      "reports_total": 34,
       "reports_by_disorder": {
-        "cptsd": 12,
+        "cptsd": 10,
         "bpd": 0
       },
       "reports_by_platform": {
-        "web": 36
+        "web": 34
       },
       "hospitals_total": 9,
       "hospitals_with_service_evidence": 0,
@@ -362,7 +362,7 @@
       "verification": {
         "official": 0,
         "corroborated": 0,
-        "unverified": 36
+        "unverified": 34
       }
     },
     {

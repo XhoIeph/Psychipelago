@@ -58,15 +58,33 @@ function clip(text: string, limit: number): string {
   return `${text.slice(0, limit - 1).trimEnd()}…`
 }
 
+/**
+ * 带冒号也不代表人名：「回复 momo : …」「补一个费用前提：…」「repo：…」都是正文里的标注，
+ * 原表里这类前缀常和昵称挤在同一格，当成署名切开会切出一条只剩昵称的假评价。
+ */
+const NOT_A_NAME = /^(?:回复|补充|补一个|补个|更新|说明|repo|搬运|转发|来源|前言|前提|费用|价格|挂号|诊断|结论|时间|地址|电话|注意|提示|备注)/iu
+
 /** 一行开头的「昵称:」：署名。剥掉名字，只留正文。 */
 function splitSpeaker(line: string): { speaker: string; rest: string } | null {
   const match = line.match(/^([^\s：:][^：:]{0,23})\s*[：:]\s*(.*)$/u)
   if (!match) return null
   const speaker = match[1].trim()
   if (!speaker || LABEL_PREFIX.test(speaker)) return null
+  if (NOT_A_NAME.test(speaker) || /\s/u.test(speaker)) return null
   // 带句读的不是昵称，是正文里的一句话
   if (/[。！？；，、!?]/u.test(speaker)) return null
   return { speaker, rest: match[2].trim() }
+}
+
+/**
+ * 整格第一行常常只有发帖人昵称（原表里不带冒号）。这种行不入库，但要先认出它，
+ * 否则它会变成一条只有两个字的假评价——「尘尘」那样。
+ * 短评（「避雷」）也可能长得一样，所以调用处还要求这格后面有「X：」形态的行。
+ */
+function isBareSpeaker(line: string): boolean {
+  if (line.length > 12) return false
+  if (/[：:\s。！？；，、!?]/u.test(line)) return false
+  return !LABEL_PREFIX.test(line)
 }
 
 /**
@@ -107,7 +125,11 @@ function cleanCommentText(text: string): string {
  * 署名本身只用于切分，不入库；公开数据不保留作者标识。
  */
 export function evaluationComments(raw: string): string[] {
-  const lines = raw.replace(/\r\n?/gu, '\n').split('\n').map(line => line.trim()).filter(Boolean)
+  const trimmed = raw.replace(/\r\n?/gu, '\n').split('\n').map(line => line.trim()).filter(Boolean)
+  if (!trimmed.length) return []
+  // 首行只有昵称、后面又跟着「X：」形态的行：那是署名，剥掉，别让它变成一条假评价。
+  const leadingName = isBareSpeaker(trimmed[0]) && trimmed.slice(1).some(line => /^[^\r\n]{1,24}[：:]/u.test(line))
+  const lines = leadingName ? trimmed.slice(1) : trimmed
   if (!lines.length) return []
   const marked = lines.some(line => splitSpeaker(line))
   // 没有署名的一格就是一条，保持原样（多行仍属同一条长评）
