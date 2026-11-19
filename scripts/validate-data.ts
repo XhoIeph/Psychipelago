@@ -245,6 +245,27 @@ if (disorders && hospitals && doctors && reports && provinces) {
   }
 
   const published = reports.items.filter((item) => item.status === 'published').length
+
+  // 快照不在仓库里，CI 上没有重放基准可比。这里补一组不依赖快照的结构强断言，
+  // 免得「删掉快照」等于闸门变哑：条数、状态分布、id 形态都要自证。
+  const statusCounts = new Map<string, number>()
+  for (const item of reports.items) {
+    const status = String(item.status)
+    statusCounts.set(status, (statusCounts.get(status) ?? 0) + 1)
+  }
+  const statusSummary = [...statusCounts].map(([status, count]) => `${status} ${count}`).join('、')
+  if (published === 0) errors.push(`reports.json: 一条已发布线索都没有（${statusSummary}），状态分布不像真实数据`)
+  if (reports.items.length < hospitals.items.length) {
+    errors.push(`reports.json: 线索数 ${reports.items.length} 少于机构数 ${hospitals.items.length}，烘焙多半只做了一半`)
+  }
+  // id 是位置的坐标，只有表序号、行号与段号；分享 id 与表名都不许出现在这里。
+  const oddIds = reports.items
+    .map((item) => String(item.id))
+    .filter((id) => !/^(?:kdocs-s\d+-r\d+(?:-p\d+)?|local-[a-z0-9-]+)$/u.test(id))
+  for (const id of oddIds.slice(0, 5)) {
+    errors.push(`reports.json → ${id}: 线索 id 必须形如 kdocs-s1-r39 或 local-…，不得带表标识或分享 id`)
+  }
+
   console.log(
     `✓ 数据校验通过：疾病 ${disorders.items.length}、医院 ${hospitals.items.length}、医生 ${doctors.items.length}、线索 ${reports.items.length}（已发布 ${published}）、省级行政区 ${provinces.items.length}`,
   )
