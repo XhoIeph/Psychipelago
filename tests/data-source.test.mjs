@@ -3,7 +3,7 @@ import { readFileSync, readdirSync, existsSync, mkdtempSync, mkdirSync, writeFil
 import { resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import test from 'node:test'
-import { evaluationComments, reportsFromDocument, reportsWithLocations, doctorsWithLocations, SOURCE_CAPTURE } from '../scripts/import-kdocs.ts'
+import { evaluationComments, reportsFromDocument, reportsWithLocations, doctorsWithLocations, specialtiesFromNote, SOURCE_CAPTURE } from '../scripts/import-kdocs.ts'
 import { doctorsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import { LOCATION_EVIDENCE } from '../scripts/lib/amap.ts'
 import { hospitalsFromRun } from '../scripts/geocode-hospitals.ts'
@@ -73,9 +73,9 @@ test('三张工作表与每一行有内容的记录都进了库', () => {
   ]))
   // 线索单位是「一条发言」：备注单独一条，评价里每位署名的用户各一条；
   // 无名分的多行仍在同一格里属同一条长评。跨行、跨表一律不合并。
-  assert.deepEqual(perSheet, { 1: 88, 2: 63, 3: 174 })
-  assert.equal(sourceReports.length, 325)
-  assert.equal(reportsFromDocument(document).length, 325)
+  assert.deepEqual(perSheet, { 1: 88, 2: 59, 3: 171 })
+  assert.equal(sourceReports.length, 318)
+  assert.equal(reportsFromDocument(document).length, 318)
   // 合并必须可重放：同一份文档跑两遍得到同一组 id，定位表与断言样本才不会抖。
   assert.deepEqual(reportsFromDocument(document).map((report) => report.id), sourceReports.map((report) => report.id))
   // 整份 curated 必须等于「源转写 + 覆盖层」，多一条少一条都是覆盖层没烘焙。
@@ -164,9 +164,9 @@ test('工作表按病症分组，其他字段保持未知而不是编造', () =>
     grouped.filter((report) => report.disorders.join('/') === group).length,
   ]))
   // 一条线索最多只带一个病症组合，跨表同引文合并会带上另一张表的病症标签。
-  assert.deepEqual(byDisorder, { cptsd: 82, 'osdd/did': 59, pd: 174 })
+  assert.deepEqual(byDisorder, { cptsd: 82, 'osdd/did': 56, pd: 171 })
   assert.equal(grouped.filter((report) => report.disorders.includes('cptsd')).length, 88)
-  assert.equal(grouped.filter((report) => report.disorders.includes('pd')).length, 183)
+  assert.equal(grouped.filter((report) => report.disorders.includes('pd')).length, 179)
   for (const report of sourceReports) {
     // stage 只在没被覆盖时必须是 unknown：人工改过阶段就是层里那个值。
     if (!overridden(report.id, 'stage')) assert.equal(report.stage, 'unknown')
@@ -288,9 +288,9 @@ test('医生档案只由表格里的诊室、备注、评价生成，且都能�
   )
   // 合并过的线索记下合并前的发言条数，单条不写 1：只剩「两张表抄了同一句话」这一类
   const merged = sourceReports.filter((report) => report.parts_count)
-  assert.equal(merged.length, 11)
+  assert.equal(merged.length, 10)
   assert.ok(merged.every((report) => report.parts_count >= 2))
-  assert.equal(merged.reduce((total, report) => total + report.parts_count, 0), 22)
+  assert.equal(merged.reduce((total, report) => total + report.parts_count, 0), 20)
   // 合并后正文里不该留下同一句重复两遍
   for (const report of merged) {
     const lines = (report.evidence_full_text ?? report.evidence_quote).split('\n').map((line) => line.trim()).filter(Boolean)
@@ -456,4 +456,57 @@ test('昵称独占一行时剥掉，标注前缀不当成第二个人', () => {
   )
   // 一格里真有两个人说话，仍然按署名分开
   assert.deepEqual(evaluationComments('alice：我去了\nbob：我也去过'), ['我去了', '我也去过'])
+})
+
+test('平台专长介绍不进线索，落到医生档案的 specialties', () => {
+  // 备注格里的「第三方页面显示擅长…」说的是平台怎么写这位医生，不是病友的就诊经历。
+  // 当成线索会拿宣传语当病友的话；而且这一行后面若还有作者自己补的话，那句话才是线索。
+  const mini = {
+    captured_at: '2026-11-09T00:00:00Z',
+    sheets: [
+      {
+        index: 0,
+        name: 'cptsd',
+        merges: [],
+        values: [
+          ['地区', '医院名称', '诊室', '姓名', '备注', '评价'],
+          ['海南', '海南安宁医院', '精神科', '刘向来', '第三方页面显示擅长创伤后应激障碍、多重人格等', ''],
+          ['海南', '海南省安宁医院', '精神科', '张三', '第三方页面显示擅长创伤后应激障碍', '这位医生问得很细'],
+        ],
+      },
+    ],
+  }
+  const produced = reportsFromDocument(mini)
+  assert.equal(produced.length, 1, '只有一句平台专长介绍的行不该产出线索')
+  assert.equal(produced[0].evidence_quote, '这位医生问得很细')
+  assert.ok(!produced.some((report) => /^第三方页面显示/u.test(report.evidence_quote)))
+
+  // 专长从同一句里解析，尾巴（「等疾病的诊治」「等，出版有…」）要剥掉，引号要脱掉
+  assert.deepEqual(specialtiesFromNote('第三方页面显示擅长创伤后应激障碍、多重人格等'), ['创伤后应激障碍', '多重人格'])
+  assert.deepEqual(
+    specialtiesFromNote('第三方页面显示擅长“创伤应激障碍”'),
+    ['创伤应激障碍'],
+  )
+  assert.deepEqual(
+    specialtiesFromNote('第三方页面显示擅长精神分裂症、心境障碍、焦虑、失眠、抑郁、多重人格障碍、分离性障碍等疾病的诊治。'),
+    ['精神分裂症', '心境障碍', '焦虑', '失眠', '抑郁', '多重人格障碍', '分离性障碍'],
+  )
+  assert.deepEqual(
+    specialtiesFromNote('第三方页面显示擅长自恋型人格障碍、边缘型人格障碍、摄食障碍、创伤后应激障碍等，出版有《人格障碍的心理咨询与治疗》等书籍'),
+    ['自恋型人格障碍', '边缘型人格障碍', '摄食障碍', '创伤后应激障碍'],
+  )
+  assert.deepEqual(specialtiesFromNote('有小红书账号，初诊只在国际部'), [], '普通备注不解析成专长')
+})
+
+test('已发布线索的引文不会是一句平台专长介绍', () => {
+  const offenders = reports
+    .filter((report) => report.status === 'published' && /^第三方页面显示/u.test(report.evidence_quote ?? ''))
+    .map((report) => report.id)
+  assert.deepEqual(offenders, [], '平台专长介绍不是病友的话，不能当线索')
+  // 这七条搬进档案之后，那几位医生的专长要有值，否则等于信息丢了
+  for (const name of ['杨晓敏', '李刚', '吴为阁', '刘向来', '钟华清', '许明智']) {
+    const found = doctors.filter((doctor) => doctor.name === name)
+    assert.ok(found.length > 0, `${name} 的档案不该消失`)
+    assert.ok(found.some((doctor) => doctor.specialties.length > 0), `${name} 的专长要落到 specialties`)
+  }
 })

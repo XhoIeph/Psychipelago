@@ -1,8 +1,8 @@
 {
   "source_batch": "sheet-2026-11-09",
-  "generated_at": "2026-11-10T11:38:49.791Z",
-  "requests": 1,
-  "requests_total": 96,
+  "generated_at": "2026-11-19T23:35:19.844Z",
+  "requests": 2,
+  "requests_total": 99,
   "results": [
     {
       "name": "北京回龙观医院",
@@ -1902,39 +1902,6 @@
       "selection_rule": "base-name"
     },
     {
-      "name": "海南安宁医院",
-      "report_ids": [
-        "kdocs-s2-r46"
-      ],
-      "region": "海南",
-      "status": "geocoded",
-      "reason": "复用上一轮同一机构的定位结果",
-      "candidates": [
-        {
-          "id": "B038202B8M",
-          "name": "海南省安宁医院",
-          "address": "南海大道东10号",
-          "location": "110.337253,19.994608",
-          "pname": "海南省",
-          "cityname": "海口市",
-          "adcode": "",
-          "typecode": "090210"
-        }
-      ],
-      "chosen": {
-        "id": "B038202B8M",
-        "name": "海南省安宁医院",
-        "address": "南海大道东10号",
-        "location": "110.337253,19.994608",
-        "pname": "海南省",
-        "cityname": "海口市",
-        "adcode": "",
-        "typecode": "090210"
-      },
-      "matched_name": "海南省安宁医院",
-      "selection_rule": "base-name"
-    },
-    {
       "name": "浙大一附院",
       "report_ids": [
         "kdocs-s2-r47"
@@ -2847,7 +2814,6 @@
         "kdocs-s3-r65",
         "kdocs-s3-r66",
         "kdocs-s3-r67",
-        "kdocs-s3-r68",
         "kdocs-s3-r69"
       ],
       "region": "广东",
@@ -2916,8 +2882,7 @@
     {
       "name": "广东省精神卫生中心",
       "report_ids": [
-        "kdocs-s3-r73",
-        "kdocs-s3-r74"
+        "kdocs-s3-r73"
       ],
       "region": "广东",
       "status": "geocoded",
@@ -3148,7 +3113,6 @@
     {
       "name": "武汉市精神卫生中心",
       "report_ids": [
-        "kdocs-s3-r91",
         "kdocs-s3-r92"
       ],
       "region": "湖北",
@@ -4797,6 +4761,37 @@
         "cityname": "桃园市",
         "adcode": "",
         "typecode": "090000"
+      }
+    },
+    {
+      "name": "海南安宁医院",
+      "report_ids": [],
+      "region": "海南",
+      "matched_name": "海南省安宁医院",
+      "status": "geocoded",
+      "reason": "按高德主体/本部及名称匹配选取机构代表位置",
+      "candidates": [
+        {
+          "id": "B038202B8M",
+          "name": "海南省安宁医院",
+          "address": "南海大道东10号",
+          "location": "110.337253,19.994608",
+          "pname": "海南省",
+          "cityname": "海口市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "selection_rule": "base-name",
+      "chosen": {
+        "id": "B038202B8M",
+        "name": "海南省安宁医院",
+        "address": "南海大道东10号",
+        "location": "110.337253,19.994608",
+        "pname": "海南省",
+        "cityname": "海口市",
+        "adcode": "",
+        "typecode": "090210"
       }
     }
   ],

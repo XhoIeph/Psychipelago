@@ -9,7 +9,7 @@ import { resolve } from 'node:path'
 import { doctorsFileSchema, hospitalsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import type { Hospital, Report } from '../lib/schema.ts'
 import { acceptsManualCoordinate, hospitalsFromRun, withManualCoordinates } from './lib/hospitals.ts'
-import { doctorsWithLocations, hospitalsWithOverrides, markUnlinked, reportsFromDocument, SOURCE_BATCH, SOURCE_CAPTURE } from './import-kdocs.ts'
+import { doctorsWithLocations, hospitalsWithOverrides, markUnlinked, reportsFromDocument, sourceHospitalNames, SOURCE_BATCH, SOURCE_CAPTURE } from './import-kdocs.ts'
 import type { SourceDocument } from './import-kdocs.ts'
 import { LOCATION_EVIDENCE, locationTargets, searchName, searchCity, selectPoi, searchAmap, linkLocationReports } from './lib/amap.ts'
 import type { LocationRun, Poi } from './lib/amap.ts'
@@ -35,7 +35,7 @@ export { hospitalsFromRun, gcj02ToWgs84 } from './lib/hospitals.ts'
 
 export function applyRun(reports: Report[], run: LocationRun, document: SourceDocument) {
   if (run.source_batch !== SOURCE_BATCH || run.results.some(result => result.status === 'not_queried')) throw new Error('定位报告批次不符或尚未完成查询')
-  const linked = markUnlinked(linkLocationReports(reports, run), run)
+  const linked = markUnlinked(linkLocationReports(reports, run, sourceHospitalNames(document)), run)
   // 与烘焙同一条合成：派生集 → 覆盖层 → 人工确定的坐标。少补最后一步，
   // 这里写出的 hospitals.json 就与 validate 的比对基准差一批坐标，那份红会指向「有人手改数据」。
   const hospitals = withManualCoordinates(applyStoredOverrides('hospitals', hospitalsFromRun(run)), readManualLocations())
@@ -127,7 +127,7 @@ async function main() {
     if (!response.ok || body.status !== '1') process.exitCode = 1
     return
   }
-  const targets = locationTargets(reports)
+  const targets = locationTargets(reports, sourceHospitalNames(document))
   const run: LocationRun = { source_batch: SOURCE_BATCH, generated_at: new Date().toISOString(), requests: 0, requests_total: 0,
     results: targets.map(target => ({ ...target, status: 'not_queried', reason: '尚未查询', candidates: [] })) }
   const rawPath = 'data/raw/amap-2026-11-09.json'

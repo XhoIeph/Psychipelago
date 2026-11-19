@@ -315,14 +315,46 @@ export function sourceRows(document: SourceDocument): SourceRow[] {
  * 「└」「09-16」是引用树和日期戳，「朱鸿儒 课题组」是姓名格的团队名。
  * 它们挂在第一条线索前，既不丢原文，也不各自占一条内容单薄的线索。
  */
+/**
+ * 备注格里转述第三方平台的专长介绍，例如「第三方页面显示擅长人格障碍、多重人格」。
+ *
+ * 这句话说的是这家医院或平台怎么写这位医生，不是病友的就诊经历。
+ * 把它当一条线索，等于拿宣传语当病友的话——和「不把 source_topics 当诊断」是同一类错。
+ * 所以它不生成线索，只解析成医生档案的 `specialties`；原文留在 `note` 里当出处。
+ */
+const THIRD_PARTY_NOTE = /^第三方页面显示(?:擅长)?[：:]?\s*(.+)$/u
+
+/**
+ * 从平台专长介绍里取出专长名。
+ * 原句常带尾巴（「等疾病的诊治」「等，出版有《…》等书籍」），先剥尾巴再按顿号、逗号切；
+ * 一项超过 24 字的不像专长名，丢弃，宁可少录也不把整句塞进档案。
+ */
+export function specialtiesFromNote(note: string): string[] {
+  const match = note.trim().match(THIRD_PARTY_NOTE)
+  if (!match) return []
+  const body = match[1]
+    .replace(/等疾病的?诊治[。.]?$/u, '')
+    .replace(/[，,]\s*出版.*$/u, '')
+    .replace(/等[。.]?$/u, '')
+  return body
+    .split(/[、，,]/u)
+    .map(part => part.trim().replace(/^[“"「『]/u, '').replace(/[”"」』]$/u, ''))
+    .filter(part => part.length > 0 && part.length <= 24)
+}
+
 function rowLeads(row: SourceRow): string[] {
   // 姓名格原文（团队名、专病门诊、整段科室介绍）就是这一行主体的名称，整段进线索。
   const subject = [row.label, row.annotation].filter(Boolean).join('')
   const leads: string[] = []
-  const note = row.note.trim()
-  if (note) leads.push(note)
+  const noteLines = row.note.split(/\r?\n/u).map(line => line.trim()).filter(Boolean)
+  // 平台专长介绍那几行不进口语；同一格后面若还有作者自己补的话，仍然算这一行的线索。
+  const noteBody = noteLines.filter(line => !THIRD_PARTY_NOTE.test(line)).join('\n')
+  if (noteBody) leads.push(noteBody)
   leads.push(...row.comments)
   if (!leads.length) {
+    // 这一行原本写了东西（哪怕只是一句平台专长介绍）时不再兜底：
+    // 用「机构 · 诊室 · 医生」补一条，等于替表里没写的话造一条线索。
+    if (row.note) return leads
     // 没有备注和评价时，行本身（机构、诊室、姓名）就是可核对的原文。
     const fallback = [row.hospital, row.department, row.doctor].filter(Boolean).join(' · ')
     const text = subject || fallback
@@ -461,11 +493,18 @@ function evaluationEchoesReport(evaluation: string, texts: string[]): boolean {
  * 人工补上的姓名叫（DOCTOR_NAME_FIXES）只进线索，不在这里新建档案：
  * 被提到的人不该继承别人那一行的评价。
  */
-export function doctorsFromDocument(document: SourceDocument, reports: Report[]): Doctor[] {
+export function doctorsFromDocument(document: SourceDocument, reports: Report[], run?: LocationRun): Doctor[] {
   const hospitalOf = new Map(reports.map(report => [report.id, report.hospital_id]))
   // 跨表合并会把后面那行的线索并进前一行，后一行的 id 就不再出现在 reports 里。
   // 那一行的医生仍然存在（他确实在这家机构出诊），所以按机构名与地区兜底找同一家机构。
   const hospitalByName = new Map<string, string>()
+  // 一行里唯一能当线索的东西不进口语时（例如备注只写了平台专长介绍），这一行不产生线索，
+  // 但那位医生仍然在这家机构出诊。定位依据里有原文机构名到落点的对应，用它兜住这些人，
+  // 否则他们会连同机构一起从档案里消失——医生数会跟着线索数掉，而这两位本来就该在。
+  for (const result of run?.results ?? []) {
+    if (result.status !== 'geocoded' || !result.chosen) continue
+    hospitalByName.set(`${result.name}\u0000${result.region}`, `kdocs-amap-${result.chosen.id.toLowerCase()}`)
+  }
   // 一位医生的线索原文：姓名栏可能是「甲、乙」，两位都要拿到这条线索的正文。
   const textsByDoctor = new Map<string, string[]>()
   for (const report of reports) {
@@ -480,14 +519,19 @@ export function doctorsFromDocument(document: SourceDocument, reports: Report[])
       else textsByDoctor.set(doctorKey, [text])
     }
   }
-  const groups = new Map<string, { hospitalId: string; name: string; department: string; notes: string[]; evaluations: { text: string; source: string }[] }>()
+  const groups = new Map<string, { hospitalId: string; name: string; department: string; notes: string[]; specialties: string[]; evaluations: { text: string; source: string }[] }>()
   for (const row of sourceRows(document)) {
     const hospitalId = hospitalOf.get(row.reportId) ?? hospitalByName.get(`${row.hospital}\u0000${row.region}`)
     if (!row.doctor || !hospitalId) continue
     const key = `${hospitalId}\u0000${row.doctor}`
-    const group = groups.get(key) ?? { hospitalId, name: row.doctor, department: '', notes: [], evaluations: [] }
+    const group = groups.get(key) ?? { hospitalId, name: row.doctor, department: '', notes: [], specialties: [], evaluations: [] }
     if (!group.department && row.department) group.department = row.department
     if (row.note && !group.notes.includes(row.note)) group.notes.push(row.note)
+    // 平台专长介绍不进线索，落到档案的 specialties；出处就是 note 里那句原文，
+    // 所以这里不另造 URL——`official_sources` 只收能公开引用的链接，原表地址不外流。
+    for (const specialty of specialtiesFromNote(row.note)) {
+      if (!group.specialties.includes(specialty)) group.specialties.push(specialty)
+    }
     // 评价按来源逐条留：同一格里本来就有好几位用户各说一段，逐条记下才能数条数、回到各自出处。
     // 拼成一个长字符串会让「几条评价」无从回答，也把几个人的话糊成一个人的经历。
     for (const comment of row.comments) {
@@ -508,7 +552,7 @@ export function doctorsFromDocument(document: SourceDocument, reports: Report[])
       title: '',
       credentials: [],
       profile_urls: [],
-      specialties: [],
+      specialties: group.specialties,
       official_sources: [],
       ...(group.notes.length ? { note: group.notes.join('\n') } : {}),
       ...(evaluation ? { evaluation } : {}),
@@ -536,16 +580,28 @@ export function markUnlinked(reports: Report[], run: LocationRun): Report[] {
   })
 }
 
+/** 源表里出现过的机构（名称 + 地区），含那些没能产出线索的行。 */
+export function sourceHospitalNames(document: SourceDocument): { name: string; region: string }[] {
+  const seen = new Map<string, { name: string; region: string }>()
+  for (const row of sourceRows(document)) {
+    if (!row.hospital) continue
+    const key = `${row.hospital}\u0000${row.region}`
+    if (!seen.has(key)) seen.set(key, { name: row.hospital, region: row.region })
+  }
+  return [...seen.values()]
+}
+
 export function reportsWithLocations(document: SourceDocument): Report[] {
   const reports = reportsFromDocument(document)
   if (!existsSync(LOCATION_EVIDENCE)) return reports
   const run = readJson<LocationRun>(LOCATION_EVIDENCE)
   if (run.source_batch !== SOURCE_BATCH) throw new Error('定位依据必须对应当前主线批次')
-  return markUnlinked(linkLocationReports(reports, run), run)
+  return markUnlinked(linkLocationReports(reports, run, sourceHospitalNames(document)), run)
 }
 
 export function doctorsWithLocations(document: SourceDocument, reports: Report[]): Doctor[] {
-  return doctorsFromDocument(document, reports)
+  const run = existsSync(LOCATION_EVIDENCE) ? readJson<LocationRun>(LOCATION_EVIDENCE) : undefined
+  return doctorsFromDocument(document, reports, run?.source_batch === SOURCE_BATCH ? run : undefined)
 }
 
 /**

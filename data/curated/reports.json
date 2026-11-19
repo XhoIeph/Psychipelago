@@ -4140,47 +4140,6 @@
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "第三方页面显示擅长人格障碍、多重人格",
-      "parts_count": 2,
-      "evidence_context": {
-        "index_in_capture": "osdd-did · 第28行",
-        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
-      },
-      "evidence_source": "article",
-      "verification": {
-        "level": "unverified"
-      },
-      "extraction": {
-        "tool": "kdocs-sheet-transcription",
-        "captured_at": "2026-11-09"
-      },
-      "flags": {
-        "contains_minor": false,
-        "contains_selfharm_detail": false,
-        "sensitive": false
-      },
-      "status": "published"
-    },
-    {
-      "id": "kdocs-s2-r28-p2",
-      "platform": "web",
-      "source_channel": "browser_session",
-      "published_at_precision": "unknown",
-      "hospital_region": "上海",
-      "hospital_id": "kdocs-amap-b0ffgzngk5",
-      "hospital_name_raw": "上海市精神卫生中心",
-      "department": "精神科",
-      "doctor_name_raw": "杨晓敏",
-      "disorders": [
-        "osdd",
-        "did",
-        "pd"
-      ],
-      "source_topics": [
-        "人格障碍"
-      ],
-      "stage": "unknown",
-      "experience": null,
       "evidence_quote": "有repo确实可以看但态度不好",
       "parts_count": 2,
       "evidence_context": {
@@ -4362,42 +4321,6 @@
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "第三方页面显示擅长精神分裂症、心境障碍、焦虑、失眠、抑郁、多重人格障碍、分离性障碍等疾病的诊治。",
-      "evidence_context": {
-        "index_in_capture": "osdd-did · 第33行",
-        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
-      },
-      "evidence_source": "article",
-      "verification": {
-        "level": "unverified"
-      },
-      "extraction": {
-        "tool": "kdocs-sheet-transcription",
-        "captured_at": "2026-11-09"
-      },
-      "flags": {
-        "contains_minor": false,
-        "contains_selfharm_detail": false,
-        "sensitive": false
-      },
-      "status": "published"
-    },
-    {
-      "id": "kdocs-s2-r33-p2",
-      "platform": "web",
-      "source_channel": "browser_session",
-      "published_at_precision": "unknown",
-      "hospital_region": "广东",
-      "hospital_id": "kdocs-amap-b00140uerj",
-      "hospital_name_raw": "广东省人民医院",
-      "department": "心理精神科",
-      "doctor_name_raw": "李刚",
-      "disorders": [
-        "osdd",
-        "did"
-      ],
-      "stage": "unknown",
-      "experience": null,
       "evidence_quote": "有反馈得到诊断，可能需要住院观察",
       "evidence_context": {
         "index_in_capture": "osdd-did · 第33行",
@@ -4506,42 +4429,6 @@
       ],
       "stage": "unknown",
       "experience": null,
-      "evidence_quote": "第三方页面显示擅长“创伤应激障碍”",
-      "evidence_context": {
-        "index_in_capture": "osdd-did · 第35行",
-        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
-      },
-      "evidence_source": "article",
-      "verification": {
-        "level": "unverified"
-      },
-      "extraction": {
-        "tool": "kdocs-sheet-transcription",
-        "captured_at": "2026-11-09"
-      },
-      "flags": {
-        "contains_minor": false,
-        "contains_selfharm_detail": false,
-        "sensitive": false
-      },
-      "status": "published"
-    },
-    {
-      "id": "kdocs-s2-r35-p2",
-      "platform": "web",
-      "source_channel": "browser_session",
-      "published_at_precision": "unknown",
-      "hospital_region": "福建",
-      "hospital_id": "kdocs-amap-b025003yih",
-      "hospital_name_raw": "厦门市仙岳医院",
-      "department": "心理咨询科",
-      "doctor_name_raw": "吴为阁",
-      "disorders": [
-        "osdd",
-        "did"
-      ],
-      "stage": "unknown",
-      "experience": null,
       "evidence_quote": "可以区分asd症状和解离，不确定能诊断did/osdd",
       "evidence_context": {
         "index_in_capture": "osdd-did · 第35行",
@@ -4563,7 +4450,7 @@
       "status": "published"
     },
     {
-      "id": "kdocs-s2-r35-p3",
+      "id": "kdocs-s2-r35-p2",
       "platform": "web",
       "source_channel": "browser_session",
       "published_at_precision": "unknown",
@@ -4977,42 +4864,6 @@
       "evidence_quote": "陆军军医大学第二附属医院（新桥医院） · 心理咨询科 · 戴光明",
       "evidence_context": {
         "index_in_capture": "osdd-did · 第45行",
-        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
-      },
-      "evidence_source": "article",
-      "verification": {
-        "level": "unverified"
-      },
-      "extraction": {
-        "tool": "kdocs-sheet-transcription",
-        "captured_at": "2026-11-09"
-      },
-      "flags": {
-        "contains_minor": false,
-        "contains_selfharm_detail": false,
-        "sensitive": false
-      },
-      "status": "published"
-    },
-    {
-      "id": "kdocs-s2-r46",
-      "platform": "web",
-      "source_channel": "browser_session",
-      "published_at_precision": "unknown",
-      "hospital_region": "海南",
-      "hospital_id": "kdocs-amap-b038202b8m",
-      "hospital_name_raw": "海南安宁医院",
-      "department": "精神科",
-      "doctor_name_raw": "刘向来",
-      "disorders": [
-        "osdd",
-        "did"
-      ],
-      "stage": "unknown",
-      "experience": null,
-      "evidence_quote": "第三方页面显示擅长创伤后应激障碍、多重人格等",
-      "evidence_context": {
-        "index_in_capture": "osdd-did · 第46行",
         "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
       },
       "evidence_source": "article",
@@ -7853,44 +7704,6 @@
       "status": "published"
     },
     {
-      "id": "kdocs-s3-r68",
-      "platform": "web",
-      "source_channel": "browser_session",
-      "published_at_precision": "unknown",
-      "hospital_region": "广东",
-      "hospital_id": "kdocs-amap-b00140hu1b",
-      "hospital_name_raw": "广州医科大学附属脑科医院（芳村）",
-      "department": "精神科、儿少精神科",
-      "doctor_name_raw": "钟华清",
-      "disorders": [
-        "pd"
-      ],
-      "source_topics": [
-        "人格障碍"
-      ],
-      "stage": "unknown",
-      "experience": null,
-      "evidence_quote": "第三方页面显示擅长人格障碍",
-      "evidence_context": {
-        "index_in_capture": "人格障碍 · 第68行",
-        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
-      },
-      "evidence_source": "article",
-      "verification": {
-        "level": "unverified"
-      },
-      "extraction": {
-        "tool": "kdocs-sheet-transcription",
-        "captured_at": "2026-11-09"
-      },
-      "flags": {
-        "contains_minor": false,
-        "contains_selfharm_detail": false,
-        "sensitive": false
-      },
-      "status": "published"
-    },
-    {
       "id": "kdocs-s3-r69",
       "platform": "web",
       "source_channel": "browser_session",
@@ -8060,43 +7873,6 @@
       "evidence_quote": "广东省精神卫生中心 · 贾福军",
       "evidence_context": {
         "index_in_capture": "人格障碍 · 第73行",
-        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
-      },
-      "evidence_source": "article",
-      "verification": {
-        "level": "unverified"
-      },
-      "extraction": {
-        "tool": "kdocs-sheet-transcription",
-        "captured_at": "2026-11-09"
-      },
-      "flags": {
-        "contains_minor": false,
-        "contains_selfharm_detail": false,
-        "sensitive": false
-      },
-      "status": "published"
-    },
-    {
-      "id": "kdocs-s3-r74",
-      "platform": "web",
-      "source_channel": "browser_session",
-      "published_at_precision": "unknown",
-      "hospital_region": "广东",
-      "hospital_id": "kdocs-amap-b00140w7rp",
-      "hospital_name_raw": "广东省精神卫生中心",
-      "doctor_name_raw": "许明智",
-      "disorders": [
-        "pd"
-      ],
-      "source_topics": [
-        "人格障碍"
-      ],
-      "stage": "unknown",
-      "experience": null,
-      "evidence_quote": "第三方页面显示擅长进食障碍",
-      "evidence_context": {
-        "index_in_capture": "人格障碍 · 第74行",
         "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
       },
       "evidence_source": "article",
@@ -8662,43 +8438,6 @@
       "evidence_quote": "温州医科大学附属第一医院 · 精神科 · 赵永忠",
       "evidence_context": {
         "index_in_capture": "人格障碍 · 第90行",
-        "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
-      },
-      "evidence_source": "article",
-      "verification": {
-        "level": "unverified"
-      },
-      "extraction": {
-        "tool": "kdocs-sheet-transcription",
-        "captured_at": "2026-11-09"
-      },
-      "flags": {
-        "contains_minor": false,
-        "contains_selfharm_detail": false,
-        "sensitive": false
-      },
-      "status": "published"
-    },
-    {
-      "id": "kdocs-s3-r91",
-      "platform": "web",
-      "source_channel": "browser_session",
-      "published_at_precision": "unknown",
-      "hospital_region": "湖北",
-      "hospital_id": "kdocs-amap-b0lamrcibh",
-      "hospital_name_raw": "武汉市精神卫生中心",
-      "doctor_name_raw": "童俊",
-      "disorders": [
-        "pd"
-      ],
-      "source_topics": [
-        "人格障碍"
-      ],
-      "stage": "unknown",
-      "experience": null,
-      "evidence_quote": "第三方页面显示擅长自恋型人格障碍、边缘型人格障碍、摄食障碍、创伤后应激障碍等，出版有《人格障碍的心理咨询与治疗》等书籍",
-      "evidence_context": {
-        "index_in_capture": "人格障碍 · 第91行",
         "capture_scope": "data/evidence/kdocs/2026-11-09/document.json"
       },
       "evidence_source": "article",

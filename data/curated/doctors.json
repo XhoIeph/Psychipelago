@@ -691,7 +691,9 @@
       "title": "",
       "credentials": [],
       "profile_urls": [],
-      "specialties": [],
+      "specialties": [
+        "创伤应激障碍"
+      ],
       "official_sources": [],
       "note": "第三方页面显示擅长“创伤应激障碍”",
       "evaluation": "repo：厦门仙岳医院吴为阁医生对创伤方面也有一定了解，今天问询有没有必要去广脑评估一下他说他就能看，两份问卷费用可能一百左右，根据人表现和量表得出结论明显存在可能，口头确诊慢性创伤应激。\n09-16\n治疗方法倾向于CBT认知训练，有医院一次400元版和网络五个月每天共2000元版本\n\n可以区分asd症状和解离，不确定能诊断did/osdd\n\n我在仙岳医院吴为阁那边是判断解离症，多重人格不确定\n补充一下华西厦门医院应该是郑重医生，也能口头确诊转换障碍（即fnd）\n我在仙岳医院吴为阁那边是判断解离症，多重人格不确定",
@@ -1320,7 +1322,10 @@
       "title": "",
       "credentials": [],
       "profile_urls": [],
-      "specialties": [],
+      "specialties": [
+        "人格障碍",
+        "多重人格"
+      ],
       "official_sources": [],
       "note": "第三方页面显示擅长人格障碍、多重人格",
       "evaluation": "有repo确实可以看但态度不好",
@@ -1380,7 +1385,15 @@
       "title": "",
       "credentials": [],
       "profile_urls": [],
-      "specialties": [],
+      "specialties": [
+        "精神分裂症",
+        "心境障碍",
+        "焦虑",
+        "失眠",
+        "抑郁",
+        "多重人格障碍",
+        "分离性障碍"
+      ],
       "official_sources": [],
       "note": "第三方页面显示擅长精神分裂症、心境障碍、焦虑、失眠、抑郁、多重人格障碍、分离性障碍等疾病的诊治。",
       "evaluation": "有反馈得到诊断，可能需要住院观察",
@@ -1535,7 +1548,10 @@
       "title": "",
       "credentials": [],
       "profile_urls": [],
-      "specialties": [],
+      "specialties": [
+        "创伤后应激障碍",
+        "多重人格"
+      ],
       "official_sources": [],
       "note": "第三方页面显示擅长创伤后应激障碍、多重人格等"
     },
@@ -2276,7 +2292,9 @@
       "title": "",
       "credentials": [],
       "profile_urls": [],
-      "specialties": [],
+      "specialties": [
+        "人格障碍"
+      ],
       "official_sources": [],
       "note": "第三方页面显示擅长人格障碍"
     },
@@ -2351,7 +2369,9 @@
       "title": "",
       "credentials": [],
       "profile_urls": [],
-      "specialties": [],
+      "specialties": [
+        "进食障碍"
+      ],
       "official_sources": [],
       "note": "第三方页面显示擅长进食障碍"
     },
@@ -2542,7 +2562,12 @@
       "title": "",
       "credentials": [],
       "profile_urls": [],
-      "specialties": [],
+      "specialties": [
+        "自恋型人格障碍",
+        "边缘型人格障碍",
+        "摄食障碍",
+        "创伤后应激障碍"
+      ],
       "official_sources": [],
       "note": "第三方页面显示擅长自恋型人格障碍、边缘型人格障碍、摄食障碍、创伤后应激障碍等，出版有《人格障碍的心理咨询与治疗》等书籍"
     },

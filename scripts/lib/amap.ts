@@ -48,7 +48,14 @@ export function baseReportId(id: string): string {
   return id.replace(/-p\d+$/u, '')
 }
 
-export function locationTargets(reports: Report[]): LocationTarget[] {
+/**
+ * 原文机构清单：每条线索归到它所属的机构。
+ *
+ * `extra` 收的是「源表里有这一行、但这一行没能产出线索」的机构（例如备注只写了平台专长介绍）。
+ * 它们没有 report_id 可关联，却仍要有一份定位结果——医生档案靠机构名兜底找回这些医生，
+ * 少了它，那位医生会连同机构一起从档案里消失。条目的 report_ids 留空，不会有线索被关联上去。
+ */
+export function locationTargets(reports: Report[], extra: { name: string; region: string }[] = []): LocationTarget[] {
   const groups = new Map<string, LocationTarget>()
   for (const report of reports) {
     const name = report.hospital_name_raw!
@@ -58,6 +65,11 @@ export function locationTargets(reports: Report[]): LocationTarget[] {
     const base = baseReportId(report.id)
     if (!target.report_ids.includes(base)) target.report_ids.push(base)
     groups.set(key, target)
+  }
+  for (const item of extra) {
+    if (!item.name) continue
+    const key = targetKey(item.name, item.region)
+    if (!groups.has(key)) groups.set(key, { name: item.name, region: item.region, report_ids: [] })
   }
   return [...groups.values()]
 }
@@ -292,8 +304,8 @@ export async function searchAmap(key: string, keywords: string, city: string, re
   return { pois, requests: pages }
 }
 
-export function linkLocationReports(reports: Report[], run: LocationRun): Report[] {
-  const targets = locationTargets(reports)
+export function linkLocationReports(reports: Report[], run: LocationRun, extra: { name: string; region: string }[] = []): Report[] {
+  const targets = locationTargets(reports, extra)
   if (run.results.length !== targets.length) throw new Error('定位清单没有覆盖全部原文机构')
   const byTarget = new Map(run.results.map(result => [targetKey(result.name, result.region), result]))
   if (byTarget.size !== targets.length) throw new Error('定位清单存在重复机构')
