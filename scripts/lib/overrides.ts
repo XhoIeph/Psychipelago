@@ -228,6 +228,12 @@ export function applyOverrides(
       }
       const payload = { ...(record.set ?? {}) }
       if (String(payload.id ?? '') !== record.id) errors.push(`${where}: set.id 必须是 ${record.id}`)
+      // 坐标的出处只有两个：那轮高德定位的证据，和 amap-manual.json 里人工选定的点。
+      // 新增记录两个都没有，自带坐标能过 zod、也能过比对，一路到合成页面坐标表才炸。
+      if (kind === 'hospitals' && (payload.coordinates != null || payload.coordinates_source != null)) {
+        errors.push(`${where}: 新增机构不能自带坐标，坐标只能来自高德查询与人工选定`)
+        continue
+      }
       if (kind === 'reports') {
         // 上游以后出现同一条发言时，本地新增就该退场，不能两处并存。
         // 判据只用引文与抓取范围：表格摘录类线索没有原帖链接可对。

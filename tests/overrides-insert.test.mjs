@@ -47,3 +47,16 @@ test('拿已烘焙的结果当基准再叠 insert，就会自我否定——这�
   const again = applyOverrides('hospitals', baked, [insert])
   assert.match(again.errors.join('\n'), /已是源记录/, '烘焙产物里已经有这个 id，insert 必然撞自己')
 })
+
+test('新增机构自带坐标会被拒：坐标只能来自高德查询与人工选定', () => {
+  for (const stray of [{ coordinates: { lat: 39.9, lng: 116.4 } }, { coordinates_source: 'manual' }]) {
+    const record = {
+      ...insert,
+      id: 'local-test-coord',
+      set: { ...insert.set, id: 'local-test-coord', ...stray },
+    }
+    const applied = applyOverrides('hospitals', derived, [record])
+    assert.match(applied.errors.join('\n'), /新增机构不能自带坐标，坐标只能来自高德查询与人工选定/)
+    assert.ok(!applied.items.some(item => item.id === 'local-test-coord'), '被拒的新增不能进结果')
+  }
+})

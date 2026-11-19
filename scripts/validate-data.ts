@@ -12,6 +12,9 @@ import {
 import { CURATED_FILES, readJson } from './lib/paths.ts'
 import { existsSync } from 'node:fs'
 import { isDeepStrictEqual } from 'node:util'
+import { LOCATION_EVIDENCE } from './lib/amap.ts'
+import type { LocationRun } from './lib/amap.ts'
+import { evidenceHospitalId, readManualLocations } from './lib/locations.ts'
 import { reportsWithLocations, doctorsWithLocations, hospitalsWithOverrides, SOURCE_CAPTURE } from './import-kdocs.ts'
 import type { SourceDocument } from './import-kdocs.ts'
 import { applyOverrides, loadOverrides } from './lib/overrides.ts'
@@ -104,6 +107,28 @@ if (sourceDocument && sourceStructureValid && reports && !isDeepStrictEqual(repo
 // 两边各拼一次迟早会漂，漂出来的差异会伪装成「有人手改数据」。
 const expectedHospitals = hospitalsWithOverrides(items => withOverrides('hospitals', items)) ?? []
 if (hospitals && !isDeepStrictEqual(hospitals.items, expectedHospitals)) errors.push('hospitals.json 与本轮高德定位依据不一致，不能恢复退役机构或手改坐标')
+// 坐标的出处只有两个：那轮高德定位的证据，和 amap-manual.json 里人工选定的点。
+// hospitals.json 里有坐标、两处却都查不到出处，说明这条坐标是凭空长出来的。
+// 以前这种记录要等到 build-aggregates 合成页面坐标表才炸，离保存已经过了八分钟；这里提前到几秒。
+const geocodedIds = new Set<string>()
+if (existsSync(LOCATION_EVIDENCE)) {
+  for (const result of readJson<LocationRun>(LOCATION_EVIDENCE).results) {
+    const id = evidenceHospitalId(result)
+    if (id && result.status === 'geocoded' && result.chosen) geocodedIds.add(id)
+  }
+}
+try {
+  for (const entry of readManualLocations()) {
+    if (entry.status === 'geocoded' && entry.chosen) geocodedIds.add(entry.hospital_id)
+  }
+} catch (error) {
+  errors.push(`amap-manual.json 读不出来：${(error as Error).message}`)
+}
+for (const hospital of hospitals?.items ?? []) {
+  const id = String(hospital.id)
+  if (!hospital.coordinates || geocodedIds.has(id)) continue
+  errors.push(`hospitals.json → ${id}: 有坐标但证据集与 amap-manual.json 里都没有 status=geocoded 的定位记录，坐标只能来自高德查询与人工选定`)
+}
 if (sourceDocument && sourceStructureValid && doctors && reports &&
   !isDeepStrictEqual(doctors.items, withOverrides('doctors', doctorsWithLocations(sourceDocument, reports.items as Report[])))) {
   errors.push('doctors.json 与主线表格里的诊室、备注、评价不一致；请运行 node scripts/import-kdocs.ts，不能手改医生档案')
