@@ -1,65 +1,57 @@
 import Link from 'next/link'
 
 /**
- * 共享品牌组件：青绿色意识丝带 + 站名 TraumaCompass，整体是回首页的链接。
- * 按 2026-09-16 UI/UX 调整任务书 P1-0 实现：
- * - 图形资产 public/brand/traumacompass-ribbon.svg（原图 912×1280 竖向、单色 #008080）。
- *   以高度控制尺寸、宽度按 912:1280 自动计算，禁止拉伸/裁切/旋转/描边/加底板。
- * - 丝带与可见站名相邻 → 装饰图（alt="" + aria-hidden），链接可访问名称由可见文本提供。
- * - 显式写出 width/height 与 aspect-ratio，避免图片加载前后布局位移。
- * - 服务端组件（无 'use client'）；不使用 next/image，静态资源路径由 basePath 手动拼接。
+ * 共享品牌组件：群岛 Psychipelago 横排锁排（图形 + 英文词标 + 中文），整体是回首页的链接。
+ * 资产 public/brand/psychipelago-lockup.svg 取自品牌设计源文件 Psychipelago_SVG.svg
+ * （viewBox 1225.4×291.74），原样使用，禁止拉伸/裁切/改色/加底板。
  *
- * 版式由 .tc-brand 的 inline-flex + align-items:center 统一控制。
+ * - 锁排自带词标，因此站点不再用文字站名；可访问名称由图片 alt 提供。
+ * - 显式写 width/height 与 aspect-ratio，避免图片加载前后布局位移。
+ * - 服务端组件（无 'use client'）；路径按 basePath 手动拼接。
+ *
+ * 版式由 .tc-brand 的 inline-flex 控制。
  */
 
-/** 源 SVG 的 viewBox 尺寸，决定固定纵横比 */
-const RIBBON_WIDTH = 912
-const RIBBON_HEIGHT = 1280
-const RIBBON_ASPECT_RATIO = `${RIBBON_WIDTH} / ${RIBBON_HEIGHT}`
+/** 品牌锁排的固有尺寸（与 SVG 的 viewBox 一致），决定纵横比 */
+const LOGO_WIDTH = 1225.4
+const LOGO_HEIGHT = 291.74
+const LOGO_ASPECT_RATIO = `${LOGO_WIDTH} / ${LOGO_HEIGHT}`
 
 /**
  * next.config.ts 通过 env 注入 NEXT_PUBLIC_BASE_PATH：
- * 本地开发为 ''（根路径），GitHub Pages 项目站点为 '/TraumaCompass'。
+ * 本地开发为 ''（根路径），GitHub Pages 项目站点为 '/Psychipelago'。
  * 去掉可能存在的结尾斜杠，避免拼出 '//brand/...'。
  */
 const BASE_PATH = (process.env.NEXT_PUBLIC_BASE_PATH ?? '').replace(/\/+$/, '')
-const RIBBON_SRC = `${BASE_PATH}/brand/traumacompass-ribbon.svg`
+const LOGO_SRC = `${BASE_PATH}/brand/psychipelago-lockup.svg`
 
 export type BrandProps = {
-  /** 丝带高度（px），宽度按 912:1280 自动计算；默认 28 */
+  /** 锁排高度（px），宽度按 1245.5:301.25 自动计算；默认 34 */
   height?: number
-  /** 站名下方的辅助小字（渲染为 <small>）；省略时不渲染 */
+  /** 预留：辅助小字由锁排自带，不再单独渲染 */
   subtitle?: string
   /** 追加到 .tc-brand 之后的类名，用于按场景微调间距/字号 */
   className?: string
 }
 
-export function Brand({ height = 28, subtitle, className }: BrandProps) {
-  // 属性上的 width/height 给出加载前的固有尺寸提示；实际尺寸由行内样式 + aspect-ratio 决定
-  const intrinsicWidth = Math.round((height * RIBBON_WIDTH) / RIBBON_HEIGHT)
+export function Brand({ height = 34, className }: BrandProps) {
+  const intrinsicWidth = Math.round((height * LOGO_WIDTH) / LOGO_HEIGHT)
   const linkClassName = className ? `tc-brand ${className}` : 'tc-brand'
 
   return (
-    <Link
-      href="/"
-      className={linkClassName}
-    >
+    <Link href="/" className={linkClassName}>
       <img
-        src={RIBBON_SRC}
-        alt=""
-        aria-hidden="true"
+        src={LOGO_SRC}
+        alt="群岛 Psychipelago"
         width={intrinsicWidth}
         height={height}
         decoding="async"
         style={{
           width: 'auto',
           height: `${height}px`,
-          aspectRatio: RIBBON_ASPECT_RATIO,
+          aspectRatio: LOGO_ASPECT_RATIO,
         }}
-      /><span className="tc-brand-wordmark">
-        <span>TraumaCompass</span>
-        {subtitle ? <small>{subtitle}</small> : null}
-      </span>
+      />
     </Link>
   )
 }
@@ -68,14 +60,14 @@ export default Brand
 
 /**
  * 独立品牌图形（用于 /about/ 标题区等不与站名并排、也不作为链接的场景）。
- * 与 Brand 共用同一份资产与 basePath 逻辑；此处图形是页面主标识，因此给出真实 alt。
+ * 与 Brand 共用同一份资产与 basePath 逻辑。
  */
-export function RibbonMark({ height = 60, className }: { height?: number; className?: string }) {
-  const intrinsicWidth = Math.round((height * RIBBON_WIDTH) / RIBBON_HEIGHT)
+export function BrandMark({ height = 64, className }: { height?: number; className?: string }) {
+  const intrinsicWidth = Math.round((height * LOGO_WIDTH) / LOGO_HEIGHT)
   return (
     <img
-      src={RIBBON_SRC}
-      alt="TraumaCompass 青绿色意识丝带标识"
+      src={LOGO_SRC}
+      alt="群岛 Psychipelago 标识"
       width={intrinsicWidth}
       height={height}
       decoding="async"
@@ -84,9 +76,8 @@ export function RibbonMark({ height = 60, className }: { height?: number; classN
         display: 'block',
         width: 'auto',
         height: `${height}px`,
-        aspectRatio: RIBBON_ASPECT_RATIO,
+        aspectRatio: LOGO_ASPECT_RATIO,
       }}
     />
   )
 }
-

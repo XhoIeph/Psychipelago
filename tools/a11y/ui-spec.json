@@ -57,14 +57,12 @@
     },
     {
       "id": "type.brand-desktop",
-      "type": "computed",
-      "desc": "桌面侧栏品牌 24px / 750 / 字距 -0.9px / 行高 1.15",
-      "selector": ".tc-sidebar .tc-brand-wordmark",
-      "props": {
-        "fontSize": "24px",
-        "fontWeight": "750",
-        "letterSpacing": "-0.9px",
-        "lineHeight": "27.6px"
+      "type": "rect",
+      "desc": "桌面侧栏品牌锁排按高度渲染，宽度随固有比，窄栏内不溢出",
+      "selector": ".tc-sidebar .tc-brand img",
+      "min": {
+        "w": 120,
+        "h": 36
       },
       "at": 1440
     },
