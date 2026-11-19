@@ -14,25 +14,27 @@ const limit = limitArg >= 0 ? Number(args[limitArg + 1]) : 40
 const shouldWrite = args.includes('--write')
 
 const reports = readJson<{ items: Report[] }>(CURATED_FILES.reports).items.filter(
-  (report) => report.status === 'published',
+  // 表格摘录类线索没有公开原帖可查，巡检只看真有链接的那些。
+  (report) => report.status === 'published' && report.source_url,
 )
 
 const targets = reports.slice(0, Number.isFinite(limit) && limit > 0 ? limit : 40)
 const results: Array<{ id: string; url: string; status: number | null; ok: boolean; note?: string }> = []
 
 async function probe(report: Report) {
+  const url = report.source_url as string
   try {
-    const response = await fetch(report.source_url, {
+    const response = await fetch(url, {
       redirect: 'follow',
       signal: AbortSignal.timeout(15_000),
       headers: { 'user-agent': 'TraumaCompass-link-check/0.1 (+https://github.com/XhoIeph/TraumaCompass)' },
     })
     const ok = response.status >= 200 && response.status < 400
-    results.push({ id: report.id, url: report.source_url, status: response.status, ok })
+    results.push({ id: report.id, url, status: response.status, ok })
   } catch (error) {
     results.push({
       id: report.id,
-      url: report.source_url,
+      url,
       status: null,
       ok: false,
       note: error instanceof Error ? error.message : String(error),

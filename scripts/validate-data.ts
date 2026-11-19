@@ -10,8 +10,9 @@ import {
   reportsFileSchema,
 } from '../lib/schema.ts'
 import { CURATED_FILES, readJson } from './lib/paths.ts'
+import { existsSync } from 'node:fs'
 import { isDeepStrictEqual } from 'node:util'
-import { reportsWithLocations, doctorsWithLocations, hospitalsWithOverrides, SOURCE_CAPTURE, SOURCE_TITLE, SOURCE_URL } from './import-kdocs.ts'
+import { reportsWithLocations, doctorsWithLocations, hospitalsWithOverrides, SOURCE_CAPTURE } from './import-kdocs.ts'
 import type { SourceDocument } from './import-kdocs.ts'
 import { applyOverrides, loadOverrides } from './lib/overrides.ts'
 import type { OverrideKind } from './lib/overrides.ts'
@@ -75,14 +76,14 @@ const provinces = parseOrReport('provinces.json', provincesFileSchema, provinces
   | { items: Array<Record<string, unknown>> }
   | null
 
-const sourceDocument = readJson<SourceDocument>(SOURCE_CAPTURE)
-if (sourceDocument.url !== SOURCE_URL || sourceDocument.title !== SOURCE_TITLE) {
-  errors.push(`来源转写必须对应唯一主线《${SOURCE_TITLE}》`)
-}
-const sourceStructureValid = Array.isArray(sourceDocument.sheets) &&
+// 快照只留在本地做保真重放，不进仓库：原表地址与表名都不外流。
+// 本地没有快照时明说这次没做重放，不能静默当成通过。
+const sourceDocument = existsSync(SOURCE_CAPTURE) ? readJson<SourceDocument>(SOURCE_CAPTURE) : null
+if (!sourceDocument) console.log('保真重放跳过：本地无快照')
+const sourceStructureValid = !!sourceDocument && Array.isArray(sourceDocument.sheets) &&
   sourceDocument.sheets.length > 0 &&
   sourceDocument.sheets.every((sheet, index) => sheet.index === index && sheet.values.length >= 2)
-if (!sourceStructureValid) {
+if (sourceDocument && !sourceStructureValid) {
   errors.push('来源转写必须按工作表顺序包含表头与全部数据行')
 }
 // 覆盖层：人工改动只能经由 data/overrides 表达。比对基准因此是「源推导结果 + 覆盖层」，
@@ -96,14 +97,14 @@ function withOverrides<T extends Record<string, unknown>>(kind: OverrideKind, it
 }
 
 // 转写结构不成立时无法重放解析，只报结构错误，避免用残缺来源继续比对。
-if (sourceStructureValid && reports && !isDeepStrictEqual(reports.items, withOverrides('reports', reportsWithLocations(sourceDocument)))) {
+if (sourceDocument && sourceStructureValid && reports && !isDeepStrictEqual(reports.items, withOverrides('reports', reportsWithLocations(sourceDocument)))) {
   errors.push('reports.json 与主线表格转写不一致；请运行 node scripts/import-kdocs.ts，不能恢复旧源或手改引文')
 }
 // 机构清单与烘焙走同一个函数：覆盖层之后还要补人工选定的坐标，
 // 两边各拼一次迟早会漂，漂出来的差异会伪装成「有人手改数据」。
 const expectedHospitals = hospitalsWithOverrides(items => withOverrides('hospitals', items)) ?? []
 if (hospitals && !isDeepStrictEqual(hospitals.items, expectedHospitals)) errors.push('hospitals.json 与本轮高德定位依据不一致，不能恢复退役机构或手改坐标')
-if (sourceStructureValid && doctors && reports &&
+if (sourceDocument && sourceStructureValid && doctors && reports &&
   !isDeepStrictEqual(doctors.items, withOverrides('doctors', doctorsWithLocations(sourceDocument, reports.items as Report[])))) {
   errors.push('doctors.json 与主线表格里的诊室、备注、评价不一致；请运行 node scripts/import-kdocs.ts，不能手改医生档案')
 }
@@ -154,18 +155,20 @@ if (disorders && hospitals && doctors && reports && provinces) {
       errors.push(`reports.json → ${id}: doctor_id ${String(report.doctor_id)} 不存在`)
     }
 
-    const sourceNoteId = new URL(String(report.source_url)).pathname.split('/').filter(Boolean).at(-1)
+    // 链接与抓取同源的互检只在真有公开原帖时成立：表格摘录类线索没有原帖，两个字段都不写。
+    const rawSourceUrl = typeof report.source_url === 'string' ? report.source_url : ''
+    const sourceNoteId = rawSourceUrl ? new URL(rawSourceUrl).pathname.split('/').filter(Boolean).at(-1) : undefined
     const recordNoteId = typeof report.source_post_id === 'string'
       ? report.source_post_id.split('#')[0]
       : undefined
-    if (recordNoteId && recordNoteId !== sourceNoteId) {
+    if (sourceNoteId && recordNoteId && recordNoteId !== sourceNoteId) {
       errors.push(`reports.json → ${id}: source_post_id 与 source_url 指向不同原帖`)
     }
     const captureScope = (report.evidence_context as { capture_scope?: string } | undefined)?.capture_scope
     const capturedNoteId = typeof captureScope === 'string'
       ? captureScope.match(/(?:xiaohongshu|comments)[\\/]([0-9a-f]{24})(?:[\\/\\.]|$)/)?.[1]
       : undefined
-    if (capturedNoteId && capturedNoteId !== sourceNoteId) {
+    if (sourceNoteId && capturedNoteId && capturedNoteId !== sourceNoteId) {
       errors.push(`reports.json → ${id}: 证据截图或评论抓取与 source_url 指向不同原帖`)
     }
 
@@ -211,8 +214,8 @@ if (disorders && hospitals && doctors && reports && provinces) {
     if (flags?.contains_selfharm_detail && status === 'published') {
       errors.push(`reports.json → ${id}: 含自伤细节，status 必须是 withheld 或 removed`)
     }
-    if (status === 'published' && (!report.evidence_quote || !report.source_url)) {
-      errors.push(`reports.json → ${id}: 已发布线索必须同时具备 evidence_quote 与 source_url`)
+    if (status === 'published' && !report.evidence_quote) {
+      errors.push(`reports.json → ${id}: 已发布线索必须有原文引文`)
     }
   }
 

@@ -133,9 +133,12 @@ export const reportSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   platform: platformSchema,
   source_channel: sourceChannelSchema,
-  /** 规范化后的可长期访问链接（展示用） */
-  source_url: httpUrl,
-  /** 原始链接（小红书含会过期的 xsec_token），只写本地 raw，不进公开数据 */
+  /**
+   * 公开来源的链接。原始表格的地址与表名都不进数据：那类线索没有这个字段，
+   * 页面只显示「工作表 · 行号」这种位置标识。
+   */
+  source_url: httpUrl.optional(),
+  /** 原始链接 id；只有确有公开原帖时才留，表格摘录类线索不写 */
   source_post_id: z.string().optional(),
   /**
    * 不记录任何用户标识：既不留真实昵称，也不留哈希别名。

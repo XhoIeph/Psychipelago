@@ -3,7 +3,7 @@ import { readFileSync, readdirSync, existsSync, mkdtempSync, mkdirSync, writeFil
 import { resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import test from 'node:test'
-import { evaluationComments, reportsFromDocument, reportsWithLocations, doctorsWithLocations, SOURCE_CAPTURE, SOURCE_TITLE, SOURCE_URL } from '../scripts/import-kdocs.ts'
+import { evaluationComments, reportsFromDocument, reportsWithLocations, doctorsWithLocations, SOURCE_CAPTURE } from '../scripts/import-kdocs.ts'
 import { doctorsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import { LOCATION_EVIDENCE } from '../scripts/lib/amap.ts'
 import { hospitalsFromRun } from '../scripts/geocode-hospitals.ts'
@@ -38,15 +38,15 @@ const faithful = (field) => sourceReports.filter((report) => !overridden(report.
 
 /** 姓名格不是人名、或姓名格空着的行：它们照样是线索，名称取姓名格原文（姓名格空时取诊室那一格）。 */
 const subjectIds = new Set([
-  'kdocs-cp3b7toqal3j-s1-r2',
-  'kdocs-cp3b7toqal3j-s1-r2-p2',
-  'kdocs-cp3b7toqal3j-s1-r2-p3',
-  'kdocs-cp3b7toqal3j-s1-r43',
-  'kdocs-cp3b7toqal3j-s1-r50',
-  'kdocs-cp3b7toqal3j-s3-r49',
-  'kdocs-cp3b7toqal3j-s3-r51',
-  'kdocs-cp3b7toqal3j-s3-r108',
-  'kdocs-cp3b7toqal3j-s3-r109',
+  'kdocs-s1-r2',
+  'kdocs-s1-r2-p2',
+  'kdocs-s1-r2-p3',
+  'kdocs-s1-r43',
+  'kdocs-s1-r50',
+  'kdocs-s3-r49',
+  'kdocs-s3-r51',
+  'kdocs-s3-r108',
+  'kdocs-s3-r109',
 ])
 
 /** 工作表里地区与医院名只在段首填写，其余行留空继承。 */
@@ -62,8 +62,9 @@ const filledRow = (sheetIndex, excelRow) => {
 }
 
 test('三张工作表与每一行有内容的记录都进了库', () => {
-  assert.equal(document.url, SOURCE_URL)
-  assert.equal(document.title, SOURCE_TITLE)
+  // 快照里有什么不管，落到 curated 的一律不带表名与地址。
+  assert.ok(sourceReports.every((report) => report.source_url === undefined))
+  assert.ok(sourceReports.every((report) => report.evidence_context?.note_title === undefined))
   assert.deepEqual(document.sheets.map((sheet) => sheet.name), ['cptsd', 'osdd-did', '人格障碍'])
   assert.deepEqual(document.sheets.map((sheet) => sheet.values.length), [57, 55, 184])
   const perSheet = Object.fromEntries(document.sheets.map((sheet, index) => [
@@ -106,9 +107,9 @@ test('每条线索都能回溯到同一张表的同一单元格', () => {
   }
   // 只核对源转写：控制台新增的线索没有表格单元格可回溯，它们由覆盖层的 insert 校验管。
   for (const report of sourceReports) {
-    assert.equal(report.source_url, SOURCE_URL)
-    assert.equal(report.source_post_id, 'cp3b7ToQAl3J')
-    assert.equal(report.evidence_context.note_title, document.title)
+    assert.equal(report.source_url, undefined)
+    assert.equal(report.source_post_id, undefined)
+    assert.equal(report.evidence_context.note_title, undefined)
     assert.equal(report.evidence_context.capture_scope, SOURCE_CAPTURE)
     const [, sheetIndex, excelRow] = report.id.match(/-s(\d+)-r(\d+)(?:-p\d+)?$/u).map(Number)
     const sheet = document.sheets[sheetIndex - 1]
@@ -208,15 +209,15 @@ test('姓名格不是人名的行照原文当名称上卡，状态附注与整�
     assert.equal(report.doctor_id, undefined)
   }
   // 姓名格写的是专病门诊、课题组、团队、专家会诊：这串原文就是这一行的名称，和医生一样上卡。
-  const named = (id) => reports.find((report) => report.id === `kdocs-cp3b7toqal3j-${id}`)?.doctor_name_raw
-  if (!overridden('kdocs-cp3b7toqal3j-s1-r2', 'doctor_name_raw')) assert.equal(named('s1-r2'), '创伤后应激障碍专病门诊')
-  if (!overridden('kdocs-cp3b7toqal3j-s1-r43', 'doctor_name_raw')) assert.equal(named('s1-r43'), '临床心理科/创伤专病门诊')
-  if (!overridden('kdocs-cp3b7toqal3j-s1-r50', 'doctor_name_raw')) assert.equal(named('s1-r50'), '朱鸿儒 课题组')
-  if (!overridden('kdocs-cp3b7toqal3j-s3-r49', 'doctor_name_raw')) assert.equal(named('s3-r49'), '专家会诊')
-  if (!overridden('kdocs-cp3b7toqal3j-s3-r51', 'doctor_name_raw')) assert.equal(named('s3-r51'), '黄佳团队')
-  if (!overridden('kdocs-cp3b7toqal3j-s3-r108', 'doctor_name_raw')) assert.equal(named('s3-r108'), '郑重 团队')
+  const named = (id) => reports.find((report) => report.id === `kdocs-${id}`)?.doctor_name_raw
+  if (!overridden('kdocs-s1-r2', 'doctor_name_raw')) assert.equal(named('s1-r2'), '创伤后应激障碍专病门诊')
+  if (!overridden('kdocs-s1-r43', 'doctor_name_raw')) assert.equal(named('s1-r43'), '临床心理科/创伤专病门诊')
+  if (!overridden('kdocs-s1-r50', 'doctor_name_raw')) assert.equal(named('s1-r50'), '朱鸿儒 课题组')
+  if (!overridden('kdocs-s3-r49', 'doctor_name_raw')) assert.equal(named('s3-r49'), '专家会诊')
+  if (!overridden('kdocs-s3-r51', 'doctor_name_raw')) assert.equal(named('s3-r51'), '黄佳团队')
+  if (!overridden('kdocs-s3-r108', 'doctor_name_raw')) assert.equal(named('s3-r108'), '郑重 团队')
   // 整段科室介绍：名称取首个分句，整段原文仍在这条线索里，一个字都没丢。
-  const intro = reports.find((report) => report.id === 'kdocs-cp3b7toqal3j-s3-r109')
+  const intro = reports.find((report) => report.id === 'kdocs-s3-r109')
   if (!overridden(intro.id, 'doctor_name_raw')) assert.equal(intro.doctor_name_raw, '心身疾病一科设有“人格障碍专业组”')
   if (!overridden(intro.id, 'evidence_quote')) {
     assert.match(intro.evidence_quote, /^心身疾病一科设有“人格障碍专业组”，官网写明/u)
@@ -233,7 +234,7 @@ test('姓名格不是人名的行照原文当名称上卡，状态附注与整�
     ['s3-r109', intro.doctor_name_raw],
   ]
   for (const [id, expectedName] of expecting) {
-    const reportId = `kdocs-cp3b7toqal3j-${id}`
+    const reportId = `kdocs-${id}`
     const name = overridden(reportId, 'doctor_name_raw')
       ? reports.find((report) => report.id === reportId)?.doctor_name_raw
       : expectedName
@@ -297,8 +298,8 @@ test('医生档案只由表格里的诊室、备注、评价生成，且都能�
   }
   // 评价里点到别的医生，不改变这一行属于谁：梁红那行就是梁红，潘伟刚只在自己那行出现一次。
   // 曾经按人工表把这行补成「潘伟刚、梁红」，结果同一个人在医院页并排两张卡。
-  if (!overridden('kdocs-cp3b7toqal3j-s1-r4', 'doctor_name_raw')) {
-    assert.equal(reports.find((report) => report.id === 'kdocs-cp3b7toqal3j-s1-r4').doctor_name_raw, '梁红')
+  if (!overridden('kdocs-s1-r4', 'doctor_name_raw')) {
+    assert.equal(reports.find((report) => report.id === 'kdocs-s1-r4').doctor_name_raw, '梁红')
   }
   // 梁红那一行有四位用户各说一段，加上备注共五条线索
   const liang = reports.filter((report) => /-s1-r4(?:-p\d+)?$/u.test(report.id))
@@ -376,7 +377,7 @@ test('机构清单等于本轮定位依据加覆盖层，未定位的 1 条线�
   assert.deepEqual(existsSync('data/runs') ? readdirSync('data/runs') : [], [])
   for (const report of reports) {
     // 源转写的 id 来自 kdocs；控制台新增的按约定带 local- 前缀，两种都算合法来源。
-    assert.match(report.id, /^(?:kdocs-cp3b7toqal3j-|local-)/)
+    assert.match(report.id, /^(?:kdocs-|local-)/)
     if (report.hospital_id) assert.match(report.hospital_id, /^kdocs-amap-/)
     assert.doesNotMatch(JSON.stringify(report), /xiaohongshu|xsec_token|author_|parent_author|reply_to_author|ip_location|retired-2026/u)
   }

@@ -12,7 +12,8 @@ import { FileText } from 'lucide-react'
  */
 export function LeadEvidence({ sourceLabel, url, quote, contextNote, fullText }: {
   sourceLabel: string
-  url: string
+  /** 只有公开来源才给外链；原始表格的地址不外流，这种线索只显示来源标签 */
+  url?: string
   quote: string
   contextNote?: string
   fullText?: string
@@ -40,10 +41,17 @@ export function LeadEvidence({ sourceLabel, url, quote, contextNote, fullText }:
       <blockquote ref={quoteRef} className={expanded ? 'tc-quote' : 'tc-quote is-clamped'}>
         {expanded ? body : quote}
       </blockquote>
-      <a className="tc-evidence-source" href={url} target="_blank" rel="nofollow noopener noreferrer">
-        <FileText aria-hidden="true" />
-        {sourceLabel}
-      </a>
+      {url ? (
+        <a className="tc-evidence-source" href={url} target="_blank" rel="nofollow noopener noreferrer">
+          <FileText aria-hidden="true" />
+          {sourceLabel}
+        </a>
+      ) : (
+        <span className="tc-evidence-source">
+          <FileText aria-hidden="true" />
+          {sourceLabel}
+        </span>
+      )}
       {contextNote && <p className="tc-small tc-muted">{contextNote}</p>}
       {canExpand && (
         <button

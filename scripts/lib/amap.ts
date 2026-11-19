@@ -24,7 +24,8 @@ export type LocationResult = LocationTarget & {
 export const LOCATION_EVIDENCE = 'data/evidence/locations/amap-2026-11-09.json'
 
 export type LocationRun = {
-  source_url: string
+  /** 这批定位属于哪一轮转写；不含原表地址与表名 */
+  source_batch: string
   generated_at: string
   requests: number
   requests_total?: number

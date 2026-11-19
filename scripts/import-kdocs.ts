@@ -15,8 +15,11 @@ import { hospitalsFromRun, withManualCoordinates } from './lib/hospitals.ts'
 import { applyStoredOverrides } from './lib/overrides.ts'
 import { readManualLocations } from './lib/locations.ts'
 
-export const SOURCE_URL = 'https://www.kdocs.cn/l/cp3b7ToQAl3J'
-export const SOURCE_TITLE = '副本就诊地图10.25repo添加中'
+/**
+ * 主线批次标识。原表地址与表名都不进仓库：这串只用来判断「定位证据属于哪一轮转写」，
+ * 不含分享 id，也不含表名，读者拿它拼不出原表。
+ */
+export const SOURCE_BATCH = 'sheet-2026-11-09'
 export const SOURCE_CAPTURE = 'data/evidence/kdocs/2026-11-09/document.json'
 
 export type SourceMerge = { r1: number; c1: number; r2: number; c2: number }
@@ -242,7 +245,9 @@ export function sourceRows(document: SourceDocument): SourceRow[] {
       // 要么是这一行的科室归属，写成「门诊」会让读者以为找到了能挂号的门诊。
       const department = isPerson ? departmentCell : ''
       const annotation = annotations.length ? `（${annotations.join('，')}）` : ''
-      const reportId = `kdocs-cp3b7toqal3j-s${sheet.index + 1}-r${index + 1}`
+      // id 只标出位置：哪张表、第几行、这段是这一行的第几段发言。
+      // 分享 id 是原表链接的组成部分，不写进任何字段。
+      const reportId = `kdocs-s${sheet.index + 1}-r${index + 1}`
       rows.push({
         reportId,
         sheet: sheet.name,
@@ -302,8 +307,6 @@ export function reportsFromDocument(document: SourceDocument): Report[] {
         id: index === 0 ? row.reportId : `${row.reportId}-p${index + 1}`,
         platform: 'web',
         source_channel: 'browser_session',
-        source_url: document.url,
-        source_post_id: 'cp3b7ToQAl3J',
         published_at_precision: 'unknown',
         ...(row.region ? { hospital_region: row.region } : {}),
         hospital_name_raw: row.hospital,
@@ -317,7 +320,7 @@ export function reportsFromDocument(document: SourceDocument): Report[] {
         // 只有这一行比 200 字长时才单独存全文；与引文相同就不写，免得「展开原文」点了没变化。
         ...(segment.length > quote.length ? { evidence_full_text: clip(segment, 2000) } : {}),
         evidence_context: {
-          note_title: document.title,
+          // 不写 note_title：那张表的表名与本项目材料都不外流，来源标签只写「公开网页」。
           index_in_capture: `${row.sheet} · 第${row.row}行`,
           capture_scope: SOURCE_CAPTURE,
         },
@@ -502,7 +505,7 @@ export function reportsWithLocations(document: SourceDocument): Report[] {
   const reports = reportsFromDocument(document)
   if (!existsSync(LOCATION_EVIDENCE)) return reports
   const run = readJson<LocationRun>(LOCATION_EVIDENCE)
-  if (run.source_url !== SOURCE_URL) throw new Error('定位依据必须对应当前主线来源')
+  if (run.source_batch !== SOURCE_BATCH) throw new Error('定位依据必须对应当前主线批次')
   return markUnlinked(linkLocationReports(reports, run), run)
 }
 
@@ -532,7 +535,7 @@ export function hospitalsWithOverrides(
 function locationRun(): LocationRun | undefined {
   if (!existsSync(LOCATION_EVIDENCE)) return undefined
   const run = readJson<LocationRun>(LOCATION_EVIDENCE)
-  if (run.source_url !== SOURCE_URL) throw new Error('定位依据必须对应当前主线来源')
+  if (run.source_batch !== SOURCE_BATCH) throw new Error('定位依据必须对应当前主线批次')
   return run
 }
 
@@ -559,8 +562,8 @@ export function removalConflicts(base: Hospital[], kept: Hospital[], reports: Re
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const document = readJson<SourceDocument>(resolve(SOURCE_CAPTURE))
-  if (document.url !== SOURCE_URL || document.sheets.length === 0 || document.sheets.some(sheet => sheet.values.length < 2)) {
-    throw new Error('来源链接或工作表结构不符')
+  if (document.sheets.length === 0 || document.sheets.some(sheet => sheet.values.length < 2)) {
+    throw new Error('工作表结构不符')
   }
   const items = applyStoredOverrides('reports', reportsWithLocations(document))
   const updatedAt = document.captured_at.slice(0, 10)

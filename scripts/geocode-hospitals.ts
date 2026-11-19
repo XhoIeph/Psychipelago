@@ -9,7 +9,7 @@ import { resolve } from 'node:path'
 import { doctorsFileSchema, hospitalsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import type { Hospital, Report } from '../lib/schema.ts'
 import { acceptsManualCoordinate, hospitalsFromRun, withManualCoordinates } from './lib/hospitals.ts'
-import { doctorsWithLocations, hospitalsWithOverrides, markUnlinked, reportsFromDocument, SOURCE_CAPTURE, SOURCE_URL } from './import-kdocs.ts'
+import { doctorsWithLocations, hospitalsWithOverrides, markUnlinked, reportsFromDocument, SOURCE_BATCH, SOURCE_CAPTURE } from './import-kdocs.ts'
 import type { SourceDocument } from './import-kdocs.ts'
 import { LOCATION_EVIDENCE, locationTargets, searchName, searchCity, selectPoi, searchAmap, linkLocationReports } from './lib/amap.ts'
 import type { LocationRun, Poi } from './lib/amap.ts'
@@ -34,7 +34,7 @@ function loadEnvKey(): string {
 export { hospitalsFromRun, gcj02ToWgs84 } from './lib/hospitals.ts'
 
 export function applyRun(reports: Report[], run: LocationRun, document: SourceDocument) {
-  if (run.source_url !== SOURCE_URL || run.results.some(result => result.status === 'not_queried')) throw new Error('定位报告来源不符或尚未完成查询')
+  if (run.source_batch !== SOURCE_BATCH || run.results.some(result => result.status === 'not_queried')) throw new Error('定位报告批次不符或尚未完成查询')
   const linked = markUnlinked(linkLocationReports(reports, run), run)
   // 与烘焙同一条合成：派生集 → 覆盖层 → 人工确定的坐标。少补最后一步，
   // 这里写出的 hospitals.json 就与 validate 的比对基准差一批坐标，那份红会指向「有人手改数据」。
@@ -128,12 +128,12 @@ async function main() {
     return
   }
   const targets = locationTargets(reports)
-  const run: LocationRun = { source_url: SOURCE_URL, generated_at: new Date().toISOString(), requests: 0, requests_total: 0,
+  const run: LocationRun = { source_batch: SOURCE_BATCH, generated_at: new Date().toISOString(), requests: 0, requests_total: 0,
     results: targets.map(target => ({ ...target, status: 'not_queried', reason: '尚未查询', candidates: [] })) }
   const rawPath = 'data/raw/amap-2026-11-09.json'
   if (args.includes('--missing') && existsSync(LOCATION_EVIDENCE)) {
     const previous = readJson<LocationRun>(LOCATION_EVIDENCE)
-    if (previous.source_url !== SOURCE_URL) throw new Error('已有定位不属于当前来源，须重新全量定位')
+    if (previous.source_batch !== SOURCE_BATCH) throw new Error('已有定位不属于当前批次，须重新全量定位')
     const byTarget = new Map(previous.results.map(result => [`${result.name}\u0000${result.region}`, result]))
     run.requests_total = previous.requests_total ?? previous.requests
     // 线索的合并规则变了以后，report_ids 会随来源变化；定位结果是机构级事实，按机构名与地区沿用，

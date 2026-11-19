@@ -28,7 +28,6 @@ export default function MapPage() {
             : undefined,
           stage: report.stage,
           publishedAt: formatPublishedAt(report.published_at, report.published_at_precision),
-          url: report.source_url,
           fullText: report.evidence_full_text,
           doctorName: report.doctor_name_raw,
           disorders: report.disorders,

@@ -44,6 +44,9 @@ export function formatReportSource(report: Report): string {
   const section = report.evidence_context?.capture_scope?.includes('.webp')
     ? '图片摘录'
     : EVIDENCE_SOURCE_LABELS[report.evidence_source] ?? '原文'
+  // 表格摘录的线索没有可公开的标题：原表地址与表名都不进页面，
+  // 只留工作表与行号（如「cptsd · 第39行」），读者仍能判断同一张表内的位置。
+  if (report.source_channel === 'browser_session') return location ?? '表格摘录'
   if (!title) return `${PLATFORM_LABELS[report.platform]}${section}`
   if (location) return `《${title}》 · ${location}`
   return `《${title}》${section === '评论区' ? '的评论区' : ` · ${section}`}`
