@@ -71,4 +71,4 @@ tools/a11y/   界面断言表与执行器
 
 ## 许可
 
-代码与数据结构采用 [Apache-2.0](LICENSE)。引用保留原来源。
+代码采用 [AGPL-3.0](LICENSE)，线索原文与其余非代码内容采用 [CC BY-NC-ND 4.0](LICENSE-CC-BY-NC-ND)。引用保留原来源。

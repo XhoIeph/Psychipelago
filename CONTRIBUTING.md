@@ -22,8 +22,8 @@ docs(readme): shorten setup and contribution entry points
 
 ## 数据与隐私
 
-唯一线索来源为[《副本就诊地图10.25repo添加中》](https://www.kdocs.cn/l/cp3b7ToQAl3J)（WPS 电子表格，按 cptsd / osdd-did / 人格障碍 三张工作表逐行转写）。引文保留原文与上下文，分类不改写为确诊，不恢复退役采集的线索、截图与去标识记录。
+唯一线索来源为一份 WPS 电子表格，按 cptsd / osdd-did / 人格障碍 三张工作表逐行转写。原表的链接与表名不写进仓库、文档、站点与截图，也不转存原表内容。引文保留原文与上下文，分类不改写为确诊，不恢复退役采集的线索、截图与去标识记录。
 
 提交前核对暂存差异，纳入被引用的新文件，排除 `.env.local`、凭据、登录态、`data/raw/`、`tmp/`、依赖与构建缓存。不擅自改写远端历史。
 
-代码许可沿用 [Apache-2.0](LICENSE)，引文保留来源。
+代码采用 [AGPL-3.0](LICENSE)，线索原文与其余非代码内容采用 [CC BY-NC-ND 4.0](LICENSE-CC-BY-NC-ND)。引文保留来源。
