@@ -3,19 +3,22 @@ import type { DisorderId } from './schema'
 /**
  * 病症标签的显示口径
  *
- * 源文档「就诊地图」的标题只有三段：cptsd / osdd/did / 人格障碍。
- * 界面上的标签必须跟源文档一致，不能直接拿 `disorders.json` 的 `name_zh`：
- * 那是 ICD-11 术语写法（「复杂性创伤后应激障碍」「部分解离性身份障碍」），
- * 比源文档长得多，也会让同一批线索在两个地方出现两种叫法。
+ * 源文档的三段标题是 cptsd / osdd-did / 人格障碍。界面上的标签必须跟数据口径对得上，
+ * 不能直接拿 `disorders.json` 的 `name_zh`：那是 ICD-11 术语写法
+ * （「复杂性创伤后应激障碍」「部分解离性身份障碍」），比源文档长得多，
+ * 也会让同一批线索在两个地方出现两种叫法。
+ *
+ * cptsd 与 osdd/did 两段用通行缩写 PTSD/C-PTSD、OSDD/DID，「人格障碍」保持中文；
+ * 数据 id 一律不动，只换显示。
  *
  * osdd 与 did 合成一个标签：源文档把它们写在同一段里，
  * 数据上 36 条线索同时带这两个 id，分开显示会变成两张同名卡。
  */
 export const DISORDER_DISPLAY_LABELS: Record<DisorderId, string> = {
-  cptsd: 'cptsd',
+  cptsd: 'PTSD/C-PTSD',
   bpd: 'bpd',
-  osdd: 'osdd/did',
-  did: 'osdd/did',
+  osdd: 'OSDD/DID',
+  did: 'OSDD/DID',
   ptsd: 'ptsd',
   pd: '人格障碍',
   other: '其他',
@@ -23,9 +26,9 @@ export const DISORDER_DISPLAY_LABELS: Record<DisorderId, string> = {
 
 /** 显示顺序：与源文档段落顺序一致，兜底的「其他」放最后 */
 export const DISORDER_DISPLAY_ORDER: readonly string[] = [
-  'cptsd',
+  'PTSD/C-PTSD',
   'bpd',
-  'osdd/did',
+  'OSDD/DID',
   'ptsd',
   '人格障碍',
   '其他',
