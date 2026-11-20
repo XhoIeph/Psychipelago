@@ -113,7 +113,8 @@ test('每条线索都能回溯到同一张表的同一单元格', { skip: !hasSn
     assert.equal(report.source_url, undefined)
     assert.equal(report.source_post_id, undefined)
     assert.equal(report.evidence_context.note_title, undefined)
-    assert.equal(report.evidence_context.capture_scope, SOURCE_CAPTURE)
+    // 快照只留在本地做保真重放，它的路径不进载荷：读者打不开，也没必要知道。
+    assert.equal(report.evidence_context.capture_scope, undefined)
     const [, sheetIndex, excelRow] = report.id.match(/-s(\d+)-r(\d+)(?:-p\d+)?$/u).map(Number)
     const sheet = document.sheets[sheetIndex - 1]
     assert.equal(report.evidence_context.index_in_capture, `${sheet.name} · 第${excelRow}行`)

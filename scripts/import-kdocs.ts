@@ -387,9 +387,10 @@ export function reportsFromDocument(document: SourceDocument): Report[] {
         // 只有这一行比 200 字长时才单独存全文；与引文相同就不写，免得「展开原文」点了没变化。
         ...(segment.length > quote.length ? { evidence_full_text: clip(segment, 2000) } : {}),
         evidence_context: {
-          // 不写 note_title：那张表的表名与本项目材料都不外流，来源标签只写「公开网页」。
+          // 只留工作表与行号：表名与本项目材料都不外流，来源标签只写「公开网页」。
+          // 不写 capture_scope：它指向本地快照路径，那份快照不进仓库，
+          // 写进载荷等于给读者一个打不开的地址，位置信息 index_in_capture 已经够用。
           index_in_capture: `${row.sheet} · 第${row.row}行`,
-          capture_scope: SOURCE_CAPTURE,
         },
         evidence_source: 'article',
         verification: { level: 'unverified' },
