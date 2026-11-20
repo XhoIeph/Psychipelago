@@ -24,9 +24,6 @@ import { ProvinceDetail } from './ProvinceDetail'
 import type { MapHospital, MapLead, MapProvinceStat, SearchGroup, SearchResult } from './types'
 import { ClipboardList, Info, LocateFixed, Menu, Search, X } from 'lucide-react'
 
-/** 友链：桌面按钮、手机图标、关于卡正文三处共用同一地址。 */
-const SCALE_URL = 'https://psymetra.underlined.ink'
-
 const HOSPITAL_ZOOM = 10
 // 桌面侧栏宽度：默认 380，可拖 340–480，且不超过视口 42%（340 以下头部会挤成两行）。
 const SIDEBAR_DEFAULT = 380
@@ -137,8 +134,6 @@ export function MapApp(props: Props) {
   const projectRef = useRef<HTMLDivElement | null>(null)
   const aboutButtonRef = useRef<HTMLButtonElement | null>(null)
   const aboutIconRef = useRef<HTMLButtonElement | null>(null)
-  const scaleButtonRef = useRef<HTMLButtonElement | null>(null)
-  const scaleIconRef = useRef<HTMLAnchorElement | null>(null)
   const desktopRef = useRef(false)
 
   // The server and phones start map-first; desktop docking follows after hydration.
@@ -1232,14 +1227,7 @@ export function MapApp(props: Props) {
           )}
         </div>
         <div className="tc-project-corner" ref={projectRef}>
-          <button
-            ref={(node) => { scaleButtonRef.current = node; registerTrigger('scale', 'desktop')(node) }}
-            type="button"
-            className="tc-mapapp-ctl tc-mapapp-scale-link"
-            aria-expanded={openCard === 'scale'}
-            aria-controls="tc-scale-card"
-            onClick={() => toggleCard('scale')}
-          >量表测试</button>
+          <Link className="tc-mapapp-ctl tc-mapapp-scale-link" href="/psy/">量表测试</Link>
           <button
             ref={(node) => { aboutButtonRef.current = node; registerTrigger('about', 'desktop')(node) }}
             type="button"
@@ -1261,34 +1249,15 @@ export function MapApp(props: Props) {
             <Info size={20} aria-hidden="true" />
           </button>
           {/* 手机：关于 → 量表 → 夜间，同一列 44×44；桌面主题按钮在侧栏顶部。 */}
-          <a
-            ref={(node) => { scaleIconRef.current = node; registerTrigger('scale', 'mobile')(node) }}
-            className="tc-scale-icon"
-            href={SCALE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="量表测试"
-            aria-expanded={openCard === 'scale'}
-            aria-controls="tc-scale-card"
-            onClick={(event) => { event.preventDefault(); toggleCard('scale') }}
-          >
+          <Link className="tc-scale-icon" href="/psy/" aria-label="量表测试">
             <ClipboardList size={20} aria-hidden="true" />
-          </a>
+          </Link>
           {!isDesktop && <ThemeToggle theme={theme} onToggle={toggleTheme} />}
           {(openCard === 'about' || closingCard === 'about') && (
             <section id="tc-project-card" className={closingCard === 'about' ? 'tc-project-card is-closing' : 'tc-project-card'} aria-label="关于项目">
               <div className="tc-row tc-row--between"><strong>TraumaCompass</strong></div>
               <p>本项目旨在为CPTSD/BPD人群提供全国就诊地图，帮助更多人治疗心理创伤与障碍</p>
               <Link className="tc-card-action" href="/about/">了解我们</Link>
-            </section>
-          )}
-          {(openCard === 'scale' || closingCard === 'scale') && (
-            <section id="tc-scale-card" className={closingCard === 'scale' ? 'tc-project-card is-closing' : 'tc-project-card'} aria-label="量表测试">
-              <p>
-                免费量表测试看这里！→
-                <a href={SCALE_URL} target="_blank" rel="noopener noreferrer">PSYMETRA</a>
-                ←
-              </p>
             </section>
           )}
         </div>
