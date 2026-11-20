@@ -726,10 +726,12 @@ async function runSpecial(page, checks) {
   for (const c of checks) {
     const r = { id: c.id || c.type, type: c.type, desc: c.desc || '', pass: null, note: '', evidence: [] };
     try {
-      // 省面高亮：phase=paint 判「勾选后命中省画成 #087f7b/.26、其余压到 ≤.05」，
-      // phase=clear 判「取消勾选后回到按密度着色（≥.5、多种颜色）、不留 #087f7b」。
+      // 省面高亮：phase=paint 判「勾选后命中省画成品牌绿/.26、其余压到 ≤.05」，
+      // phase=clear 判「取消勾选后回到按密度着色（≥.5、多种颜色）、不留命中色」。
+      // 命中色可用 c.hitFill 覆盖；默认值跟 --tc-accent 浅色档一致，换主色只改主题令牌与这里。
       if (c.type === 'polygonPaint') {
         const chipSel = String(c.selector || 'button.tc-disorder-chip[data-disorder="cptsd"]');
+        const hitFill = String(c.hitFill || '#3b634b').toLowerCase();
         const data = await collectPolygonPaint(page, chipSel);
         if (data.missing) { r.pass = null; r.note = '本页没有病症开关，断言不适用：' + chipSel; out.push(r); continue; }
         if (data.noAmap) { r.pass = null; r.note = '地图运行时未就绪（window.AMap 缺失），断言不适用'; out.push(r); continue; }
@@ -741,12 +743,12 @@ async function runSpecial(page, checks) {
         const bad = [];
         const near = (a, b) => a != null && Math.abs(a - b) <= 0.005;
         if (phase === 'paint') {
-          const hit = calls.filter((t) => t.fillColor === '#087f7b' && near(t.fillOpacity, 0.26));
-          const rest = calls.filter((t) => !(t.fillColor === '#087f7b' && near(t.fillOpacity, 0.26)));
+          const hit = calls.filter((t) => String(t.fillColor).toLowerCase() === hitFill && near(t.fillOpacity, 0.26));
+          const rest = calls.filter((t) => !(String(t.fillColor).toLowerCase() === hitFill && near(t.fillOpacity, 0.26)));
           const bleed = rest.filter((t) => t.fillOpacity == null || t.fillOpacity > 0.05);
           const hitMin = Number(c.hitMin || 100);
           const missMin = Number(c.missMin || 100);
-          (hit.length >= hitMin ? ok : bad).push(`命中省上色 ${hit.length} 次（需 ≥${hitMin}，fillColor #087f7b / .26）`);
+          (hit.length >= hitMin ? ok : bad).push(`命中省上色 ${hit.length} 次（需 ≥${hitMin}，fillColor ${hitFill} / .26）`);
           (rest.length >= missMin ? ok : bad).push(`未命中省上色 ${rest.length} 次（需 ≥${missMin}）`);
           (bleed.length === 0 ? ok : bad).push(`未命中省透明度全部 ≤.05（越界 ${bleed.length} 次）`);
           for (const t of (c.headerIncludes || [])) {
@@ -758,11 +760,11 @@ async function runSpecial(page, checks) {
           const zeroAllowed = zero.filter((t) => t.fillColor === '#ffffff').length;
           const paintedMin = Number(c.paintedMin || 100);
           const colors = new Set(painted.map((t) => t.fillColor));
-          const stillHit = calls.filter((t) => t.fillColor === '#087f7b' && near(t.fillOpacity, 0.26));
+          const stillHit = calls.filter((t) => String(t.fillColor).toLowerCase() === hitFill && near(t.fillOpacity, 0.26));
           (painted.length >= paintedMin ? ok : bad).push(`恢复密度着色 ${painted.length} 次（需 ≥${paintedMin}，透明度 ≥.5）`);
           (colors.size >= Number(c.distinctColorsMin || 3) ? ok : bad).push(`密度色阶 ${colors.size} 种（需 ≥${Number(c.distinctColorsMin || 3)}）`);
           (zero.length === zeroAllowed ? ok : bad).push(`近零透明仅留给 0 报告省（白底 ${zeroAllowed} 次，其余 ${zero.length - zeroAllowed} 次）`);
-          (stillHit.length === 0 ? ok : bad).push(`不再有 #087f7b/.26 残留（${stillHit.length} 次）`);
+          (stillHit.length === 0 ? ok : bad).push(`不再有 ${hitFill}/.26 残留（${stillHit.length} 次）`);
         }
         (snap.pressed === wantPressed ? ok : bad).push(`aria-pressed=${snap.pressed}（需 ${wantPressed}）`);
         (snap.settled ? ok : bad).push('上色在 4s 内收敛');

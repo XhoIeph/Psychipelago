@@ -1,7 +1,7 @@
 {
   "name": "traumacompass-ui-spec-v2",
   "source": [
-    "D:\\DeepseekHarness\\cptsd_web\\docs\\departments\\designer\\UI_SPEC.md",
+    "docs/departments/designer/UI_SPEC.md",
     "第 2–7 节；分两批建成：第一批 2026-11-01（字号/字重/尺寸/层序），第二批 2026-11-01（§5 组件状态、§6 断点与图层、§7 动效时长）"
   ],
   "note": "只断言规范里写死的值，选择器全部取自线上 DOM 实测。skipIfMissing 用于本页不渲染的组件（如 .tc-button 只出现在其他路由）；notAssertable 记录 spec.cjs 判不了但已探针补测的项。 v3（2026-11-07）：见 docs/departments/designer/specs/v3-2026-11-07/BRIEF.md。",
@@ -58,13 +58,17 @@
     {
       "id": "type.brand-desktop",
       "type": "rect",
-      "desc": "桌面侧栏品牌锁排按高度渲染，宽度随固有比，窄栏内不溢出",
-      "selector": ".tc-sidebar .tc-brand img",
+      "desc": "桌面侧栏品牌锁排：.tc-brand-lockup 文字部分 109×36（2026-11-20 品牌批：左侧图形 mark 64×44 + 右侧两行文字；mark 与 lockup 整块都是 aria-hidden，可访问名取自 .tc-brand 这层链接的 aria-label）",
+      "selector": ".tc-sidebar .tc-brand-lockup",
+      "at": 1440,
       "min": {
-        "w": 120,
-        "h": 36
+        "w": 100,
+        "h": 34
       },
-      "at": 1440
+      "max": {
+        "w": 120,
+        "h": 38
+      }
     },
     {
       "id": "type.input",
@@ -589,7 +593,7 @@
       "minWidth": 2,
       "offset": 2,
       "expectColor": "#193b38",
-      "forbidColor": "#087f7b",
+      "forbidColor": "#3b634b",
       "precondition": [
         {
           "action": "click",
@@ -610,15 +614,15 @@
       "expectRestColor": "#dde7e3",
       "expectColor": "#193b38",
       "expectWidth": 1,
-      "forbidColor": "#087f7b",
+      "forbidColor": "#3b634b",
       "at": 1440
     },
     {
       "id": "s5-focus-no-brand-green",
       "type": "focusNoColor",
-      "desc": "§5：逐次 Tab，任何元素及 3 层祖先的焦点态都不得使用品牌绿 #087F7B（描边/投影/边框）",
+      "desc": "§5：逐次 Tab，任何元素及 3 层祖先的焦点态都不得使用品牌绿 #3B634B（描边/投影/边框）",
       "forbid": [
-        "#087f7b"
+        "#3b634b"
       ],
       "levels": 3,
       "maxTab": 160,
@@ -1181,82 +1185,6 @@
         {
           "action": "wait",
           "selector": ".tc-lead-doctor"
-        }
-      ],
-      "at": 1440
-    },
-    {
-      "id": "copy.lead-quote-before-source",
-      "type": "mustExist",
-      "desc": "§1.1：来源行在原文下方（.tc-quote 紧邻 .tc-evidence-source）",
-      "selector": ".tc-evidence > .tc-quote + .tc-evidence-source",
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-mapapp-burger",
-          "unlessVisible": ".tc-province-row",
-          "mobileSelector": ".tc-mobile-browse"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-province-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-doctor-link",
-          "textContains": "潘伟刚",
-          "afterMs": 1200
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-doctor-detail .tc-report",
-          "afterMs": 600
-        }
-      ],
-      "at": 1440
-    },
-    {
-      "id": "order.lead-source-not-first",
-      "type": "mustNotExist",
-      "desc": "§1.1：来源行不再排在原文上方",
-      "selector": ".tc-evidence > .tc-evidence-source + .tc-quote",
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-mapapp-burger",
-          "unlessVisible": ".tc-province-row",
-          "mobileSelector": ".tc-mobile-browse"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-province-row"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-doctor-link",
-          "textContains": "潘伟刚",
-          "afterMs": 1200
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-doctor-detail .tc-report",
-          "afterMs": 600
         }
       ],
       "at": 1440
@@ -3180,7 +3108,7 @@
       "selector": ".tc-detail-back",
       "props": {
         "fontSize": "15px",
-        "color": "rgb(9, 104, 97)",
+        "color": "rgb(47, 81, 57)",
         "height": "36px"
       },
       "precondition": [
@@ -3450,9 +3378,9 @@
       "desc": "V3-06 选中：浅绿底、深绿描边与文字、600",
       "selector": ".tc-disorder-chip[aria-pressed=\"true\"]",
       "props": {
-        "backgroundColor": "rgb(231, 245, 240)",
-        "borderTopColor": "rgb(9, 104, 97)",
-        "color": "rgb(9, 104, 97)",
+        "backgroundColor": "rgb(234, 243, 236)",
+        "borderTopColor": "rgb(47, 81, 57)",
+        "color": "rgb(47, 81, 57)",
         "fontWeight": "600"
       },
       "precondition": [
@@ -3483,9 +3411,9 @@
     {
       "id": "v3.chip-union",
       "type": "hasText",
-      "desc": "V3-06 多选取并集：cptsd + 人格障碍 → 111 家医院 · 267 条线索（2026-11-09 数据 22:53:19 / 构建 22:58:23 界面实测，只算挂上机构的）",
+      "desc": "V3-06 多选取并集：cptsd + 人格障碍 → 111 家医院 · 261 条线索（2026-11-20 数据 317 条已发布实测）",
       "selector": ".tc-level-head--country .tc-level-meta",
-      "text": "111 家医院 · 267 条线索",
+      "text": "111 家医院 · 261 条线索",
       "precondition": [
         {
           "action": "reload",
@@ -3578,7 +3506,7 @@
       "desc": "V3-07 医生名：深绿加粗、实线下划线，不是胶囊",
       "selector": ".tc-lead-doctor .tc-doctor-link",
       "props": {
-        "color": "rgb(9, 104, 97)",
+        "color": "rgb(47, 81, 57)",
         "fontWeight": "650",
         "textDecorationLine": "underline",
         "backgroundColor": "rgba(0, 0, 0, 0)",
@@ -3725,7 +3653,7 @@
       "selector": ".tc-doctor-disorders li",
       "props": {
         "borderTopLeftRadius": "7px",
-        "backgroundColor": "rgb(231, 245, 240)"
+        "backgroundColor": "rgb(234, 243, 236)"
       },
       "precondition": [
         {
@@ -3957,7 +3885,7 @@
       "desc": "V3-08 所在医院值深绿、无下划线",
       "selector": ".tc-doctor-origin-link .tc-doctor-meta-value",
       "props": {
-        "color": "rgb(9, 104, 97)",
+        "color": "rgb(47, 81, 57)",
         "textDecorationLine": "none"
       },
       "precondition": [
@@ -4121,7 +4049,7 @@
         {
           "action": "click",
           "selector": ".sheet .chipdrawer .tc-disorder-chip",
-          "textContains": "cptsd",
+          "textContains": "C-PTSD",
           "afterMs": 280
         },
         {
@@ -4148,7 +4076,7 @@
         {
           "action": "click",
           "selector": ".sheet .chipdrawer .tc-disorder-chip",
-          "textContains": "cptsd",
+          "textContains": "C-PTSD",
           "afterMs": 280
         },
         {
@@ -4265,7 +4193,7 @@
       "selector": ".sheet .back-btn",
       "props": {
         "fontSize": "15px",
-        "color": "rgb(9, 104, 97)"
+        "color": "rgb(47, 81, 57)"
       },
       "precondition": [
         {
@@ -5006,13 +4934,13 @@
     {
       "id": "v3.sidebar-resize-end-box-1440",
       "type": "rect",
-      "desc": "End 键把侧栏拉到上限 520（±2）：判的是 .tc-sidebar 实际盒子宽度，不是 aria 值",
+      "desc": "End 键把侧栏拉到上限 480（±2）：判的是 .tc-sidebar 实际盒子宽度，不是 aria 值（2026-11-20 品牌批把 280–520 收到 340–480，设计侧定：340 以下头部会挤成两行）",
       "selector": ".tc-sidebar",
       "min": {
-        "w": 518
+        "w": 478
       },
       "max": {
-        "w": 522
+        "w": 482
       },
       "precondition": [
         {
@@ -5030,10 +4958,10 @@
     {
       "id": "v3.sidebar-resize-end-value-1440",
       "type": "attr",
-      "desc": "End 键后 aria-valuenow 同步为 520：值与盒子必须一致（盒子在 end-box 里单独判）",
+      "desc": "End 键后 aria-valuenow 同步为 480：值与盒子必须一致（盒子在 end-box 里单独判）",
       "selector": ".tc-sidebar-resize",
       "attr": "aria-valuenow",
-      "equals": "520",
+      "equals": "480",
       "precondition": [
         {
           "action": "focus",
@@ -5050,13 +4978,13 @@
     {
       "id": "v3.sidebar-resize-home-box-1440",
       "type": "rect",
-      "desc": "Home 键把侧栏收到下限 280（±2）：判 .tc-sidebar 实际盒子宽度",
+      "desc": "Home 键把侧栏收到下限 340（±2）：判 .tc-sidebar 实际盒子宽度",
       "selector": ".tc-sidebar",
       "min": {
-        "w": 278
+        "w": 338
       },
       "max": {
-        "w": 282
+        "w": 342
       },
       "precondition": [
         {
@@ -5074,10 +5002,10 @@
     {
       "id": "v3.sidebar-resize-home-value-1440",
       "type": "attr",
-      "desc": "Home 键后 aria-valuenow 同步为 280",
+      "desc": "Home 键后 aria-valuenow 同步为 340",
       "selector": ".tc-sidebar-resize",
       "attr": "aria-valuenow",
-      "equals": "280",
+      "equals": "340",
       "precondition": [
         {
           "action": "focus",
@@ -5094,7 +5022,7 @@
     {
       "id": "v3.sidebar-resize-reset-box-1440",
       "type": "rect",
-      "desc": "Enter 从下限 280 复位到默认 380（±2）：证明是「回默认」而不是原地不动",
+      "desc": "Enter 从下限 340 复位到默认 380（±2）：证明是「回默认」而不是原地不动",
       "selector": ".tc-sidebar",
       "min": {
         "w": 378
@@ -5156,9 +5084,9 @@
       "at": 1440
     },
     {
-      "id": "v3.sidebar-resize-fit-280-1440",
+      "id": "v3.sidebar-resize-fit-340-1440",
       "type": "scrollFit",
-      "desc": "边界：侧栏收到 280 时栏内不得横向溢出（.tc-sidebar-body scrollWidth = clientWidth）",
+      "desc": "边界：侧栏收到下限 340 时栏内不得横向溢出（.tc-sidebar-body scrollWidth = clientWidth）",
       "selector": ".tc-sidebar-body",
       "precondition": [
         {
@@ -5174,9 +5102,9 @@
       "at": 1440
     },
     {
-      "id": "v3.sidebar-resize-fit-520-1440",
+      "id": "v3.sidebar-resize-fit-480-1440",
       "type": "scrollFit",
-      "desc": "边界：侧栏拉到 520 时栏内不得横向溢出（.tc-sidebar-body scrollWidth = clientWidth）",
+      "desc": "边界：侧栏拉到上限 480 时栏内不得横向溢出（.tc-sidebar-body scrollWidth = clientWidth）",
       "selector": ".tc-sidebar-body",
       "precondition": [
         {
@@ -5194,13 +5122,13 @@
     {
       "id": "v3.sidebar-resize-persist-box-1440",
       "type": "rect",
-      "desc": "记得住：Home 后按 11 次 → 的 456（±2）在刷新后仍生效（判 .tc-sidebar 盒子）",
+      "desc": "记得住：Home 后按 5 次 → 的 420（±2）在刷新后仍生效（判 .tc-sidebar 盒子）",
       "selector": ".tc-sidebar",
       "min": {
-        "w": 454
+        "w": 418
       },
       "max": {
-        "w": 458
+        "w": 422
       },
       "precondition": [
         {
@@ -5211,36 +5139,6 @@
           "action": "key",
           "value": "Home",
           "afterMs": 500
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
         },
         {
           "action": "key",
@@ -5277,10 +5175,10 @@
     {
       "id": "v3.sidebar-resize-persist-value-1440",
       "type": "attr",
-      "desc": "刷新后把手的 aria-valuenow 也是 456，与盒子一致",
+      "desc": "刷新后把手的 aria-valuenow 也是 420，与盒子一致",
       "selector": ".tc-sidebar-resize",
       "attr": "aria-valuenow",
-      "equals": "456",
+      "equals": "420",
       "precondition": [
         {
           "action": "focus",
@@ -5317,36 +5215,6 @@
           "afterMs": 90
         },
         {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
           "action": "reload",
           "afterMs": 2200
         }
@@ -5356,7 +5224,7 @@
     {
       "id": "v3.sidebar-resize-topbar-gap-1440",
       "type": "layoutRel",
-      "desc": "顶栏跟着侧栏走：.tc-mapapp-topbar 左缘在侧栏右缘之外 ≥20px（456 + 20 = 476）",
+      "desc": "顶栏跟着侧栏走：.tc-mapapp-topbar 左缘在侧栏右缘之外 ≥20px（420 + 20 = 440）",
       "a": ".tc-sidebar",
       "b": ".tc-mapapp-topbar",
       "relation": "leftOf",
@@ -5397,36 +5265,6 @@
           "afterMs": 90
         },
         {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
           "action": "reload",
           "afterMs": 2200
         }
@@ -5436,10 +5274,10 @@
     {
       "id": "v3.sidebar-resize-topbar-offset-1440",
       "type": "cssProp",
-      "desc": "顶栏位移等于侧栏宽度：transform 为 translateX(456px)（即左缘 = 宽度 + 20，±2）",
+      "desc": "顶栏位移等于侧栏宽度：transform 为 translateX(420px)（即左缘 = 宽度 + 20，±2）",
       "selector": ".tc-mapapp-topbar",
       "prop": "transform",
-      "expect": "matrix(1, 0, 0, 1, 456",
+      "expect": "matrix(1, 0, 0, 1, 420",
       "contains": true,
       "precondition": [
         {
@@ -5450,36 +5288,6 @@
           "action": "key",
           "value": "Home",
           "afterMs": 500
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
-        },
-        {
-          "action": "key",
-          "value": "ArrowRight",
-          "afterMs": 90
         },
         {
           "action": "key",
@@ -5638,9 +5446,10 @@
       "missMin": 100,
       "headerIncludes": [
         "35 家医院",
-        "90 条线索"
+        "88 条线索"
       ],
-      "desc": "V3-12 桌面勾「cptsd」后地图命中省画成 #087f7b/.26、未命中省压到 ≤.05，头部同步 35 家医院 · 90 条线索（2026-11-10 构建 21:37:26 实测）"
+      "desc": "V3-12 桌面勾「cptsd」后地图命中省画成 #3b634b/.26、未命中省压到 ≤.05，头部同步 35 家医院 · 88 条线索（2026-11-20 06:45:49 实测）",
+      "hitFill": "#3b634b"
     },
     {
       "id": "v3.d-filter-clear-restores-density-1440",
@@ -5658,7 +5467,8 @@
       "selector": "button.tc-disorder-chip[data-disorder=\"cptsd\"]",
       "paintedMin": 100,
       "distinctColorsMin": 3,
-      "desc": "V3-12 取消勾选后省面回到按密度着色（透明度 ≥.5、多色阶、近零透明只留给 0 报告省），不留 #087f7b/.26"
+      "desc": "V3-12 取消勾选后省面回到按密度着色（透明度 ≥.5、多色阶、近零透明只留给 0 报告省），不留 #3b634b/.26",
+      "hitFill": "#3b634b"
     },
     {
       "id": "v3.theme-toggle-1440",
@@ -6103,7 +5913,7 @@
     {
       "id": "v3.d-hospital-leads-match-row-1440",
       "type": "numberEquals",
-      "desc": "筛了病症进医院详情，列表行说「N 条线索」，详情标题也得说 N——两层各说各的数就是错（曾出现「详情里仍是全部线索」的问题）。数字比较，不比整句文案",
+      "desc": "筛了病症进医院详情，列表行说「N 条线索」，详情标题也得说 N——两层各说各的数就是错（需求方报的「详情里仍是全部线索」）。数字比较，不比整句文案",
       "selector": ".tc-level-head--hospital .tc-level-meta",
       "pattern": "(\\d+)\\s*条线索",
       "from": "rowLeads",
@@ -6148,7 +5958,7 @@
       "selector": ".tc-doctor-detail .tc-detail-count",
       "pattern": "(\\d+)",
       "expectSelector": ".tc-doctor-detail .tc-doctor-disorders li",
-      "expectMatch": "cptsd",
+      "expectMatch": "C-PTSD",
       "expectPattern": "(\\d+)",
       "precondition": [
         {
@@ -6371,135 +6181,6 @@
       "at": 390
     },
     {
-      "id": "v3.m-scale-entry-collapsed-390",
-      "type": "attr",
-      "desc": "量表入口默认收起；展开态在点开之后的那条里判",
-      "selector": ".tc-scale-icon",
-      "attr": "aria-expanded",
-      "equals": "false",
-      "at": 390
-    },
-    {
-      "id": "v3.m-scale-card-opens-390",
-      "type": "rect",
-      "desc": "点量表入口是弹卡、不是跳页；卡宽与关于卡同档（320 上下）",
-      "selector": "#tc-scale-card",
-      "min": {
-        "w": 280,
-        "h": 80
-      },
-      "max": {
-        "w": 344,
-        "h": 320
-      },
-      "precondition": [
-        {
-          "action": "wait",
-          "selector": ".tc-mapapp-canvas",
-          "settle": 1400
-        },
-        {
-          "action": "click",
-          "selector": ".tc-scale-icon",
-          "afterMs": 900
-        }
-      ],
-      "at": 390
-    },
-    {
-      "id": "v3.m-scale-card-expanded-390",
-      "type": "attr",
-      "desc": "卡开着时入口要报展开态，读屏用户才知道自己点了什么",
-      "selector": ".tc-scale-icon",
-      "attr": "aria-expanded",
-      "equals": "true",
-      "precondition": [
-        {
-          "action": "wait",
-          "selector": ".tc-mapapp-canvas",
-          "settle": 1400
-        },
-        {
-          "action": "click",
-          "selector": ".tc-scale-icon",
-          "afterMs": 900
-        }
-      ],
-      "at": 390
-    },
-    {
-      "id": "v3.m-scale-card-esc-closes-390",
-      "type": "mustNotExist",
-      "desc": "Esc 关量表卡；关不掉就挡着地图和底卡",
-      "selector": "#tc-scale-card",
-      "precondition": [
-        {
-          "action": "wait",
-          "selector": ".tc-mapapp-canvas",
-          "settle": 1400
-        },
-        {
-          "action": "click",
-          "selector": ".tc-scale-icon",
-          "afterMs": 900
-        },
-        {
-          "action": "key",
-          "value": "Escape",
-          "afterMs": 700
-        }
-      ],
-      "at": 390
-    },
-    {
-      "id": "v3.m-scale-card-esc-focus-390",
-      "type": "focusOn",
-      "desc": "Esc 关掉后焦点回到量表入口，不是掉到 body——键盘用户要能接着往下走",
-      "selector": ".tc-scale-icon",
-      "precondition": [
-        {
-          "action": "wait",
-          "selector": ".tc-mapapp-canvas",
-          "settle": 1400
-        },
-        {
-          "action": "click",
-          "selector": ".tc-scale-icon",
-          "afterMs": 900
-        },
-        {
-          "action": "key",
-          "value": "Escape",
-          "afterMs": 700
-        }
-      ],
-      "at": 390
-    },
-    {
-      "id": "v3.m-scale-card-exclusive-390",
-      "type": "mustNotExist",
-      "desc": "同时只开一张卡：点「关于」时量表卡要让位，不能两张叠着",
-      "selector": "#tc-scale-card",
-      "precondition": [
-        {
-          "action": "wait",
-          "selector": ".tc-mapapp-canvas",
-          "settle": 1400
-        },
-        {
-          "action": "click",
-          "selector": ".tc-scale-icon",
-          "afterMs": 900
-        },
-        {
-          "action": "click",
-          "selector": ".tc-about-icon",
-          "afterMs": 900
-        }
-      ],
-      "at": 390
-    },
-    {
       "id": "v3.d-scale-entry-rect-1440",
       "type": "rect",
       "desc": "桌面量表入口与「关于项目」并排同高（46 高），不是一行小字",
@@ -6512,33 +6193,6 @@
         "w": 120,
         "h": 56
       },
-      "at": 1440
-    },
-    {
-      "id": "v3.d-scale-card-opens-1440",
-      "type": "rect",
-      "desc": "桌面点量表入口弹卡，卡在顶栏下方、宽 320 档",
-      "selector": "#tc-scale-card",
-      "min": {
-        "w": 280,
-        "h": 80
-      },
-      "max": {
-        "w": 344,
-        "h": 320
-      },
-      "precondition": [
-        {
-          "action": "wait",
-          "selector": ".tc-mapapp-canvas",
-          "settle": 1200
-        },
-        {
-          "action": "click",
-          "selector": ".tc-mapapp-scale-link",
-          "afterMs": 900
-        }
-      ],
       "at": 1440
     },
     {
@@ -6707,6 +6361,39 @@
       ]
     },
     {
+      "id": "v3.doctor-eval-section-last-1440",
+      "type": "hasText",
+      "selector": ".tc-doctor-detail .tc-detail-section:last-child h3",
+      "text": "评价",
+      "at": 1440,
+      "desc": "医生页区块顺序：评价节是详情里最后一个 .tc-detail-section（线索原文整节已按 2026-11-17 要求撤下）。判的是「评价之后不再有别的节」，拦以后又往末尾塞内容",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "北京",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "北京大学第六医院",
+          "afterMs": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-doctor-link",
+          "textContains": "马弘",
+          "afterMs": 1200
+        }
+      ]
+    },
+    {
       "id": "v3.doctor-eval-empty-copy-1440",
       "at": 1440,
       "type": "hasText",
@@ -6813,72 +6500,6 @@
         }
       ],
       "styles": []
-    },
-    {
-      "id": "v3.doctor-leads-section-last-1440",
-      "type": "hasText",
-      "at": 1440,
-      "selector": ".tc-doctor-detail > .tc-detail-section:last-child",
-      "text": "线索原文",
-      "desc": "医生页区块顺序：线索原文是最后一节（评价在前，线索原文在末位）",
-      "precondition": [
-        {
-          "action": "wait",
-          "selector": ".tc-mapapp-canvas",
-          "settle": 1200
-        },
-        {
-          "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "北京",
-          "afterMs": 1200
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row",
-          "textContains": "北京大学第六医院",
-          "afterMs": 1200
-        },
-        {
-          "action": "click",
-          "selector": ".tc-doctor-link",
-          "textContains": "马弘",
-          "afterMs": 1200
-        }
-      ]
-    },
-    {
-      "id": "v3.doctor-eval-section-before-leads-1440",
-      "type": "hasText",
-      "at": 1440,
-      "selector": ".tc-doctor-detail > .tc-detail-section:nth-last-child(2)",
-      "text": "评价",
-      "desc": "医生页区块顺序：评价节紧挨在末节（线索原文）之前",
-      "precondition": [
-        {
-          "action": "wait",
-          "selector": ".tc-mapapp-canvas",
-          "settle": 1200
-        },
-        {
-          "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "北京",
-          "afterMs": 1200
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row",
-          "textContains": "北京大学第六医院",
-          "afterMs": 1200
-        },
-        {
-          "action": "click",
-          "selector": ".tc-doctor-link",
-          "textContains": "马弘",
-          "afterMs": 1200
-        }
-      ]
     },
     {
       "id": "v3.doctor-card-count-1440",
@@ -7370,114 +6991,6 @@
       ]
     },
     {
-      "id": "v3.doctor-quote-clamp-1440",
-      "type": "computed",
-      "at": 1440,
-      "selector": ".tc-doctor-detail > .tc-detail-section:last-child .tc-quote.is-clamped",
-      "props": {
-        "webkitLineClamp": "2"
-      },
-      "desc": "医生页折叠态引文 -webkit-line-clamp: 2",
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "北京"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row",
-          "textContains": "回龙观"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-doctor-link",
-          "textContains": "潘伟刚",
-          "afterMs": 1200
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-doctor-detail .tc-report"
-        }
-      ]
-    },
-    {
-      "id": "v3.doctor-quote-clamp-height-1440",
-      "type": "rect",
-      "at": 1440,
-      "selector": ".tc-doctor-detail > .tc-detail-section:last-child .tc-quote.is-clamped",
-      "min": {
-        "h": 50.5
-      },
-      "max": {
-        "h": 54.5
-      },
-      "desc": "医生页折叠态引文高 52.5±2（2 行 × 26.25）",
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "北京"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row",
-          "textContains": "回龙观"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-doctor-link",
-          "textContains": "潘伟刚",
-          "afterMs": 1200
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-doctor-detail .tc-report"
-        }
-      ]
-    },
-    {
-      "id": "v3.doctor-quote-clamp-has-toggle-1440",
-      "type": "mustExist",
-      "at": 1440,
-      "selector": ".tc-doctor-detail > .tc-detail-section:last-child .tc-evidence:has(.tc-quote.is-clamped) .tc-quote-toggle",
-      "desc": "只有存在 tc-quote-toggle 时才封顶（折叠态与展开控件同 .tc-evidence）",
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "北京"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row",
-          "textContains": "回龙观"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-doctor-link",
-          "textContains": "潘伟刚",
-          "afterMs": 1200
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-doctor-detail .tc-report"
-        }
-      ]
-    },
-    {
       "id": "v3.d-search-wuhan-first-1440",
       "type": "hasText",
       "desc": "搜索排序：搜「武汉」时医院组第一条必须是名称/城市命中——首行整行文本须含「湖北」（武汉的医院都在湖北，所以「sub 含湖北」与「名称含武汉」这一支同真）。改版前首条是郑州的医院（河南 · 线索 7 条），属「只有线索原文提到武汉」被排到了前面",
@@ -7841,6 +7354,112 @@
           "afterMs": 1400
         }
       ]
+    },
+    {
+      "id": "v3.m-scale-entry-links-390",
+      "type": "attr",
+      "desc": "手机右上角量表入口是指向站内 /psy/ 的链接，点一下就到量表库；不弹卡、不开新标签",
+      "selector": ".tc-scale-icon",
+      "attr": "href",
+      "equals": "/psy/",
+      "at": 390
+    },
+    {
+      "id": "v3.d-scale-entry-links-1440",
+      "type": "attr",
+      "desc": "桌面「量表测试」按钮同样指向站内 /psy/，不再是外链",
+      "selector": ".tc-mapapp-scale-link",
+      "attr": "href",
+      "equals": "/psy/",
+      "at": 1440
+    },
+    {
+      "id": "v3.d-zero-lead-doctor-no-card-1440",
+      "type": "forbidText",
+      "at": 1440,
+      "desc": "2026-11-20 数据侧把 7 条第三方专长描述从线索里摘走，刘向来（海南省安宁医院）变成零线索医生；设计侧定 (b)：零线索医生不列出（卡片仍按线索分组，不改成全部医生档案），也不该出现在搜索结果里。样本从 published 数据算出（当天共 5 位零线索：刘向来、钟华清、许明智、曹晓华、王祎坤）；若该医生日后重新有线索，换一位零线索医生，判据不变（判据：医院详情的医生区里搜不到这个姓名；他会出现在医院页的医生卡里即红）",
+      "text": "刘向来",
+      "scope": ".tc-detail",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-province-row",
+          "textContains": "海南",
+          "settle": 900
+        },
+        {
+          "action": "click",
+          "selector": ".tc-hospital-row",
+          "textContains": "安宁",
+          "settle": 1200
+        }
+      ]
+    },
+    {
+      "id": "v3.d-zero-lead-doctor-not-in-search-1440",
+      "type": "forbidText",
+      "at": 1440,
+      "desc": "2026-11-20 数据侧把 7 条第三方专长描述从线索里摘走，刘向来（海南省安宁医院）变成零线索医生；设计侧定 (b)：零线索医生不列出（卡片仍按线索分组，不改成全部医生档案），也不该出现在搜索结果里。样本从 published 数据算出（当天共 5 位零线索：刘向来、钟华清、许明智、曹晓华、王祎坤）；若该医生日后重新有线索，换一位零线索医生，判据不变（判据：搜索面板里搜不到这个姓名。范围取 .tc-mapapp-search 而不是结果列表——零命中时结果列表整个不渲染，取列表会让断言因「元素不存在」红得不明不白）",
+      "text": "刘向来",
+      "scope": ".tc-mapapp-search",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas",
+          "settle": 1200
+        },
+        {
+          "action": "fill",
+          "selector": "input[type=\"search\"]",
+          "value": "刘向来",
+          "settle": 1800
+        }
+      ]
+    },
+    {
+      "id": "v3.m-scale-entry-nav-390",
+      "type": "pathname",
+      "at": 390,
+      "desc": "量表入口由「弹卡 + 外链」改成站内 /psy/ 后新增：href 断言只验属性，验不出目标页不存在；这条判真导航——点下去 location.pathname 以 /psy/ 结尾，落地页有量表网格 .tc-psy-grid。入口链接与量表库必须同一次发布，只有入口没有页面时这条会红（手机入口在地图右上角控件列，可能被上层遮，用 DOM 点击）",
+      "endsWith": "/psy/",
+      "expectSelector": ".tc-psy-grid",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas",
+          "settle": 1200
+        },
+        {
+          "action": "clickjs",
+          "selector": ".tc-scale-icon",
+          "settle": 1800
+        }
+      ]
+    },
+    {
+      "id": "v3.d-scale-entry-nav-1440",
+      "type": "pathname",
+      "at": 1440,
+      "desc": "量表入口由「弹卡 + 外链」改成站内 /psy/ 后新增：href 断言只验属性，验不出目标页不存在；这条判真导航——点下去 location.pathname 以 /psy/ 结尾，落地页有量表网格 .tc-psy-grid。入口链接与量表库必须同一次发布，只有入口没有页面时这条会红（桌面入口是顶栏右上角的按钮 .tc-mapapp-ctl）",
+      "endsWith": "/psy/",
+      "expectSelector": ".tc-psy-grid",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas",
+          "settle": 1200
+        },
+        {
+          "action": "click",
+          "selector": ".tc-mapapp-scale-link",
+          "settle": 1800
+        }
+      ]
     }
   ],
   "appliesTo": [
@@ -7862,23 +7481,23 @@
     },
     {
       "id": "filter.pick-shows-reset",
-      "reason": "病症改多选，取消靠再点同一行，移除「清除筛选」"
+      "reason": "2026-11-03 设计侧定：病症改多选、取消靠再点同一行，「清除筛选」删除"
     },
     {
       "id": "filter.reset-returns-all",
-      "reason": "病症改多选，取消靠再点同一行，移除「清除筛选」"
+      "reason": "2026-11-03 设计侧定：病症改多选、取消靠再点同一行，「清除筛选」删除"
     },
     {
       "id": "copy.reset-restores-label",
-      "reason": "病症改多选，取消靠再点同一行，移除「清除筛选」"
+      "reason": "2026-11-03 设计侧定：病症改多选、取消靠再点同一行，「清除筛选」删除"
     },
     {
       "id": "filter.reset-hides-itself",
-      "reason": "病症改多选，取消靠再点同一行，移除「清除筛选」"
+      "reason": "2026-11-03 设计侧定：病症改多选、取消靠再点同一行，「清除筛选」删除"
     },
     {
       "id": "filter.no-province-control",
-      "reason": "省份原先进筛选面板（与侧栏列表两个入口两种写法），后来合并进筛选区，A30 把筛选区改成两张卡片、省份是其中一张，本条被 A30 覆盖"
+      "reason": "2026-11-02 定「省份不进筛选面板」，理由是当时省份只靠侧栏列表选（两个入口两种写法）；2026-11-06 需求方明确要求把省份合并进筛选，A30 改为筛选区两张卡片、省份是其中一张，本条被 A30 覆盖"
     },
     {
       "id": "s5-burger-48-375",
@@ -8358,13 +7977,81 @@
     },
     {
       "id": "v3.doctor-eval-section-last-1440",
-      "why": "评价在前、线索原文在末位；原判「评价节是末位」方向相反",
+      "why": "2026-11-09 晚需求方改判：评价在前、线索原文在末位，原判「评价节是末位」方向反了",
       "retiredIn": "v3-2026-11-07"
     },
     {
       "id": "v3.doctor-eval-absent-echo-1440",
       "why": "2026-11-09 22:28:44 起评价节一律渲染（回声医生也有评价节），旧判「回声不渲染」方向反了，退役",
       "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.m-scale-entry-collapsed-390",
+      "why": "2026-11-16 需求方定：量表入口点击直接跳站内 /psy/，不再弹卡、不再外链原站；弹出卡、展开态与 Esc 归还焦点这套判据失去对象（原判：量表入口默认收起；展开态在点开之后的那条里判）",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.m-scale-card-opens-390",
+      "why": "2026-11-16 需求方定：量表入口点击直接跳站内 /psy/，不再弹卡、不再外链原站；弹出卡、展开态与 Esc 归还焦点这套判据失去对象（原判：点量表入口是弹卡、不是跳页；卡宽与关于卡同档（320 上下））",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.m-scale-card-expanded-390",
+      "why": "2026-11-16 需求方定：量表入口点击直接跳站内 /psy/，不再弹卡、不再外链原站；弹出卡、展开态与 Esc 归还焦点这套判据失去对象（原判：卡开着时入口要报展开态，读屏用户才知道自己点了什么）",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.m-scale-card-esc-closes-390",
+      "why": "2026-11-16 需求方定：量表入口点击直接跳站内 /psy/，不再弹卡、不再外链原站；弹出卡、展开态与 Esc 归还焦点这套判据失去对象（原判：Esc 关量表卡；关不掉就挡着地图和底卡）",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.m-scale-card-esc-focus-390",
+      "why": "2026-11-16 需求方定：量表入口点击直接跳站内 /psy/，不再弹卡、不再外链原站；弹出卡、展开态与 Esc 归还焦点这套判据失去对象（原判：Esc 关掉后焦点回到量表入口，不是掉到 body——键盘用户要能接着往下走）",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.m-scale-card-exclusive-390",
+      "why": "2026-11-16 需求方定：量表入口点击直接跳站内 /psy/，不再弹卡、不再外链原站；弹出卡、展开态与 Esc 归还焦点这套判据失去对象（原判：同时只开一张卡：点「关于」时量表卡要让位，不能两张叠着）",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.d-scale-card-opens-1440",
+      "why": "2026-11-16 需求方定：量表入口点击直接跳站内 /psy/，不再弹卡、不再外链原站；弹出卡、展开态与 Esc 归还焦点这套判据失去对象（原判：桌面点量表入口弹卡，卡在顶栏下方、宽 320 档）",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.doctor-leads-section-last-1440",
+      "why": "2026-11-17 需求方定：医生页「线索原文」整节撤下，彻底不再展示；该节是否存在、是否在末位、评价是否紧挨在它之前，这些判据失去对象（原判：线索原文是最后一节、评价在它之前）",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.doctor-eval-section-before-leads-1440",
+      "why": "2026-11-17 需求方定：医生页「线索原文」整节撤下，彻底不再展示；该节是否存在、是否在末位、评价是否紧挨在它之前，这些判据失去对象（原判：线索原文是最后一节、评价在它之前）",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.doctor-quote-clamp-1440",
+      "why": "2026-11-17 需求方定：医生页「线索原文」整节撤下，彻底不再展示；折叠引文与展开控件都随这一节消失，钳制判据失去对象（原判：医生页折叠态引文 -webkit-line-clamp 为 2）",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.doctor-quote-clamp-height-1440",
+      "why": "2026-11-17 需求方定：医生页「线索原文」整节撤下，彻底不再展示；折叠引文与展开控件都随这一节消失，钳制判据失去对象（原判：医生页折叠态引文高 52.5±2（2 行 × 26.25））",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "v3.doctor-quote-clamp-has-toggle-1440",
+      "why": "2026-11-17 需求方定：医生页「线索原文」整节撤下，彻底不再展示；折叠引文与展开控件都随这一节消失，钳制判据失去对象（原判：折叠态与展开控件同 .tc-evidence，且存在 .tc-quote-toggle）",
+      "retiredIn": "v3-2026-11-07"
+    },
+    {
+      "id": "copy.lead-quote-before-source",
+      "why": "2026-11-20 数据侧把 7 条第三方专长描述从线索里摘走后，医生详情只渲染「评价」一节，线索原文不再出现在任何页面（ReportCard.tsx 已无调用方）——这两条判「原文在来源之前」的断言失去对象"
+    },
+    {
+      "id": "order.lead-source-not-first",
+      "why": "2026-11-20 数据侧把 7 条第三方专长描述从线索里摘走后，医生详情只渲染「评价」一节，线索原文不再出现在任何页面（ReportCard.tsx 已无调用方）——这两条判「原文在来源之前」的断言失去对象"
     }
   ]
 }
