@@ -15,8 +15,11 @@ import { hospitalsFromRun, withManualCoordinates } from './lib/hospitals.ts'
 import { applyStoredOverrides } from './lib/overrides.ts'
 import { readManualLocations } from './lib/locations.ts'
 
-export const SOURCE_URL = 'https://www.kdocs.cn/l/cp3b7ToQAl3J'
-export const SOURCE_TITLE = '副本就诊地图10.25repo添加中'
+/**
+ * 主线批次标识。原表地址与表名都不进仓库：这串只用来判断「定位证据属于哪一轮转写」，
+ * 不含分享 id，也不含表名，读者拿它拼不出原表。
+ */
+export const SOURCE_BATCH = 'sheet-2026-11-09'
 export const SOURCE_CAPTURE = 'data/evidence/kdocs/2026-11-09/document.json'
 
 export type SourceMerge = { r1: number; c1: number; r2: number; c2: number }
@@ -55,15 +58,40 @@ function clip(text: string, limit: number): string {
   return `${text.slice(0, limit - 1).trimEnd()}…`
 }
 
+/**
+ * 带冒号也不代表人名：「回复 momo : …」「补一个费用前提：…」「repo：…」都是正文里的标注，
+ * 原表里这类前缀常和昵称挤在同一格，当成署名切开会切出一条只剩昵称的假评价。
+ */
+const NOT_A_NAME = /^(?:回复|补充|补一个|补个|更新|说明|repo|搬运|转发|来源|前言|前提|费用|价格|挂号|诊断|结论|时间|地址|电话|注意|提示|备注)/iu
+
+/**
+ * 「补一个费用前提：……」「回复 momo : ……」这类自带标注的行：不是署名，但常用来另起一段。
+ * 当成署名会切出假评价，完全并进上一段又会把一段独立的经历埋进全文里——`cptsd` 第 33 行的费用段
+ * 就是这么消失的。所以它既不当人名，也不丢，只作为新一段的起点，文字照原样留在段首。
+ */
+const ANNOTATION_LINE = /^(?:回复|补充|补一个|补个|更新|说明|repo|搬运|转发|来源|前言|前提|费用|价格|挂号|诊断|结论|时间|地址|电话|注意|提示|备注)[^：:\n]{0,20}[：:]/u
+
 /** 一行开头的「昵称:」：署名。剥掉名字，只留正文。 */
 function splitSpeaker(line: string): { speaker: string; rest: string } | null {
   const match = line.match(/^([^\s：:][^：:]{0,23})\s*[：:]\s*(.*)$/u)
   if (!match) return null
   const speaker = match[1].trim()
   if (!speaker || LABEL_PREFIX.test(speaker)) return null
+  if (NOT_A_NAME.test(speaker) || /\s/u.test(speaker)) return null
   // 带句读的不是昵称，是正文里的一句话
   if (/[。！？；，、!?]/u.test(speaker)) return null
   return { speaker, rest: match[2].trim() }
+}
+
+/**
+ * 整格第一行常常只有发帖人昵称（原表里不带冒号）。这种行不入库，但要先认出它，
+ * 否则它会变成一条只有两个字的假评价——「尘尘」那样。
+ * 短评（「避雷」）也可能长得一样，所以调用处还要求这格后面有「X：」形态的行。
+ */
+function isBareSpeaker(line: string): boolean {
+  if (line.length > 12) return false
+  if (/[：:\s。！？；，、!?]/u.test(line)) return false
+  return !LABEL_PREFIX.test(line)
 }
 
 /**
@@ -104,9 +132,13 @@ function cleanCommentText(text: string): string {
  * 署名本身只用于切分，不入库；公开数据不保留作者标识。
  */
 export function evaluationComments(raw: string): string[] {
-  const lines = raw.replace(/\r\n?/gu, '\n').split('\n').map(line => line.trim()).filter(Boolean)
+  const trimmed = raw.replace(/\r\n?/gu, '\n').split('\n').map(line => line.trim()).filter(Boolean)
+  if (!trimmed.length) return []
+  // 首行只有昵称、后面又跟着「X：」形态的行：那是署名，剥掉，别让它变成一条假评价。
+  const leadingName = isBareSpeaker(trimmed[0]) && trimmed.slice(1).some(line => /^[^\r\n]{1,24}[：:]/u.test(line))
+  const lines = leadingName ? trimmed.slice(1) : trimmed
   if (!lines.length) return []
-  const marked = lines.some(line => splitSpeaker(line))
+  const marked = lines.some(line => splitSpeaker(line) || ANNOTATION_LINE.test(line))
   // 没有署名的一格就是一条，保持原样（多行仍属同一条长评）
   if (!marked) return [cleanCommentText(lines.join('\n'))].filter(Boolean)
 
@@ -128,6 +160,12 @@ export function evaluationComments(raw: string): string[] {
     if (head) {
       current = blockFor(head.speaker)
       if (head.rest) current.lines.push(head.rest)
+      continue
+    }
+    // 标注行另起一段；整格开头的标注（current 还空）不算分段，它本来就是那一段的正文。
+    if (ANNOTATION_LINE.test(line) && current && current.lines.length) {
+      current = blockFor(null)
+      current.lines.push(line)
       continue
     }
     const tail: { head: string; speaker: string; rest: string } | null = current ? splitTrailingSpeaker(line) : null
@@ -242,7 +280,9 @@ export function sourceRows(document: SourceDocument): SourceRow[] {
       // 要么是这一行的科室归属，写成「门诊」会让读者以为找到了能挂号的门诊。
       const department = isPerson ? departmentCell : ''
       const annotation = annotations.length ? `（${annotations.join('，')}）` : ''
-      const reportId = `kdocs-cp3b7toqal3j-s${sheet.index + 1}-r${index + 1}`
+      // id 只标出位置：哪张表、第几行、这段是这一行的第几段发言。
+      // 分享 id 是原表链接的组成部分，不写进任何字段。
+      const reportId = `kdocs-s${sheet.index + 1}-r${index + 1}`
       rows.push({
         reportId,
         sheet: sheet.name,
@@ -275,14 +315,46 @@ export function sourceRows(document: SourceDocument): SourceRow[] {
  * 「└」「09-16」是引用树和日期戳，「朱鸿儒 课题组」是姓名格的团队名。
  * 它们挂在第一条线索前，既不丢原文，也不各自占一条内容单薄的线索。
  */
+/**
+ * 备注格里转述第三方平台的专长介绍，例如「第三方页面显示擅长人格障碍、多重人格」。
+ *
+ * 这句话说的是这家医院或平台怎么写这位医生，不是病友的就诊经历。
+ * 把它当一条线索，等于拿宣传语当病友的话——和「不把 source_topics 当诊断」是同一类错。
+ * 所以它不生成线索，只解析成医生档案的 `specialties`；原文留在 `note` 里当出处。
+ */
+const THIRD_PARTY_NOTE = /^第三方页面显示(?:擅长)?[：:]?\s*(.+)$/u
+
+/**
+ * 从平台专长介绍里取出专长名。
+ * 原句常带尾巴（「等疾病的诊治」「等，出版有《…》等书籍」），先剥尾巴再按顿号、逗号切；
+ * 一项超过 24 字的不像专长名，丢弃，宁可少录也不把整句塞进档案。
+ */
+export function specialtiesFromNote(note: string): string[] {
+  const match = note.trim().match(THIRD_PARTY_NOTE)
+  if (!match) return []
+  const body = match[1]
+    .replace(/等疾病的?诊治[。.]?$/u, '')
+    .replace(/[，,]\s*出版.*$/u, '')
+    .replace(/等[。.]?$/u, '')
+  return body
+    .split(/[、，,]/u)
+    .map(part => part.trim().replace(/^[“"「『]/u, '').replace(/[”"」』]$/u, ''))
+    .filter(part => part.length > 0 && part.length <= 24)
+}
+
 function rowLeads(row: SourceRow): string[] {
   // 姓名格原文（团队名、专病门诊、整段科室介绍）就是这一行主体的名称，整段进线索。
   const subject = [row.label, row.annotation].filter(Boolean).join('')
   const leads: string[] = []
-  const note = row.note.trim()
-  if (note) leads.push(note)
+  const noteLines = row.note.split(/\r?\n/u).map(line => line.trim()).filter(Boolean)
+  // 平台专长介绍那几行不进口语；同一格后面若还有作者自己补的话，仍然算这一行的线索。
+  const noteBody = noteLines.filter(line => !THIRD_PARTY_NOTE.test(line)).join('\n')
+  if (noteBody) leads.push(noteBody)
   leads.push(...row.comments)
   if (!leads.length) {
+    // 这一行原本写了东西（哪怕只是一句平台专长介绍）时不再兜底：
+    // 用「机构 · 诊室 · 医生」补一条，等于替表里没写的话造一条线索。
+    if (row.note) return leads
     // 没有备注和评价时，行本身（机构、诊室、姓名）就是可核对的原文。
     const fallback = [row.hospital, row.department, row.doctor].filter(Boolean).join(' · ')
     const text = subject || fallback
@@ -302,8 +374,6 @@ export function reportsFromDocument(document: SourceDocument): Report[] {
         id: index === 0 ? row.reportId : `${row.reportId}-p${index + 1}`,
         platform: 'web',
         source_channel: 'browser_session',
-        source_url: document.url,
-        source_post_id: 'cp3b7ToQAl3J',
         published_at_precision: 'unknown',
         ...(row.region ? { hospital_region: row.region } : {}),
         hospital_name_raw: row.hospital,
@@ -317,9 +387,10 @@ export function reportsFromDocument(document: SourceDocument): Report[] {
         // 只有这一行比 200 字长时才单独存全文；与引文相同就不写，免得「展开原文」点了没变化。
         ...(segment.length > quote.length ? { evidence_full_text: clip(segment, 2000) } : {}),
         evidence_context: {
-          note_title: document.title,
+          // 只留工作表与行号：表名与本项目材料都不外流，来源标签只写「公开网页」。
+          // 不写 capture_scope：它指向本地快照路径，那份快照不进仓库，
+          // 写进载荷等于给读者一个打不开的地址，位置信息 index_in_capture 已经够用。
           index_in_capture: `${row.sheet} · 第${row.row}行`,
-          capture_scope: SOURCE_CAPTURE,
         },
         evidence_source: 'article',
         verification: { level: 'unverified' },
@@ -423,11 +494,18 @@ function evaluationEchoesReport(evaluation: string, texts: string[]): boolean {
  * 人工补上的姓名叫（DOCTOR_NAME_FIXES）只进线索，不在这里新建档案：
  * 被提到的人不该继承别人那一行的评价。
  */
-export function doctorsFromDocument(document: SourceDocument, reports: Report[]): Doctor[] {
+export function doctorsFromDocument(document: SourceDocument, reports: Report[], run?: LocationRun): Doctor[] {
   const hospitalOf = new Map(reports.map(report => [report.id, report.hospital_id]))
   // 跨表合并会把后面那行的线索并进前一行，后一行的 id 就不再出现在 reports 里。
   // 那一行的医生仍然存在（他确实在这家机构出诊），所以按机构名与地区兜底找同一家机构。
   const hospitalByName = new Map<string, string>()
+  // 一行里唯一能当线索的东西不进口语时（例如备注只写了平台专长介绍），这一行不产生线索，
+  // 但那位医生仍然在这家机构出诊。定位依据里有原文机构名到落点的对应，用它兜住这些人，
+  // 否则他们会连同机构一起从档案里消失——医生数会跟着线索数掉，而这两位本来就该在。
+  for (const result of run?.results ?? []) {
+    if (result.status !== 'geocoded' || !result.chosen) continue
+    hospitalByName.set(`${result.name}\u0000${result.region}`, `kdocs-amap-${result.chosen.id.toLowerCase()}`)
+  }
   // 一位医生的线索原文：姓名栏可能是「甲、乙」，两位都要拿到这条线索的正文。
   const textsByDoctor = new Map<string, string[]>()
   for (const report of reports) {
@@ -442,14 +520,19 @@ export function doctorsFromDocument(document: SourceDocument, reports: Report[])
       else textsByDoctor.set(doctorKey, [text])
     }
   }
-  const groups = new Map<string, { hospitalId: string; name: string; department: string; notes: string[]; evaluations: { text: string; source: string }[] }>()
+  const groups = new Map<string, { hospitalId: string; name: string; department: string; notes: string[]; specialties: string[]; evaluations: { text: string; source: string }[] }>()
   for (const row of sourceRows(document)) {
     const hospitalId = hospitalOf.get(row.reportId) ?? hospitalByName.get(`${row.hospital}\u0000${row.region}`)
     if (!row.doctor || !hospitalId) continue
     const key = `${hospitalId}\u0000${row.doctor}`
-    const group = groups.get(key) ?? { hospitalId, name: row.doctor, department: '', notes: [], evaluations: [] }
+    const group = groups.get(key) ?? { hospitalId, name: row.doctor, department: '', notes: [], specialties: [], evaluations: [] }
     if (!group.department && row.department) group.department = row.department
     if (row.note && !group.notes.includes(row.note)) group.notes.push(row.note)
+    // 平台专长介绍不进线索，落到档案的 specialties；出处就是 note 里那句原文，
+    // 所以这里不另造 URL——`official_sources` 只收能公开引用的链接，原表地址不外流。
+    for (const specialty of specialtiesFromNote(row.note)) {
+      if (!group.specialties.includes(specialty)) group.specialties.push(specialty)
+    }
     // 评价按来源逐条留：同一格里本来就有好几位用户各说一段，逐条记下才能数条数、回到各自出处。
     // 拼成一个长字符串会让「几条评价」无从回答，也把几个人的话糊成一个人的经历。
     for (const comment of row.comments) {
@@ -470,7 +553,7 @@ export function doctorsFromDocument(document: SourceDocument, reports: Report[])
       title: '',
       credentials: [],
       profile_urls: [],
-      specialties: [],
+      specialties: group.specialties,
       official_sources: [],
       ...(group.notes.length ? { note: group.notes.join('\n') } : {}),
       ...(evaluation ? { evaluation } : {}),
@@ -498,16 +581,28 @@ export function markUnlinked(reports: Report[], run: LocationRun): Report[] {
   })
 }
 
+/** 源表里出现过的机构（名称 + 地区），含那些没能产出线索的行。 */
+export function sourceHospitalNames(document: SourceDocument): { name: string; region: string }[] {
+  const seen = new Map<string, { name: string; region: string }>()
+  for (const row of sourceRows(document)) {
+    if (!row.hospital) continue
+    const key = `${row.hospital}\u0000${row.region}`
+    if (!seen.has(key)) seen.set(key, { name: row.hospital, region: row.region })
+  }
+  return [...seen.values()]
+}
+
 export function reportsWithLocations(document: SourceDocument): Report[] {
   const reports = reportsFromDocument(document)
   if (!existsSync(LOCATION_EVIDENCE)) return reports
   const run = readJson<LocationRun>(LOCATION_EVIDENCE)
-  if (run.source_url !== SOURCE_URL) throw new Error('定位依据必须对应当前主线来源')
-  return markUnlinked(linkLocationReports(reports, run), run)
+  if (run.source_batch !== SOURCE_BATCH) throw new Error('定位依据必须对应当前主线批次')
+  return markUnlinked(linkLocationReports(reports, run, sourceHospitalNames(document)), run)
 }
 
 export function doctorsWithLocations(document: SourceDocument, reports: Report[]): Doctor[] {
-  return doctorsFromDocument(document, reports)
+  const run = existsSync(LOCATION_EVIDENCE) ? readJson<LocationRun>(LOCATION_EVIDENCE) : undefined
+  return doctorsFromDocument(document, reports, run?.source_batch === SOURCE_BATCH ? run : undefined)
 }
 
 /**
@@ -532,7 +627,7 @@ export function hospitalsWithOverrides(
 function locationRun(): LocationRun | undefined {
   if (!existsSync(LOCATION_EVIDENCE)) return undefined
   const run = readJson<LocationRun>(LOCATION_EVIDENCE)
-  if (run.source_url !== SOURCE_URL) throw new Error('定位依据必须对应当前主线来源')
+  if (run.source_batch !== SOURCE_BATCH) throw new Error('定位依据必须对应当前主线批次')
   return run
 }
 
@@ -559,8 +654,8 @@ export function removalConflicts(base: Hospital[], kept: Hospital[], reports: Re
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const document = readJson<SourceDocument>(resolve(SOURCE_CAPTURE))
-  if (document.url !== SOURCE_URL || document.sheets.length === 0 || document.sheets.some(sheet => sheet.values.length < 2)) {
-    throw new Error('来源链接或工作表结构不符')
+  if (document.sheets.length === 0 || document.sheets.some(sheet => sheet.values.length < 2)) {
+    throw new Error('工作表结构不符')
   }
   const items = applyStoredOverrides('reports', reportsWithLocations(document))
   const updatedAt = document.captured_at.slice(0, 10)

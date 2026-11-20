@@ -228,13 +228,25 @@ export function applyOverrides(
       }
       const payload = { ...(record.set ?? {}) }
       if (String(payload.id ?? '') !== record.id) errors.push(`${where}: set.id 必须是 ${record.id}`)
+      // 坐标的出处只有两个：那轮高德定位的证据，和 amap-manual.json 里人工选定的点。
+      // 新增记录两个都没有，自带坐标能过 zod、也能过比对，一路到合成页面坐标表才炸。
+      if (kind === 'hospitals' && (payload.coordinates != null || payload.coordinates_source != null)) {
+        errors.push(`${where}: 新增机构不能自带坐标，坐标只能来自高德查询与人工选定`)
+        continue
+      }
       if (kind === 'reports') {
         // 上游以后出现同一条发言时，本地新增就该退场，不能两处并存。
+        // 判据只用引文与抓取范围：表格摘录类线索没有原帖链接可对。
         const quote = quoteKey(payload.evidence_quote)
-        const sourceUrl = payload.source_url
-        const clash = items.find(item =>
-          (sourceUrl && item.source_url === sourceUrl && quote && quoteKey(item.evidence_quote) === quote) ||
-          (payload.source_post_id && item.source_post_id === payload.source_post_id && quote && quoteKey(item.evidence_quote) === quote))
+        const captureScope = (payload.evidence_context as { capture_scope?: string } | undefined)?.capture_scope
+        const clash = items.find(item => {
+          const record = item as Record<string, unknown>
+          if (!quote || quoteKey(record.evidence_quote) !== quote) return false
+          const postId = payload.source_post_id
+          if (typeof postId === 'string' && postId) return record.source_post_id === postId
+          const context = record.evidence_context as { capture_scope?: string } | undefined
+          return !record.source_post_id && context?.capture_scope === captureScope
+        })
         if (clash) errors.push(`${where}: 已成为源记录（${String(clash.id)} 的出处与引文相同），请删除本地新增`)
       }
       // 新增记录没有源可推导，字段完整性只能在这里挡：缺一个必填字段，

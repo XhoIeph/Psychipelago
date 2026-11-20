@@ -59,8 +59,9 @@ export function gcj02ToWgs84(lng: number, lat: number): [number, number] {
  *
  * - `geocoded`：高德按机构地址查到的点，有地址依据。人工在图上点一下没有更强的来源，
  *   所以不覆盖——但拒绝必须说出来，静默丢掉等于「界面说成功、地图没变」。
- * - `province-centroid`：`place-hospitals.ts` 填的省中心近似值，本来就是占位（那个脚本
- *   自己也允许被覆盖）。人工精确选中的点严格更好，应当盖掉。
+ * - `province-centroid`：省级近似占位值。写它的 `place-hospitals.ts` 已退役——那个产物在
+ *   证据集里没有出处，`validate` 与 `buildLocationIndex` 都会判红。枚举值留着：将来真有别的
+ *   来源写这个值时，人工精确选中的点严格更好，应当盖掉。
  * - `manual`：上一次人工选的点。重选同样是人在改，以新的为准，否则选错了没法改。
  * - 没有坐标：当然接受，这正是新增机构上图的路径。
  */

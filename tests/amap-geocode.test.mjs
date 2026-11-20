@@ -82,7 +82,7 @@ test('a successful empty search is a valid institution-level result', async () =
 
 test('linking changes only hospital_id, and rejects incomplete or stale source mappings', () => {
   const reports = [{ id: 'kdocs-test-p1-l1', hospital_name_raw: target.name, evidence_quote: '逐字原文', verification: { level: 'unverified' } }]
-  const run = { generated_at: '2026-11-09T00:00:00Z', source_url: 'https://www.kdocs.cn/l/cp3b7ToQAl3J', requests: 1, results: [selectPoi(target, [poi])] }
+  const run = { generated_at: '2026-11-09T00:00:00Z', source_batch: 'sheet-2026-11-09', requests: 1, results: [selectPoi(target, [poi])] }
   const linked = linkLocationReports(reports, run)
   assert.deepEqual(linked[0], { ...reports[0], hospital_id: 'kdocs-amap-b001' })
   assert.equal(reports[0].hospital_id, undefined)

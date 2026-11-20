@@ -42,9 +42,36 @@ function run(args) {
 
 function restore() {
   clean()
+  // 覆盖层与人工表清空后重跑烘焙，库里那个 local-* 才会消失。只靠 `git checkout` 在副本里
+  // 会静默失败（没有 .git），把脏数据留在 data/curated 里，这正是这份脚本以前的毛病。
+  spawnSync(process.execPath, ['scripts/import-kdocs.ts'], { cwd: ROOT })
+  spawnSync(process.execPath, ['scripts/build-aggregates.ts'], { cwd: ROOT })
   spawnSync('git', ['checkout', '--', 'data/curated', 'data/generated'], { cwd: ROOT })
 }
 
+// 探针会重写 data/curated 下三份 JSON 再重跑烘焙，还原靠「清空 + 重放」。开工时树里要是有别人
+// 未提交的数据改动，重放就把它们一起抹掉，而且抹得看不出是谁干的——所以先看 data/ 干不干净。
+function requireCleanData() {
+  const force = process.argv.includes('--force')
+  const status = spawnSync('git', ['status', '--short', 'data/'], { cwd: ROOT, encoding: 'utf8' })
+  if (status.status !== 0) {
+    console.warn('读不到 git 状态（可能不在 git 树里），无法判断 data/ 有没有未提交改动；跑完按烘焙结果重放。')
+    return
+  }
+  const lines = status.stdout.split('\n').map(line => line.trimEnd()).filter(Boolean)
+  if (lines.length === 0) return
+  if (force) {
+    console.warn(`data/ 有 ${lines.length} 处未提交改动，按 --force 继续，还原时会一并抹掉：`)
+    for (const line of lines) console.warn(`  ${line}`)
+    return
+  }
+  console.error(`data/ 有 ${lines.length} 处未提交改动，探针会把它一起抹掉：`)
+  for (const line of lines) console.error(`  ${line}`)
+  console.error('先提交或 stash 再跑；确实要抹掉就带 --force。')
+  process.exit(2)
+}
+
+requireCleanData()
 clean()
 write(`data/overrides/hospitals/${HOSPITAL_ID}.json`, {
   schema_version: '1.0.0',
@@ -122,4 +149,5 @@ console.log(`五、原有机构 ${untouched.length} 家，坐标与改动前一�
 
 restore()
 const restored = read('data/curated/hospitals.json')
-console.log(`已还原：${restored.items.some(item => item.id === HOSPITAL_ID) ? '失败，测试机构还在库里' : '通过'}；amap-manual.json ${existsSync(manualFile) ? '还在' : '已清'}`)
+const strays = restored.items.filter(item => item.id.startsWith('local-')).map(item => item.id)
+console.log(`已还原：${restored.items.length} 家、残留 local-* ${strays.length} 个（期望 0）；amap-manual.json ${existsSync(manualFile) ? '还在' : '已清'}`)

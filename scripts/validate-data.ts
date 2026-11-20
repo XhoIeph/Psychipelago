@@ -10,8 +10,12 @@ import {
   reportsFileSchema,
 } from '../lib/schema.ts'
 import { CURATED_FILES, readJson } from './lib/paths.ts'
+import { existsSync } from 'node:fs'
 import { isDeepStrictEqual } from 'node:util'
-import { reportsWithLocations, doctorsWithLocations, hospitalsWithOverrides, SOURCE_CAPTURE, SOURCE_TITLE, SOURCE_URL } from './import-kdocs.ts'
+import { LOCATION_EVIDENCE } from './lib/amap.ts'
+import type { LocationRun } from './lib/amap.ts'
+import { evidenceHospitalId, readManualLocations } from './lib/locations.ts'
+import { reportsWithLocations, doctorsWithLocations, hospitalsWithOverrides, SOURCE_CAPTURE } from './import-kdocs.ts'
 import type { SourceDocument } from './import-kdocs.ts'
 import { applyOverrides, loadOverrides } from './lib/overrides.ts'
 import type { OverrideKind } from './lib/overrides.ts'
@@ -75,14 +79,14 @@ const provinces = parseOrReport('provinces.json', provincesFileSchema, provinces
   | { items: Array<Record<string, unknown>> }
   | null
 
-const sourceDocument = readJson<SourceDocument>(SOURCE_CAPTURE)
-if (sourceDocument.url !== SOURCE_URL || sourceDocument.title !== SOURCE_TITLE) {
-  errors.push(`来源转写必须对应唯一主线《${SOURCE_TITLE}》`)
-}
-const sourceStructureValid = Array.isArray(sourceDocument.sheets) &&
+// 快照只留在本地做保真重放，不进仓库：原表地址与表名都不外流。
+// 本地没有快照时明说这次没做重放，不能静默当成通过。
+const sourceDocument = existsSync(SOURCE_CAPTURE) ? readJson<SourceDocument>(SOURCE_CAPTURE) : null
+if (!sourceDocument) console.log('保真重放跳过：本地无快照')
+const sourceStructureValid = !!sourceDocument && Array.isArray(sourceDocument.sheets) &&
   sourceDocument.sheets.length > 0 &&
   sourceDocument.sheets.every((sheet, index) => sheet.index === index && sheet.values.length >= 2)
-if (!sourceStructureValid) {
+if (sourceDocument && !sourceStructureValid) {
   errors.push('来源转写必须按工作表顺序包含表头与全部数据行')
 }
 // 覆盖层：人工改动只能经由 data/overrides 表达。比对基准因此是「源推导结果 + 覆盖层」，
@@ -96,14 +100,36 @@ function withOverrides<T extends Record<string, unknown>>(kind: OverrideKind, it
 }
 
 // 转写结构不成立时无法重放解析，只报结构错误，避免用残缺来源继续比对。
-if (sourceStructureValid && reports && !isDeepStrictEqual(reports.items, withOverrides('reports', reportsWithLocations(sourceDocument)))) {
+if (sourceDocument && sourceStructureValid && reports && !isDeepStrictEqual(reports.items, withOverrides('reports', reportsWithLocations(sourceDocument)))) {
   errors.push('reports.json 与主线表格转写不一致；请运行 node scripts/import-kdocs.ts，不能恢复旧源或手改引文')
 }
 // 机构清单与烘焙走同一个函数：覆盖层之后还要补人工选定的坐标，
 // 两边各拼一次迟早会漂，漂出来的差异会伪装成「有人手改数据」。
 const expectedHospitals = hospitalsWithOverrides(items => withOverrides('hospitals', items)) ?? []
 if (hospitals && !isDeepStrictEqual(hospitals.items, expectedHospitals)) errors.push('hospitals.json 与本轮高德定位依据不一致，不能恢复退役机构或手改坐标')
-if (sourceStructureValid && doctors && reports &&
+// 坐标的出处只有两个：那轮高德定位的证据，和 amap-manual.json 里人工选定的点。
+// hospitals.json 里有坐标、两处却都查不到出处，说明这条坐标是凭空长出来的。
+// 以前这种记录要等到 build-aggregates 合成页面坐标表才炸，离保存已经过了八分钟；这里提前到几秒。
+const geocodedIds = new Set<string>()
+if (existsSync(LOCATION_EVIDENCE)) {
+  for (const result of readJson<LocationRun>(LOCATION_EVIDENCE).results) {
+    const id = evidenceHospitalId(result)
+    if (id && result.status === 'geocoded' && result.chosen) geocodedIds.add(id)
+  }
+}
+try {
+  for (const entry of readManualLocations()) {
+    if (entry.status === 'geocoded' && entry.chosen) geocodedIds.add(entry.hospital_id)
+  }
+} catch (error) {
+  errors.push(`amap-manual.json 读不出来：${(error as Error).message}`)
+}
+for (const hospital of hospitals?.items ?? []) {
+  const id = String(hospital.id)
+  if (!hospital.coordinates || geocodedIds.has(id)) continue
+  errors.push(`hospitals.json → ${id}: 有坐标但证据集与 amap-manual.json 里都没有 status=geocoded 的定位记录，坐标只能来自高德查询与人工选定`)
+}
+if (sourceDocument && sourceStructureValid && doctors && reports &&
   !isDeepStrictEqual(doctors.items, withOverrides('doctors', doctorsWithLocations(sourceDocument, reports.items as Report[])))) {
   errors.push('doctors.json 与主线表格里的诊室、备注、评价不一致；请运行 node scripts/import-kdocs.ts，不能手改医生档案')
 }
@@ -154,18 +180,20 @@ if (disorders && hospitals && doctors && reports && provinces) {
       errors.push(`reports.json → ${id}: doctor_id ${String(report.doctor_id)} 不存在`)
     }
 
-    const sourceNoteId = new URL(String(report.source_url)).pathname.split('/').filter(Boolean).at(-1)
+    // 链接与抓取同源的互检只在真有公开原帖时成立：表格摘录类线索没有原帖，两个字段都不写。
+    const rawSourceUrl = typeof report.source_url === 'string' ? report.source_url : ''
+    const sourceNoteId = rawSourceUrl ? new URL(rawSourceUrl).pathname.split('/').filter(Boolean).at(-1) : undefined
     const recordNoteId = typeof report.source_post_id === 'string'
       ? report.source_post_id.split('#')[0]
       : undefined
-    if (recordNoteId && recordNoteId !== sourceNoteId) {
+    if (sourceNoteId && recordNoteId && recordNoteId !== sourceNoteId) {
       errors.push(`reports.json → ${id}: source_post_id 与 source_url 指向不同原帖`)
     }
     const captureScope = (report.evidence_context as { capture_scope?: string } | undefined)?.capture_scope
     const capturedNoteId = typeof captureScope === 'string'
       ? captureScope.match(/(?:xiaohongshu|comments)[\\/]([0-9a-f]{24})(?:[\\/\\.]|$)/)?.[1]
       : undefined
-    if (capturedNoteId && capturedNoteId !== sourceNoteId) {
+    if (sourceNoteId && capturedNoteId && capturedNoteId !== sourceNoteId) {
       errors.push(`reports.json → ${id}: 证据截图或评论抓取与 source_url 指向不同原帖`)
     }
 
@@ -211,12 +239,33 @@ if (disorders && hospitals && doctors && reports && provinces) {
     if (flags?.contains_selfharm_detail && status === 'published') {
       errors.push(`reports.json → ${id}: 含自伤细节，status 必须是 withheld 或 removed`)
     }
-    if (status === 'published' && (!report.evidence_quote || !report.source_url)) {
-      errors.push(`reports.json → ${id}: 已发布线索必须同时具备 evidence_quote 与 source_url`)
+    if (status === 'published' && !report.evidence_quote) {
+      errors.push(`reports.json → ${id}: 已发布线索必须有原文引文`)
     }
   }
 
   const published = reports.items.filter((item) => item.status === 'published').length
+
+  // 快照不在仓库里，CI 上没有重放基准可比。这里补一组不依赖快照的结构强断言，
+  // 免得「删掉快照」等于闸门变哑：条数、状态分布、id 形态都要自证。
+  const statusCounts = new Map<string, number>()
+  for (const item of reports.items) {
+    const status = String(item.status)
+    statusCounts.set(status, (statusCounts.get(status) ?? 0) + 1)
+  }
+  const statusSummary = [...statusCounts].map(([status, count]) => `${status} ${count}`).join('、')
+  if (published === 0) errors.push(`reports.json: 一条已发布线索都没有（${statusSummary}），状态分布不像真实数据`)
+  if (reports.items.length < hospitals.items.length) {
+    errors.push(`reports.json: 线索数 ${reports.items.length} 少于机构数 ${hospitals.items.length}，烘焙多半只做了一半`)
+  }
+  // id 是位置的坐标，只有表序号、行号与段号；分享 id 与表名都不许出现在这里。
+  const oddIds = reports.items
+    .map((item) => String(item.id))
+    .filter((id) => !/^(?:kdocs-s\d+-r\d+(?:-p\d+)?|local-[a-z0-9-]+)$/u.test(id))
+  for (const id of oddIds.slice(0, 5)) {
+    errors.push(`reports.json → ${id}: 线索 id 必须形如 kdocs-s1-r39 或 local-…，不得带表标识或分享 id`)
+  }
+
   console.log(
     `✓ 数据校验通过：疾病 ${disorders.items.length}、医院 ${hospitals.items.length}、医生 ${doctors.items.length}、线索 ${reports.items.length}（已发布 ${published}）、省级行政区 ${provinces.items.length}`,
   )

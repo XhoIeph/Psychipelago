@@ -3,18 +3,21 @@ import { readFileSync, readdirSync, existsSync, mkdtempSync, mkdirSync, writeFil
 import { resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import test from 'node:test'
-import { evaluationComments, reportsFromDocument, reportsWithLocations, doctorsWithLocations, SOURCE_CAPTURE, SOURCE_TITLE, SOURCE_URL } from '../scripts/import-kdocs.ts'
+import { evaluationComments, reportsFromDocument, reportsWithLocations, doctorsWithLocations, specialtiesFromNote, SOURCE_CAPTURE } from '../scripts/import-kdocs.ts'
 import { doctorsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import { LOCATION_EVIDENCE } from '../scripts/lib/amap.ts'
 import { hospitalsFromRun } from '../scripts/geocode-hospitals.ts'
 import { applyStoredOverrides } from '../scripts/lib/overrides.ts'
 
 const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'))
-const document = readJson(SOURCE_CAPTURE)
+// 整表快照只在本地留档：原表的地址、表名与逐格内容都不进仓库，CI 上没有这份文件。
+// 有快照时跑逐行保真比对；没有时跳过那几条，结构与 schema 类断言照跑，闸门不会因此变哑。
+const hasSnapshot = existsSync(SOURCE_CAPTURE)
+const document = hasSnapshot ? readJson(SOURCE_CAPTURE) : null
 const reports = readJson('data/curated/reports.json').items
 const doctors = readJson('data/curated/doctors.json').items
 // curated 是「源转写 + 覆盖层」的结果，比对也得走同一条路，否则控制台改一个字这条就红。
-const expected = applyStoredOverrides('reports', reportsWithLocations(document))
+const expected = hasSnapshot ? applyStoredOverrides('reports', reportsWithLocations(document)) : reports
 // 控制台新增的线索 id 带 local- 前缀，它们不在表格里。凡是「表格每一行都进了库」这类
 // 断言只数源转写；curated 与「源 + 覆盖层」的整份比对仍然用 reports，多一条少一条都红。
 const sourceReports = reports.filter((report) => !report.id.startsWith('local-'))
@@ -38,15 +41,15 @@ const faithful = (field) => sourceReports.filter((report) => !overridden(report.
 
 /** 姓名格不是人名、或姓名格空着的行：它们照样是线索，名称取姓名格原文（姓名格空时取诊室那一格）。 */
 const subjectIds = new Set([
-  'kdocs-cp3b7toqal3j-s1-r2',
-  'kdocs-cp3b7toqal3j-s1-r2-p2',
-  'kdocs-cp3b7toqal3j-s1-r2-p3',
-  'kdocs-cp3b7toqal3j-s1-r43',
-  'kdocs-cp3b7toqal3j-s1-r50',
-  'kdocs-cp3b7toqal3j-s3-r49',
-  'kdocs-cp3b7toqal3j-s3-r51',
-  'kdocs-cp3b7toqal3j-s3-r108',
-  'kdocs-cp3b7toqal3j-s3-r109',
+  'kdocs-s1-r2',
+  'kdocs-s1-r2-p2',
+  'kdocs-s1-r2-p3',
+  'kdocs-s1-r43',
+  'kdocs-s1-r50',
+  'kdocs-s3-r49',
+  'kdocs-s3-r51',
+  'kdocs-s3-r108',
+  'kdocs-s3-r109',
 ])
 
 /** 工作表里地区与医院名只在段首填写，其余行留空继承。 */
@@ -61,9 +64,10 @@ const filledRow = (sheetIndex, excelRow) => {
   return { region, hospital, cells: values[excelRow - 1].map((cell) => (cell ?? '').trim()) }
 }
 
-test('三张工作表与每一行有内容的记录都进了库', () => {
-  assert.equal(document.url, SOURCE_URL)
-  assert.equal(document.title, SOURCE_TITLE)
+test('三张工作表与每一行有内容的记录都进了库', { skip: !hasSnapshot }, () => {
+  // 快照里有什么不管，落到 curated 的一律不带表名与地址。
+  assert.ok(sourceReports.every((report) => report.source_url === undefined))
+  assert.ok(sourceReports.every((report) => report.evidence_context?.note_title === undefined))
   assert.deepEqual(document.sheets.map((sheet) => sheet.name), ['cptsd', 'osdd-did', '人格障碍'])
   assert.deepEqual(document.sheets.map((sheet) => sheet.values.length), [57, 55, 184])
   const perSheet = Object.fromEntries(document.sheets.map((sheet, index) => [
@@ -72,9 +76,9 @@ test('三张工作表与每一行有内容的记录都进了库', () => {
   ]))
   // 线索单位是「一条发言」：备注单独一条，评价里每位署名的用户各一条；
   // 无名分的多行仍在同一格里属同一条长评。跨行、跨表一律不合并。
-  assert.deepEqual(perSheet, { 1: 90, 2: 63, 3: 174 })
-  assert.equal(sourceReports.length, 327)
-  assert.equal(reportsFromDocument(document).length, 327)
+  assert.deepEqual(perSheet, { 1: 88, 2: 59, 3: 171 })
+  assert.equal(sourceReports.length, 318)
+  assert.equal(reportsFromDocument(document).length, 318)
   // 合并必须可重放：同一份文档跑两遍得到同一组 id，定位表与断言样本才不会抖。
   assert.deepEqual(reportsFromDocument(document).map((report) => report.id), sourceReports.map((report) => report.id))
   // 整份 curated 必须等于「源转写 + 覆盖层」，多一条少一条都是覆盖层没烘焙。
@@ -83,7 +87,7 @@ test('三张工作表与每一行有内容的记录都进了库', () => {
   assert.equal(doctorsFileSchema.safeParse(readJson('data/curated/doctors.json')).success, true)
 })
 
-test('每条线索都能回溯到同一张表的同一单元格', () => {
+test('每条线索都能回溯到同一张表的同一单元格', { skip: !hasSnapshot }, () => {
   // 跨表合并后一条线索可能引用同一机构同一医生在两三张表里的发言，
   // 因此回溯范围是「这家机构这位医生」在全部工作表里的姓名、备注、评价单元格。
   const nameOf = (cell) => (cell ?? '')
@@ -106,10 +110,11 @@ test('每条线索都能回溯到同一张表的同一单元格', () => {
   }
   // 只核对源转写：控制台新增的线索没有表格单元格可回溯，它们由覆盖层的 insert 校验管。
   for (const report of sourceReports) {
-    assert.equal(report.source_url, SOURCE_URL)
-    assert.equal(report.source_post_id, 'cp3b7ToQAl3J')
-    assert.equal(report.evidence_context.note_title, document.title)
-    assert.equal(report.evidence_context.capture_scope, SOURCE_CAPTURE)
+    assert.equal(report.source_url, undefined)
+    assert.equal(report.source_post_id, undefined)
+    assert.equal(report.evidence_context.note_title, undefined)
+    // 快照只留在本地做保真重放，它的路径不进载荷：读者打不开，也没必要知道。
+    assert.equal(report.evidence_context.capture_scope, undefined)
     const [, sheetIndex, excelRow] = report.id.match(/-s(\d+)-r(\d+)(?:-p\d+)?$/u).map(Number)
     const sheet = document.sheets[sheetIndex - 1]
     assert.equal(report.evidence_context.index_in_capture, `${sheet.name} · 第${excelRow}行`)
@@ -163,9 +168,9 @@ test('工作表按病症分组，其他字段保持未知而不是编造', () =>
     grouped.filter((report) => report.disorders.join('/') === group).length,
   ]))
   // 一条线索最多只带一个病症组合，跨表同引文合并会带上另一张表的病症标签。
-  assert.deepEqual(byDisorder, { cptsd: 84, 'osdd/did': 59, pd: 174 })
-  assert.equal(grouped.filter((report) => report.disorders.includes('cptsd')).length, 90)
-  assert.equal(grouped.filter((report) => report.disorders.includes('pd')).length, 183)
+  assert.deepEqual(byDisorder, { cptsd: 82, 'osdd/did': 56, pd: 171 })
+  assert.equal(grouped.filter((report) => report.disorders.includes('cptsd')).length, 88)
+  assert.equal(grouped.filter((report) => report.disorders.includes('pd')).length, 179)
   for (const report of sourceReports) {
     // stage 只在没被覆盖时必须是 unknown：人工改过阶段就是层里那个值。
     if (!overridden(report.id, 'stage')) assert.equal(report.stage, 'unknown')
@@ -208,15 +213,15 @@ test('姓名格不是人名的行照原文当名称上卡，状态附注与整�
     assert.equal(report.doctor_id, undefined)
   }
   // 姓名格写的是专病门诊、课题组、团队、专家会诊：这串原文就是这一行的名称，和医生一样上卡。
-  const named = (id) => reports.find((report) => report.id === `kdocs-cp3b7toqal3j-${id}`)?.doctor_name_raw
-  if (!overridden('kdocs-cp3b7toqal3j-s1-r2', 'doctor_name_raw')) assert.equal(named('s1-r2'), '创伤后应激障碍专病门诊')
-  if (!overridden('kdocs-cp3b7toqal3j-s1-r43', 'doctor_name_raw')) assert.equal(named('s1-r43'), '临床心理科/创伤专病门诊')
-  if (!overridden('kdocs-cp3b7toqal3j-s1-r50', 'doctor_name_raw')) assert.equal(named('s1-r50'), '朱鸿儒 课题组')
-  if (!overridden('kdocs-cp3b7toqal3j-s3-r49', 'doctor_name_raw')) assert.equal(named('s3-r49'), '专家会诊')
-  if (!overridden('kdocs-cp3b7toqal3j-s3-r51', 'doctor_name_raw')) assert.equal(named('s3-r51'), '黄佳团队')
-  if (!overridden('kdocs-cp3b7toqal3j-s3-r108', 'doctor_name_raw')) assert.equal(named('s3-r108'), '郑重 团队')
+  const named = (id) => reports.find((report) => report.id === `kdocs-${id}`)?.doctor_name_raw
+  if (!overridden('kdocs-s1-r2', 'doctor_name_raw')) assert.equal(named('s1-r2'), '创伤后应激障碍专病门诊')
+  if (!overridden('kdocs-s1-r43', 'doctor_name_raw')) assert.equal(named('s1-r43'), '临床心理科/创伤专病门诊')
+  if (!overridden('kdocs-s1-r50', 'doctor_name_raw')) assert.equal(named('s1-r50'), '朱鸿儒 课题组')
+  if (!overridden('kdocs-s3-r49', 'doctor_name_raw')) assert.equal(named('s3-r49'), '专家会诊')
+  if (!overridden('kdocs-s3-r51', 'doctor_name_raw')) assert.equal(named('s3-r51'), '黄佳团队')
+  if (!overridden('kdocs-s3-r108', 'doctor_name_raw')) assert.equal(named('s3-r108'), '郑重 团队')
   // 整段科室介绍：名称取首个分句，整段原文仍在这条线索里，一个字都没丢。
-  const intro = reports.find((report) => report.id === 'kdocs-cp3b7toqal3j-s3-r109')
+  const intro = reports.find((report) => report.id === 'kdocs-s3-r109')
   if (!overridden(intro.id, 'doctor_name_raw')) assert.equal(intro.doctor_name_raw, '心身疾病一科设有“人格障碍专业组”')
   if (!overridden(intro.id, 'evidence_quote')) {
     assert.match(intro.evidence_quote, /^心身疾病一科设有“人格障碍专业组”，官网写明/u)
@@ -233,7 +238,7 @@ test('姓名格不是人名的行照原文当名称上卡，状态附注与整�
     ['s3-r109', intro.doctor_name_raw],
   ]
   for (const [id, expectedName] of expecting) {
-    const reportId = `kdocs-cp3b7toqal3j-${id}`
+    const reportId = `kdocs-${id}`
     const name = overridden(reportId, 'doctor_name_raw')
       ? reports.find((report) => report.id === reportId)?.doctor_name_raw
       : expectedName
@@ -244,7 +249,7 @@ test('姓名格不是人名的行照原文当名称上卡，状态附注与整�
   }
 })
 
-test('医生档案只由表格里的诊室、备注、评价生成，且都能落到已定位机构', () => {
+test('医生档案只由表格里的诊室、备注、评价生成，且都能落到已定位机构', { skip: !hasSnapshot }, () => {
   const hospitalIds = new Set(readJson('data/curated/hospitals.json').items.map((item) => item.id))
   assert.equal(doctors.length, 252)
   assert.deepEqual(doctors, applyStoredOverrides('doctors', doctorsWithLocations(document, expected)))
@@ -287,9 +292,9 @@ test('医生档案只由表格里的诊室、备注、评价生成，且都能�
   )
   // 合并过的线索记下合并前的发言条数，单条不写 1：只剩「两张表抄了同一句话」这一类
   const merged = sourceReports.filter((report) => report.parts_count)
-  assert.equal(merged.length, 11)
+  assert.equal(merged.length, 10)
   assert.ok(merged.every((report) => report.parts_count >= 2))
-  assert.equal(merged.reduce((total, report) => total + report.parts_count, 0), 22)
+  assert.equal(merged.reduce((total, report) => total + report.parts_count, 0), 20)
   // 合并后正文里不该留下同一句重复两遍
   for (const report of merged) {
     const lines = (report.evidence_full_text ?? report.evidence_quote).split('\n').map((line) => line.trim()).filter(Boolean)
@@ -297,8 +302,8 @@ test('医生档案只由表格里的诊室、备注、评价生成，且都能�
   }
   // 评价里点到别的医生，不改变这一行属于谁：梁红那行就是梁红，潘伟刚只在自己那行出现一次。
   // 曾经按人工表把这行补成「潘伟刚、梁红」，结果同一个人在医院页并排两张卡。
-  if (!overridden('kdocs-cp3b7toqal3j-s1-r4', 'doctor_name_raw')) {
-    assert.equal(reports.find((report) => report.id === 'kdocs-cp3b7toqal3j-s1-r4').doctor_name_raw, '梁红')
+  if (!overridden('kdocs-s1-r4', 'doctor_name_raw')) {
+    assert.equal(reports.find((report) => report.id === 'kdocs-s1-r4').doctor_name_raw, '梁红')
   }
   // 梁红那一行有四位用户各说一段，加上备注共五条线索
   const liang = reports.filter((report) => /-s1-r4(?:-p\d+)?$/u.test(report.id))
@@ -376,7 +381,7 @@ test('机构清单等于本轮定位依据加覆盖层，未定位的 1 条线�
   assert.deepEqual(existsSync('data/runs') ? readdirSync('data/runs') : [], [])
   for (const report of reports) {
     // 源转写的 id 来自 kdocs；控制台新增的按约定带 local- 前缀，两种都算合法来源。
-    assert.match(report.id, /^(?:kdocs-cp3b7toqal3j-|local-)/)
+    assert.match(report.id, /^(?:kdocs-|local-)/)
     if (report.hospital_id) assert.match(report.hospital_id, /^kdocs-amap-/)
     assert.doesNotMatch(JSON.stringify(report), /xiaohongshu|xsec_token|author_|parent_author|reply_to_author|ip_location|retired-2026/u)
   }
@@ -393,7 +398,7 @@ test('常规构建与校验命令不再调用退役的采集入口', () => {
   assert.ok(!Object.keys(scripts).some((name) => name.startsWith('collect:') || name === 'evidence:manifest' || name === 'audit:sources'))
 })
 
-test('校验器拒绝私人标识与改动过的引文，并拒绝结构不成立的工作表', () => {
+test('校验器拒绝私人标识与改动过的引文，并拒绝结构不成立的工作表', { skip: !hasSnapshot }, () => {
   mkdirSync('tmp', { recursive: true })
   const fixture = mkdtempSync(resolve('tmp/data-source-'))
   try {
@@ -433,5 +438,79 @@ test('校验器拒绝私人标识与改动过的引文，并拒绝结构不成�
   } finally {
     assert.ok(fixture.startsWith(`${resolve('tmp')}/`) || fixture.startsWith(`${resolve('tmp')}\\`))
     rmSync(fixture, { recursive: true })
+  }
+})
+
+test('昵称独占一行时剥掉，标注前缀不当成第二个人', () => {
+  // 原表里常有一格写成「昵称 / 换行 / repo：正文」：昵称不带冒号，正文开头是标注。
+  // 以前把「短词 + 冒号」一律当署名，会切出一条只剩昵称的假评价（页面上就是一张只有两个字的卡）。
+  assert.deepEqual(
+    evaluationComments('尘尘\nrepo：厦门仙岳医院吴为阁医生对创伤有了解\n09-16\n治疗方法倾向于CBT'),
+    ['repo：厦门仙岳医院吴为阁医生对创伤有了解\n09-16\n治疗方法倾向于CBT'],
+  )
+  assert.deepEqual(
+    evaluationComments('兰因\n回复 momo : 我只去了一次心理咨询'),
+    ['回复 momo : 我只去了一次心理咨询'],
+  )
+  // 正文中间冒出来的「补一个费用前提：」不是换了个人，但它另起一段：
+  // 并进上一条会让这段费用信息只剩在全文里，卡片上看不到（cptsd 第 33 行就是这么丢的）。
+  assert.deepEqual(
+    evaluationComments('鲸鲸小冰\n来repo一下。\n补一个费用前提：前面做过检查可以沿用'),
+    ['来repo一下。', '补一个费用前提：前面做过检查可以沿用'],
+  )
+  // 一格里真有两个人说话，仍然按署名分开
+  assert.deepEqual(evaluationComments('alice：我去了\nbob：我也去过'), ['我去了', '我也去过'])
+})
+
+test('平台专长介绍不进线索，落到医生档案的 specialties', () => {
+  // 备注格里的「第三方页面显示擅长…」说的是平台怎么写这位医生，不是病友的就诊经历。
+  // 当成线索会拿宣传语当病友的话；而且这一行后面若还有作者自己补的话，那句话才是线索。
+  const mini = {
+    captured_at: '2026-11-09T00:00:00Z',
+    sheets: [
+      {
+        index: 0,
+        name: 'cptsd',
+        merges: [],
+        values: [
+          ['地区', '医院名称', '诊室', '姓名', '备注', '评价'],
+          ['海南', '海南安宁医院', '精神科', '刘向来', '第三方页面显示擅长创伤后应激障碍、多重人格等', ''],
+          ['海南', '海南省安宁医院', '精神科', '张三', '第三方页面显示擅长创伤后应激障碍', '这位医生问得很细'],
+        ],
+      },
+    ],
+  }
+  const produced = reportsFromDocument(mini)
+  assert.equal(produced.length, 1, '只有一句平台专长介绍的行不该产出线索')
+  assert.equal(produced[0].evidence_quote, '这位医生问得很细')
+  assert.ok(!produced.some((report) => /^第三方页面显示/u.test(report.evidence_quote)))
+
+  // 专长从同一句里解析，尾巴（「等疾病的诊治」「等，出版有…」）要剥掉，引号要脱掉
+  assert.deepEqual(specialtiesFromNote('第三方页面显示擅长创伤后应激障碍、多重人格等'), ['创伤后应激障碍', '多重人格'])
+  assert.deepEqual(
+    specialtiesFromNote('第三方页面显示擅长“创伤应激障碍”'),
+    ['创伤应激障碍'],
+  )
+  assert.deepEqual(
+    specialtiesFromNote('第三方页面显示擅长精神分裂症、心境障碍、焦虑、失眠、抑郁、多重人格障碍、分离性障碍等疾病的诊治。'),
+    ['精神分裂症', '心境障碍', '焦虑', '失眠', '抑郁', '多重人格障碍', '分离性障碍'],
+  )
+  assert.deepEqual(
+    specialtiesFromNote('第三方页面显示擅长自恋型人格障碍、边缘型人格障碍、摄食障碍、创伤后应激障碍等，出版有《人格障碍的心理咨询与治疗》等书籍'),
+    ['自恋型人格障碍', '边缘型人格障碍', '摄食障碍', '创伤后应激障碍'],
+  )
+  assert.deepEqual(specialtiesFromNote('有小红书账号，初诊只在国际部'), [], '普通备注不解析成专长')
+})
+
+test('已发布线索的引文不会是一句平台专长介绍', () => {
+  const offenders = reports
+    .filter((report) => report.status === 'published' && /^第三方页面显示/u.test(report.evidence_quote ?? ''))
+    .map((report) => report.id)
+  assert.deepEqual(offenders, [], '平台专长介绍不是病友的话，不能当线索')
+  // 这七条搬进档案之后，那几位医生的专长要有值，否则等于信息丢了
+  for (const name of ['杨晓敏', '李刚', '吴为阁', '刘向来', '钟华清', '许明智']) {
+    const found = doctors.filter((doctor) => doctor.name === name)
+    assert.ok(found.length > 0, `${name} 的档案不该消失`)
+    assert.ok(found.some((doctor) => doctor.specialties.length > 0), `${name} 的专长要落到 specialties`)
   }
 })

@@ -29,7 +29,8 @@ export type MapLead = {
   contextNote?: string
   stage: string
   publishedAt?: string
-  url: string
+  /** 只有公开来源才给外链；原始表格的地址属于不外流的材料，站点上一律不出现 */
+  url?: string
   /** 长评价的完整原文；比 quote 长时才给，供「展开原文」使用 */
   fullText?: string
   /** 线索原文里的医生姓名，照录 `doctor_name_raw`；没有姓名时不出现 */

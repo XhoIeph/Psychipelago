@@ -38,7 +38,6 @@ export function ReportCard({
       )}
       <LeadEvidence
         sourceLabel={formatReportSource(report)}
-        url={report.source_url}
         quote={report.evidence_quote}
         contextNote={report.evidence_context?.parent_excerpt ? `该评论回复的原话：「${report.evidence_context.parent_excerpt}」` : undefined}
         fullText={report.evidence_full_text && report.evidence_full_text.length > report.evidence_quote.length ? report.evidence_full_text : undefined}
