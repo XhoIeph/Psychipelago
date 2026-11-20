@@ -1,24 +1,20 @@
 'use client'
 
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { LeadEvidence } from '@/components/LeadEvidence'
 import type { Doctor } from '@/lib/schema'
-import type { MapHospital, MapLead } from './types'
-import { STAGE_LABELS } from './types'
+import type { MapHospital } from './types'
 
 export type DoctorDisorderStat = { id: string; label: string; count: number }
 
 export function DoctorDetail({
   name,
   hospital,
-  leads,
   disorders,
   profile,
   onBackToHospital,
 }: {
   name: string
   hospital: MapHospital
-  leads: MapLead[]
   disorders: DoctorDisorderStat[]
   profile: Doctor | null
   onBackToHospital: () => void
@@ -84,25 +80,6 @@ export function DoctorDetail({
           ratingItems.map((text, index) => (
             <article className="tc-rating-card" key={`${index}-${text.slice(0, 12)}`}>
               <p className="tc-quote">{text}</p>
-            </article>
-          ))
-        )}
-      </section>
-
-      <section className="tc-detail-section">
-        <h3>线索原文<span className="tc-detail-count">{leads.length} 条</span></h3>
-        {leads.length === 0 ? (
-          <p className="tc-small tc-muted">暂无关联线索。</p>
-        ) : (
-          leads.map((lead) => (
-            <article key={lead.id} className="tc-report">
-              {(lead.stage !== 'unknown' || lead.publishedAt) && (
-                <div className="tc-row tc-small tc-muted">
-                  {lead.stage !== 'unknown' && <span>{STAGE_LABELS[lead.stage] ?? lead.stage}</span>}
-                  {lead.publishedAt && <span>{lead.publishedAt}</span>}
-                </div>
-              )}
-              <LeadEvidence sourceLabel={lead.sourceLabel} url={lead.url} quote={lead.quote} contextNote={lead.contextNote} fullText={lead.fullText} />
             </article>
           ))
         )}
