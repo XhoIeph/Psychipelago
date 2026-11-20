@@ -1,7 +1,21 @@
 import type { Hospital, Report } from './schema'
 
+/**
+ * 检索归一化。
+ *
+ * 界面上病症标签用的是通行缩写（PTSD/C-PTSD、OSDD/DID，见 `disorder-labels.ts`），
+ * 数据里存的却是 id（`cptsd`、`osdd`/`did`）。用户照着标签输入时必须也能命中，
+ * 所以先把标签整串折回 id，再按空白与标点切词；斜杠不参与切词，否则
+ * 「OSDD/DID」会被切成空词。
+ */
 export function normalizeSearch(text: string): string {
-  return text.toLowerCase().replace(/孤独症|自闭症|autism/gi, 'asd').replace(/复杂性创伤后应激障碍/g, 'cptsd').replace(/边缘型人格障碍/g, 'bpd')
+  return text
+    .toLowerCase()
+    .replace(/孤独症|自闭症|autism/gi, 'asd')
+    .replace(/复杂性创伤后应激障碍/g, 'cptsd')
+    .replace(/边缘型人格障碍/g, 'bpd')
+    .replace(/ptsd\s*\/\s*c-ptsd|c-ptsd/g, 'cptsd')
+    .replace(/osdd\s*\/\s*did/g, 'osdd')
 }
 
 export function matchesSearch(text: string, query: string): boolean {

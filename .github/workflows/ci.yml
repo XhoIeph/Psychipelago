@@ -24,6 +24,9 @@ jobs:
       - name: Source regression tests
         run: npm run test:data
 
+      - name: Search regression tests
+        run: npm run test:search
+
       - name: Geocoding regression tests
         run: npm run test:geo
 
