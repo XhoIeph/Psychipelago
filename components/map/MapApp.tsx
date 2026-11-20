@@ -29,6 +29,10 @@ const HOSPITAL_ZOOM = 10
 const SIDEBAR_DEFAULT = 380
 const SIDEBAR_MIN = 340
 const SIDEBAR_MAX = 480
+// 搜索结果行激活后焦点要落的地方：详情标题（省/机构/医生），筛选态落回全国列表标题；
+// 实在找不到就把焦点还给搜索框，绝不留给正在卸载的结果列表。
+const RESULT_FOCUS_TITLE = '.tc-detail-title'
+const RESULT_FOCUS_SEARCH = '.tc-mapapp-search input'
 const SIDEBAR_STORAGE_KEY = 'tc.sidebar.width'
 const sidebarWidthCap = (viewport: number) =>
   Math.max(SIDEBAR_MIN, Math.min(SIDEBAR_MAX, Math.round((viewport || 1440) * .42)))
@@ -148,7 +152,11 @@ export function MapApp(props: Props) {
   const [cluster, setCluster] = useState<{ members: MapHospital[]; key: string; x: number; y: number } | null>(null)
   const clusterRef = useRef<HTMLDivElement | null>(null)
   const focusDetailRef = useRef(false)
+  // 搜索结果行激活后要交接的焦点落点。它没有「返回的那一行」可回，结果列表还会整块卸载，
+  // 不交接就掉到 body。记选择器 + 一个自增票：票变了才在渲染完之后聚焦一次。
+  const resultFocusRef = useRef<string | null>(null)
   const [activeResult, setActiveResult] = useState(-1)
+  const [resultFocusTicket, setResultFocusTicket] = useState(0)
   const [sidebarTab, setSidebarTab] = useState<SidebarTabId>('hospitals')
   // A disorder or source-topic search lists the hospitals that mention it, in the institution panel.
   const [resultFilter, setResultFilter] = useState<ResultFilter | null>(null)
@@ -308,6 +316,21 @@ export function MapApp(props: Props) {
       sidebarRef.current?.querySelector<HTMLButtonElement>(`[data-doctor-name="${CSS.escape(returnName)}"]`)?.focus({ preventScroll: true })
     }
   }, [selectedHospitalId, selectedProvinceAdcode, selectedDoctor, cluster])
+
+  // 搜索结果行没有「原来那一行」可回：关键词一清空，结果列表整块卸载，焦点只会掉到 body。
+  // 落点由结果行自己在 run 里登记到 resultFocusRef，这里按票只交接一次，避免每次渲染都抢焦点。
+  useEffect(() => {
+    if (!resultFocusTicket) return
+    // 手机端上面那条 useLayoutEffect 已经把焦点交给卡头标题，这里只补桌面。
+    if (!isDesktop) return
+    const target = resultFocusRef.current
+    resultFocusRef.current = null
+    const root = shellRef.current
+    if (!root) return
+    const wanted = target ? root.querySelector<HTMLElement>(target) : null
+    const fallback = root.querySelector<HTMLElement>(RESULT_FOCUS_SEARCH)
+    ;(wanted ?? fallback)?.focus({ preventScroll: true })
+  }, [isDesktop, resultFocusTicket])
 
   useEffect(() => {
     if (!cluster) return
@@ -610,7 +633,10 @@ export function MapApp(props: Props) {
           group: '省份',
           label: province.name,
           sub: '省份概要',
-          run: () => selectProvince(province.adcode),
+          run: () => {
+            resultFocusRef.current = RESULT_FOCUS_TITLE
+            selectProvince(province.adcode)
+          },
         })
       }
       if (results.filter((item) => item.group === '省份').length >= 3) break
@@ -639,7 +665,10 @@ export function MapApp(props: Props) {
           group: '医院',
           label: hospital.name,
           sub: `${provinceShortName(propsRef.current.provinces, hospital.adcode)} · 线索 ${count} 条`,
-          run: () => selectHospital(hospital.id),
+          run: () => {
+            resultFocusRef.current = RESULT_FOCUS_TITLE
+            selectHospital(hospital.id)
+          },
         },
         tier,
         count,
@@ -680,7 +709,7 @@ export function MapApp(props: Props) {
             sub: `${entry.hospitalName} · ${group.label} · 线索 ${hitReportIds.length} 条`,
             run: () => {
               if (entry.hospitalId) {
-                focusDetailRef.current = true
+                resultFocusRef.current = RESULT_FOCUS_TITLE
                 selectHospital(entry.hospitalId)
                 setSelectedDoctor({ hospitalId: entry.hospitalId, name: entry.name })
                 return
@@ -721,6 +750,8 @@ export function MapApp(props: Props) {
         run: () => {
           // 搜索命中的病症点亮面板里对应那一行，内容区回到省份列表。
           const groupId = DISORDER_FILTER_GROUPS.find((item) => item.label === bucket.label)?.id
+          // 没有对应筛选组（0 条线索的标签）时什么都不动，焦点由 runResult 还给搜索框。
+          resultFocusRef.current = groupId ? RESULT_FOCUS_TITLE : null
           if (groupId) enterFilter(null, [groupId])
         },
       })
@@ -742,6 +773,7 @@ export function MapApp(props: Props) {
           const hospitalIds = [...new Set(propsRef.current.reports
             .filter((report) => report.source_topics?.includes(topic) && report.hospital_id)
             .map((report) => report.hospital_id as string))]
+          resultFocusRef.current = RESULT_FOCUS_TITLE
           enterFilter({ label: topic, hint: `${count} 条线索`, hospitalIds }, [])
         },
       })
@@ -768,6 +800,9 @@ export function MapApp(props: Props) {
     result.run()
     setQuery('')
     setActiveResult(-1)
+    // 结果列表随关键词清空整块卸载，焦点必须交出去：run 里登记了落点就用它，
+    // 没有（比如 0 条线索的病症行）就还给搜索框，不能留在已经卸载的按钮上。
+    setResultFocusTicket((ticket) => ticket + 1)
   }
 
   const selectedHospital = props.mapHospitals.find((item) => item.id === selectedHospitalId) ?? null

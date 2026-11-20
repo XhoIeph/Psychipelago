@@ -7622,6 +7622,100 @@
         }
       ],
       "at": 1440
+    },
+    {
+      "id": "v3.d-search-result-focus-hospital-1440",
+      "type": "focusOn",
+      "desc": "桌面从搜索结果点医院行，焦点要落到医院详情的标题上：结果列表随关键词清空整块卸载，不交接就掉到 body，键盘用户回不来。落 body 或停在已卸载的按钮上都算失败。",
+      "selector": ".tc-detail-title",
+      "text": "回龙观",
+      "at": 1440,
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas"
+        },
+        {
+          "action": "fill",
+          "selector": ".tc-mapapp-search input",
+          "value": "回龙观",
+          "settle": 1200
+        },
+        {
+          "action": "wait",
+          "selector": "li[role=\"group\"][aria-label=\"医院\"] button.tc-mapapp-result",
+          "afterMs": 800
+        },
+        {
+          "action": "click",
+          "selector": "li[role=\"group\"][aria-label=\"医院\"] button.tc-mapapp-result",
+          "afterMs": 900
+        }
+      ]
+    },
+    {
+      "id": "v3.d-search-result-focus-disorder-1440",
+      "type": "focusOn",
+      "desc": "桌面从搜索结果点病症行（OSDD/DID，60 条线索），内容区回到全国省份列表并带上筛选，焦点要落到列表标题「全国」。0 条线索的标签没有对应筛选组、点完什么也不变，落点是搜索框，不在这条范围内。",
+      "selector": ".tc-detail-title",
+      "text": "全国",
+      "at": 1440,
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas"
+        },
+        {
+          "action": "fill",
+          "selector": ".tc-mapapp-search input",
+          "value": "OSDD/DID",
+          "settle": 1200
+        },
+        {
+          "action": "wait",
+          "selector": "li[role=\"group\"][aria-label=\"病症\"] button.tc-mapapp-result",
+          "afterMs": 800
+        },
+        {
+          "action": "click",
+          "selector": "li[role=\"group\"][aria-label=\"病症\"] button.tc-mapapp-result",
+          "afterMs": 900
+        }
+      ]
+    },
+    {
+      "id": "v3.d-search-result-focus-keyboard-1440",
+      "type": "focusOn",
+      "desc": "键盘走同一条路：焦点先落到搜索结果行，按 Enter 激活后焦点必须交给详情标题。鼠标点击本身会移动焦点，只有键盘这条能证明代码真的交接了。",
+      "selector": ".tc-detail-title",
+      "text": "回龙观",
+      "at": 1440,
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas"
+        },
+        {
+          "action": "fill",
+          "selector": ".tc-mapapp-search input",
+          "value": "回龙观",
+          "settle": 1200
+        },
+        {
+          "action": "wait",
+          "selector": "li[role=\"group\"][aria-label=\"医院\"] button.tc-mapapp-result",
+          "afterMs": 800
+        },
+        {
+          "action": "focus",
+          "selector": "li[role=\"group\"][aria-label=\"医院\"] button.tc-mapapp-result"
+        },
+        {
+          "action": "key",
+          "value": "Enter",
+          "afterMs": 900
+        }
+      ]
     }
   ],
   "appliesTo": [
