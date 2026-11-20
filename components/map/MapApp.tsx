@@ -28,10 +28,10 @@ import { ClipboardList, Info, LocateFixed, Menu, Search, X } from 'lucide-react'
 const SCALE_URL = 'https://psymetra.underlined.ink'
 
 const HOSPITAL_ZOOM = 10
-// 桌面侧栏宽度：默认 380，可拖 280–520，且不超过视口 42%（再宽地图就没地方了）。
+// 桌面侧栏宽度：默认 380，可拖 340–480，且不超过视口 42%（340 以下头部会挤成两行）。
 const SIDEBAR_DEFAULT = 380
-const SIDEBAR_MIN = 280
-const SIDEBAR_MAX = 520
+const SIDEBAR_MIN = 340
+const SIDEBAR_MAX = 480
 const SIDEBAR_STORAGE_KEY = 'tc.sidebar.width'
 const sidebarWidthCap = (viewport: number) =>
   Math.max(SIDEBAR_MIN, Math.min(SIDEBAR_MAX, Math.round((viewport || 1440) * .42)))
@@ -172,7 +172,7 @@ export function MapApp(props: Props) {
   const [viewportHeight, setViewportHeight] = useState(0)
   // 点钉进详情时，钉在画布里的 y：让位目标是这枚钉，不是层级锚点。
   const [pinFocusY, setPinFocusY] = useState<number | null>(null)
-  // 桌面侧栏宽度：默认 380，可拖 280–520（且不超过视口 42%），写进 localStorage。
+  // 桌面侧栏宽度：默认 380，可拖 340–480（且不超过视口 42%），写进 localStorage。
   const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_DEFAULT)
   // 相机当前是按多宽的侧栏取的景；改宽时用它算需要平移多少。
   const sidebarInsetRef = useRef(0)
