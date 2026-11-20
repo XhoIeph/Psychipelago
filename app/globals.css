@@ -3,7 +3,7 @@
   --tc-bg:#f4f7f6; --tc-surface:#fff; --tc-surface-muted:#f0f4f3;
   --tc-border:#dde7e3; --tc-border-strong:#7b948c;
   --tc-text:#193b38; --tc-text-muted:#536b66; --tc-text-faint:#60756f;
-  --tc-accent:#087f7b; --tc-accent-soft:#e7f5f0; --tc-accent-strong:#096861;
+  --tc-accent:#3b634b; --tc-accent-soft:#eaf3ec; --tc-accent-strong:#2f5139;
   --tc-official:#146347; --tc-official-soft:#e7f5ed;
   --tc-corroborated:#795c15; --tc-corroborated-soft:#fbf2dc;
   --tc-unverified:#875422; --tc-unverified-soft:#fbf0e6;
@@ -14,8 +14,8 @@
   --tc-max-width:1200px; --tc-shadow:0 3px 16px #193b3810,0 1px 3px #193b3810;
   --tc-font:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
   /* 地图数据层：密度五档、命中态、图钉与徽标（夜间值见 DARK-THEME-v1.md §4）。 */
-  --tc-ramp-1:#b9e6c8; --tc-ramp-2:#7dd3a4; --tc-ramp-3:#4dbb83; --tc-ramp-4:#2f9e68; --tc-ramp-5:#147a52;
-  --tc-pin:#087353; --tc-pin-hover:#095b44; --tc-pin-selected:#ba631e;
+  --tc-ramp-1:#cfe3d3; --tc-ramp-2:#a3cdb0; --tc-ramp-3:#74b189; --tc-ramp-4:#4f9166; --tc-ramp-5:#2f6349;
+  --tc-pin:#2f6349; --tc-pin-hover:#274f3b; --tc-pin-selected:#ba631e;
   --tc-cluster-badge:#a65c21; --tc-cluster-badge-text:#fff;
   --tc-scrollbar-thumb:#c3d7ce;
 }
@@ -25,14 +25,14 @@
   --tc-bg:#0f1312; --tc-surface:#171c1a; --tc-surface-muted:#1e2523;
   --tc-border:#2b3532; --tc-border-strong:#55645f;
   --tc-text:#e8efec; --tc-text-muted:#a7b5b0; --tc-text-faint:#93a49e;
-  --tc-accent:#4fd1b0; --tc-accent-soft:#1b3a33; --tc-accent-strong:#74e0c3;
+  --tc-accent:#8fd7a8; --tc-accent-soft:#1c3126; --tc-accent-strong:#a7e3bb;
   --tc-official:#7fd8b0; --tc-official-soft:#17332a;
   --tc-corroborated:#e2c06a; --tc-corroborated-soft:#332b16;
   --tc-unverified:#e8a76a; --tc-unverified-soft:#332415;
   --tc-danger:#f08a84; --tc-danger-soft:#3a1f1e;
   --tc-shadow:0 3px 16px #00000059,0 1px 3px #00000040;
-  --tc-ramp-1:#16312a; --tc-ramp-2:#2a604e; --tc-ramp-3:#377d65; --tc-ramp-4:#419376; --tc-ramp-5:#4aa585;
-  --tc-pin:#2f9e78; --tc-pin-hover:#38b78a; --tc-pin-selected:#ffb066;
+  --tc-ramp-1:#16311f; --tc-ramp-2:#2a5237; --tc-ramp-3:#3a6d49; --tc-ramp-4:#4a8759; --tc-ramp-5:#5aa06a;
+  --tc-pin:#6ab87f; --tc-pin-hover:#7ecb92; --tc-pin-selected:#ffb066;
   --tc-cluster-badge:#e8a15c; --tc-cluster-badge-text:#171c1a;
   --tc-scrollbar-thumb:#3b4a45;
   /* v3 的分隔线写死成浅色，夜间会发光；它同时给列表、缩放按钮和右上角列用。 */
@@ -68,11 +68,13 @@ svg { flex-shrink:0; }
 .tc-main { flex:1; padding:48px 0 64px; }
 .tc-header { background:var(--tc-surface); border-bottom:1px solid var(--tc-border); }
 .tc-header-inner { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:24px; padding-block:20px; }
-.tc-brand { display:inline-flex; align-items:center; gap:12px; min-height:48px; color:var(--tc-text); font-size:23px; font-weight:750; letter-spacing:-.8px; flex-shrink:0; }
+.tc-brand { display:inline-flex; align-items:center; gap:10px; min-height:48px; color:var(--tc-text); flex-shrink:0; }
 .tc-brand:hover { text-decoration:none; }
-.tc-brand img { flex-shrink:0; }
-.tc-brand-wordmark { display:flex; flex-direction:column; line-height:1.15; }
-.tc-brand small { font-size:12px; font-weight:400; letter-spacing:0; color:var(--tc-text-muted); }
+/* 品牌拆成三件用：图形标原色、词标与中文名是单色遮罩，颜色跟 --tc-accent 走（浅/深底同一个文件）。 */
+.tc-brand-mark { flex-shrink:0; display:block; max-width:100%; object-fit:contain; }
+.tc-brand-lockup { display:flex; flex-direction:column; justify-content:center; gap:3px; min-width:0; }
+.tc-brand-en, .tc-brand-zh { display:block; flex-shrink:0; background-color:var(--tc-accent); }
+.tc-brand-en { max-width:100%; }
 .tc-nav { display:flex; align-items:center; gap:4px; flex-wrap:wrap; font-size:14px; }
 .tc-nav a { padding:10px 12px; min-height:44px; border-radius:var(--tc-control-radius); color:var(--tc-text-muted); }
 .tc-nav a:hover,.tc-nav a[aria-current='page'] { background:var(--tc-accent-soft); color:var(--tc-accent-strong); text-decoration:none; }
@@ -370,13 +372,13 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .sr-empty { margin:0; padding:28px 0 32px; color:var(--tc-text-muted); font-size:14px; text-align:center; }
 
 /* 筛选入口：聚焦、展开或有选中时才从 0 展到 48，平时把宽度还给搜索框。 */
-.fbtn { display:flex; align-items:center; justify-content:center; gap:5px; flex:none; width:0; height:44px; margin-left:0; padding:0; overflow:hidden; opacity:0; border:0; border-radius:14px; background:#dff0e7; color:var(--tc-accent-strong); box-shadow:inset 0 0 0 1px #087f7b1a;
+.fbtn { display:flex; align-items:center; justify-content:center; gap:5px; flex:none; width:0; height:44px; margin-left:0; padding:0; overflow:hidden; opacity:0; border:0; border-radius:14px; background:#eaf3ec; color:var(--tc-accent-strong); box-shadow:inset 0 0 0 1px #3b634b1f;
   transition:width 240ms cubic-bezier(.32,.72,0,1),margin-left 240ms cubic-bezier(.32,.72,0,1),opacity 180ms ease,background-color .16s ease; }
 .searchrow.is-eng .fbtn { width:48px; margin-left:8px; opacity:1; }
 /* 折叠态宽度是 0，但按钮仍要能用键盘走到：拿到焦点就先展开，焦点环才有地方画。 */
 .fbtn:focus-visible { width:48px; margin-left:8px; opacity:1; }
-.fbtn:hover { background:#d5eade; }
-.fbtn[aria-expanded="true"] { background:#c9e4d7; box-shadow:inset 0 0 0 1px #087f7b38; }
+.fbtn:hover { background:#e0eee5; }
+.fbtn[aria-expanded="true"] { background:#d3e8db; box-shadow:inset 0 0 0 1px #3b634b3d; }
 .fbtn .cnt { display:none; font-size:11px; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; }
 .fbtn.has .cnt { display:block; }
 /* 筛选面板挂在搜索行与标题之间，是卡自己的 flex 子项：翻正文时它不动，展开时把标题和列表一起推下去。 */
@@ -387,9 +389,9 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .fpanel ul { margin:0; padding:0; list-style:none; }
 /* 两张卡：一张选省份、一张选病症，卡面只写当前值，点开才是菜单。 */
 .fcards { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px; }
-.fcard { position:relative; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:1px; width:100%; height:52px; padding:0 26px 0 11px; border:1px solid rgba(8,127,123,.16); border-radius:12px; background:#dff0e7; color:var(--tc-text); text-align:left; transition:background-color .16s ease,border-color .16s ease; }
-.fcard:hover { background:#d5eade; }
-.fcard[aria-expanded="true"] { background:#c9e4d7; border-color:rgba(8,127,123,.42); }
+.fcard { position:relative; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:1px; width:100%; height:52px; padding:0 26px 0 11px; border:1px solid rgba(59,99,75,.16); border-radius:12px; background:#eaf3ec; color:var(--tc-text); text-align:left; transition:background-color .16s ease,border-color .16s ease; }
+.fcard:hover { background:#e0eee5; }
+.fcard[aria-expanded="true"] { background:#d3e8db; border-color:rgba(59,99,75,.42); }
 .fcard-kind { color:var(--tc-text-faint); font-size:11.5px; line-height:1.2; }
 .fcard-label { max-width:100%; overflow:hidden; color:var(--tc-accent-strong); font-size:14px; font-weight:650; line-height:1.3; text-overflow:ellipsis; white-space:nowrap; }
 .fcard-chev { position:absolute; top:50%; right:9px; transform:translateY(-50%); color:var(--tc-accent-strong); transition:transform .2s cubic-bezier(.32,.72,0,1); }
@@ -430,7 +432,7 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 .sheet .empty p { margin:8px 0 0; color:var(--tc-text-muted); font-size:13.5px; line-height:1.7; }
 .sheet .empty .acts { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
 .sheet .empty .btn { display:inline-flex; align-items:center; height:40px; padding:0 14px; border:0; border-radius:10px; background:var(--tc-surface-muted); color:var(--tc-text); font-size:13.5px; font-weight:600; }
-.sheet .empty .btn.acc { background:#dff0e7; color:var(--tc-accent-strong); }
+.sheet .empty .btn.acc { background:#eaf3ec; color:var(--tc-accent-strong); }
 .sheet .empty .btn:hover { filter:brightness(.97); }
 /* 空态正文已经把话说全，卡头的返回行与层级名不再重复。 */
 .sheet.is-empty .head-title { display:none; }
