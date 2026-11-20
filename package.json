@@ -24,6 +24,7 @@
     "data:stats": "node scripts/data-stats.ts",
     "data:import": "node scripts/import-kdocs.ts",
     "test:data": "node --test tests/data-source.test.mjs",
+    "test:search": "node --test tests/search-disorder-label.test.mjs",
     "test:amap": "node --test tests/map-coordinates.test.mjs tests/preview.test.mjs"
   },
   "dependencies": {
