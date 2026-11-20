@@ -7460,6 +7460,168 @@
           "settle": 1800
         }
       ]
+    },
+    {
+      "id": "v3.d-search-label-ptsd-cptsd-1440",
+      "type": "hasText",
+      "desc": "照界面标签搜「PTSD/C-PTSD」时，病症组必须有一行标签恰好是它（当前 88 条线索）。判据用整串相等：搜「ptsd」时 PTSD/C-PTSD 也含该子串，用包含会把两个标签混成一条。",
+      "selector": "li[role=\"group\"][aria-label=\"病症\"] button.tc-mapapp-result strong",
+      "text": "PTSD/C-PTSD",
+      "exact": true,
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas",
+          "settle": 1200
+        },
+        {
+          "action": "fill",
+          "selector": ".tc-mapapp-search input",
+          "value": "PTSD/C-PTSD",
+          "settle": 1200
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-result",
+          "afterMs": 1200
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.d-search-label-bpd-1440",
+      "type": "hasText",
+      "desc": "照界面标签搜「bpd」时，病症组必须有一行标签恰好是它（当前 0 条线索，数据里没有这一类的线索，所以只判行在不在、不判有没有线索）。判据用整串相等。",
+      "selector": "li[role=\"group\"][aria-label=\"病症\"] button.tc-mapapp-result strong",
+      "text": "bpd",
+      "exact": true,
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas",
+          "settle": 1200
+        },
+        {
+          "action": "fill",
+          "selector": ".tc-mapapp-search input",
+          "value": "bpd",
+          "settle": 1200
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-result",
+          "afterMs": 1200
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.d-search-label-osdd-did-1440",
+      "type": "hasText",
+      "desc": "照界面标签搜「OSDD/DID」时，病症组必须有一行标签恰好是它（当前 60 条线索）。判据用整串相等：搜「ptsd」时 PTSD/C-PTSD 也含该子串，用包含会把两个标签混成一条。",
+      "selector": "li[role=\"group\"][aria-label=\"病症\"] button.tc-mapapp-result strong",
+      "text": "OSDD/DID",
+      "exact": true,
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas",
+          "settle": 1200
+        },
+        {
+          "action": "fill",
+          "selector": ".tc-mapapp-search input",
+          "value": "OSDD/DID",
+          "settle": 1200
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-result",
+          "afterMs": 1200
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.d-search-label-ptsd-1440",
+      "type": "hasText",
+      "desc": "照界面标签搜「ptsd」时，病症组必须有一行标签恰好是它（当前 0 条线索，数据里没有这一类的线索，所以只判行在不在、不判有没有线索）。判据用整串相等。",
+      "selector": "li[role=\"group\"][aria-label=\"病症\"] button.tc-mapapp-result strong",
+      "text": "ptsd",
+      "exact": true,
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas",
+          "settle": 1200
+        },
+        {
+          "action": "fill",
+          "selector": ".tc-mapapp-search input",
+          "value": "ptsd",
+          "settle": 1200
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-result",
+          "afterMs": 1200
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.d-search-label-pd-1440",
+      "type": "hasText",
+      "desc": "照界面标签搜「人格障碍」时，病症组必须有一行标签恰好是它（当前 178 条线索）。判据用整串相等：搜「ptsd」时 PTSD/C-PTSD 也含该子串，用包含会把两个标签混成一条。",
+      "selector": "li[role=\"group\"][aria-label=\"病症\"] button.tc-mapapp-result strong",
+      "text": "人格障碍",
+      "exact": true,
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas",
+          "settle": 1200
+        },
+        {
+          "action": "fill",
+          "selector": ".tc-mapapp-search input",
+          "value": "人格障碍",
+          "settle": 1200
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-result",
+          "afterMs": 1200
+        }
+      ],
+      "at": 1440
+    },
+    {
+      "id": "v3.d-search-label-other-1440",
+      "type": "hasText",
+      "desc": "照界面标签搜「其他」时，病症组必须有一行标签恰好是它（当前 0 条线索，数据里没有这一类的线索，所以只判行在不在、不判有没有线索）。判据用整串相等。",
+      "selector": "li[role=\"group\"][aria-label=\"病症\"] button.tc-mapapp-result strong",
+      "text": "其他",
+      "exact": true,
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-canvas",
+          "settle": 1200
+        },
+        {
+          "action": "fill",
+          "selector": ".tc-mapapp-search input",
+          "value": "其他",
+          "settle": 1200
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp-result",
+          "afterMs": 1200
+        }
+      ],
+      "at": 1440
     }
   ],
   "appliesTo": [
