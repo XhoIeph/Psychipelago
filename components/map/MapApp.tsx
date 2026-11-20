@@ -791,9 +791,6 @@ export function MapApp(props: Props) {
     return (props.leadsByHospital[selectedDoctor.hospitalId] ?? []).filter((lead) =>
       splitDoctorNames(lead.doctorName).includes(selectedDoctor.name))
   }, [selectedDoctor, props.leadsByHospital])
-  const doctorLeads = matchingLeadIds
-    ? doctorLeadsAll.filter((lead) => matchingLeadIds.has(lead.id))
-    : doctorLeadsAll
 
   const doctorDisorders = useMemo<DoctorDisorderStat[]>(() => {
     if (!selectedDoctor) return []
@@ -846,7 +843,6 @@ export function MapApp(props: Props) {
     <DoctorDetail
       name={selectedDoctor.name}
       hospital={doctorHospital}
-      leads={doctorLeads}
       disorders={doctorDisorders}
       profile={doctorProfile}
       onBackToHospital={backToHospital}

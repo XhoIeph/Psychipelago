@@ -26,7 +26,6 @@ export type MapHospital = {
 export type MapLead = {
   id: string
   quote: string
-  sourceLabel: string
   contextNote?: string
   stage: string
   publishedAt?: string

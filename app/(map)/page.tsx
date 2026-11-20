@@ -23,7 +23,6 @@ export default function MapPage() {
         .map((report) => ({
           id: report.id,
           quote: report.evidence_quote,
-          sourceLabel: formatReportSource(report),
           contextNote: report.evidence_context?.parent_excerpt
             ? `该评论回复的原话：「${report.evidence_context.parent_excerpt}」`
             : undefined,
