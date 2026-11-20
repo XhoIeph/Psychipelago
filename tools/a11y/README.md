@@ -40,6 +40,7 @@ node tools/a11y/spec.cjs http://127.0.0.1:4174/ tools/a11y/ui-spec.json --no-map
 | `count`、`numberEquals`、`sumEquals` | 元素个数与必须相等/相加相等的数字 |
 | `mustExist`、`mustNotExist`、`attr` | 元素存在性与属性值 |
 | `tabOrder`、`focusOn`、`focusRing`、`focusRingCdp`、`focusBorder`、`focusNoColor` | Tab 顺序、焦点落点、焦点环 |
+| `pathname` | 点击后落点路径（`endsWith` / `equals`，可带 `expectSelector` 要求落地页存在某元素） |
 | `mapPan`、`polygonPaint` | 地图拖动与区域着色（依赖地图运行时） |
 | `media`、`layerOrder`、`singleEntry` | 断点表现、层叠顺序、单一入口 |
 
