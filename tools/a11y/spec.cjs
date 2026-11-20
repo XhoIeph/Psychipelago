@@ -330,10 +330,16 @@ async function runChecks(checks) {
       });
       const flat = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ');
       if (!els.length) { r.pass = false; r.note = '选择器没有可见元素：' + c.selector; out.push(r); continue; }
-      const hit = els.find(e => flat(e.textContent).includes(flat(c.text)));
+      // exact 用于「整串必须是这个标签」：搜「ptsd」时 PTSD/C-PTSD 也含子串，
+      // 用 includes 会把两个不同标签判成同一个命中。
+      const want = flat(c.text).trim();
+      const hit = els.find(e => {
+        const text = flat(e.textContent).trim();
+        return c.exact ? text === want : text.includes(want);
+      });
       r.pass = Boolean(hit);
       r.note = r.pass
-        ? `文本里有「${c.text}」`
+        ? (c.exact ? `文本恰好是「${c.text}」` : `文本里有「${c.text}」`)
         : `文本里没有「${c.text}」：当前是「${flat(els[0].textContent).trim().slice(0, 40)}」`;
       if (r.pass) r.evidence.push('取样 ' + hit.tagName.toLowerCase());
       out.push(r); continue;
