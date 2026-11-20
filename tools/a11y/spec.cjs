@@ -141,6 +141,38 @@ async function runChecks(checks) {
       continue;
     }
 
+    if (c.type === 'pathname') {
+      // 判「点下去真到了哪一页」：读 location.pathname，而不是读入口的 href 属性。
+      // href 写对了但目标页不存在时，属性断言会绿——这条要的是真导航结果。
+      const path = location.pathname;
+      let ok = true;
+      if (c.equals != null) {
+        const hit = path === c.equals;
+        ok = ok && hit;
+        r.evidence.push((hit ? '✓' : '✓ 实际 ' ) + (hit ? '路径 ' + path + ' 等于 ' + c.equals : '路径 ' + path + ' 不等于 ' + c.equals));
+      }
+      if (c.endsWith != null) {
+        const hit = path.endsWith(c.endsWith);
+        ok = ok && hit;
+        r.evidence.push(hit ? '✓ 路径 ' + path + ' 以 ' + c.endsWith + ' 结尾' : '✗ 路径 ' + path + ' 不以 ' + c.endsWith + ' 结尾');
+      }
+      if (c.expectSelector) {
+        const el = document.querySelector(c.expectSelector);
+        const hit = Boolean(el);
+        ok = ok && hit;
+        r.evidence.push(hit ? '✓ 落地页存在 ' + c.expectSelector : '✗ 落地页找不到 ' + c.expectSelector + '（可能进了 404）');
+      }
+      if (c.expectText && c.textSelector) {
+        const el = document.querySelector(c.textSelector);
+        const text = el ? el.textContent.replace(/\s+/g, '') : '';
+        const hit = Boolean(el) && text.includes(String(c.expectText).replace(/\s+/g, ''));
+        ok = ok && hit;
+        r.evidence.push(hit ? '✓ ' + c.textSelector + ' 文案含「' + c.expectText + '」' : '✗ ' + c.textSelector + ' 文案不含「' + c.expectText + '」');
+      }
+      r.pass = ok;
+      r.note = '到达页：' + path;
+      out.push(r); continue;
+    }
     if (c.type === 'computed') {
       if (!c.sampleNow) await settleAnimations();
       // 计算样式跟尺寸无关：body 在这种全固定布局里高度为 0，但 fontSize/lineHeight 仍然有意义。
@@ -1473,6 +1505,8 @@ async function applyPrecondition(page, steps) {
           return true;
         }, sel);
         if (!ok) return { ok: false, note: `clickjs 找不到元素：${sel}`, memo };
+        // 点了以后同样要给导航/过渡留时间：少这一段时，紧接着读 location.pathname 会读到旧 URL。
+        await page.waitForTimeout(step.settle || 350);
         continue;
       }
       if (action === 'select') {
