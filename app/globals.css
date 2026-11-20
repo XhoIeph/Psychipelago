@@ -515,7 +515,8 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
   :root { --tc-gutter:20px; }
   h1 { font-size:24px; }
   .tc-header-inner { gap:16px; padding-block:16px; }
-  .tc-nav { width:100%; gap:0; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); }
+  .tc-nav { width:100%; gap:4px; display:grid; grid-template-columns:none; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); }
+  .tc-nav > a:nth-child(n) { grid-column:auto; }
   .tc-nav a { padding:10px 2px; font-size:13px; text-align:center; }
   .tc-main { padding:28px 0 40px; }
   .tc-page-heading { gap:16px; padding-bottom:20px; margin-bottom:24px; }
@@ -528,9 +529,6 @@ input[type='checkbox'] { width:17px; height:17px; accent-color:var(--tc-accent);
 @media (max-width:360px) {
   :root,.tc-sidebar { --tc-gutter:16px; --tc-card-padding:16px; }
   .tc-sidebar .tc-brand { font-size:20px; gap:8px; }
-  .tc-nav { grid-template-columns:repeat(6,minmax(0,1fr)); gap:4px; }
-  .tc-nav a { grid-column:span 2; }
-  .tc-nav a:nth-child(-n+2) { grid-column:span 3; }
 }
 @media (prefers-reduced-motion:reduce) {
   *,*::before,*::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; }
