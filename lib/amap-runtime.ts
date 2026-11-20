@@ -13,14 +13,14 @@ export type { Theme }
 // 密度色阶与筛选色的夜间值来自 DARK-THEME-v1.md §4：两色线性插值，只有一个数组常量。
 // 夜间五档按线性光插值取中间值：sRGB 直接插值会让最低两档在深底上几乎贴在一起。
 const densityRamp: Record<Theme, readonly string[]> = {
-  light: ['#ffffff', '#b9e6c8', '#7dd3a4', '#4dbb83', '#2f9e68', '#147a52'],
-  dark: ['#16312a', '#16312a', '#2a604e', '#377d65', '#419376', '#4aa585'],
+  light: ['#ffffff', '#cfe3d3', '#a3cdb0', '#74b189', '#4f9166', '#2f6349'],
+  dark: ['#16311f', '#16311f', '#2a5237', '#3a6d49', '#4a8759', '#5aa06a'],
 }
 const densityIndex = (count: number) => (count <= 0 ? 0 : count <= 2 ? 1 : count <= 4 ? 2 : count <= 7 ? 3 : count <= 10 ? 4 : 5)
 const densityColor = (theme: Theme, count: number) => densityRamp[theme][densityIndex(count)]
 const palettes: Record<Theme, { hitFill: string; hitStroke: string; hitOpacity: number; missOpacity: number; blockOpacity: number; stroke: string }> = {
-  light: { hitFill: '#087f7b', hitStroke: 'rgba(8,127,123,.5)', hitOpacity: .26, missOpacity: .04, blockOpacity: .55, stroke: '#78a88e' },
-  dark: { hitFill: '#4fd1b0', hitStroke: 'rgba(79,209,176,.5)', hitOpacity: .24, missOpacity: .02, blockOpacity: .9, stroke: '#4a5f57' },
+  light: { hitFill: '#3b634b', hitStroke: 'rgba(59,99,75,.5)', hitOpacity: .26, missOpacity: .04, blockOpacity: .55, stroke: '#78a88e' },
+  dark: { hitFill: '#8fd7a8', hitStroke: 'rgba(143,215,168,.5)', hitOpacity: .24, missOpacity: .02, blockOpacity: .9, stroke: '#4a5f57' },
 }
 type Geometry = { features: { properties: { adcode: string | number; name?: string }; geometry: { type?: string; coordinates: CoordinateTree } }[] }
 type LiveNode = { marker: AMap.Marker; element: HTMLButtonElement; members: string[]; exit?: gsap.core.Tween }
