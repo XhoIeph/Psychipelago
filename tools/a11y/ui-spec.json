@@ -7716,6 +7716,142 @@
           "afterMs": 900
         }
       ]
+    },
+    {
+      "id": "v3.m-nav-row-320",
+      "type": "rowSpread",
+      "at": 320,
+      "desc": "320 宽主导航必须一行排满：三项同一行（top 差 ≤1）、宽度两两差 ≤2、命中高度 ≥44、末项右缘贴导航右缘（差 ≤1），页头高 ≤145。用于抓「第三项挤到第二行」与「占了几栏、右边空一截」。",
+      "container": ".tc-nav",
+      "items": ".tc-nav a",
+      "headerSelector": ".tc-header",
+      "headerMax": 145,
+      "minHit": 44,
+      "topTolerance": 1,
+      "widthTolerance": 2,
+      "edgeTolerance": 1,
+      "precondition": [
+        {
+          "action": "goto",
+          "path": "/psy/",
+          "settle": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-nav a",
+          "settle": 400
+        }
+      ]
+    },
+    {
+      "id": "v3.m-nav-row-390",
+      "type": "rowSpread",
+      "at": 390,
+      "desc": "390 宽主导航必须一行排满：三项同一行（top 差 ≤1）、宽度两两差 ≤2、命中高度 ≥44、末项右缘贴导航右缘（差 ≤1），页头高 ≤145。用于抓「第三项挤到第二行」与「占了几栏、右边空一截」。",
+      "container": ".tc-nav",
+      "items": ".tc-nav a",
+      "headerSelector": ".tc-header",
+      "headerMax": 145,
+      "minHit": 44,
+      "topTolerance": 1,
+      "widthTolerance": 2,
+      "edgeTolerance": 1,
+      "precondition": [
+        {
+          "action": "goto",
+          "path": "/psy/",
+          "settle": 1400
+        },
+        {
+          "action": "wait",
+          "selector": ".tc-nav a",
+          "settle": 400
+        }
+      ]
+    },
+    {
+      "id": "v3.m-label-group-osdd-390",
+      "type": "textPattern",
+      "at": 390,
+      "desc": "搜「OSDD/DID」时，结果里要有一行病症组行：文本以标签开头、后面是「N 条线索」（N 不写死）。改前这条必红——旧实现按数据 id 匹配，界面写的却是标签。",
+      "selector": ".sr-row",
+      "pattern": "^OSDD\\/DID\\s*\\d+\\s*条线索$",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp",
+          "settle": 1000
+        },
+        {
+          "action": "fill",
+          "selector": "div.sfield input",
+          "value": "OSDD/DID",
+          "settle": 2600
+        }
+      ]
+    },
+    {
+      "id": "v3.m-label-group-ptsd-390",
+      "type": "textPattern",
+      "at": 390,
+      "desc": "搜「PTSD/C-PTSD」时，结果里要有一行病症组行：文本以标签开头、后面是「N 条线索」（N 不写死）。改前这条必红——旧实现按数据 id 匹配，界面写的却是标签。",
+      "selector": ".sr-row",
+      "pattern": "^PTSD\\/C-PTSD\\s*\\d+\\s*条线索$",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp",
+          "settle": 1000
+        },
+        {
+          "action": "fill",
+          "selector": "div.sfield input",
+          "value": "PTSD/C-PTSD",
+          "settle": 2600
+        }
+      ]
+    },
+    {
+      "id": "v3.d-label-group-osdd-1440",
+      "type": "textPattern",
+      "at": 1440,
+      "desc": "搜「OSDD/DID」时，结果里要有一行病症组行：文本以标签开头、后面是「N 条线索」（N 不写死）。改前这条必红——旧实现按数据 id 匹配，界面写的却是标签。",
+      "selector": ".tc-mapapp-result",
+      "pattern": "^OSDD\\/DID\\s*\\d+\\s*条线索$",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp",
+          "settle": 1000
+        },
+        {
+          "action": "fill",
+          "selector": "div.tc-mapapp-search input",
+          "value": "OSDD/DID",
+          "settle": 2600
+        }
+      ]
+    },
+    {
+      "id": "v3.d-label-group-ptsd-1440",
+      "type": "textPattern",
+      "at": 1440,
+      "desc": "搜「PTSD/C-PTSD」时，结果里要有一行病症组行：文本以标签开头、后面是「N 条线索」（N 不写死）。改前这条必红——旧实现按数据 id 匹配，界面写的却是标签。",
+      "selector": ".tc-mapapp-result",
+      "pattern": "^PTSD\\/C-PTSD\\s*\\d+\\s*条线索$",
+      "precondition": [
+        {
+          "action": "wait",
+          "selector": ".tc-mapapp",
+          "settle": 1000
+        },
+        {
+          "action": "fill",
+          "selector": "div.tc-mapapp-search input",
+          "value": "PTSD/C-PTSD",
+          "settle": 2600
+        }
+      ]
     }
   ],
   "appliesTo": [
