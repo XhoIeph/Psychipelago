@@ -1290,7 +1290,7 @@ export function MapApp(props: Props) {
           {!isDesktop && <ThemeToggle theme={theme} onToggle={toggleTheme} />}
           {(openCard === 'about' || closingCard === 'about') && (
             <section id="tc-project-card" className={closingCard === 'about' ? 'tc-project-card is-closing' : 'tc-project-card'} aria-label="关于项目">
-              <div className="tc-row tc-row--between"><strong>TraumaCompass</strong></div>
+              <div className="tc-row tc-row--between"><strong>群岛 Psychipelago</strong></div>
               <p>本项目旨在为CPTSD/BPD人群提供全国就诊地图，帮助更多人治疗心理创伤与障碍</p>
               <Link className="tc-card-action" href="/about/">了解我们</Link>
             </section>
