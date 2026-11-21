@@ -323,6 +323,88 @@ async function runChecks(checks) {
       out.push(r); continue;
     }
 
+
+    // Text shape: among the visible matches, at least one element's flattened textContent
+    // matches the regex. Used where a row carries no dedicated hook and only its wording
+    // tells the reader which kind of row it is (e.g. a disorder group row).
+    if (c.type === 'textPattern') {
+      const flat = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
+      const els = [...document.querySelectorAll(c.selector)].filter((e) => {
+        const rc = e.getBoundingClientRect();
+        return rc.width > 0 && rc.height > 0;
+      });
+      if (!els.length) {
+        r.pass = c.skipIfMissing ? null : false;
+        r.note = (c.skipIfMissing ? '本页没有该元素，断言不适用：' : '选择器没有可见元素：') + c.selector;
+        out.push(r); continue;
+      }
+      const re = new RegExp(String(c.pattern));
+      const hits = els.filter((e) => re.test(flat(e.textContent)));
+      r.pass = hits.length > 0;
+      r.note = r.pass
+        ? hits.length + '/' + els.length + ' 个元素文本匹配 /' + c.pattern + '/'
+        : '没有元素文本匹配 /' + c.pattern + '/；首个是「' + flat(els[0].textContent).slice(0, 40) + '」';
+      if (r.pass) r.evidence.push(flat(hits[0].textContent).slice(0, 60));
+      out.push(r); continue;
+    }
+
+    // One-row spread: the container's items must sit on the same line, share one width,
+    // keep a tappable height and end flush with the container's right edge. This is the
+    // shape that catches "third item wrapped to a second line" and "three items in a
+    // five-column grid, leaving a gap on the right" — both invisible to height-only checks.
+    if (c.type === 'rowSpread') {
+      const box = (el) => el.getBoundingClientRect();
+      const container = document.querySelector(c.container || c.selector);
+      if (!container) {
+        r.pass = c.skipIfMissing ? null : false;
+        r.note = (c.skipIfMissing ? '本页没有该容器，断言不适用：' : '容器不存在：') + (c.container || c.selector);
+        out.push(r); continue;
+      }
+      const itemSel = c.items || ((c.container || c.selector) + ' > *');
+      const items = [...document.querySelectorAll(itemSel)].filter((e) => {
+        const rc = box(e);
+        return rc.width > 0 && rc.height > 0;
+      });
+      if (items.length < 2) {
+        r.pass = c.skipIfMissing ? null : false;
+        r.note = (c.skipIfMissing ? '本页没有该容器，断言不适用：' : '可见子项不足 2 个：') + itemSel;
+        out.push(r); continue;
+      }
+      const boxes = items.map(box);
+      const cbox = box(container);
+      const tops = boxes.map((b) => b.top);
+      const widths = boxes.map((b) => b.width);
+      const heights = boxes.map((b) => b.height);
+      const topSpread = Math.max(...tops) - Math.min(...tops);
+      const widthSpread = Math.max(...widths) - Math.min(...widths);
+      const minHeight = Math.min(...heights);
+      const rightGap = Math.abs(cbox.right - Math.max(...boxes.map((b) => b.right)));
+      const tol = c.topTolerance == null ? 1 : c.topTolerance;
+      const wtol = c.widthTolerance == null ? 2 : c.widthTolerance;
+      const etol = c.edgeTolerance == null ? 1 : c.edgeTolerance;
+      const minHit = c.minHit == null ? 44 : c.minHit;
+      const problems = [];
+      if (topSpread > tol) problems.push('子项不在同一行：top 差 ' + topSpread.toFixed(1));
+      if (widthSpread > wtol) problems.push('宽度不一致：差 ' + widthSpread.toFixed(1));
+      if (minHeight < minHit) problems.push('命中高度不足：' + minHeight.toFixed(1) + ' < ' + minHit);
+      if (rightGap > etol) problems.push('末项右缘离容器右缘 ' + rightGap.toFixed(1) + 'px');
+      if (c.headerSelector) {
+        const h = document.querySelector(c.headerSelector);
+        if (!h) problems.push('页头不存在：' + c.headerSelector);
+        else {
+          const hh = box(h).height;
+          if (c.headerMax != null && hh > c.headerMax) problems.push('页头高 ' + hh.toFixed(1) + ' > ' + c.headerMax);
+        }
+      }
+      r.pass = problems.length === 0;
+      r.note = r.pass
+        ? items.length + ' 项同一行，宽 ' + widths.map((w) => w.toFixed(1)).join('/')
+          + '，命中高 ' + minHeight.toFixed(1) + '，右缘差 ' + rightGap.toFixed(1)
+        : problems.join('；');
+      r.evidence = boxes.map((b, i) => '第' + (i + 1) + '项 ' + b.width.toFixed(1) + '×' + b.height.toFixed(1) + ' @ ' + b.left.toFixed(1) + ',' + b.top.toFixed(1));
+      out.push(r); continue;
+    }
+
     if (c.type === 'hasText') {
       const els = [...document.querySelectorAll(c.selector)].filter(e => {
         const rc = e.getBoundingClientRect();
@@ -1345,14 +1427,14 @@ async function runSpecial(page, checks) {
 
 // 断言的「前置状态」：写在断言文件的 precondition 里，只允许这里的几种动作。
 // 直接操作页面（不是参数化的全局开关），这样同一份文件就能说清「这条要在什么状态下量」。
-const PRECONDITION_ACTIONS = new Set(['fill', 'click', 'clickjs', 'clickat', 'wait', 'select', 'key', 'press', 'focus', 'expectfocus', 'reload', 'assertrect', 'drag']);
+const PRECONDITION_ACTIONS = new Set(['fill', 'click', 'clickjs', 'clickat', 'wait', 'select', 'key', 'press', 'focus', 'expectfocus', 'reload', 'assertrect', 'drag', 'goto']);
 
 async function applyPrecondition(page, steps) {
   const memo = {};
   for (const step of steps) {
     const action = String((step && step.action) || '').toLowerCase();
     if (!PRECONDITION_ACTIONS.has(action)) {
-      return { ok: false, note: `前置动作不认识：${action || '(空)'}，只支持 fill / click / clickjs / clickat / wait / select / key（或 press）/ focus / expectFocus / reload / assertRect / drag`, memo };
+      return { ok: false, note: `前置动作不认识：${action || '(空)'}，只支持 fill / click / clickjs / clickat / wait / select / key（或 press）/ focus / expectFocus / reload / assertRect / drag / goto`, memo };
     }
     // key / press 没有选择器：直接往当前焦点元素敲键（Escape 关抽屉、Tab 走位这类）。
     // press 是 key 的别名，两个名字都收：断言作者按日常说法写的也能跑。
@@ -1453,6 +1535,14 @@ async function applyPrecondition(page, steps) {
       await page.mouse.up()
       await page.waitForTimeout(Number(step.afterMs || 800))
       continue
+    }
+    if (action === 'goto') {
+      // Whole-page navigation inside the same tab: some checks live on a page the entry
+      // point does not reach, so the precondition has to walk there first.
+      const target = new URL(step.path || step.url || '/', page.url()).toString();
+      await page.goto(target, { waitUntil: 'domcontentloaded', timeout: 45000 });
+      await page.waitForTimeout(Number(step.afterMs || step.settle || 1200));
+      continue;
     }
     if (action === 'reload') {
       // 刷新后 localStorage 仍在同一个浏览器上下文里，才验得出「记得住」。

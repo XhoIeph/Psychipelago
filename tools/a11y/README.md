@@ -41,10 +41,12 @@ node tools/a11y/spec.cjs http://127.0.0.1:4174/ tools/a11y/ui-spec.json --no-map
 | `mustExist`、`mustNotExist`、`attr` | 元素存在性与属性值 |
 | `tabOrder`、`focusOn`、`focusRing`、`focusRingCdp`、`focusBorder`、`focusNoColor` | Tab 顺序、焦点落点、焦点环 |
 | `pathname` | 点击后落点路径（`endsWith` / `equals`，可带 `expectSelector` 要求落地页存在某元素） |
+| `textPattern` | 同类元素里至少一个的可见文本匹配正则。用于只有文案能区分身份的行，例如病症组行。 |
+| `rowSpread` | 一组子项必须同一行、等宽、命中高度够、末项贴容器右缘。用于抓「挤成两行」与「占几栏、右边空一截」。 |
 | `mapPan`、`polygonPaint` | 地图拖动与区域着色（依赖地图运行时） |
 | `media`、`layerOrder`、`singleEntry` | 断点表现、层叠顺序、单一入口 |
 
-前置动作支持 `wait`、`click`、`clickat`、`clickjs`、`focus`、`fill`、`key`、`reload`、`drag`、`expectfocus`、`assertrect`。`clickjs` 在页面内派发点击，用于动画进行中点的场景——`click` 即使带 `force` 也要等元素可点，量到的是动画结束之后。
+前置动作支持 `wait`、`click`、`clickat`、`clickjs`、`focus`、`fill`、`key`、`reload`、`drag`、`expectfocus`、`assertrect`、`goto`。`clickjs` 在页面内派发点击，用于动画进行中点的场景——`click` 即使带 `force` 也要等元素可点，量到的是动画结束之后。
 
 ## 三种「不适用」
 
