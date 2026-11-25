@@ -1,74 +1,40 @@
-# 群岛Psychipelago
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/psychipelago-dark.png">
+    <img src=".github/assets/psychipelago.png" width="520" alt="群岛 Psychipelago">
+  </picture>
+</p>
+<h1 align="center">群岛Psychipelago</h1>
+<p align="center">
+  <a href="https://traumacompass.us.ci/">网站首页</a> ·
+  <a href="https://traumacompass.us.ci/map/">就诊地图</a> ·
+  <a href="https://traumacompass.us.ci/psy/">量表库</a>
+</p>
 
-按地区、机构、病症与医生浏览就诊线索，查看原文、出处与地图位置。使用 Next.js、React、高德 JS API 2.0 与 GSAP，构建为静态导出，产物发布在 GitHub Pages。
+**群岛 Psychipelago** 是一个公益性非营利组织。我们致力于为相关亲历者、系统/多意识体及人格障碍群体提供科普支持、资源连接与社群互助，陪伴更多人获取心理帮助与治疗，共同构建一隅安宁之岛。
 
-站点：<https://traumacompass.us.ci>
+就诊地图可按地区、医院和病症查看线索及出处。量表库可在线作答，草稿和结果保存在当前浏览器。
 
-## 本地运行
+## 本地预览
 
-使用 **Node.js 24**。在 `.env.local` 配置：
-
-- `NEXT_PUBLIC_AMAP_JS_KEY`：高德 Web 端 JS API Key。
-- `AMAP_SECURITY_JS_CODE`：JS API 安全密钥，仅由本地代理读取。
-- `NEXT_PUBLIC_AMAP_SERVICE_HOST`：本地写 `http://127.0.0.1:4174/_AMapService`。
+网站用 Next.js 和 React 构建，地图使用高德 JS API 2.0。安装 Node.js 24。要加载地图，在 `.env.local` 填写高德 Web 端 Key `NEXT_PUBLIC_AMAP_JS_KEY` 和本地代理使用的安全密钥 `AMAP_SECURITY_JS_CODE`，再构建。
 
 ```sh
+git clone https://github.com/XhoIeph/Psychipelago.git
+cd Psychipelago
 npm ci
 npm run build
 npm run serve
 ```
 
-打开 <http://127.0.0.1:4174/>。`npm run serve` 同时提供静态文件与高德安全代理；源码或数据修改后重新构建。
+打开 <http://127.0.0.1:4174/>。`npm run serve` 同时提供静态页面和高德代理。
 
-## 数据
+## 反馈与贡献
 
-线索只有两个来源，逐行转写进 `data/evidence/`：
+纠正记录、补充线索或申请撤下内容时，请附上页面链接和涉及的条目。[选择反馈表单](https://github.com/XhoIeph/Psychipelago/issues/new/choose)
 
-- 就诊地图电子表格（cptsd / osdd-did / 人格障碍 三张工作表）：`data/evidence/kdocs/<日期>/document.json`
-- 高德定位返回：`data/evidence/locations/amap-<日期>.json`
-
-`data/curated/` 里的 `hospitals.json`、`doctors.json`、`reports.json` 由上述证据加人工修订生成。人工修订放进 `data/overrides/<kind>/<id>.json`，一条记录一个文件。脚本逐条核对结果与依据，不能手改坐标、不能恢复已退役的机构。
-
-```sh
-npm run data:import     # 证据表 → curated
-npm run data:build      # curated → data/generated/（省级聚合与定位索引）
-npm run data:validate   # 校验 curated 与证据、人工修订是否一致
-npm run data:stats      # 统计条数
-```
-
-## 部署
-
-推送 `main` 触发 `.github/workflows/deploy-pages.yml`，先跑校验与测试，通过后再发布到 GitHub Pages。
-
-生产构建需要两项仓库配置：
-
-- secret `NEXT_PUBLIC_AMAP_JS_KEY`
-- variable `NEXT_PUBLIC_AMAP_SERVICE_HOST`，值为 `https://amap.traumacompass.us.ci/_AMapService`
-
-安全代理单独托管，Pages 只发布静态文件。`AMAP_SECURITY_JS_CODE` 与 `AMAP_WEB_SERVICE_KEY` 不进入构建。
-
-## 校验
-
-```sh
-npm run data:validate
-npm run build
-npm run typecheck
-```
-
-数据与地图另有 `test:data`、`test:geo`、`test:map-layout`、`test:map-wheel`、`test:amap`。界面断言见 [tools/a11y/README.md](tools/a11y/README.md)。提交规范见 [CONTRIBUTING.md](CONTRIBUTING.md)。
-
-## 目录
-
-```text
-app/          路由与页面
-components/   界面组件（地图、侧栏、详情、筛选）
-lib/          数据读取、地图运行时、格式化
-data/         证据、人工修订、curated 与生成物
-scripts/      导入、定位、聚合、校验
-tests/        node:test 用例
-tools/a11y/   界面断言表与执行器
-```
+提交格式、检查命令和 Pages 发布流程见 [贡献指南](CONTRIBUTING.md)。
 
 ## 许可
 
-代码采用 [AGPL-3.0](LICENSE)，线索原文与其余非代码内容采用 [CC BY-NC-ND 4.0](LICENSE-CC-BY-NC-ND)。引用保留原来源。
+代码采用 [AGPL-3.0](LICENSE)，项目以 [CC BY-NC-ND 4.0](LICENSE-CC-BY-NC-ND) 发布的内容转载时须保留署名和出处。第三方引文、素材与量表适用各自的权利条款。
