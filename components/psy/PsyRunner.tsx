@@ -1,7 +1,10 @@
 'use client'
 
 import Link from 'next/link'
+import { ChevronLeft } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { gsap } from 'gsap'
+import { useGSAP } from '@gsap/react'
 import PsyReport from './PsyReport'
 import { loadAssessment, loadEngine } from '@/lib/psy/registry'
 import type {
@@ -14,6 +17,8 @@ import type {
   PsyQuestion,
   PsyResult,
 } from '@/lib/psy/types'
+
+gsap.registerPlugin(useGSAP)
 
 type Phase = 'intro' | 'questions' | 'result'
 
@@ -82,6 +87,7 @@ function pageSizeFor(total: number) {
 }
 
 export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
+  const storageId = item.formVersion ? `${item.id}.${item.formVersion}` : item.id
   const [phase, setPhase] = useState<Phase>('intro')
   const [assessment, setAssessment] = useState<PsyAssessment | null>(null)
   const [engine, setEngine] = useState<PsyEngine | null>(null)
@@ -90,11 +96,16 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
   const [page, setPage] = useState(0)
   const [result, setResult] = useState<PsyResult | null>(null)
   const [savedResult, setSavedResult] = useState<PsyResult | null>(null)
+  const [priorResult, setPriorResult] = useState<PsyResult | null>(null)
+  const [priorDraft, setPriorDraft] = useState(false)
   const [draftNotice, setDraftNotice] = useState<Draft | null>(null)
   const [pageError, setPageError] = useState<string | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const topRef = useRef<HTMLDivElement | null>(null)
+  const stageRef = useRef<HTMLDivElement | null>(null)
+  const pageDirectionRef = useRef(1)
+  const prevPhaseRef = useRef<Phase>('intro')
 
   const questions = assessment?.questions ?? []
   const pageSize = pageSizeFor(questions.length)
@@ -107,8 +118,10 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
   const progress = questions.length ? Math.round((answeredCount / questions.length) * 100) : 0
 
   useEffect(() => {
-    setSavedResult(readJson<PsyResult>(resultKey(item.id)))
-    const draft = readJson<Draft>(draftKey(item.id))
+    setSavedResult(readJson<PsyResult>(resultKey(storageId)))
+    setPriorResult(item.formVersion ? readJson<PsyResult>(resultKey(item.id)) : null)
+    setPriorDraft(Boolean(item.formVersion && readJson<Draft>(draftKey(item.id))))
+    const draft = readJson<Draft>(draftKey(storageId))
     const resumed = draft ? Object.keys(draft.selected ?? draft.answers ?? {}).length : 0
     if (draft && resumed > 0) {
       setDraftNotice(draft)
@@ -116,11 +129,57 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
     } else {
       setGender(readJson<number>(GENDER_KEY))
     }
-  }, [item.id])
+  }, [item.id, item.formVersion, storageId])
 
   const scrollTop = useCallback(() => {
     topRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' })
   }, [])
+
+  useGSAP(
+    () => {
+      const stage = stageRef.current
+      if (!stage) return
+      const phaseChanged = prevPhaseRef.current !== phase
+      prevPhaseRef.current = phase
+      const media = gsap.matchMedia()
+      media.add('(prefers-reduced-motion: no-preference)', () => {
+        if (phase === 'questions' && !phaseChanged) {
+          const items = Array.from(stage.querySelectorAll<HTMLElement>('.tc-psy-question'))
+          if (!items.length) return
+          gsap.killTweensOf(items)
+          gsap.fromTo(
+            items,
+            { opacity: 0, x: pageDirectionRef.current * 18 },
+            {
+              opacity: 1,
+              x: 0,
+              duration: 0.28,
+              stagger: 0.018,
+              ease: 'power3.out',
+              overwrite: 'auto',
+              clearProps: 'transform,opacity',
+            },
+          )
+          return
+        }
+        gsap.killTweensOf(stage)
+        gsap.fromTo(
+          stage,
+          { opacity: 0, y: 12 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.32,
+            ease: 'power3.out',
+            overwrite: 'auto',
+            clearProps: 'transform,opacity',
+          },
+        )
+      })
+      return () => media.revert()
+    },
+    { scope: topRef, dependencies: [phase, page] },
+  )
 
   const start = useCallback(
     async (restore?: Draft) => {
@@ -159,6 +218,7 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
         setAssessment(loadedAssessment)
         setEngine(next)
         setSelected(restoredSelected)
+        pageDirectionRef.current = 1
         setPage(restore?.page ?? 0)
         setDraftNotice(null)
         setPhase('questions')
@@ -172,23 +232,28 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
     [gender, item.id, scrollTop]
   )
 
+  const saveDraft = useCallback(
+    (choices: Record<number, number>, draftPage: number) => {
+      writeJson(draftKey(storageId), {
+        answers: valuesFromSelected(choices, questions, assessment),
+        selected: choices,
+        page: draftPage,
+        gender,
+        savedAt: Date.now(),
+      } satisfies Draft)
+    },
+    [assessment, gender, questions, storageId]
+  )
+
   const choose = useCallback(
     (questionId: number, index: number, value: number) => {
-      setSelected((prev) => {
-        const next = { ...prev, [questionId]: index }
-        writeJson(draftKey(item.id), {
-          answers: valuesFromSelected(next, questions, assessment),
-          selected: next,
-          page,
-          gender,
-          savedAt: Date.now(),
-        } satisfies Draft)
-        return next
-      })
+      const next = { ...selected, [questionId]: index }
+      setSelected(next)
+      saveDraft(next, page)
       engine?.setAnswer(questionId, value)
       setPageError(null)
     },
-    [assessment, engine, gender, item.id, page, questions]
+    [engine, page, saveDraft, selected]
   )
 
   const goPage = useCallback(
@@ -198,11 +263,14 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
         setPageError(`这一页还有 ${missing.length} 题没答`)
         return
       }
+      const nextPage = Math.min(pageCount - 1, Math.max(0, page + delta))
+      pageDirectionRef.current = delta >= 0 ? 1 : -1
       setPageError(null)
-      setPage((prev) => Math.min(pageCount - 1, Math.max(0, prev + delta)))
+      setPage(nextPage)
+      saveDraft(selected, nextPage)
       scrollTop()
     },
-    [pageCount, pageQuestions, scrollTop, selected]
+    [page, pageCount, pageQuestions, saveDraft, scrollTop, selected]
   )
 
   const submit = useCallback(() => {
@@ -214,9 +282,9 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
     }
     const computed = engine.computeResult()
     const stamped: PsyResult = { ...computed, answers: computed.answers as PsyAnswer[] }
-    writeJson(resultKey(item.id), stamped)
+    writeJson(resultKey(storageId), stamped)
     try {
-      window.localStorage.removeItem(draftKey(item.id))
+      window.localStorage.removeItem(draftKey(storageId))
     } catch {
       /* 忽略 */
     }
@@ -224,11 +292,11 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
     setResult(stamped)
     setPhase('result')
     scrollTop()
-  }, [engine, item.id, questions, scrollTop, selected])
+  }, [engine, storageId, questions, scrollTop, selected])
 
   const restart = useCallback(() => {
     try {
-      window.localStorage.removeItem(draftKey(item.id))
+      window.localStorage.removeItem(draftKey(storageId))
     } catch {
       /* 忽略 */
     }
@@ -239,28 +307,32 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
     setPhase('intro')
     setDraftNotice(null)
     scrollTop()
-  }, [item.id, scrollTop])
+  }, [storageId, scrollTop])
 
   const genderMissing = item.requiresGender && gender === null
 
   return (
     <div className="tc-psy-run" ref={topRef}>
       <nav className="tc-psy-crumb" aria-label="位置">
-        <Link href="/psy/">量表库</Link>
-        <span aria-hidden="true">›</span>
-        <span aria-current="page">{item.name}</span>
+        <Link href="/psy/" className="tc-detail-back">
+          <ChevronLeft aria-hidden="true" />
+          <span>量表库</span>
+        </Link>
       </nav>
 
+      <div ref={stageRef}>
       {phase === 'intro' && (
         <section className="tc-psy-intro">
-          <p className="tc-psy-eyebrow">
-            {item.category} · {item.questionCount} 题 · 约 {item.duration} 分钟
-          </p>
-          <h1>{item.name}</h1>
-          <p className="tc-psy-subtitle">
-            {item.fullName}
-            {item.englishName ? ` · ${item.englishName}` : ''}
-          </p>
+          <h1>{item.fullName}</h1>
+          <p className="tc-psy-subtitle">{item.name}</p>
+          <ul className="tc-doctor-disorders tc-psy-tags" aria-label="量表信息">
+            <li>
+              <span>{item.category}</span>
+            </li>
+            <li>
+              <span>{item.questionCount} 题</span>
+            </li>
+          </ul>
           <p className="tc-psy-lead">{item.description}</p>
 
           <div className="tc-psy-instructions">
@@ -271,11 +343,11 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
                 回想时间范围：<strong>{item.timeframe}</strong>
               </p>
             )}
-            <p className="tc-psy-note">结果只保存在这台设备上，不会上传。量表不能代替医生的诊断。</p>
-            <p className="tc-psy-note">
-              量表题项与计分逻辑转写自 PSYMETRA 项目；量表版权归原作者与出版方所有。
-            </p>
+            {item.attribution && <p className="tc-psy-note"><a href={item.attribution.url}>{item.attribution.label}</a></p>}
+            {item.validationStudy && <p className="tc-psy-note"><a href={item.validationStudy.url}>{item.validationStudy.label}</a></p>}
           </div>
+
+          {priorDraft && <p className="tc-psy-note">旧版草稿仍保存在此浏览器。题面已更新，当前版本需重新作答。</p>}
 
           {item.requiresGender && (
             <fieldset className="tc-psy-gender">
@@ -307,7 +379,7 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
             <div className="tc-psy-banner" role="status">
               <p>上次作答没提交，已答 {Object.keys(draftNotice.selected ?? draftNotice.answers ?? {}).length} 题。</p>
               <div className="tc-psy-banner-actions">
-                <button type="button" className="tc-button" onClick={() => start(draftNotice)}>
+                <button type="button" className="tc-button tc-button--active" onClick={() => start(draftNotice)}>
                   继续上次
                 </button>
                 <button
@@ -315,7 +387,7 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
                   className="tc-button tc-button--ghost"
                   onClick={() => {
                     try {
-                      window.localStorage.removeItem(draftKey(item.id))
+                      window.localStorage.removeItem(draftKey(storageId))
                     } catch {
                       /* 忽略 */
                     }
@@ -337,7 +409,7 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
           <div className="tc-psy-intro-actions">
             <button
               type="button"
-              className="tc-button"
+              className="tc-button tc-button--active"
               disabled={loading || genderMissing}
               onClick={() => start(draftNotice ?? undefined)}
             >
@@ -357,6 +429,15 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
                 看上次结果
               </button>
             )}
+            {priorResult && (
+              <button type="button" className="tc-button tc-button--ghost" onClick={() => {
+                setResult(priorResult)
+                setPhase('result')
+                scrollTop()
+              }}>
+                查看旧版结果
+              </button>
+            )}
           </div>
         </section>
       )}
@@ -364,32 +445,32 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
       {phase === 'questions' && (
         <section className="tc-psy-quiz" aria-label={`${item.name} 作答`}>
           <header className="tc-psy-quiz-head">
-            <div>
-              <p className="tc-psy-eyebrow">{item.name}</p>
-              <h1 className="tc-psy-quiz-title">
-                第 {page + 1} / {pageCount} 页
-              </h1>
+            <h1>{item.fullName}</h1>
+            <div className="tc-psy-quiz-status">
+              {pageCount > 1 && <span>第 {page + 1} / {pageCount} 页</span>}
+              <p role="status">已答 {answeredCount} / {questions.length}</p>
             </div>
-            <p className="tc-psy-progress-text" role="status">
-              已答 {answeredCount} / {questions.length}
-            </p>
           </header>
           <div className="tc-psy-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress} aria-label="作答进度">
             <span style={{ width: `${progress}%` }} />
           </div>
 
           <ol className="tc-psy-questions">
-            {pageQuestions.map((question) => {
+            {pageQuestions.map((question, index) => {
               const options = question.options?.length ? question.options : assessment?.defaultOptions ?? []
               const current = selected[question.id]
               const fieldName = `q-${question.id}`
+              const displayNumber = question.displayNumber ?? question.id
+              const groupPrompt = question.groupPrompt !== pageQuestions[index - 1]?.groupPrompt ? question.groupPrompt : undefined
               return (
                 <li key={question.id} className="tc-psy-question">
+                  {question.instruction && <p className="tc-psy-note">{question.instruction}</p>}
+                  {groupPrompt && <p className="tc-psy-note">{groupPrompt}</p>}
                   <p className="tc-psy-question-text">
-                    <span className="tc-psy-question-no">{question.id}.</span>
+                    <span className="tc-psy-question-no">{displayNumber}.</span>
                     {question.text}
                   </p>
-                  <div className="tc-psy-options" role="radiogroup" aria-label={`第 ${question.id} 题`}>
+                  <div className="tc-psy-options" role="radiogroup" aria-label={`第 ${displayNumber} 题`}>
                     {options.map((option, index) => (
                       <label
                         key={index}
@@ -426,11 +507,11 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
               上一页
             </button>
             {page < pageCount - 1 ? (
-              <button type="button" className="tc-button" onClick={() => goPage(1)}>
+              <button type="button" className="tc-button tc-button--active" onClick={() => goPage(1)}>
                 下一页
               </button>
             ) : (
-              <button type="button" className="tc-button" onClick={submit}>
+              <button type="button" className="tc-button tc-button--active" onClick={submit}>
                 提交，看结果
               </button>
             )}
@@ -439,8 +520,9 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
       )}
 
       {phase === 'result' && result && (
-        <PsyReport item={item} result={result} levels={assessment?.scoring?.levels ?? []} onRestart={restart} />
+        <PsyReport result={result} levels={assessment?.scoring?.levels ?? []} onRestart={restart} />
       )}
+      </div>
     </div>
   )
 }

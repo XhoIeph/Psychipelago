@@ -3,7 +3,10 @@ export type PsyOption = { label: string; value: number; desc?: string };
 export type PsyQuestion = {
   id: number;
   text: string;
+  displayNumber?: string;
+  groupPrompt?: string;
   dimension?: string;
+  instruction?: string;
   reversed?: boolean;
   options?: PsyOption[];
 };
@@ -36,7 +39,7 @@ export type PsyDimensionScore = {
 
 export type PsyMetric = { label: string; value: number | string; unit?: string; min?: number; max?: number };
 
-export type PsyAnswer = { id: number; text: string; value: number; scored: number };
+export type PsyAnswer = { id: number; text: string; value: number; scored: number; label?: string };
 
 export type PsyResult = {
   scaleId: string;
@@ -48,6 +51,7 @@ export type PsyResult = {
   scaleTimeframe?: string;
   primaryScore: number;
   primaryMetric: PsyMetric;
+  scoringVersion?: string;
   secondaryMetrics?: PsyMetric[];
   level: string;
   levelType?: string;
@@ -97,7 +101,6 @@ export type PsyAssessment = {
 export type PsyEngine = {
   gender?: number;
   setAnswer(questionId: number, value: number): void;
-  hasAnswer(questionId: number): boolean;
   computeResult(): PsyResult;
 };
 
@@ -116,4 +119,7 @@ export type PsyCatalogueItem = {
   questionCount: number;
   requiresGender: boolean;
   crisis: boolean;
+  formVersion?: string;
+  attribution?: { label: string; url: string };
+  validationStudy?: { label: string; url: string };
 };

@@ -2,8 +2,9 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { CHINA_BOUNDS, constrainChinaCenter, sidebarCameraFrame } from '../lib/map-sidebar.ts'
-import { MAP_MAX_ZOOM, MapPoint, project as projectCamera, unproject } from '../lib/map-camera.ts'
+import { fitProvinceFrame, MAP_MAX_ZOOM, MapPoint, project as projectCamera, unproject } from '../lib/map-camera.ts'
 import { attachMapPointer } from '../lib/map-pointer.ts'
+import { showMapNodes } from '../lib/map-mode.ts'
 import { groupMapNodes, mapNodeLayout, NODE_SPACING } from '../lib/map-nodes.ts'
 import { mapHospitalInputs } from '../lib/map-coordinates.ts'
 
@@ -16,6 +17,43 @@ const camera = {
   }),
   unproject: (point, zoom) => ({ lng: point.x / 2 ** zoom, lat: point.y / 2 ** zoom }),
 }
+
+test('单城点位向镜头中心靠拢，同时保留省域尺度，空省仍按主区域取景', () => {
+  const bounds = [{ lat: 24, lng: 100 }, { lat: 32, lng: 110 }]
+  const pins = [{ lat: 25, lng: 109 }, { lat: 25.01, lng: 109.01 }]
+  const size = new MapPoint(1440, 900), padding = [84, 70, 36, 36], inset = 480
+  const empty = fitProvinceFrame(bounds, [], size, inset, padding, 4)
+  const focused = fitProvinceFrame(bounds, pins, size, inset, padding, 4)
+  const visibleCenter = new MapPoint(960, 457)
+  function distance(frame) {
+    const point = projectCamera(pins[0], frame.zoom).subtract(projectCamera(frame.center, frame.zoom)).add(size.divideBy(2))
+    return Math.hypot(point.x - visibleCenter.x, point.y - visibleCenter.y)
+  }
+  assert.ok(distance(focused) < distance(empty) / 2)
+  assert.ok(focused.zoom > empty.zoom && focused.zoom <= empty.zoom + 1.01)
+  assert.ok(Math.abs(projectCamera(empty.center, empty.zoom).x + inset / 2 - projectCamera({ lat: 28, lng: 105 }, empty.zoom).x) < 1e-9)
+})
+
+test('手机可在全国图钉阈值以下展示分布较散的医院，点位留在底卡上方', () => {
+  const size = new MapPoint(390, 844), shift = -151
+  const bounds = [{ lat: 35, lng: 73 }, { lat: 49, lng: 97 }]
+  const pins = [{ lat: 39, lng: 76 }, { lat: 44, lng: 88 }, { lat: 42, lng: 86 }]
+  const frame = fitProvinceFrame(bounds, pins, size, 0, [76 - shift, 466 + shift, 36, 36], 3)
+  assert.ok(frame.zoom < 7)
+  assert.equal(showMapNodes(frame.zoom, false), false)
+  assert.equal(showMapNodes(frame.zoom, false, frame.zoom), true)
+  for (const pin of pins) {
+    const { x, y } = projectCamera(pin, frame.zoom).subtract(projectCamera(frame.center, frame.zoom)).add(size.divideBy(2)).add([0, shift])
+    assert.ok(x >= 36 && x <= 354 && y >= 76 && y <= 378, `pin at ${x}, ${y}`)
+  }
+})
+
+test('小行政区内重合就诊点也不会把省份镜头放大到街区级', () => {
+  const pin = { lat: 22.16, lng: 113.55 }
+  const bounds = [{ lat: 22.11, lng: 113.53 }, { lat: 22.21, lng: 113.60 }]
+  const frame = fitProvinceFrame(bounds, [pin, pin], new MapPoint(1440, 900), 380, [84, 70, 36, 36], 4)
+  assert.equal(frame.zoom, 12)
+})
 
 test('侧栏缩放可逆，地理锚点始终位于剩余视区中央', () => {
   const anchor = { lng: 105, lat: 35 }
@@ -168,7 +206,7 @@ test('呼和浩特相邻机构越过旧12级上限后拆分，保留各自原坐
   }
 })
 
-function pointerFixture() {
+function pointerFixture(onTap) {
   const listeners = new Map(), captures = new Set(), frames = new Map(), paints = []
   let frame = 0, starts = 0, ends = 0
   globalThis.Element = class { closest() { return null } }
@@ -189,9 +227,9 @@ function pointerFixture() {
     beginMove(){starts++}, endMove(){ends++},
     move(center,zoom){this.zoom=zoom;this.center=constrainChinaCenter(this,center,48);paints.push({...this.center,zoom})},
   }
-  const controller=attachMapPointer(map)
+  const controller=attachMapPointer(map,onTap)
   return {map,listeners,captures,frames,paints,controller,get starts(){return starts},get ends(){return ends},
-    event(name,extra={}){listeners.get(name)({pointerId:1,pointerType:'mouse',button:0,clientX:500,clientY:300,preventDefault(){},stopPropagation(){},...extra})},
+    event(name,extra={}){listeners.get(name)({type:name,pointerId:1,pointerType:'mouse',button:0,clientX:500,clientY:300,preventDefault(){},stopPropagation(){},...extra})},
     flush(){const pending=[...frames.values()];frames.clear();pending.forEach(callback=>callback())},
   }
 }
@@ -238,7 +276,8 @@ test('双指围绕中点缩放，抬起一指继续平移不跳变', () => {
 })
 
 test('省份轻点不被捕获，拖动不误触，图钉与控件仍接收点击', () => {
-  const f=pointerFixture()
+  const taps=[]
+  const f=pointerFixture(event=>taps.push(event.pointerType))
   let stopped=0
   const click={stopPropagation(){stopped++}}
   f.event('pointerdown');f.event('pointermove',{clientX:502});f.event('pointerup');f.event('click',click)
@@ -248,6 +287,9 @@ test('省份轻点不被捕获，拖动不误触，图钉与控件仍接收点�
   const control=new Element();control.closest=()=>control
   f.event('pointerdown',{target:control});f.event('click',{...click,target:control})
   assert.equal(stopped,1);assert.equal(f.starts,2)
+  f.event('pointerdown',{pointerType:'touch'});f.event('pointerup',{pointerType:'touch'})
+  f.event('pointerdown',{pointerType:'touch'});f.event('pointercancel',{pointerType:'touch'})
+  assert.deepEqual(taps,['mouse','touch'])
   f.controller.dispose()
 })
 

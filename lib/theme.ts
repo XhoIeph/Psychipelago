@@ -1,3 +1,5 @@
+import { flushSync } from 'react-dom'
+
 export type Theme = 'light' | 'dark'
 
 const STORAGE_KEY = 'tc.theme'
@@ -22,4 +24,21 @@ export function applyTheme(theme: Theme, persist = true) {
   } catch {
     // 存不下就只在本次会话生效。
   }
+}
+
+export function togglePageTheme(onChange: (theme: Theme) => void) {
+  function update() {
+    const current = document.documentElement.dataset.theme ?? readTheme()
+    const next = current === 'dark' ? 'light' : 'dark'
+    applyTheme(next)
+    onChange(next)
+  }
+
+  if (!document.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    update()
+    return
+  }
+
+  // Capture the new surface colors and the theme control in the same frame.
+  document.startViewTransition(() => flushSync(update))
 }

@@ -13,9 +13,11 @@ export type CatalogueItem = {
   questionCount: number
   requiresGender: boolean
   crisis: boolean
+  formVersion?: string
+  attribution?: { label: string; url: string }
+  validationStudy?: { label: string; url: string }
   references?: { original: string[]; chineseValidation: string[] }
 }
 
 export const CATALOGUE_ITEMS: CatalogueItem[] = (raw as { items: CatalogueItem[] }).items
 export const CATALOGUE_BY_ID = new Map(CATALOGUE_ITEMS.map((item) => [item.id, item]))
-export const CATALOGUE_COUNT = CATALOGUE_ITEMS.length

@@ -12,9 +12,9 @@ import {
   type ReactNode,
 } from 'react'
 import { ChevronLeft, Search, SlidersHorizontal, X } from 'lucide-react'
-import { gsap } from 'gsap'
 import { DisorderChips } from '@/components/DisorderChips'
 import type { DisorderGroup } from '@/components/HospitalExplorer'
+import { animatePanelDrill } from '@/lib/panel-motion'
 import { advanceGesture, beginGesture, resolveTap, type DragGesture } from '@/lib/sheet-drag'
 import type { SearchResult, SheetSearchGroup } from './types'
 
@@ -268,13 +268,7 @@ export function MapSheet({
     const targets = [headRef.current, bodyRef.current].filter((node): node is HTMLElement => Boolean(node))
     if (targets.length === 0) return
     const direction = Math.sign(depth - previousDepth) || 1
-    const media = gsap.matchMedia()
-    media.add('(prefers-reduced-motion: no-preference)', () => {
-      gsap.from(targets, {
-        x: direction * 20, opacity: 0.6, duration: 0.22, ease: 'power3.out', clearProps: 'transform,opacity',
-      })
-    })
-    return () => media.revert()
+    return animatePanelDrill(targets, { direction })
   }, [level])
 
   // 把手、键盘换档：没有详情层的最低档限制了，三档都能落。

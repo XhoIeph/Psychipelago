@@ -78,7 +78,7 @@ export function HospitalDetail({
   onLocate: () => void
   onSelectDoctor: (name: string) => void
 }) {
-  const meta = [knownText(hospital.city) || provinceName, knownText(hospital.address), `${leads.length} 条线索`]
+  const meta = [knownText(hospital.city) || provinceName, knownText(hospital.address)]
     .filter(Boolean)
     .join(' · ')
   const profiles = new Map(
@@ -103,7 +103,7 @@ export function HospitalDetail({
         </button>
       </div>
       <section className="tc-detail-section">
-      <h3>医生线索<span className="tc-detail-count">{leads.length} 条</span></h3>
+      <h3>医生线索</h3>
       {leads.length === 0 ? (
         <p className="tc-small tc-muted">暂无关联线索。</p>
       ) : (

@@ -36,8 +36,8 @@ function TextMask({ height, name, aspect, className }: TextMaskProps) {
       className={className}
       aria-hidden="true"
       style={{
-        width,
-        height,
+        ['--tc-brand-w' as string]: `${width}px`,
+        ['--tc-brand-h' as string]: `${height}px`,
         WebkitMaskImage: mask,
         maskImage: mask,
         WebkitMaskRepeat: 'no-repeat',
@@ -72,6 +72,10 @@ export function Brand({ height = 34, className }: BrandProps) {
         aria-hidden="true"
         width={markWidth}
         height={height}
+        style={{
+          ['--tc-brand-w' as string]: `${markWidth}px`,
+          ['--tc-brand-h' as string]: `${height}px`,
+        }}
         decoding="async"
       />
       <span className="tc-brand-lockup" aria-hidden="true">

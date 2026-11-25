@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react'
 import { DisorderChips } from '@/components/DisorderChips'
-import { hospitalRowMeta } from '@/lib/hospital-row'
+import { knownText } from '@/lib/hospital-row'
 import type { DisorderGroup } from '@/components/HospitalExplorer'
 import type { MapHospital } from './types'
 
@@ -44,7 +44,6 @@ export function ProvinceDetail({
 }: Props) {
   // 筛选把列表筛空时，省本身的收录数还在，不能据此当成「有数据」。
   const hasData = !filteredEmpty && ((stat?.reports ?? 0) > 0 || hospitals.length > 0)
-  const leads = hospitals.reduce((sum, hospital) => sum + hospital.leads, 0)
 
   return (
     <div className="tc-detail">
@@ -62,7 +61,6 @@ export function ProvinceDetail({
           <span>全国</span>
         </button>
         <h2 className="tc-detail-title" tabIndex={-1}>{provinceName}</h2>
-        <p className="tc-level-meta"><b>{hospitals.length}</b> 家医院 · <b>{leads}</b> 条线索</p>
       </header>
 
       {hasData ? (
@@ -74,22 +72,25 @@ export function ProvinceDetail({
           {hospitals.length > 0 && (
             <section className="tc-detail-section">
               <ul className="tc-hospital-list">
-                {hospitals.map((hospital) => (
-                  <li key={hospital.id}>
-                    <button
-                      type="button"
-                      className="tc-hospital-row"
-                      data-hospital-id={hospital.id}
-                      onClick={() => onSelectHospital(hospital.id)}
-                    >
-                      <span className="tc-row-text">
-                        <span className="tc-hospital-row-name">{hospital.name}</span>
-                        <span className="tc-hospital-row-meta">{hospitalRowMeta(hospital.city, hospital.leads)}</span>
-                      </span>
-                      <ChevronRight className="tc-row-chev" size={16} aria-hidden="true" />
-                    </button>
-                  </li>
-                ))}
+                {hospitals.map((hospital) => {
+                  const city = knownText(hospital.city)
+                  return (
+                    <li key={hospital.id}>
+                      <button
+                        type="button"
+                        className="tc-hospital-row"
+                        data-hospital-id={hospital.id}
+                        onClick={() => onSelectHospital(hospital.id)}
+                      >
+                        <span className="tc-row-text">
+                          <span className="tc-hospital-row-name">{hospital.name}</span>
+                          {city && <span className="tc-hospital-row-meta">{city}</span>}
+                        </span>
+                        <ChevronRight className="tc-row-chev" size={16} aria-hidden="true" />
+                      </button>
+                    </li>
+                  )
+                })}
               </ul>
             </section>
           )}

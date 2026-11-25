@@ -1,7 +1,7 @@
 import { MapPoint, type MapCamera } from './map-camera.ts'
 
 // A single input owner prevents SDK overscroll and competing post-drag corrections.
-export function attachMapPointer(map: MapCamera) {
+export function attachMapPointer(map: MapCamera, onTap?: (event: PointerEvent) => void) {
   const container = map.getContainer()
   const pointers = new Map<number, MapPoint>()
   let frame: number | undefined
@@ -52,7 +52,7 @@ export function attachMapPointer(map: MapCamera) {
     event.preventDefault()
     pointers.set(event.pointerId, position(event))
     const point = position(event)
-    // Leave taps with the SDK's province overlays; capture only an intentional drag.
+    // Capture only intentional drags so taps keep their original targets.
     if (!moved && Math.hypot(point.x - firstPoint.x, point.y - firstPoint.y) <= 3) return
     moved = true
     for (const id of pointers.keys()) if (!container.hasPointerCapture(id)) container.setPointerCapture(id)
@@ -64,7 +64,12 @@ export function attachMapPointer(map: MapCamera) {
     pointers.delete(event.pointerId)
     if (container.hasPointerCapture(event.pointerId)) container.releasePointerCapture(event.pointerId)
     if (pointers.size) snapshot()
-    else { suppressClick = moved; map.endMove() }
+    else {
+      suppressClick = moved
+      map.endMove()
+      // The SDK can cancel touchstart and suppress the resulting DOM click.
+      if (!moved && event.type === 'pointerup') onTap?.(event)
+    }
   }
   const zoomAt = (point: MapPoint, change: number) => {
     const anchor = map.containerPointToLatLng(point)
