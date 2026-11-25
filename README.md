@@ -6,9 +6,9 @@
 </p>
 <h1 align="center">群岛Psychipelago</h1>
 <p align="center">
-  <a href="https://traumacompass.us.ci/">网站首页</a> ·
-  <a href="https://traumacompass.us.ci/map/">就诊地图</a> ·
-  <a href="https://traumacompass.us.ci/psy/">量表库</a>
+  <a href="https://psychipelago.cn/">网站首页</a> ·
+  <a href="https://psychipelago.cn/map/">就诊地图</a> ·
+  <a href="https://psychipelago.cn/psy/">量表库</a>
 </p>
 
 **群岛 Psychipelago** 是一个公益性非营利组织。我们致力于为相关亲历者、系统/多意识体及人格障碍群体提供科普支持、资源连接与社群互助，陪伴更多人获取心理帮助与治疗，共同构建一隅安宁之岛。
