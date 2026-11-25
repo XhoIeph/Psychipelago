@@ -1,691 +1,22 @@
 {
-  "generatedFrom": "PSYMETRA/js/assessments",
-  "generatedAt": "2026-11-11T19:58:42.957Z",
-  "count": 49,
   "items": [
-    {
-      "id": "ace",
-      "name": "ACE",
-      "fullName": "童年期不良经历问卷",
-      "englishName": "Adverse Childhood Experiences Questionnaire",
-      "category": "创伤经历",
-      "duration": 2,
-      "timeframe": "18岁以前童年与青少年期",
-      "description": "由美国疾控中心 (CDC) 与 Kaiser Permanente 联合编制的划时代公共卫生量表。评估 18 岁以前在虐待、忽视及家庭功能失调三大领域的 10 种不良经历累积暴露度，揭示童年毒性应激对成人期心身健康与情绪调节的深远影响。",
-      "instructions": "请回顾您在【18岁成年之前（童年和少年时期）】的家庭环境与成长事实。请针对以下 10 项经历，根据客观事实选择“是”或“否”。",
-      "questionCount": 10,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "aqa",
-      "name": "AQA",
-      "fullName": "成人自闭症谱系筛查量表",
-      "englishName": "Autism-Spectrum Quotient (Adult)",
-      "category": "神经发育/ASD",
-      "duration": 10,
-      "timeframe": "长期一贯表现",
-      "description": "由剑桥大学自闭症研究中心 Simon Baron-Cohen 教授团队研发的国际金标准自评量表，全面测量成人是否具备高功能自闭症或阿斯伯格综合征 (Asperger) 相关的神经发育谱系特质。",
-      "instructions": "以下每一条陈述都描述了日常生活中关于社交、思考与行为习惯的感受。请根据您真实的习惯与直觉作出选择，没有对错之分。",
-      "questionCount": 50,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Baron-Cohen, S., Wheelwright, S., Skinner, R., Martin, J., & Clubley, E. (2001). The Autism-Spectrum Quotient (AQ): evidence from Asperger syndrome/high-functioning autism, males and females, scientists and mathematicians. Journal of Autism and Developmental Disorders, 31(1), 5-17."
-        ],
-        "chineseValidation": [
-          "Zhao, Q., & Zheng, T. (Institute of Psychology, Chinese Academy of Sciences). Adult Autism Spectrum Quotient (AQ) – Chinese (Simplified). Autism Research Centre, University of Cambridge.",
-          "Lau, W. Y., Gau, S. S., Chiu, Y. N., et al. (2013). Psychometric properties of the Chinese version of the Autism-Spectrum Quotient. Research in Developmental Disabilities, 34(1), 294-305."
-        ]
-      }
-    },
-    {
-      "id": "asq",
-      "name": "ASQ",
-      "fullName": "自杀筛查问卷",
-      "englishName": "Ask Suicide-Screening Questions",
-      "category": "危机/自伤",
-      "duration": 2,
-      "timeframe": "最近几周、过去一周及当前即刻",
-      "description": "由美国国家精神卫生研究院 (NIMH) 专为急诊与综合医疗场景研发的敏捷自杀风险筛查工具，具有高达 98% 的敏感度与 92% 的特异度。量表由4道核心筛查题与1道急性即刻意念鉴别题构成，能极速鉴别潜在危险与急性发作风险。",
-      "instructions": "请仔细阅读以下简短问题，并根据您的实际感受与经历选择“是”或“否”。请真实作答，哪怕您近期只是感到轻微的心情沉重或生活压力大。",
-      "questionCount": 5,
-      "requiresGender": false,
-      "crisis": true,
-      "references": {
-        "original": [
-          "Horowitz, L. M., Bridge, J. A., Teach, S. J., et al. (2012). Ask Suicide-Screening Questions (ASQ): a brief instrument for the pediatric emergency department. Archives of Pediatrics & Adolescent Medicine, 166(12), 1170-1176."
-        ],
-        "chineseValidation": [
-          "National Institute of Mental Health (NIMH). (2020). Ask Suicide-Screening Questions (ASQ) Toolkit - Simplified Chinese Translation. NIMH Office of Clinical Research."
-        ]
-      }
-    },
-    {
-      "id": "asrm",
-      "name": "ASRM",
-      "fullName": "奥特曼自评躁狂量表",
-      "englishName": "Altman Self-Rating Mania Scale",
-      "category": "双相/躁狂",
-      "duration": 2,
-      "timeframe": "过去一周（包括今天）",
-      "description": "由 Altman 等学者于 1997 年研制，是国际精神医学界最简洁、权威且被广泛验证的双相障碍自评工具之一。全量表仅包含 5 个核心症状条目（情绪高涨、自信膨胀、睡眠减少、言语增多、活动躁动），用于评估个体在过去一周内是否存在躁狂或轻躁狂发作倾向。",
-      "instructions": "以下 5 组陈述评估您在【过去一周内（包括今天）】的感觉与行为表现。每道题包含 5 级描述（0 至 4 分），请仔细阅读每一组选项，并选出最符合您过去一周真实状态的一项。",
-      "questionCount": 5,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Altman, E. G., Hedeker, D., Peterson, J. L., & Davis, J. M. (1997). The Altman Self-Rating Mania Scale. Biological Psychiatry, 42(10), 948-955."
-        ],
-        "chineseValidation": [
-          "王雪, 司天梅, 等. (2014). 奥特曼自评躁狂量表在双相障碍门诊患者中的效度检验. 中国神经精神疾病杂志."
-        ]
-      }
-    },
-    {
-      "id": "asrs",
-      "name": "ASRS",
-      "fullName": "成人 ADHD 自填量表",
-      "englishName": "Adult ADHD Self-Report Scale",
-      "category": "神经发育/ADHD",
-      "duration": 4,
-      "timeframe": "过去 6 个月",
-      "description": "由世界卫生组织 (WHO) 联合哈佛医学院等学者基于 DSM 标准共同制订的权威成人注意缺陷与多动障碍 (ADHD) 筛查工具，全面评估注意力不集中、冲动与多动表现。",
-      "instructions": "请根据您在过去 6 个月中的实际感受与工作、生活行为表现回答以下问题。请凭直觉选择最符合您日常实际情况的频度选项。",
-      "questionCount": 18,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Kessler, R.C., Adler, L., Ames, M., et al. (2005). The World Health Organization Adult ADHD Self-Report Scale (ASRS): a short screening scale for use in the general population. Psychological Medicine, 35(2), 245-256."
-        ],
-        "chineseValidation": [
-          "卞清涛, 等. (2012). 成人注意缺陷多动障碍自评量表中文版的信效度检验. 中华精神科杂志."
-        ]
-      }
-    },
-    {
-      "id": "audit",
-      "name": "AUDIT",
-      "fullName": "酒精使用障碍筛查量表",
-      "englishName": "Alcohol Use Disorders Identification Test",
-      "category": "成瘾行为",
-      "duration": 3,
-      "timeframe": "过去一年",
-      "description": "由世界卫生组织 (WHO) 历时多年在多国临床研究中编制，是全球医学界筛查危险饮酒、有害性饮酒及酒精依赖综合征 (Alcohol Dependence) 的权威基准工具。涵盖酒精摄入量、依赖失控指征及饮酒导致的心身躯体危害。",
-      "instructions": "【标准饮酒单位说明】：1个标准杯（约10-12克纯酒精）约相当于：1听普通啤酒（330ml）、1小杯葡萄酒（约120ml）或1两低度白酒（约50ml）。请根据您【过去一年内】的真实饮酒情况作答。",
-      "questionCount": 10,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "bes",
-      "name": "BES",
-      "fullName": "暴食障碍自评量表",
-      "englishName": "Binge Eating Scale",
-      "category": "进食障碍",
-      "duration": 4,
-      "timeframe": "近两个月以来的进食表现",
-      "description": "由 Gormally 教授等于 1982 年编制，是国际临床用于系统量化暴食障碍 (Binge Eating Disorder) 行为特征与认知情绪痛苦的核心标准工具。全面评估机械暴饮暴食、控制丧失、秘密进食及暴食后的深层内疚自我厌憎。",
-      "instructions": "以下 16 组题目分别描述了关于进食习惯、食欲控制及情绪反应的不同感受。请仔细阅读每组选项，选择最贴切反映您【近两个月以来真实状态】的一项。",
-      "questionCount": 16,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "bsds",
-      "name": "BSDS",
-      "fullName": "双相谱系诊断量表",
-      "englishName": "Bipolar Spectrum Diagnostic Scale",
-      "category": "双相/躁狂",
-      "duration": 5,
-      "timeframe": "终生及过往各发作期",
-      "description": "由著名双相障碍专家 Ronald Pies 与 S. Nassir Ghaemi 等研制，专为捕捉极易被误诊为单相抑郁的双相谱系障碍（如双相二型、环性心境、亚临床轻躁狂）而设计。",
-      "instructions": "请仔细阅读以下关于心境和精力起伏的 19 条生活体验陈述，逐条选择最符合您的真实情况（“符合”或“不符合”）。在回答完前 19 题后，请完成第 20 题，评估这篇故事与您过往整体经历的吻合程度。",
-      "questionCount": 20,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Ghaemi, S. N., Miller, C. J., Berv, D. A., et al. (2005). Sensitivity and specificity of a new bipolar spectrum diagnostic scale. Journal of Affective Disorders, 84(2-3), 273-277.",
-          "Pies, R. (2005). The Bipolar Spectrum Diagnostic Scale (BSDS). Journal of Clinical Psychiatry."
-        ],
-        "chineseValidation": [
-          "王英成, 司天梅, 等. (2011). 双相谱系诊断量表中文版的信度和效度. 中国心理卫生杂志, 25(8), 585-589."
-        ]
-      }
-    },
-    {
-      "id": "bsl23",
-      "name": "BSL-23",
-      "fullName": "边缘人格障碍表现量表",
-      "englishName": "Borderline Symptom List-23",
-      "category": "人格评估",
-      "duration": 5,
-      "timeframe": "过去一星期",
-      "description": "由德国海德堡大学 Martin Bohus 教授团队编制的国际金标准自评量表，专门用于评估边缘型人格障碍 (BPD) 核心特质严重度及过去一周内的内在心理痛苦与危机状态。",
-      "instructions": "以下列出了在情绪与自我体验中常见的一系列困难。请仔细回想在过去的一个星期里（包括今天），您受到这些问题的困扰程度有多深，并选出最符合的一项。",
-      "questionCount": 23,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Bohus, M., Kleindienst, N., Limberger, M.F., et al. (2009). The short version of the Borderline Symptom List (BSL-23). The Journal of Nervous and Mental Disease, 197(8), 604-608."
-        ],
-        "chineseValidation": [
-          "Kleindienst, N., et al. (2020). State and trait components of borderline personality disorder symptoms: Validation of the BSL-23."
-        ]
-      }
-    },
-    {
-      "id": "bss",
-      "name": "BSS",
-      "fullName": "贝克自杀意念量表",
-      "englishName": "Beck Scale for Suicide Ideation",
-      "category": "危机/自伤",
-      "duration": 6,
-      "timeframe": "最近一周及当前状态",
-      "description": "由世界著名精神病学家 Aaron T. Beck 等人编制，是精神医学领域评估自杀意念强度、被动/主动求死欲望、实施方案具体度及行动准备程度最权威的临床评定量表之一。量表包含 19 项核心计分条目，全面描摹个体由自杀念头向自杀行动转化的完整心理图景。",
-      "instructions": "本量表共有 19 道题目。请仔细阅读每一道题目的三个选项，并根据您最近一周（包括今天）最真实的想法和感受，选择最符合您实际情况的一项。",
-      "questionCount": 19,
-      "requiresGender": false,
-      "crisis": true,
-      "references": {
-        "original": [
-          "Beck, A. T., Kovacs, M., & Weissman, A. (1979). Assessment of suicidal intention: The Scale for Suicide Ideation. Journal of Consulting and Clinical Psychology, 47(2), 343-352.",
-          "Beck, A. T., & Steer, R. A. (1991). Manual for the Beck Scale for Suicide Ideation. San Antonio, TX: Psychological Corporation."
-        ],
-        "chineseValidation": [
-          "李献云, 费立鹏, 等. (2011). 贝克自杀意念量表中文版在社区及大学生人群中的信效度研究. 中国心理卫生杂志, 25(11), 862-866."
-        ]
-      }
-    },
-    {
-      "id": "cssrs",
-      "name": "C-SSRS",
-      "fullName": "哥伦比亚自杀严重程度评估量表",
-      "englishName": "Columbia-Suicide Severity Rating Scale",
-      "category": "危机/自伤",
-      "duration": 3,
-      "timeframe": "最近一个月及终生经历",
-      "description": "由美国哥伦比亚大学 Posner 等人研发，被 FDA、CDC、WHO 及国际临床医学界推荐为自杀风险评估金标准。本量表采用哥伦比亚临床筛查协议 (Columbia Protocol Screener)，标准化量化自杀意念的层级深度（死亡愿望、非特异意念、方法考量、行动意愿、明确计划）及既往自杀行为史。",
-      "instructions": "本问卷用于评估近期的自杀意念与一生的自杀行为史。请根据您最近一个月内的真实感受以及过往经历，对以下问题如实回答“是”或“否”。若您当前感到情绪极度痛苦或有自我伤害的想法，请务必向信任的人或专业危机干预机构寻求帮助。",
-      "questionCount": 6,
-      "requiresGender": false,
-      "crisis": true,
-      "references": {
-        "original": [
-          "Posner, K., Brown, G. K., Stanley, B., et al. (2011). The Columbia–Suicide Severity Rating Scale: initial validity and internal consistency findings from three multisite studies with adolescents and adults. American Journal of Psychiatry, 168(12), 1266-1277."
-        ],
-        "chineseValidation": [
-          "李献云, 等. (2014). 哥伦比亚自杀严重程度评定量表中文版在精神科门诊的信效度评估. 中国神经精神疾病杂志, 40(8), 478-482."
-        ]
-      }
-    },
-    {
-      "id": "cape42",
-      "name": "CAPE-42",
-      "fullName": "精神体验社区评估量表",
-      "englishName": "Community Assessment of Psychic Experiences",
-      "category": "综合症状",
-      "duration": 10,
-      "timeframe": "日常及近来体验",
-      "description": "世界卫生组织与精神病理学广泛应用的社区超常与微弱精神体验（PLEs）金标准评估工具，精准绘制个体的阳性类精神病体验、阴性动机情感特质与抑郁易感性多维图谱。",
-      "instructions": "人们在日常生活中可能会有各种各样细微、特殊的思维体验、知觉感知或心境反应。请结合您的实际体验，评估以下情况在您身上发生的真实频率。",
-      "questionCount": 42,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "catq",
-      "name": "CAT-Q",
-      "fullName": "自闭特质伪装与掩饰问卷",
-      "englishName": "Camouflaging Autistic Traits Questionnaire",
-      "category": "神经发育/ASD",
-      "duration": 8,
-      "timeframe": "日常社交情境",
-      "description": "伦敦大学学院（UCL）研发的自闭谱系“社交拟态与伪装”国际金标准量表，深入测评补偿（主动学习技巧）、掩饰（压抑自闭特质）与同化（被迫表演融入）三大维度，揭示高功能自闭者背后的深层精神耗竭与职业倦怠风险。",
-      "instructions": "请仔细阅读下列每一项陈述，并选择最符合您在日常社交互动中真实体验与做法的选项（1分代表非常不同意，7分代表非常同意）。",
-      "questionCount": 25,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "cds",
-      "name": "CDS",
-      "fullName": "剑桥人格解体量表",
-      "englishName": "Cambridge Depersonalisation Scale",
-      "category": "创伤解离",
-      "duration": 8,
-      "timeframe": "过去 6 个月内",
-      "description": "剑桥大学精神病学系编制的人格解体/现实解体障碍（DPDR）国际诊断金标准量表，系统评估离体体验、自我陌生感、情感麻木、体象异化及周围世界虚幻感等核心解离症状。",
-      "instructions": "人格解体与现实解体是指一种感觉自己或周围世界“不真实”、“分离”或“陌生”的特殊体验。请回顾在【过去 6 个月内】，以下体验在您身上发生的真实频率，并选择最符合的一项。",
-      "questionCount": 29,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "ctqsf",
-      "name": "CTQ-SF",
-      "fullName": "童年期创伤问卷简版",
-      "englishName": "Childhood Trauma Questionnaire - Short Form",
-      "category": "创伤经历",
-      "duration": 5,
-      "timeframe": "18岁以前童年与青少年期",
-      "description": "由美国精神病学家 Bernstein 教授编制的国际权威回顾性自评工具。系统评估 18 岁以前成长经历中的情感虐待、躯体虐待、性虐待、情感忽视及躯体忽视五大核心童年逆境维度。",
-      "instructions": "请回忆您在【童年及青少年时期（18岁之前）】在家庭和成长过程中的真实经历。请依据当时的实际情况，选择最符合的选项。",
-      "questionCount": 28,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "dass21",
-      "name": "DASS-21",
-      "fullName": "抑郁-焦虑-压力量表简版",
-      "englishName": "Depression Anxiety Stress Scales - 21 Items",
-      "category": "综合症状",
-      "duration": 4,
-      "timeframe": "过去一周",
-      "description": "由 Lovibond 等编制的国际经典情绪三联征评估量表。同时量化抑郁、焦虑和压力三种核心负性情绪维度，清晰区分三者在生理唤起、心境低落与神经紧绷方面的不同表现。",
-      "instructions": "请评估在【过去的一周内】以下陈述适用于您的程度。请根据您的第一直觉选择最贴切的选项。",
-      "questionCount": 21,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "ders16",
-      "name": "DERS-16",
-      "fullName": "情绪调节困难量表简版",
-      "englishName": "Difficulties in Emotion Regulation Scale - 16 Items",
-      "category": "人格评估",
-      "duration": 3,
-      "timeframe": "近期日常生活",
-      "description": "由 Bjureberg 等基于 Gratz 经典模型精炼编制的标准化情绪调节测量工具。全面评估情绪明确性缺失、目标维持困难、冲动失控、对负性情绪的非接纳、以及调节策略匮乏五大核心维度。",
-      "instructions": "请评估下列句子在多大程度上能够贴切地描述您在近期面对情绪低落、烦躁或困扰时的真实反应。请根据您的第一直觉作答。",
-      "questionCount": 16,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "des2",
-      "name": "DES-II",
-      "fullName": "解离体验量表第二版",
-      "englishName": "Dissociative Experiences Scale-II",
-      "category": "创伤解离",
-      "duration": 6,
-      "timeframe": "日常生活近期感受",
-      "description": "由美国国家精神卫生研究所学者 Carlson 与 Putnam 编制的国际金标准解离评估工具。全面测查分离性遗忘、人格解体、现实解体及过度吸收沉浸等解离现象的发生频率。",
-      "instructions": "量表列出了人们在日常生活中可能体验到的感受。请根据您在【未饮酒或未服药的清醒状态下】，这些情况在您日常生活中发生的频度比例（0% 至 100%）。",
-      "questionCount": 28,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Carlson, E. B., & Putnam, F. W. (1993). An update on the Dissociative Experiences Scale. Dissociation: Progress in the Dissociative Disorders, 6(1), 16-27."
-        ],
-        "chineseValidation": [
-          "姜荣环, 陶玉兰, 汤宜朗, 等. (2007). 解离体验量表中文版在创伤人群中的信效度检验. 中国心理卫生杂志."
-        ]
-      }
-    },
-    {
-      "id": "eat26",
-      "name": "EAT-26",
-      "fullName": "进食态度量表",
-      "englishName": "Eating Attitudes Test - 26 Items",
-      "category": "进食障碍",
-      "duration": 4,
-      "timeframe": "近期日常生活",
-      "description": "由 Garner 等于 1982 年编制，是国际公认筛查神经性厌食症 (Anorexia Nervosa)、神经性贪食症 (Bulimia Nervosa) 及非典型进食障碍高危人群的标准化自评工具。评估节食与体型关注、暴食与食物关注、以及口腔控制行为。",
-      "instructions": "请评估下列关于饮食习惯、体型观念和体重控制的陈述与您的实际情况相符合的程度。请根据您的真实感受作答。",
-      "questionCount": 26,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "edeq",
-      "name": "EDE-Q",
-      "fullName": "进食障碍检查问卷",
-      "englishName": "Eating Disorder Examination Questionnaire 6.0",
-      "category": "进食障碍",
-      "duration": 6,
-      "timeframe": "过去28天",
-      "description": "由英国牛津大学进食障碍研究中心 Fairburn 教授编制的国际权威量表。系统评估过去 28 天内限制进食、进食关注、体型关注及体重关注四大核心病理维度，是临床诊断与疗效评估的公认基准。",
-      "instructions": "请仔细阅读下列各项问题，评估在【过去的 28 天（4周）内】各项行为和想法在您身上发生的频度或严重程度。请按您的真实情况作答。",
-      "questionCount": 24,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "epds",
-      "name": "EPDS",
-      "fullName": "爱丁堡产后抑郁量表",
-      "englishName": "Edinburgh Postnatal Depression Scale",
-      "category": "抑郁评估",
-      "duration": 3,
-      "timeframe": "过去7天",
-      "description": "由英国学者 Cox 等于 1987 年编制，是全球妇幼保健院及精神心理科用于早期筛查产后抑郁症 (PPD) 与围产期情绪障碍的国际公认标准量表。敏锐识别新手母亲在产后因激素骤降与育儿重压下的抑郁、焦虑及功能无措感。",
-      "instructions": "请根据您在【过去 7 天（过去一周内）】的真实身心感受作答，而不仅仅是今天一天的感受。请选择最贴切反映您近期状态的选项。",
-      "questionCount": 10,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "ess",
-      "name": "ESS",
-      "fullName": "爱泼沃斯嗜睡量表",
-      "englishName": "Epworth Sleepiness Scale",
-      "category": "睡眠质量",
-      "duration": 2,
-      "timeframe": "近期日常生活",
-      "description": "由澳大利亚睡眠医学专家 Murray Johns 博士编制的经典自评量表。专门评估受试者在 8 种不同日常情境下的日间嗜睡倾向，是临床筛查日间过度嗜睡 (EDS) 及睡眠呼吸暂停综合征 (OSAHS) 的核心测量标准。",
-      "instructions": "请评估您在近期日常生活中，身处下列不同情境时【打瞌睡或睡着】的可能性有多大（不仅仅是感到疲劳）。如果您近期未经历过某种情况，请根据以往经验估算您身处其中时的可能反应。",
-      "questionCount": 8,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "gad7",
-      "name": "GAD-7",
-      "fullName": "广泛性焦虑自评量表",
-      "englishName": "Generalized Anxiety Disorder-7",
-      "category": "焦虑筛查",
-      "duration": 2,
-      "timeframe": "最近两周",
-      "description": "权威且高效的广泛性焦虑障碍筛查量表，用于评估过去两周内的焦虑情绪与紧张状态的频度与程度。",
-      "instructions": "在过去的两周里，您有多大程度受到以下任何问题的困扰？请根据您的实际体会选择最贴切的选项。",
-      "questionCount": 7,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Spitzer, R.L., Kroenke, K., Williams, J.B.W., & Löwe, B. (2006). A brief measure for assessing generalized anxiety disorder. Archives of Internal Medicine, 166, 1092-1097."
-        ],
-        "chineseValidation": [
-          "He, X.Y., et al. (2010). A fast, simple screening tool to identify young students who are at risk for generalized anxiety disorder: A validation study. PLOS ONE."
-        ]
-      }
-    },
-    {
-      "id": "hcl32",
-      "name": "HCL-32",
-      "fullName": "32项轻躁狂自评量表",
-      "englishName": "Hypomania Checklist-32",
-      "category": "双相/躁狂",
-      "duration": 5,
-      "timeframe": "情绪高涨/亢奋发作期",
-      "description": "由Jules Angst教授编制的国际经典双相情感障碍/轻躁狂筛查工具，主要用于评估抑郁发作人群既往是否存在轻度情绪高涨、精力旺盛或冲动发作的特征。",
-      "instructions": "在人的一生中，情绪状态常常会有所起伏。以下列出了处于“情绪高涨、状态极佳、精力旺盛”状态时可能出现的体验。请回忆您在最亢奋或精力最旺盛的时期的实际情况，选择“是”或“否”。",
-      "questionCount": 32,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Angst, J., Adolfsson, R., Benazzi, F., Gamma, A., Bowden, C. L., et al. (2005). The HCL-32: towards a self-assessment tool for hypomanic symptoms in outpatient conditions. Journal of Affective Disorders, 88(2), 217-233."
-        ],
-        "chineseValidation": [
-          "杨海晨, 陆汝斌, 贾福军, 等. (2011). 32项轻躁狂自评量表中文版在双相障碍中的信度和效度. 中华精神科杂志, 44(4), 214-218."
-        ]
-      }
-    },
-    {
-      "id": "isas",
-      "name": "ISAS",
-      "fullName": "自伤陈述量表",
-      "englishName": "Inventory of Statements About Self-injury",
-      "category": "危机/自伤",
-      "duration": 8,
-      "timeframe": "终生及近期自伤冲动体验",
-      "description": "由 Klonsky 与 Glenn 于 2009 年编制，是国际上评估非自杀性自伤 (NSSI) 心理功能最权威且实证研究最广泛的标准化测量工具。量表系统评估情绪调节、反解离、自我惩罚、人际影响、自主掌控等核心维度，深刻揭示自伤行为背后的心理内驱力与应对机制。",
-      "instructions": "本量表用于了解非自杀性自伤（在没有求死意图的情况下故意伤害自己身体）背后的心理动机与功能。即使您仅在过去偶有自伤冲动或尝试，也请仔细阅读下列每一项陈述，根据您的真实感受评估它符合您的程度。",
-      "questionCount": 39,
-      "requiresGender": false,
-      "crisis": true,
-      "references": {
-        "original": [
-          "Klonsky, E. D., & Glenn, C. R. (2009). Assessing the functions of hurt: Construction and psychometric evaluation of the Inventory of Statements About Self-Injury (ISAS). Journal of Psychopathology and Behavioral Assessment, 31(3), 215-219."
-        ],
-        "chineseValidation": [
-          "郑月, 等. (2017). 自伤陈述量表中文版的信度与效度检验. 中国临床心理学杂志, 25(3), 478-482.",
-          "林琳, 等. (2021). 非自杀性自伤陈述量表在青少年群体的修订及临床应用. 中国卫生统计, 38(2), 241-244."
-        ]
-      }
-    },
-    {
-      "id": "isi",
-      "name": "ISI",
-      "fullName": "失眠严重程度指数",
-      "englishName": "Insomnia Severity Index",
-      "category": "睡眠质量",
-      "duration": 2,
-      "timeframe": "过去两周",
-      "description": "由国际知名睡眠心理学学者 Charles Morin 教授编制的权威失眠自评量表。评估过去两周内入睡困难、维持睡眠困难、早醒、睡眠满意度及日间功能损害程度。",
-      "instructions": "请评估在【过去的两周内】您的睡眠问题严重程度。请根据您的实际感受选择最贴切的选项。",
-      "questionCount": 7,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Morin, C. M., Belleville, G., Bélanger, L., & Ivers, H. (2011). The Insomnia Severity Index: psychometric indicators to detect insomnia cases and evaluate treatment response. Sleep, 34(5), 601-608."
-        ],
-        "chineseValidation": [
-          "潘集阳, 等. (2010). 失眠严重程度指数 (ISI) 中文版的信度与效度评估. 中华行为医学与脑科学杂志."
-        ]
-      }
-    },
     {
       "id": "itq",
       "name": "ITQ",
       "fullName": "国际创伤问卷",
       "englishName": "International Trauma Questionnaire",
-      "category": "创伤应激",
+      "category": "创伤与解离",
       "duration": 5,
       "timeframe": "过去一个月",
-      "description": "由国际创伤研究学者基于WHO ICD-11标准联合研发的权威问卷，用于系统筛查创伤后应激障碍 (PTSD) 及复杂性创伤后应激障碍 (CPTSD)。",
-      "instructions": "请回想您一生中经历过的最令您痛苦、恐惧或绝望的重大负性事件（如严重事故、人身暴力、自然灾害、严重虐待、丧亲等）。请根据在过去的一个月里，以下感受对您的困扰程度如实作答。",
+      "description": "按照 ICD-11 评估创伤后应激与自我组织困难。",
+      "instructions": "请想一个最负面 或 创伤的经历，并根据此经历回答以下各题。",
       "questionCount": 18,
       "requiresGender": false,
       "crisis": false,
-      "references": {
-        "original": [
-          "Cloitre, M., Shevlin, M., Brewin, C.R., et al. (2018). The International Trauma Questionnaire: development of a self-report measure of ICD-11 PTSD and complex PTSD. Acta Psychiatrica Scandinavica, 138(6), 536-546."
-        ],
-        "chineseValidation": [
-          "Ho, G.W.K., et al. (2019). Psychometric properties of the Chinese version of the International Trauma Questionnaire (ITQ). European Journal of Psychotraumatology."
-        ]
-      }
-    },
-    {
-      "id": "lpfsbf",
-      "name": "LPFS-BF 2.0",
-      "fullName": "人格功能水平量表简版 2.0",
-      "englishName": "Level of Personality Functioning Scale - Brief Form 2.0",
-      "category": "人格评估",
-      "duration": 3,
-      "timeframe": "当前与近期的总体真实状态",
-      "description": "由 Weekers 等人基于 DSM-5 人格障碍替代模型（AMPD）诊断标准 A（Criterion A）编制的 12 项权威自评工具。系统评估“自我功能”（认同与自我定向）和“人际功能”（共情与亲密）两大核心维度，是国际公认的人格功能受损严重程度筛查金标准。",
-      "instructions": "请评估以下每一项陈述在多大程度上符合您当下的情况（Report for each of the following statements to what extent they apply to you at this moment），选择最贴切的选项。",
-      "questionCount": 12,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "mdq",
-      "name": "MDQ",
-      "fullName": "心境障碍问卷",
-      "englishName": "The Mood Disorder Questionnaire",
-      "category": "双相/躁狂",
-      "duration": 3,
-      "timeframe": "一生中经历",
-      "description": "由美国精神病学会知名学者 Hirschfeld 编制的双相情感障碍金标准筛查量表，用于识别可能被单相抑郁掩盖的轻躁狂与躁狂发作特征。",
-      "instructions": "本问卷用于了解您在一生中是否曾经历过一段与平时明显不同的情绪兴奋、高涨或精力过分充沛的时期。请凭第一直觉如实回答。",
-      "questionCount": 15,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Hirschfeld, R. M., Williams, J. B., Spitzer, R. L., et al. (2000). Development and validation of a screening instrument for bipolar spectrum disorder: the Mood Disorder Questionnaire. American Journal of Psychiatry, 157(11), 1873-1875."
-        ],
-        "chineseValidation": [
-          "张海音, 费立鹏, 等. (2007). 心境障碍问卷 (MDQ) 中文版的信度与效度. 中国心理卫生杂志."
-        ]
-      }
-    },
-    {
-      "id": "mid",
-      "name": "MID 6.0",
-      "fullName": "多维度解离障碍调查表",
-      "englishName": "Multidimensional Inventory of Dissociation 6.0",
-      "category": "创伤解离",
-      "duration": 25,
-      "timeframe": "长期生活与近期体验",
-      "description": "由解离障碍权威专家 Paul F. Dell 博士研发，是国际创伤与解离研究学会 (ISSTD) 临床公认用于全面系统评估病理性解离结构最详尽、最严谨的标准化诊断辅助量表。包含 218 道条目，全面评估解离性身份障碍 (DID)、其他特定解离障碍 (OSDD)、解离性失忆、人格解体/现实解体，以及躯体化解离与内隐意识干扰。",
-      "instructions": "在排除酒精或毒品干扰的情形下，请给出您有关下列体验的发生频度。如果您从未有过该种体验，请选择“0”；如果您一直存在该种体验，请选择“10”。如果您只是在某些时刻存在该种体验，请在数字 1 至 9 之间选择最符合您状况的数字以说明该体验发生的频度。",
-      "questionCount": 218,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Dell, P. F. (2006). The Multidimensional Inventory of Dissociation (MID): A comprehensive measure of pathological dissociation. Journal of Trauma & Dissociation, 7(2), 77-106.",
-          "Dell, P. F. (2004). The Multidimensional Inventory of Dissociation (MID 6.0): User's Manual. Norfolk, VA: Trauma Recovery Center."
-        ],
-        "chineseValidation": [
-          "中国心理学会临床心理学注册工作委员会. 解离障碍临床评定与多维度解离量表中文应用研究."
-        ]
-      }
-    },
-    {
-      "id": "mmpi",
-      "name": "MMPI-2",
-      "fullName": "明尼苏达多项人格测验第二版",
-      "englishName": "Minnesota Multiphasic Personality Inventory-2",
-      "category": "人格评估",
-      "duration": 60,
-      "timeframe": "过去与现在整体心身状况",
-      "description": "国际精神医学与人格心理学公认的金标准多项人格测验。结合中国全国常模样本统计量（Cheung et al. 1996）严谨换算中国 T 分，生成包含 3 大效度量表与 10 大核心临床量表的人格剖析图及两点编码型分析。",
-      "instructions": "请根据您的第一直觉和真实感受作答，选择“是”或“否”。",
-      "questionCount": 567,
-      "requiresGender": true,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "mspss",
-      "name": "MSPSS",
-      "fullName": "领悟社会支持量表",
-      "englishName": "Multidimensional Scale of Perceived Social Support",
-      "category": "社会支持",
-      "duration": 3,
-      "timeframe": "当前及近期的日常生活与人际体验",
-      "description": "由 Zimet 教授等于 1988 年编制，是国际临床心理学评估个体对外界支持感知程度的公认标准工具。全面评估来自家庭、朋友以及生命中其他重要他人（伴侣、师长等）三大维度的主观理解与情感物质支持。",
-      "instructions": "请根据您【当下的真实人际体验与内心感受】，评估以下陈述与您的符合程度。请根据您的第一直觉作答。",
-      "questionCount": 12,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "nias",
-      "name": "NIAS",
-      "fullName": "九项回避限制性摄食筛查量表",
-      "englishName": "Nine Item Avoidant/Restrictive Food Intake Disorder Screen",
-      "category": "进食障碍",
-      "duration": 2,
-      "timeframe": "长期一贯的饮食习惯与感受",
-      "description": "由 Zickgraf 等于 2018 年编制，是 DSM-5 回避性/限制性摄食障碍 (ARFID) 的权威自评工具。与厌食/贪食症不同，ARFID 并非出于追求身材苗条，而是由“感官挑食敏感”、“食欲缺乏无兴趣”及“恐惧哽噎呕吐”三大核心生理心理表型所驱动。",
-      "instructions": "请根据您【多年以来的长期进食习惯与身体感受】，评估以下陈述与您的符合程度。请根据您的第一直觉作答。",
-      "questionCount": 9,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "ocir",
-      "name": "OCI-R",
-      "fullName": "强迫症状自评量表修订版",
-      "englishName": "Obsessive-Compulsive Inventory - Revised",
-      "category": "强迫评估",
-      "duration": 4,
-      "timeframe": "过去一个月",
-      "description": "由宾夕法尼亚大学焦虑障碍研究中心 Foa 教授编制的强迫症国际金标准筛查工具。全面评估清洗、检查、强迫思维、整理对称、计数抵消及囤积等 6 大核心强迫临床亚型。",
-      "instructions": "以下列出人们在日常生活中可能体验到的感受与行为。请仔细阅读每一项，并根据【在过去的一个月中】该体验给您带来困扰或烦恼的程度作出选择。",
-      "questionCount": 18,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Foa, E. B., Huppert, J. D., Leiberg, S., et al. (2002). The Obsessive-Compulsive Inventory: development and validation of a short version. Psychological Assessment, 14(4), 485-496."
-        ],
-        "chineseValidation": [
-          "许晶, 严和骎, 等. (2006). 强迫症状自评量表修订版 (OCI-R) 中文版的信效度研究. 中华精神科杂志."
-        ]
+      "formVersion": "itq-zh-ho-icd11",
+      "attribution": {
+        "label": "简体中文版由 Grace W. K. Ho（2017）翻译",
+        "url": "https://www.traumameasuresglobal.com/ptsd"
       }
     },
     {
@@ -693,57 +24,131 @@
       "name": "PCL-5",
       "fullName": "创伤后应激障碍检查量表",
       "englishName": "PTSD Checklist for DSM-5",
-      "category": "创伤应激",
+      "category": "创伤与解离",
       "duration": 5,
       "timeframe": "过去一个月",
-      "description": "由美国国家创伤中心 (NCPTSD) 依据 DSM-5 诊断标准编制的国际金标准 PTSD 评定量表。全面评估侵入性再体验、持续性回避、认知情绪负向改变及过度唤起 4 大症候群。",
+      "description": "根据 DSM-5 评估过去一个月的创伤后应激症状。",
       "instructions": "以下列出人们在经历非常艰难、痛苦或危险的生活事件后可能出现的问题。请回想您在【过去的一个月内】，这些问题给您带来的困扰程度。",
       "questionCount": 20,
       "requiresGender": false,
       "crisis": false,
-      "references": {
-        "original": [
-          "Blevins, C. A., Weathers, F. W., Davis, M. T., Witte, T. K., & Domino, J. L. (2015). The Posttraumatic Stress Disorder Checklist for DSM-5 (PCL-5): Development and initial psychometric evaluation. Journal of Traumatic Stress, 28(6), 489-498."
-        ],
-        "chineseValidation": [
-          "汪向东, 李晓驷, 等. (2015). 创伤后应激障碍检查量表 (PCL-5) 中文版的信度与效度评估. 中国心理卫生杂志."
-        ]
+      "attribution": {
+        "label": "中文版沿用本站原有 PSYMETRA 题面。美国国家 PTSD 中心公布的原版与评分说明",
+        "url": "https://www.ptsd.va.gov/professional/assessment/adult-sr/ptsd-checklist.asp"
       }
     },
     {
-      "id": "pds",
-      "name": "PDS",
-      "fullName": "创伤后应激诊断量表",
-      "englishName": "Posttraumatic Diagnostic Scale",
-      "category": "创伤应激",
+      "id": "des2",
+      "name": "DES-II",
+      "fullName": "解离体验量表第二版",
+      "englishName": "Dissociative Experiences Scale-II",
+      "category": "创伤与解离",
+      "duration": 6,
+      "timeframe": "日常生活近期感受",
+      "description": "了解日常生活中解离体验出现的频率。",
+      "instructions": "量表列出了人们在日常生活中可能体验到的感受。请根据您在【未饮酒或未服药的清醒状态下】，这些情况在您日常生活中发生的频度比例（0% 至 100%）。",
+      "questionCount": 28,
+      "requiresGender": false,
+      "crisis": false,
+      "attribution": {
+        "label": "中文题面来源：PSYMETRA",
+        "url": "https://psymetra.underlined.ink/"
+      }
+    },
+    {
+      "id": "cds",
+      "name": "CDS",
+      "fullName": "剑桥人格解体量表",
+      "englishName": "Cambridge Depersonalisation Scale",
+      "category": "创伤与解离",
+      "duration": 8,
+      "timeframe": "过去 6 个月内",
+      "description": "记录过去六个月内人格解体体验的频率。使用 PSYMETRA 频率版，满分 116。",
+      "instructions": "人格解体与现实解体是指一种感觉自己或周围世界“不真实”、“分离”或“陌生”的特殊体验。请回顾在【过去 6 个月内】，以下体验在您身上发生的真实频率，并选择最符合的一项。",
+      "questionCount": 29,
+      "requiresGender": false,
+      "crisis": false,
+      "attribution": {
+        "label": "中文题面来源：PSYMETRA",
+        "url": "https://psymetra.underlined.ink/"
+      }
+    },
+    {
+      "id": "bsl23",
+      "name": "BSL-23",
+      "fullName": "边缘症状简表",
+      "englishName": "Borderline Symptom List 23",
+      "category": "人格与情绪调节",
       "duration": 5,
-      "timeframe": "过去 1 个月内",
-      "description": "国际创伤心理学金标准自评工具之一，严格针对重大创伤后的侵入性再体验、持续性回避麻木及过度警觉 3 大核心病理维度，评估创伤后应激障碍（PTSD）的严重程度与临床界限。",
-      "instructions": "请回想您在人生中曾经历或目睹过的最痛苦、最具伤害性的创伤事件（如严重事故、自然灾害、暴力伤害、亲友突然离世或虐待等）。请评估在【过去 1 个月内】，以下症状给您带来的困扰程度与发生频率。",
-      "questionCount": 17,
+      "timeframe": "过去一周",
+      "description": "评估过去一周边缘型人格障碍相关症状的困扰程度。",
+      "instructions": "请逐项阅读，根据过去一周的实际感受，选择每项体验的程度。",
+      "questionCount": 23,
       "requiresGender": false,
       "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
+      "formVersion": "bsl23-zh-mannheim",
+      "attribution": {
+        "label": "Bohus 等编制，曼海姆中央精神卫生研究所中文版",
+        "url": "https://www.zi-mannheim.de/fileadmin/user_upload/downloads/forschung/PSM_downloads/BSL23_Chinesisch_final.pdf"
       }
     },
     {
-      "id": "pdss",
-      "name": "PDSS",
-      "fullName": "惊恐障碍严重程度量表",
-      "englishName": "Panic Disorder Severity Scale",
-      "category": "焦虑评估",
+      "id": "ders16",
+      "name": "DERS-16",
+      "fullName": "情绪调节困难量表简版",
+      "englishName": "Difficulties in Emotion Regulation Scale - 16 Items",
+      "category": "人格与情绪调节",
       "duration": 3,
-      "timeframe": "过去一周",
-      "description": "由匹兹堡大学医学院 Shear 教授等编制，是国际精神病学评估惊恐障碍 (Panic Disorder) 的权威工具。系统评估过去一周内惊恐发作频度、发作痛苦感、预期焦虑、场所/内感性回避以及对职业和社交功能的损害程度。",
-      "instructions": "请评估在【过去的一周内】您的惊恐发作症状、担忧及回避行为的实际严重程度。惊恐发作是指突然爆发的强烈恐惧或极度不适，数分钟内达到顶峰，并伴有心悸、窒息感、发抖、眩晕、濒死感或失控感等反应。",
-      "questionCount": 7,
+      "timeframe": "近期日常生活",
+      "description": "评估理解、接纳和调节情绪时遇到的困难。",
+      "instructions": "请评估下列句子在多大程度上能够贴切地描述您在近期面对情绪低落、烦躁或困扰时的真实反应。请根据您的第一直觉作答。",
+      "questionCount": 16,
       "requiresGender": false,
       "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
+      "attribution": {
+        "label": "中文题面来源：PSYMETRA",
+        "url": "https://psymetra.underlined.ink/"
+      }
+    },
+    {
+      "id": "lpfsbf",
+      "name": "LPFS-BF 2.0",
+      "fullName": "人格功能水平量表简版 2.0",
+      "englishName": "Level of Personality Functioning Scale - Brief Form 2.0",
+      "category": "人格与情绪调节",
+      "duration": 3,
+      "timeframe": "当前与近期的总体真实状态",
+      "description": "评估自我与人际两个方面的人格功能。",
+      "instructions": "请评估以下每一项陈述在多大程度上符合您当下的情况（Report for each of the following statements to what extent they apply to you at this moment），选择最贴切的选项。",
+      "questionCount": 12,
+      "requiresGender": false,
+      "crisis": false,
+      "attribution": {
+        "label": "中文题面来源：PSYMETRA",
+        "url": "https://psymetra.underlined.ink/"
+      }
+    },
+    {
+      "id": "pdq4plus",
+      "name": "PDQ-4+",
+      "fullName": "人格障碍诊断问卷",
+      "englishName": "Personality Diagnostic Questionnaire-4+",
+      "category": "人格与情绪调节",
+      "duration": 0,
+      "timeframe": "",
+      "description": "按 DSM-IV 类别筛查人格障碍相关特征，达到筛查参考值的结果可供进一步评估。",
+      "instructions": "根据自己过去几年的一贯表现选择「是」或「否」。最后两题分为若干小项，每一项都需作答，全卷共 126 个应答项。",
+      "questionCount": 107,
+      "requiresGender": false,
+      "crisis": false,
+      "formVersion": "pdq4plus-zh-cxmed-107",
+      "attribution": {
+        "label": "中文题面及计分来源：常笑医学网",
+        "url": "https://www.cxmed.cn/ms/details_300.html"
+      },
+      "validationStudy": {
+        "label": "中文版信效度研究（杨蕴萍等，2002）",
+        "url": "https://doi.org/10.3969/j.issn.1005-3611.2002.03.002"
       }
     },
     {
@@ -751,250 +156,100 @@
       "name": "PHQ-9",
       "fullName": "患者健康问卷抑郁量表",
       "englishName": "Patient Health Questionnaire-9",
-      "category": "抑郁筛查",
+      "category": "伴随困扰与支持",
       "duration": 3,
       "timeframe": "最近两周",
-      "description": "国际通用的抑郁症状快速筛查与严重度评估量表，基于DSM标准设计，被全球医疗与心理机构广泛使用。",
-      "instructions": "在过去的两周里，您有多大程度受到以下任何问题的困扰？请根据您的实际体验选择最符合的选项。",
+      "description": "评估过去两周的抑郁症状及其程度。",
+      "instructions": "在过去兩个星期，你有多经常受以下问题困扰？",
       "questionCount": 9,
       "requiresGender": false,
       "crisis": false,
       "references": {
         "original": [
           "Kroenke, K., Spitzer, R.L., & Williams, J.B.W. (2001). The PHQ-9: Validity of a brief depression severity measure. Journal of General Internal Medicine, 16(9), 606-613."
-        ],
-        "chineseValidation": [
-          "陈华敏, 等. (2016). PHQ-9抑郁症状群量表汉化版在中国的信效度研究. 中国心理卫生杂志, 30(5), 358-362."
         ]
+      },
+      "attribution": {
+        "label": "Spitzer、Williams、Kroenke 等编制，中文版来源",
+        "url": "https://www.dhc.gov.hk/sc/depression_questionnaire.html"
       }
     },
     {
-      "id": "pid5",
-      "name": "PID-5-BF",
-      "fullName": "DSM-5 人格问卷简版",
-      "englishName": "Personality Inventory for DSM-5 - Brief Form",
-      "category": "人格评估",
-      "duration": 5,
-      "timeframe": "长期一贯的人格特质模式",
-      "description": "由美国精神医学学会 (APA) 人格障碍工作组权威编制。基于现代心理测量学的大五人格病理延伸模型，系统量化负性情感、疏离冷漠、对抗自大、去抑制冲动与精神质离奇五大核心适应不良人格领域。",
-      "instructions": "以下陈述描述了人们在日常生活中不同的自我感受、思维模式和待人方式。请评估各项陈述在多大程度上能够贴切地描述您长期的真实情况。",
-      "questionCount": 25,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "pqb",
-      "name": "PQ-B",
-      "fullName": "简版精神病风险前驱期问卷",
-      "englishName": "Prodromal Questionnaire - Brief Version",
-      "category": "综合症状",
-      "duration": 5,
-      "timeframe": "过去 1 个月内",
-      "description": "加利福尼亚大学（UCSF / UCLA）前驱期研究团队编制的微弱精神病样体验与临床高危（Clinical High Risk, CHR）国际黄金初筛工具，敏锐捕捉早期知觉变异、偏执猜疑及思维解体指征。",
-      "instructions": "以下陈述涉及人们在日常生活中可能出现的一些不寻常的感官感知、思维模式或预感体验。请排除饮酒、使用药物或躯体高热等生理原因，根据您在【过去 1 个月内】的实际感受作答。",
-      "questionCount": 21,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "psqi",
-      "name": "PSQI",
-      "fullName": "匹兹堡睡眠质量指数",
-      "englishName": "Pittsburgh Sleep Quality Index",
-      "category": "睡眠质量",
-      "duration": 5,
-      "timeframe": "最近一个月",
-      "description": "由美国匹兹堡大学精神病学家 Buysse 等于 1989 年编制、刘贤臣等于 1996 年进行中国本土信效度检验的国际经典睡眠质量自评工具。全面评估主观睡眠质量、入睡潜伏期、实际睡眠时长、习惯性睡眠效率、睡眠障碍、催眠药物及日间功能障碍 7 大临床成分。",
-      "instructions": "以下问题是关于您在【过去一个月】里的实际睡眠习惯与心身感受。请根据您最近一个月的真实情况，选择最符合的一项。",
-      "questionCount": 17,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Buysse, D. J., Reynolds, C. F., Monk, T. H., Berman, S. R., & Kupfer, D. J. (1989). The Pittsburgh Sleep Quality Index: A new instrument for psychiatric practice and research. Psychiatry Research, 28(2), 193-213."
-        ],
-        "chineseValidation": [
-          "刘贤臣, 唐茂芹, 胡蕾, 王爱祯, 吴宏新, 赵贵芳, 高春生, 李万顺. (1996). 匹兹堡睡眠质量指数的信度和效度研究. 中华精神科杂志, 29(2), 103-107."
-        ]
-      }
-    },
-    {
-      "id": "raadsr",
-      "name": "RAADS-R",
-      "fullName": "成人自闭与阿斯伯格诊断量表修订版",
-      "englishName": "Ritvo Autism Asperger Diagnostic Scale-Revised",
-      "category": "神经发育/ASD",
-      "duration": 20,
-      "timeframe": "终生体验（从童年至今）",
-      "description": "国际成人自闭谱系与阿斯伯格特质临床诊断金标准自评量表，由耶鲁大学医学院 Riva Ariella Ritvo 博士团队联合 UCLA 等多中心研发，深入考察社交关联性、感官运动特质、专注狭隘兴趣及语言语用沟通 4 大核心维度，能够敏锐识别成年高功能自闭与“伪装掩饰”人群。",
-      "instructions": "本量表旨在评估成年期可能存在的自闭症谱系（ASD）或阿斯伯格特质。请回顾您从童年早期（16岁前）至今的整体人生经验，对以下描述选择最符合您实际情况的一项。",
-      "questionCount": 80,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Ritvo, R. A., Ritvo, E. R., Guthrie, D., Ritvo, M. J., Hufnagel, D. H., McMahon, W., Tonge, C., Mataix-Cols, D., Ronald, A., Ozonoff, P., et al. (2011). The Ritvo Autism Asperger Diagnostic Scale-Revised (RAADS-R): A scale to diagnose adult high functioning autism spectrum disorders. Journal of Autism and Developmental Disorders, 41(8), 1076–1089."
-        ],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "rses",
-      "name": "RSES",
-      "fullName": "罗森伯格自尊量表",
-      "englishName": "Rosenberg Self-Esteem Scale",
-      "category": "人格评估",
+      "id": "gad7",
+      "name": "GAD-7",
+      "fullName": "广泛性焦虑自评量表",
+      "englishName": "Generalized Anxiety Disorder-7",
+      "category": "伴随困扰与支持",
       "duration": 2,
-      "timeframe": "日常稳定感受",
-      "description": "由美国著名社会心理学家 Morris Rosenberg 编制的全球权威自尊评定工具。用于测定个体对自我价值、自我接纳及自我肯定水平的整体积极感受。",
-      "instructions": "请仔细阅读以下陈述，根据您的真实感受选择最符合您对自己看法的选项。请凭第一直觉作答，答案无所谓对错好坏。",
-      "questionCount": 10,
+      "timeframe": "最近两周",
+      "description": "评估过去两周的焦虑症状及其程度。",
+      "instructions": "在过去两周，您经常受到以下问题的困扰吗？",
+      "questionCount": 7,
       "requiresGender": false,
       "crisis": false,
       "references": {
         "original": [
-          "Rosenberg, M. (1965). Society and the adolescent self-image. Princeton University Press."
-        ],
-        "chineseValidation": [
-          "汪向东, 王希林, 马弘. (1999). 心理卫生评定量表手册 (增订版): 罗森伯格自尊量表. 中国心理卫生杂志社."
+          "Spitzer, R.L., Kroenke, K., Williams, J.B.W., & Löwe, B. (2006). A brief measure for assessing generalized anxiety disorder. Archives of Internal Medicine, 166, 1092-1097."
         ]
+      },
+      "attribution": {
+        "label": "Spitzer、Williams、Kroenke 等编制，中文版来源",
+        "url": "https://projectteachny.org/app/uploads/2022/07/GAD7_Simplified-Chinese-for-Mainland-China.pdf"
       }
     },
     {
-      "id": "sas",
-      "name": "SAS",
-      "fullName": "焦虑自评量表",
-      "englishName": "Self-Rating Anxiety Scale",
-      "category": "焦虑评估",
-      "duration": 5,
-      "timeframe": "最近一周",
-      "description": "由William W.K. Zung编制的用于评定焦虑主观感受的心理量表，具有较高的信度和效度，广泛用于临床及心理科研。",
-      "instructions": "请根据您最近一周的实际感受，仔细阅读每一题并作出客观评价，不要受到他人看法的影响。",
-      "questionCount": 20,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Zung, W.W.K. (1971). A rating instrument for anxiety disorders. Psychosomatics, 12(6), 371-379."
-        ],
-        "chineseValidation": [
-          "张明园. (1990). 精神科评定量表手册. 长沙: 湖南科技出版社."
-        ]
-      }
-    },
-    {
-      "id": "sbqr",
-      "name": "SBQ-R",
-      "fullName": "自杀行为问卷修订版",
-      "englishName": "Suicide Behaviors Questionnaire-Revised",
-      "category": "危机/自伤",
+      "id": "isi",
+      "name": "ISI",
+      "fullName": "失眠严重程度指数",
+      "englishName": "Insomnia Severity Index",
+      "category": "伴随困扰与支持",
       "duration": 2,
-      "timeframe": "终生、过去一年及未来可能性",
-      "description": "由 Osman 等人于 2001 年修订编制，广泛应用于临床精神病学与心理学流行病学研究。问卷通过评估贯穿一生的自杀想法与行为、过去一年念头频率、自杀意图的言语威胁/沟通以及未来自杀行为自评可能性等4个核心维度，多层次量化自杀危险性。",
-      "instructions": "本问卷包含4个关于自杀意念与行为的问题，每个问题评估不同的风险侧面。请仔细阅读每个题目及其对应的选项，选择最符合您真实体验的一项。",
-      "questionCount": 4,
+      "timeframe": "过去两周",
+      "description": "了解失眠的程度及其对日常生活的影响。",
+      "instructions": "请评估在【过去的两周内】您的睡眠问题严重程度。请根据您的实际感受选择最贴切的选项。",
+      "questionCount": 7,
       "requiresGender": false,
-      "crisis": true,
-      "references": {
-        "original": [
-          "Osman, A., Bagge, C. L., Gutierrez, P. M., et al. (2001). The Suicidal Behaviors Questionnaire-Revised (SBQ-R): validation with clinical and nonclinical samples. Assessment, 8(4), 443-454."
-        ],
-        "chineseValidation": [
-          "梁海燕, 郑泳萍, 等. (2017). 自杀行为问卷修订版(SBQ-R)在中国青少年群体中的信效度检验. 中国临床心理学杂志, 25(4), 676-679."
-        ]
+      "crisis": false,
+      "attribution": {
+        "label": "中文题面来源：PSYMETRA",
+        "url": "https://psymetra.underlined.ink/"
       }
     },
     {
-      "id": "scl90",
-      "name": "SCL-90",
-      "fullName": "症状自评量表",
-      "englishName": "Symptom Checklist 90",
-      "category": "综合症状",
-      "duration": 15,
-      "timeframe": "最近一周",
-      "description": "国内外最著名的心理健康综合筛查量表，涵盖躯体化、强迫、抑郁、焦虑等10个维度的心理症状评估。",
-      "instructions": "以下列出了有些人可能有的问题，请仔细阅读每一条，然后根据最近一周（包括今天）的实际感受，选择最适合您情况的答案。请不要漏题，按第一直觉作答。",
-      "questionCount": 90,
+      "id": "pdss",
+      "name": "PDSS",
+      "fullName": "惊恐障碍严重程度量表（自评版）",
+      "englishName": "Panic Disorder Severity Scale",
+      "category": "伴随困扰与支持",
+      "duration": 3,
+      "timeframe": "过去一周",
+      "description": "评估惊恐发作、相关回避及其对日常活动的影响。",
+      "instructions": "请评估在【过去的一周内】您的惊恐发作症状、担忧及回避行为的实际严重程度。惊恐发作是指突然爆发的强烈恐惧或极度不适，数分钟内达到顶峰，并伴有心悸、窒息感、发抖、眩晕、濒死感或失控感等反应。",
+      "questionCount": 7,
       "requiresGender": false,
       "crisis": false,
-      "references": {
-        "original": [
-          "Derogatis, L.R., Lipman, R.S., & Covi, L. (1973). SCL-90: An outpatient psychiatric rating scale. Psychopharmacology Bulletin, 9(1), 13-28."
-        ],
-        "chineseValidation": [
-          "王征宇, 迟玉芬. (1984). 症状自评量表（SCL-90）. 上海精神医学, 新2(2), 68-70.",
-          "金华, 吴文源, 张明园. (1986). 中国正常人SCL-90评定结果的初步分析. 中国神经精神疾病杂志, 12(5), 260-263."
-        ]
+      "attribution": {
+        "label": "中文题面来源：PSYMETRA",
+        "url": "https://psymetra.underlined.ink/"
       }
     },
     {
-      "id": "scoff",
-      "name": "SCOFF",
-      "fullName": "SCOFF 进食障碍筛查量表",
-      "englishName": "SCOFF Questionnaire for Eating Disorders",
-      "category": "进食障碍",
-      "duration": 1,
-      "timeframe": "近期日常生活与身体体验",
-      "description": "由英国伦敦大学圣乔治医院 Morgan 教授等编制，是全球医学界与大学心理健康中心使用最广泛的进食障碍快速初筛工具。涵盖病理性呕吐 (Sick)、控制丧失 (Control)、体重骤降 (One stone)、体象歪曲 (Fat) 及食物主宰 (Food) 五大核心指征。",
-      "instructions": "请根据您【近期的日常生活与进食观念】，对以下 5 个问题客观选择“是”或“否”。请按您的第一直觉作答。",
-      "questionCount": 5,
+      "id": "mspss",
+      "name": "MSPSS",
+      "fullName": "领悟社会支持量表",
+      "englishName": "Multidimensional Scale of Perceived Social Support",
+      "category": "伴随困扰与支持",
+      "duration": 3,
+      "timeframe": "",
+      "description": "了解自己感受到来自家人、朋友和其他重要他人的支持。",
+      "instructions": "请仔细阅读各项陈述，选择最符合您感受的选项。",
+      "questionCount": 12,
       "requiresGender": false,
       "crisis": false,
-      "references": {
-        "original": [],
-        "chineseValidation": []
-      }
-    },
-    {
-      "id": "sds",
-      "name": "SDS",
-      "fullName": "抑郁自评量表",
-      "englishName": "Self-Rating Depression Scale",
-      "category": "抑郁评估",
-      "duration": 5,
-      "timeframe": "最近一周",
-      "description": "由William W.K. Zung编制的经典心理测量量表，包含正反向评分题，全面评估精神性情感、躯体障碍及精神运动障碍。",
-      "instructions": "请仔细阅读每一条，并根据您最近一周以来的实际感觉，选择最符合您情况的一项。所有题目无对错之分。",
-      "questionCount": 20,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Zung, W.W.K. (1965). A self-rating depression scale. Archives of General Psychiatry, 12(1), 63-70."
-        ],
-        "chineseValidation": [
-          "张明园. (1990). 精神科评定量表手册. 长沙: 湖南科技出版社."
-        ]
-      }
-    },
-    {
-      "id": "ymrs",
-      "name": "YMRS",
-      "fullName": "杨氏躁狂评定量表",
-      "englishName": "Young Mania Rating Scale",
-      "category": "双相/躁狂",
-      "duration": 8,
-      "timeframe": "过去 48 小时（或最近一周）",
-      "description": "由 Young 等学者于 1978 年编制，是国际精神医学领域评估躁狂症状严重程度的金标准临床评定量表。广泛用于双相障碍急性期病情分级、住院监测及心境稳定剂疗效评估。",
-      "instructions": "根据受试者在过去 48 小时内的临床交谈表现、行为观察及主观体验进行评定。请仔细阅读每一项各等级的具体行为锚定描述，选择最符合受试者症状严重程度的一个选项。注意：第 5、6、8、9 项采用双倍权重计分（0, 2, 4, 6, 8 分）。",
-      "questionCount": 11,
-      "requiresGender": false,
-      "crisis": false,
-      "references": {
-        "original": [
-          "Young, R. C., Biggs, J. T., Ziegler, V. E., & Meyer, D. A. (1978). A rating scale for mania: reliability, validity and sensitivity. The British Journal of Psychiatry, 133(5), 429-435."
-        ],
-        "chineseValidation": [
-          "郑延平, 等. (1984). 杨氏躁狂评定量表的信度和效度. 中华神经精神科杂志, 17(3), 150-153."
-        ]
+      "formVersion": "mspss-zh-mhpss",
+      "attribution": {
+        "label": "Zimet、Dahlem、Zimet 与 Farley（1988）编制，MHPSS.net 简体中文表单",
+        "url": "https://app.mhpss.net/resource/simplified-chinese-version-multidimensional-scale-of-perceived-social-support-mspss"
       }
     }
   ]

@@ -38,7 +38,7 @@
     {
       "id": "type.hospital-row-meta",
       "type": "computed",
-      "desc": "§1.1：机构行第二行 13px（城市 · N 条线索）",
+      "desc": "§1.1 机构行城市文字为 13px",
       "selector": ".tc-hospital-row-meta",
       "props": {
         "fontSize": "13px"
@@ -2314,12 +2314,11 @@
       "repathedIn": "v3-2026-11-07"
     },
     {
-      "id": "a11y.empty-province-meta",
-      "type": "hasText",
+      "id": "v3.m-empty-province-no-count",
+      "type": "mustNotExist",
+      "desc": "空省头部仅显示省名和返回按钮",
       "at": 390,
-      "desc": "A16：空省头部写「0 家医院」，别写成 0 条线索或干脆不写数",
-      "selector": ".sheet-head",
-      "text": "0 家医院",
+      "selector": ".sheet-head .head-meta",
       "precondition": [
         {
           "action": "click",
@@ -3017,8 +3016,8 @@
     {
       "id": "v3.head-structure",
       "type": "mustExist",
-      "desc": "V3-04 头部结构：header.tc-level-head > 返回 + h2 + p.tc-level-meta",
-      "selector": "header.tc-level-head.tc-level-head--province > button.tc-detail-back + h2.tc-detail-title + p.tc-level-meta",
+      "desc": "省份头部将返回按钮与省名放在同一行",
+      "selector": "header.tc-level-head--province > button.tc-detail-back + h2.tc-detail-title",
       "precondition": [
         {
           "action": "click",
@@ -3277,10 +3276,9 @@
     },
     {
       "id": "v3.hospital-meta-address",
-      "type": "hasText",
-      "desc": "V3-04 医院头部第二行写城市 · 地址；医院名与地址都在，条数不写死（条数由 v3.d-hospital-leads-match-list-1440 用列表行与详情头两侧自证，数据一变不再假红）",
+      "type": "textPattern",
+      "desc": "医院头部次行仅显示城市与地址",
       "selector": ".tc-level-head--hospital .tc-level-meta",
-      "text": "北京市 · 南店路7号",
       "precondition": [
         {
           "action": "click",
@@ -3301,7 +3299,8 @@
           "selector": ".tc-doctor-card"
         }
       ],
-      "at": 1440
+      "at": 1440,
+      "pattern": "^北京市 · 南店路7号$"
     },
     {
       "id": "v3.country-head",
@@ -3411,9 +3410,9 @@
     {
       "id": "v3.chip-union",
       "type": "hasText",
-      "desc": "V3-06 多选取并集：cptsd + 人格障碍 → 111 家医院 · 261 条线索（2026-11-20 数据 317 条已发布实测）",
-      "selector": ".tc-level-head--country .tc-level-meta",
-      "text": "111 家医院 · 261 条线索",
+      "desc": "PTSD/C-PTSD 与人格障碍取并集并去重。按当前数据，北京分别命中 3 家和 5 家，有 2 家同时命中",
+      "selector": ".tc-sidebar .tc-province-row[data-province=\"110000\"] .tc-province-count",
+      "text": "6 家",
       "precondition": [
         {
           "action": "reload",
@@ -3428,7 +3427,8 @@
           "selector": ".tc-disorder-chip[data-disorder=\"pd\"]"
         }
       ],
-      "at": 1440
+      "at": 1440,
+      "exact": true
     },
     {
       "id": "v3.chip-toggle-off",
@@ -4302,10 +4302,9 @@
     },
     {
       "id": "v3.m-hospital-meta",
-      "type": "hasText",
-      "desc": "V3-11 手机档医院头部写地址；条数由 v3.m-hospital-leads-match-list-390 两侧自证",
+      "type": "textPattern",
+      "desc": "手机底卡的医院头部次行仅显示城市与地址",
       "selector": ".sheet .head-meta",
-      "text": "南店路7号",
       "precondition": [
         {
           "action": "click",
@@ -4331,7 +4330,8 @@
           "selector": ".sheet .tc-doctor-card"
         }
       ],
-      "at": 390
+      "at": 390,
+      "pattern": "^北京市 · 南店路7号$"
     },
     {
       "id": "v3.m-hospital-medium",
@@ -4416,25 +4416,22 @@
       "at": 390
     },
     {
-      "id": "v3.m-peek-head-visible",
-      "type": "rect",
-      "desc": "V3-11 全国 peek 时计数行完整可见",
+      "id": "v3.m-peek-head-no-count",
+      "type": "mustNotExist",
+      "desc": "全国底卡头部不显示汇总计数",
       "selector": ".sheet .head-meta",
-      "max": {
-        "y": 812
-      },
       "at": 390
     },
     {
       "id": "v3.m-initial-peek",
       "type": "rect",
-      "desc": "V3-11 打开首页底卡停在 peek（筛选抽屉收起后比常驻时矮 46，实测 154）",
+      "desc": "全国层底卡初始停在 peek，收起时约 129px",
       "selector": ".sheet",
       "max": {
-        "h": 160
+        "h": 135
       },
       "min": {
-        "h": 148
+        "h": 123
       },
       "at": 390
     },
@@ -5444,11 +5441,7 @@
       "selector": "button.tc-disorder-chip[data-disorder=\"cptsd\"]",
       "hitMin": 100,
       "missMin": 100,
-      "headerIncludes": [
-        "35 家医院",
-        "88 条线索"
-      ],
-      "desc": "V3-12 桌面勾「cptsd」后地图命中省画成 #3b634b/.26、未命中省压到 ≤.05，头部同步 35 家医院 · 88 条线索（2026-11-20 06:45:49 实测）",
+      "desc": "选择 PTSD/C-PTSD 后给命中省着色，未命中省压到 ≤.05",
       "hitFill": "#3b634b"
     },
     {
@@ -5911,47 +5904,6 @@
       "at": 390
     },
     {
-      "id": "v3.d-hospital-leads-match-row-1440",
-      "type": "numberEquals",
-      "desc": "筛了病症进医院详情，列表行说「N 条线索」，详情标题也得说 N——两层各说各的数就是错（需求方报的「详情里仍是全部线索」）。数字比较，不比整句文案",
-      "selector": ".tc-level-head--hospital .tc-level-meta",
-      "pattern": "(\\d+)\\s*条线索",
-      "from": "rowLeads",
-      "precondition": [
-        {
-          "action": "wait",
-          "selector": ".tc-mapapp-canvas",
-          "settle": 1200
-        },
-        {
-          "action": "click",
-          "selector": ".tc-disorder-chip",
-          "settle": 1000
-        },
-        {
-          "action": "click",
-          "selector": "button.tc-province-row",
-          "textContains": "北京",
-          "settle": 1400
-        },
-        {
-          "action": "wait",
-          "selector": "button.tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": "button.tc-hospital-row",
-          "remember": "rowLeads",
-          "settle": 1400
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-level-head--hospital .tc-level-meta"
-        }
-      ],
-      "at": 1440
-    },
-    {
       "id": "v3.d-doctor-leads-match-labels-1440",
       "type": "numberEquals",
       "desc": "筛了病症进医生详情，标题条数 = 该医生「关联病症」里所选病症那一项的条数（医生页同样按命中线索收窄）",
@@ -6000,49 +5952,6 @@
         {
           "action": "wait",
           "selector": ".tc-doctor-detail"
-        }
-      ],
-      "at": 1440
-    },
-    {
-      "id": "v3.d-search-row-count-matches-detail-1440",
-      "type": "numberEquals",
-      "desc": "筛 cptsd 搜「回龙观」：结果行说「线索 N 条」，点进去详情也得说 N 条线索。两个数分别取自两个节点（记忆的是点击前的结果行、比对的是详情头部），不是同一节点读两次",
-      "selector": ".tc-level-head--hospital .tc-level-meta",
-      "pattern": "(\\d+)\\s*条线索",
-      "from": "searchRowLeads",
-      "expectPattern": "线索\\s*(\\d+)\\s*条",
-      "precondition": [
-        {
-          "action": "wait",
-          "selector": ".tc-mapapp-canvas",
-          "settle": 1200
-        },
-        {
-          "action": "click",
-          "selector": ".tc-disorder-chip",
-          "settle": 1000
-        },
-        {
-          "action": "fill",
-          "selector": "input[type=\"search\"]",
-          "value": "回龙观",
-          "settle": 1500
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-mapapp-result"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-mapapp-result",
-          "textContains": "回龙观医院",
-          "remember": "searchRowLeads",
-          "settle": 1400
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-level-head--hospital .tc-level-meta"
         }
       ],
       "at": 1440
@@ -6128,44 +6037,6 @@
       "at": 1440
     },
     {
-      "id": "v3.d-search-unfiltered-matches-detail-1440",
-      "type": "numberEquals",
-      "desc": "不筛时搜「安定」要出现，且行上 N 与详情 N 相等——与第 1 条用同一家医院做正反对照，选择器写歪时两条会一起红",
-      "selector": ".tc-level-head--hospital .tc-level-meta",
-      "pattern": "(\\d+)\\s*条线索",
-      "from": "searchRowAll",
-      "expectPattern": "线索\\s*(\\d+)\\s*条",
-      "precondition": [
-        {
-          "action": "wait",
-          "selector": ".tc-mapapp-canvas",
-          "settle": 1200
-        },
-        {
-          "action": "fill",
-          "selector": "input[type=\"search\"]",
-          "value": "安定",
-          "settle": 1500
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-mapapp-result"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-mapapp-result",
-          "textContains": "安定医院",
-          "remember": "searchRowAll",
-          "settle": 1400
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-level-head--hospital .tc-level-meta"
-        }
-      ],
-      "at": 1440
-    },
-    {
       "id": "v3.m-scale-entry-rect-390",
       "type": "rect",
       "desc": "右上角量表入口 44×44，和关于、夜间同宽同列；入口丢了这一列就断成两截",
@@ -6194,95 +6065,6 @@
         "h": 56
       },
       "at": 1440
-    },
-    {
-      "id": "v3.d-hospital-leads-match-list-1440",
-      "type": "numberEquals",
-      "desc": "V3-04 医院来的那一条：列表行写「北京市 · N 条线索」，点进去详情头部也写同一个 N。两侧各取一次（行文本在点击前记下，详情头在点击后读），不写死数字",
-      "selector": ".tc-level-head--hospital .tc-level-meta",
-      "pattern": "(\\d+)\\s*条线索",
-      "from": "listRowLeads",
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".tc-province-row",
-          "textContains": "北京"
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".tc-hospital-row",
-          "textContains": "回龙观",
-          "remember": "listRowLeads",
-          "settle": 1200
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-doctor-card"
-        }
-      ],
-      "at": 1440
-    },
-    {
-      "id": "v3.m-hospital-leads-match-list-390",
-      "type": "numberEquals",
-      "desc": "V3-11 手机档同一条：底卡里省份行的医院行写「北京市 · N 条线索」，进详情后底卡头也写同一个 N",
-      "selector": ".sheet .head-meta",
-      "pattern": "(\\d+)\\s*条线索",
-      "from": "listRowLeadsM",
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".sheet .grab",
-          "afterMs": 450
-        },
-        {
-          "action": "click",
-          "selector": ".sheet .tc-province-row",
-          "textContains": "北京"
-        },
-        {
-          "action": "wait",
-          "selector": ".sheet .tc-hospital-row"
-        },
-        {
-          "action": "click",
-          "selector": ".sheet .tc-hospital-row",
-          "textContains": "回龙观",
-          "remember": "listRowLeadsM",
-          "settle": 1200
-        },
-        {
-          "action": "wait",
-          "selector": ".sheet .tc-doctor-card"
-        }
-      ],
-      "at": 390
-    },
-    {
-      "id": "v3.d-province-leads-sum-1440",
-      "type": "sumEquals",
-      "desc": "省级视图一致性：省头「N 条线索」= 该省各医院行「N 条线索」之和。只对当前可见的行取数（隐藏副本不算）；一家医院都没有的省判不适用，不出现 0 = 0 的假绿。",
-      "selector": ".tc-level-head--province .tc-level-meta",
-      "pattern": "(\\d+)\\s*条线索",
-      "sumSelector": ".tc-hospital-row .tc-hospital-row-meta",
-      "sumPattern": "(\\d+)\\s*条线索",
-      "at": 1440,
-      "precondition": [
-        {
-          "action": "wait",
-          "selector": ".tc-mapapp-canvas",
-          "settle": 1200
-        },
-        {
-          "action": "click",
-          "selector": ".tc-province-row",
-          "afterMs": 1500
-        }
-      ]
     },
     {
       "id": "v3.doctor-meta-rows-1440",
@@ -7041,13 +6823,12 @@
       "at": 390
     },
     {
-      "id": "v3.d-province-count-matches-rows-1440",
-      "type": "numberEquals",
+      "id": "v3.d-province-hospital-rows-1440",
+      "type": "count",
       "at": 1440,
-      "selector": ".tc-level-head--province .tc-level-meta",
-      "pattern": "(\\d+)\\s*家",
-      "expectCountSelector": ".tc-hospital-row",
-      "desc": "省行「N 家医院」必须等于该省医院行数。样本福建 5 家对 5 行。2026-11-10 数据里 127 家全部有线索，「0 条线索的行」这一分支当前没有样本，未覆盖；判据保留。",
+      "selector": ".tc-sidebar .tc-hospital-row",
+      "expect": 5,
+      "desc": "福建省详情显示当前收录的 5 家医院",
       "precondition": [
         {
           "action": "wait",
@@ -7718,55 +7499,29 @@
       ]
     },
     {
-      "id": "v3.m-nav-row-320",
-      "type": "rowSpread",
+      "id": "v3.m-nav-drawer-320",
+      "type": "count",
       "at": 320,
-      "desc": "320 宽主导航必须一行排满：三项同一行（top 差 ≤1）、宽度两两差 ≤2、命中高度 ≥44、末项右缘贴导航右缘（差 ≤1），页头高 ≤145。用于抓「第三项挤到第二行」与「占了几栏、右边空一截」。",
-      "container": ".tc-nav",
-      "items": ".tc-nav a",
-      "headerSelector": ".tc-header",
-      "headerMax": 145,
-      "minHit": 44,
-      "topTolerance": 1,
-      "widthTolerance": 2,
-      "edgeTolerance": 1,
+      "desc": "320 宽在量表页打开导航抽屉，显示四个入口。",
+      "selector": ".tc-nav[data-expanded='true'] a",
+      "expect": 4,
       "precondition": [
-        {
-          "action": "goto",
-          "path": "/psy/",
-          "settle": 1400
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-nav a",
-          "settle": 400
-        }
+        { "action": "goto", "path": "/psy/", "settle": 500 },
+        { "action": "click", "selector": ".tc-site-menu[aria-expanded='false']" },
+        { "action": "wait", "selector": ".tc-nav[data-expanded='true'] a" }
       ]
     },
     {
-      "id": "v3.m-nav-row-390",
-      "type": "rowSpread",
+      "id": "v3.m-nav-drawer-390",
+      "type": "count",
       "at": 390,
-      "desc": "390 宽主导航必须一行排满：三项同一行（top 差 ≤1）、宽度两两差 ≤2、命中高度 ≥44、末项右缘贴导航右缘（差 ≤1），页头高 ≤145。用于抓「第三项挤到第二行」与「占了几栏、右边空一截」。",
-      "container": ".tc-nav",
-      "items": ".tc-nav a",
-      "headerSelector": ".tc-header",
-      "headerMax": 145,
-      "minHit": 44,
-      "topTolerance": 1,
-      "widthTolerance": 2,
-      "edgeTolerance": 1,
+      "desc": "390 宽在量表页打开导航抽屉，显示四个入口。",
+      "selector": ".tc-nav[data-expanded='true'] a",
+      "expect": 4,
       "precondition": [
-        {
-          "action": "goto",
-          "path": "/psy/",
-          "settle": 1400
-        },
-        {
-          "action": "wait",
-          "selector": ".tc-nav a",
-          "settle": 400
-        }
+        { "action": "goto", "path": "/psy/", "settle": 500 },
+        { "action": "click", "selector": ".tc-site-menu[aria-expanded='false']" },
+        { "action": "wait", "selector": ".tc-nav[data-expanded='true'] a" }
       ]
     },
     {
@@ -8444,6 +8199,30 @@
     {
       "id": "order.lead-source-not-first",
       "why": "2026-11-20 数据侧把 7 条第三方专长描述从线索里摘走后，医生详情只渲染「评价」一节，线索原文不再出现在任何页面（ReportCard.tsx 已无调用方）——这两条判「原文在来源之前」的断言失去对象"
+    },
+    {
+      "id": "v3.d-hospital-leads-match-row-1440",
+      "why": "2026-11-25 移除省级汇总、医院行和医院详情里的线索计数，原计数比较失去对象。"
+    },
+    {
+      "id": "v3.d-search-row-count-matches-detail-1440",
+      "why": "2026-11-25 移除省级汇总、医院行和医院详情里的线索计数，原计数比较失去对象。"
+    },
+    {
+      "id": "v3.d-search-unfiltered-matches-detail-1440",
+      "why": "2026-11-25 移除省级汇总、医院行和医院详情里的线索计数，原计数比较失去对象。"
+    },
+    {
+      "id": "v3.d-hospital-leads-match-list-1440",
+      "why": "2026-11-25 移除省级汇总、医院行和医院详情里的线索计数，原计数比较失去对象。"
+    },
+    {
+      "id": "v3.m-hospital-leads-match-list-390",
+      "why": "2026-11-25 移除省级汇总、医院行和医院详情里的线索计数，原计数比较失去对象。"
+    },
+    {
+      "id": "v3.d-province-leads-sum-1440",
+      "why": "2026-11-25 移除省级汇总、医院行和医院详情里的线索计数，原计数比较失去对象。"
     }
   ]
 }

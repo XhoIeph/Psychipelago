@@ -1,14 +1,13 @@
 'use client'
 
 import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import Link from 'next/link'
 import { hospitalSearchTiers, matchesSearch, searchTier } from '@/lib/search'
 import { knownText } from '@/lib/hospital-row'
 import { aggregateDoctorLeads, splitDoctorNames } from '@/lib/doctor-leads'
 import { displayDisorderLabels, disorderDisplayLabel, disorderDisplayRank, DISORDER_FILTER_GROUPS } from '@/lib/disorder-labels'
 import { loadAmap } from '@/lib/amap-loader'
 import { createAmapRuntime } from '@/lib/amap-runtime'
-import { applyTheme, readTheme, type Theme } from '@/lib/theme'
+import { applyTheme, readTheme, togglePageTheme, type Theme } from '@/lib/theme'
 import type { MapCamera } from '@/lib/map-camera'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
@@ -22,7 +21,8 @@ import { HospitalDetail } from './HospitalDetail'
 import { DoctorDetail, type DoctorDisorderStat } from './DoctorDetail'
 import { ProvinceDetail } from './ProvinceDetail'
 import type { MapHospital, MapLead, MapProvinceStat, SearchGroup, SearchResult } from './types'
-import { ClipboardList, Info, LocateFixed, Menu, Search, X } from 'lucide-react'
+import { TransitionLink, usePageTransition } from '@/components/PageTransition'
+import { ClipboardList, Home, Info, LocateFixed, Menu, Search, X } from 'lucide-react'
 
 const HOSPITAL_ZOOM = 10
 // 桌面侧栏宽度：默认 380，可拖 340–480，且不超过视口 42%（340 以下头部会挤成两行）。
@@ -38,6 +38,13 @@ const sidebarWidthCap = (viewport: number) =>
   Math.max(SIDEBAR_MIN, Math.min(SIDEBAR_MAX, Math.round((viewport || 1440) * .42)))
 const clampSidebarWidth = (value: number) =>
   Math.max(SIDEBAR_MIN, Math.min(sidebarWidthCap(window.innerWidth), Math.round(value)))
+const mediumSheetHeight = (viewport: number) => Math.min(424, Math.max(240, viewport - 160))
+const mapShiftForSheet = (viewport: number, height: number, anchor: number) => {
+  const top = 98
+  const bottom = Math.max(top + 240, viewport - height)
+  return Math.round(Math.max(-320, Math.min(220, (top + bottom) / 2 - anchor)))
+}
+const PROVINCE_SHEET_ANCHOR = 410
 // 省简称：卡片返回行、医院 meta 与搜索结果副标题都用它。模块级别放，
 // 免得放在组件体后半段被 useMemo 的闭包提前调用（const 的 TDZ 只在生产包里炸）。
 function provinceShortName(provinces: readonly Province[], adcode: string): string {
@@ -136,7 +143,6 @@ export function MapApp(props: Props) {
   const sidebarRef = useRef<HTMLElement | null>(null)
   const burgerRef = useRef<HTMLButtonElement | null>(null)
   const projectRef = useRef<HTMLDivElement | null>(null)
-  const aboutButtonRef = useRef<HTMLButtonElement | null>(null)
   const aboutIconRef = useRef<HTMLButtonElement | null>(null)
   const desktopRef = useRef(false)
 
@@ -148,6 +154,8 @@ export function MapApp(props: Props) {
   const [query, setQuery] = useState('')
   const [mapError, setMapError] = useState('')
   const [mapReady, setMapReady] = useState(false)
+  const [densityReady, setDensityReady] = useState(false)
+  const pageTransition = usePageTransition()
   const [limits, setLimits] = useState({ atMin: true, atMax: false })
   const [cluster, setCluster] = useState<{ members: MapHospital[]; key: string; x: number; y: number } | null>(null)
   const clusterRef = useRef<HTMLDivElement | null>(null)
@@ -192,11 +200,11 @@ export function MapApp(props: Props) {
   }, [])
 
   const toggleTheme = useCallback(() => {
-    const next: Theme = themeRef.current === 'dark' ? 'light' : 'dark'
-    themeRef.current = next
-    setTheme(next)
-    applyTheme(next)
-    runtimeRef.current?.setTheme(next)
+    togglePageTheme(next => {
+      themeRef.current = next
+      setTheme(next)
+      runtimeRef.current?.setTheme(next)
+    })
   }, [])
 
   useEffect(() => {
@@ -214,16 +222,12 @@ export function MapApp(props: Props) {
     setSidebarWidth((current) => clampSidebarWidth(current))
   }, [viewportWidth])
 
-  // 下次打开还原上次拖的宽度；没有记录就用 380。
-  useEffect(() => {
-    const saved = Number(window.localStorage.getItem(SIDEBAR_STORAGE_KEY))
-    if (Number.isFinite(saved) && saved > 0) setSidebarWidth(clampSidebarWidth(saved))
-  }, [])
-
   // 宽度只写 CSS 变量：侧栏自身、顶栏、图例与地图 logo 都吃同一个值。
   useLayoutEffect(() => {
     shellRef.current?.style.setProperty('--tc-sidebar-w', `${sidebarWidth}px`)
   }, [sidebarWidth])
+
+  const initialProvinceRef = useRef<string | null>(null)
 
   // 拖动途中只走 CSS，不碰相机；松手才写存储、重量画布，并把取景中心重新对准可见带。
   const applySidebarWidth = useCallback((value: number, commit: boolean) => {
@@ -284,6 +288,10 @@ export function MapApp(props: Props) {
   const provinceRef = useRef<string | null>(null)
   provinceRef.current = selectedProvinceAdcode
   const activeIdsRef = useRef<Set<string> | null>(null)
+
+  useEffect(() => {
+    runtimeRef.current?.camera.endMove()
+  }, [selectedProvinceAdcode, selectedHospitalId])
 
   // 手机端的抽屉由底卡取代；桌面关闭侧栏只需要收起停靠状态。
   const closeDrawer = () => setSidebarOpen(false)
@@ -347,7 +355,16 @@ export function MapApp(props: Props) {
     dockDesktopRef.current = isDesktop
     const map = mapRef.current
     const fromInset = dock.inset
-    const inset = isDesktop && sidebarOpen ? sidebarRef.current?.offsetWidth ?? 380 : 0
+    const targetProgress = sidebarOpen ? 1 : 0
+    const inset = isDesktop && sidebarOpen ? sidebarRef.current?.offsetWidth ?? sidebarWidth : 0
+    if (Math.abs(fromInset - inset) < 0.5 && Math.abs(dock.progress - targetProgress) < 0.001) {
+      dock.progress = targetProgress
+      dock.inset = inset
+      sidebarInsetRef.current = inset
+      shell.style.setProperty('--tc-sidebar-progress', String(targetProgress))
+      shell.style.setProperty('--tc-sidebar-offset', `${inset}px`)
+      return
+    }
     const width = map?.getSize().x ?? shell.clientWidth
     const anchor = map?.unproject(map.project(map.getCenter(), map.getZoom()).add([fromInset / 2, 0]), map.getZoom())
     const startZoom = map?.getZoom() ?? 0
@@ -369,7 +386,7 @@ export function MapApp(props: Props) {
     }
     cancelDockCameraRef.current = finishCamera
     dockTweenRef.current = gsap.to(dock, {
-      progress: sidebarOpen ? 1 : 0,
+      progress: targetProgress,
       inset,
       duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 0.68,
       ease: 'power3.inOut',
@@ -387,8 +404,34 @@ export function MapApp(props: Props) {
   }, { scope: shellRef, dependencies: [sidebarOpen, isDesktop, mapReady, mapError] })
 
   // Desktop docks by default; phones keep the first view on the map.
-  useEffect(() => {
+  useLayoutEffect(() => {
+    const saved = Number(window.localStorage.getItem(SIDEBAR_STORAGE_KEY))
+    const initialWidth = Number.isFinite(saved) && saved > 0 ? clampSidebarWidth(saved) : SIDEBAR_DEFAULT
+    if (initialWidth !== SIDEBAR_DEFAULT) setSidebarWidth(initialWidth)
+
     const mq = window.matchMedia('(min-width: 1000px)')
+    const hasPanelParam = new URLSearchParams(window.location.search).has('panel')
+    const initialOpen = mq.matches || hasPanelParam
+    const initialInset = mq.matches && initialOpen ? initialWidth : 0
+    desktopRef.current = mq.matches
+    dockDesktopRef.current = mq.matches
+    dockRef.current = { progress: initialOpen ? 1 : 0, inset: initialInset }
+    sidebarInsetRef.current = initialInset
+    if (shellRef.current) {
+      shellRef.current.style.setProperty('--tc-sidebar-w', `${initialWidth}px`)
+      shellRef.current.style.setProperty('--tc-sidebar-progress', String(initialOpen ? 1 : 0))
+      shellRef.current.style.setProperty('--tc-sidebar-offset', `${initialInset}px`)
+    }
+
+    const initialProvince = new URLSearchParams(window.location.search).get('province')
+    const validProvince = initialProvince && propsRef.current.provinces.some((p) => p.adcode === initialProvince)
+      ? initialProvince
+      : null
+    if (validProvince) {
+      initialProvinceRef.current = validProvince
+      setSelectedProvinceAdcode(validProvince)
+      if (!mq.matches) setSheetStop('medium')
+    }
     const apply = () => {
       desktopRef.current = mq.matches
       setIsDesktop(mq.matches)
@@ -435,15 +478,34 @@ export function MapApp(props: Props) {
     selectHospital(id, fromPin)
   }
 
+  const frameProvince = (adcode: string, animate = true) => {
+    const runtime = runtimeRef.current
+    if (!runtime) return
+    if (desktopRef.current) {
+      const inset = sidebarRef.current?.offsetWidth ?? SIDEBAR_DEFAULT
+      navigationInsetRef.current = inset
+      runtime.province(adcode, inset, [84, 70, 36, 36], animate)
+    } else {
+      const viewport = window.innerHeight
+      const height = mediumSheetHeight(viewport)
+      const shift = mapShiftForSheet(viewport, height, PROVINCE_SHEET_ANCHOR)
+      const visibleHeight = viewport - height
+      const top = Math.min(76, visibleHeight / 5)
+      const right = visibleHeight < 240 ? 132 : 36
+      // The sheet shifts the canvas, so convert the screen's visible band back to canvas coordinates.
+      runtime.province(adcode, 0, [top - shift, height + 42 + shift, 36, right], animate)
+    }
+  }
+
   const selectProvince = (adcode: string) => {
     setCluster(null)
     setSelectedDoctor(null)
     setSelectedProvinceAdcode(adcode)
     setSelectedHospitalId(null)
     setPinFocusY(null)
-    navigationInsetRef.current = desktopRef.current ? 380 : 0
     if (desktopRef.current) setSidebarOpen(true)
-    runtimeRef.current?.province(adcode, desktopRef.current ? 380 : 0)
+    else setSheetStop('medium')
+    frameProvince(adcode)
   }
 
   // Sidebar lists move focus into the detail they open; map clicks keep their own focus.
@@ -474,6 +536,20 @@ export function MapApp(props: Props) {
   useEffect(() => {
     let disposed = false
     let runtime: ReturnType<typeof createAmapRuntime> | undefined
+    const dispose = () => {
+      if (disposed) return
+      disposed = true
+      window.clearTimeout(initialViewTimer)
+      cancelDockCameraRef.current?.()
+      runtime?.destroy()
+      runtimeRef.current = null
+      mapRef.current = null
+      cancelWheelRef.current = undefined
+    }
+    const initialViewTimer = window.setTimeout(() => {
+      dispose()
+      setMapError('底图加载超时')
+    }, 25000)
     async function setup() {
       try {
         const sdk = await loadAmap()
@@ -483,6 +559,10 @@ export function MapApp(props: Props) {
           inset: () => dockRef.current.inset, selected: () => selectedRef.current,
           province: () => provinceRef.current,
           activeIds: () => activeIdsRef.current,
+          pinKeywords: id => [...new Set((propsRef.current.leadsByHospital[id] ?? [])
+            .flatMap(lead => displayDisorderLabels(lead.disorders)))]
+            .filter(label => label !== disorderDisplayLabel('other'))
+            .sort((a, b) => disorderDisplayRank(a) - disorderDisplayRank(b)).slice(0, 3),
           selectHospital: pickHospital, selectProvince, interruptDock: () => cancelDockCameraRef.current?.(),
           limits: (atMin, atMax) => setLimits(previous => previous.atMin === atMin && previous.atMax === atMax ? previous : { atMin, atMax }),
           closeCluster: () => setCluster(null),
@@ -490,7 +570,11 @@ export function MapApp(props: Props) {
             const size = runtime!.camera.getSize()
             setCluster({ members, key, x: Math.max(dockRef.current.inset + 16, Math.min(size.x - 296, x - 140)), y: Math.max(84, Math.min(size.y - 320, y - 40)) })
           },
-          ready: () => { if (!disposed) setMapReady(true) },
+          ready: () => {
+            if (disposed) return
+            window.clearTimeout(initialViewTimer)
+            setMapReady(true)
+          },
           onMapClick: () => mapClickRef.current(),
           sheetLarge: () => sheetStopRef.current === 'large',
           theme: themeRef.current,
@@ -499,19 +583,29 @@ export function MapApp(props: Props) {
         mapRef.current = runtime.camera
         cancelWheelRef.current = runtime.cancelWheel
         await runtime.loadDensity()
-      } catch (error) { if (!disposed) setMapError(error instanceof Error ? error.message : String(error)) }
+        if (disposed) return
+        if (initialProvinceRef.current) {
+          const adcode = initialProvinceRef.current
+          initialProvinceRef.current = null
+          frameProvince(adcode, false)
+        }
+        if (!disposed) setDensityReady(true)
+      } catch (error) {
+        if (disposed) return
+        dispose()
+        setMapError(error instanceof Error ? error.message : String(error))
+      }
     }
     void setup()
-    return () => {
-      disposed = true
-      cancelDockCameraRef.current?.()
-      runtime?.destroy()
-      runtimeRef.current = null
-      mapRef.current = null
-      cancelWheelRef.current = undefined
-    }
+    return dispose
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    if ((mapReady && densityReady) || mapError) {
+      pageTransition?.signalMapSettled(!mapError && mapReady && densityReady)
+    }
+  }, [densityReady, mapError, mapReady, pageTransition])
 
   const backToCountry = () => {
     setSelectedDoctor(null)
@@ -572,20 +666,13 @@ export function MapApp(props: Props) {
     }
     return ids
   }, [selectedDisorders.length, selectedSet])
-  // 详情层与列表层要用同一份命中集合：省列表的 leadCountFor 是按线索过滤的，
-  // 详情里若仍取 leadsByHospital 的全量，条数和内容都会对不上。
+  // Filter individual leads inside a hospital that matches the selected categories.
   const matchingLeadIds = useMemo(() => {
     if (!activeDisorderIds) return null
     return new Set(props.reports
       .filter((report) => report.disorders.some((id) => activeDisorderIds.has(id)))
       .map((report) => report.id))
   }, [props.reports, activeDisorderIds])
-  const activeLeads = activeDisorderIds
-    ? props.reports.filter((report) => report.disorders.some((id) => activeDisorderIds.has(id))).length
-    : null
-  const leadCountFor = (hospitalId: string) => activeDisorderIds
-    ? props.reports.filter((report) => report.hospital_id === hospitalId && report.disorders.some((id) => activeDisorderIds.has(id))).length
-    : props.reportCounts[hospitalId] ?? 0
 
   // 任何进入筛选的入口都走这里：不先回全国列表，筛选结果会挂在旧详情下面（面包屑还在）。
   const enterFilter = (filter: ResultFilter | null, disorderIds: string[]) => {
@@ -718,7 +805,7 @@ export function MapApp(props: Props) {
               const hospitalIds = propsRef.current.hospitals
                 .filter((hospital) => hospital.name === entry.hospitalName)
                 .map((hospital) => hospital.id)
-              enterFilter({ label: entry.name, hint: `线索 ${hitReportIds.length} 条`, hospitalIds }, [])
+              enterFilter({ hospitalIds }, [])
             },
           },
           tier,
@@ -774,7 +861,7 @@ export function MapApp(props: Props) {
             .filter((report) => report.source_topics?.includes(topic) && report.hospital_id)
             .map((report) => report.hospital_id as string))]
           resultFocusRef.current = RESULT_FOCUS_TITLE
-          enterFilter({ label: topic, hint: `${count} 条线索`, hospitalIds }, [])
+          enterFilter({ hospitalIds }, [])
         },
       })
     }
@@ -854,11 +941,9 @@ export function MapApp(props: Props) {
     backToCountry()
   }
 
-  // 省详情与底卡计数共用同一份筛选后的医院列表。
   const provinceHospitals = selectedProvince
     ? props.mapHospitals
       .filter((item) => item.adcode === selectedProvince.adcode && (!activeHospitalIds || activeHospitalIds.has(item.id)))
-      .map((item) => (activeHospitalIds ? { ...item, leads: leadCountFor(item.id) } : item))
     : []
 
   // 该省本来有没有收录：决定「筛选筛空了」和「本来就没有」两句文案用哪句。
@@ -930,8 +1015,6 @@ export function MapApp(props: Props) {
           disorderGroups={disorderGroups}
           selectedDisorders={selectedDisorders}
           onToggleDisorder={toggleDisorder}
-          activeLeads={activeLeads}
-          totalLeads={props.reports.length}
           resultFilter={resultFilter}
         />
       </Suspense>
@@ -955,8 +1038,6 @@ export function MapApp(props: Props) {
         disorderGroups={disorderGroups}
         selectedDisorders={selectedDisorders}
         onToggleDisorder={toggleDisorder}
-        activeLeads={activeLeads}
-        totalLeads={props.reports.length}
         resultFilter={resultFilter}
         hideHeading
         hideChips
@@ -966,7 +1047,6 @@ export function MapApp(props: Props) {
     </Suspense>
   )
 
-  // 底卡的标题跟着当前层级走；搜索时让位给查询词，计数只报能在结果里看到的省份与医院。
   const searching = query.trim().length > 0
   const sheetLevel: SheetLevel = searching
     ? 'search'
@@ -982,39 +1062,25 @@ export function MapApp(props: Props) {
   // 卡头标题只跟层级走，搜索态也不例外（参考页 titleOf(t) 与查询词无关）。
   // 搜索时 v3.css 把 sheet-head 整块隐藏，这一行只影响读屏读到的区块名。
   const sheetTitle = selectedDoctor?.name ?? selectedHospital?.name ?? selectedProvince?.short_name ?? '全国'
-  // 卡头计数：全国/省报医院与线索，医院层报城市·地址·条数，医生层不报。
-  const hospitalSheetMeta = selectedHospital
+  const sheetMeta = sheetLevel === 'hospital' && selectedHospital
     ? [
       knownText(selectedHospital.city) || provinceShortName(props.provinces, selectedHospital.adcode),
       knownText(selectedHospital.address),
-      `${selectedLeads.length} 条线索`,
     ].filter(Boolean).join(' · ')
-    : ''
-  const sheetMeta = searching ? null : sheetLevel === 'country' ? (
-    <><b>{activeHospitalIds ? activeHospitalIds.size : props.hospitals.length}</b> 家医院 · <b>{activeLeads ?? props.reports.length}</b> 条线索</>
-  ) : sheetLevel === 'province' ? (
-    <><b>{provinceHospitals.length}</b> 家医院 · <b>{provinceHospitals.reduce((sum, item) => sum + item.leads, 0)}</b> 条线索</>
-  ) : sheetLevel === 'hospital' ? (
-    hospitalSheetMeta
-  ) : null
+    : null
 
   const sheetViewport = viewportHeight || 844
   const sheetHeights = useMemo<SheetHeights>(() => ({
     peek: peekHeight || 140,
-    medium: Math.min(424, Math.max(240, sheetViewport - 160)),
+    medium: mediumSheetHeight(sheetViewport),
     large: Math.min(736, Math.max(320, sheetViewport - 108)),
   }), [peekHeight, sheetViewport])
 
   // 可见带是顶部浮层下沿到卡沿；带中心对准画面中心，卡抬起来地图跟着上移。
   // 搜索层不改地图画面，锚点按实际所在层级取；从图钉进来的详情改用这枚钉的屏幕位置。
   const mapViewLevel: 'country' | 'province' = selectedProvinceAdcode ? 'province' : 'country'
-  const sheetShift = useMemo(() => {
-    const bandTop = 98
-    const bandBottom = Math.max(bandTop + 240, sheetViewport - sheetHeights[sheetStop])
-    const band = (bandTop + bandBottom) / 2
-    const anchor = pinFocusY ?? (mapViewLevel === 'country' ? 412 : 410)
-    return Math.round(Math.max(-320, Math.min(220, band - anchor)))
-  }, [mapViewLevel, pinFocusY, sheetHeights, sheetStop, sheetViewport])
+  const sheetShift = mapShiftForSheet(sheetViewport, sheetHeights[sheetStop],
+    pinFocusY ?? (mapViewLevel === 'country' ? 412 : PROVINCE_SHEET_ANCHOR))
 
   useLayoutEffect(() => {
     const shell = shellRef.current
@@ -1164,7 +1230,7 @@ export function MapApp(props: Props) {
 
   return (
     <div ref={shellRef} className="tc-mapapp">
-      <div ref={containerRef} className="tc-mapapp-canvas" role="application" aria-label="全国就诊资源与线索地图" />
+      <div ref={containerRef} className="tc-mapapp-canvas" role="application" aria-label="全国就诊资源与线索地图" style={mapReady ? undefined : { opacity: 0 }} inert={!mapReady} />
       {!mapReady && !mapError && <div className="tc-map-loading" role="status">正在加载全国地图…</div>}
       {mapError && (
         <div className="tc-mapapp-error" role="alert">
@@ -1262,16 +1328,10 @@ export function MapApp(props: Props) {
           )}
         </div>
         <div className="tc-project-corner" ref={projectRef}>
-          <Link className="tc-mapapp-ctl tc-mapapp-scale-link" href="/psy/">量表测试</Link>
-          <button
-            ref={(node) => { aboutButtonRef.current = node; registerTrigger('about', 'desktop')(node) }}
-            type="button"
-            className="tc-mapapp-ctl tc-mapapp-about"
-            aria-expanded={openCard === 'about'}
-            aria-controls="tc-project-card"
-            onClick={() => toggleCard('about')}
-          >关于项目</button>
-          {/* 手机顶栏只留图标入口：同样先弹卡，卡里的「了解我们」才去 /about。 */}
+          <TransitionLink className="tc-mapapp-ctl tc-mapapp-home-desktop" href="/">
+            <Home size={16} aria-hidden="true" />
+            <span>回到主岛</span>
+          </TransitionLink>
           <button
             ref={(node) => { aboutIconRef.current = node; registerTrigger('about', 'mobile')(node) }}
             type="button"
@@ -1284,19 +1344,24 @@ export function MapApp(props: Props) {
             <Info size={20} aria-hidden="true" />
           </button>
           {/* 手机：关于 → 量表 → 夜间，同一列 44×44；桌面主题按钮在侧栏顶部。 */}
-          <Link className="tc-scale-icon" href="/psy/" aria-label="量表测试">
+          <TransitionLink className="tc-scale-icon" href="/psy/" aria-label="量表测试">
             <ClipboardList size={20} aria-hidden="true" />
-          </Link>
+          </TransitionLink>
           {!isDesktop && <ThemeToggle theme={theme} onToggle={toggleTheme} />}
-          {(openCard === 'about' || closingCard === 'about') && (
+          {!isDesktop && (openCard === 'about' || closingCard === 'about') && (
             <section id="tc-project-card" className={closingCard === 'about' ? 'tc-project-card is-closing' : 'tc-project-card'} aria-label="关于项目">
               <div className="tc-row tc-row--between"><strong>群岛 Psychipelago</strong></div>
               <p>本项目旨在为CPTSD/BPD人群提供全国就诊地图，帮助更多人治疗心理创伤与障碍</p>
-              <Link className="tc-card-action" href="/about/">了解我们</Link>
+              <TransitionLink className="tc-card-action" href="/about/">了解我们</TransitionLink>
             </section>
           )}
         </div>
       </div>
+
+      <TransitionLink className="tc-mapapp-home-mobile" href="/" aria-label="回到主岛">
+        <Home size={16} aria-hidden="true" />
+        <span>回到主岛</span>
+      </TransitionLink>
 
       {isDesktop && (
         <Sidebar

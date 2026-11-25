@@ -16,8 +16,6 @@ export type DisorderGroup = {
 
 /** 全局搜索命中来源话题时，机构栏目按命中集合列机构 */
 export type ResultFilter = {
-  label: string
-  hint: string
   hospitalIds: string[]
 }
 
@@ -39,12 +37,8 @@ type Props = {
   /** 已选病症（可多选，点同一项取消） */
   selectedDisorders: string[]
   onToggleDisorder: (id: string) => void
-  /** 选中病症时并集命中的线索条数（按条去重） */
-  activeLeads?: number | null
-  /** 没有筛选时的全国线索总数（含没有对应机构的线索）。 */
-  totalLeads?: number
   resultFilter?: ResultFilter | null
-  /** 底卡头部已经报了总数，正文不再重复同一行。 */
+  /** The mobile sheet supplies its own heading. */
   hideHeading?: boolean
   /** 手机底卡的筛选条挂在卡的搜索行下面，正文里不重复渲染。 */
   hideChips?: boolean
@@ -64,8 +58,6 @@ export function HospitalExplorer({
   disorderGroups,
   selectedDisorders,
   onToggleDisorder,
-  activeLeads = null,
-  totalLeads = 0,
   resultFilter = null,
   hideHeading = false,
   hideChips = false,
@@ -118,10 +110,6 @@ export function HospitalExplorer({
     ? hospitals.filter((hospital) => resultFilter.hospitalIds.includes(hospital.id))
     : null
 
-  // 头部计数与列表同一份集合：医院数按省行加总，线索数跟着筛选走。
-  const hospitalCount = matched ? provinceRows.reduce((sum, row) => sum + row.count, 0) : hospitals.length
-  const leadCount = activeLeads ?? totalLeads
-
   if (hospitals.length === 0) {
     return (
       <div className="tc-empty">
@@ -165,13 +153,6 @@ export function HospitalExplorer({
       {!hideHeading && (
         <header className="tc-level-head tc-level-head--country">
           <h2 className="tc-detail-title" tabIndex={-1}>全国</h2>
-          <p className="tc-level-meta">
-            {searchList ? (
-              <><b>{searchList.length}</b> 家医院 · {resultFilter?.hint}</>
-            ) : (
-              <><b>{hospitalCount}</b> 家医院 · <b>{leadCount}</b> 条线索</>
-            )}
-          </p>
         </header>
       )}
 

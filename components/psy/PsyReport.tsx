@@ -1,8 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
-import type { PsyCatalogueItem, PsyDimensionScore, PsyLevel, PsyResult } from '@/lib/psy/types'
+import { useMemo, useRef, useState } from 'react'
+import { gsap } from 'gsap'
+import { useGSAP } from '@gsap/react'
+import type { PsyDimensionScore, PsyLevel, PsyResult } from '@/lib/psy/types'
+
+gsap.registerPlugin(useGSAP)
 
 const TONE_BY_TYPE: Record<string, string> = {
   normal: 'ok',
@@ -60,7 +64,7 @@ function perItemMax(dimension: PsyDimensionScore, fallback: number) {
   return groupMax / count
 }
 
-/** 描述里的评分口径「（3题，0-12分）」不需要出现在页面上：分值已经写在维度行里。 */
+/** Keep the dimension description focused on what it measures. */
 function displayDesc(desc?: string) {
   if (!desc) return ''
   return desc
@@ -76,7 +80,6 @@ function axisLabel(name: string) {
   return clean.length > 8 ? `${clean.slice(0, 8)}…` : clean
 }
 
-/** MMPI 等量表的 summary / advice 直接给字符串，其余给数组；统一成数组再渲染。 */
 function toLines(value: string | string[] | undefined): string[] {
   if (!value) return []
   return (Array.isArray(value) ? value : [value]).filter((line) => typeof line === 'string' && line.trim())
@@ -147,21 +150,21 @@ function RadarChart({
 }
 
 export default function PsyReport({
-  item,
   result,
   levels,
   onRestart,
 }: {
-  item: PsyCatalogueItem
   result: PsyResult
   levels: PsyLevel[]
   onRestart: () => void
 }) {
   const [copied, setCopied] = useState(false)
+  const reportRef = useRef<HTMLElement | null>(null)
   const dimensions = result.dimensionScores ?? []
-  const advice = toLines(result.advice)
+  const summaryLines = toLines(result.summary)
+  const oldItq = result.scaleId === 'itq' && !result.scoringVersion
+  const dso = result.scaleId === 'itq' && result.scoringVersion ? result.secondaryMetrics?.[0] : undefined
   const barMax = useMemo(() => dimensionMax(dimensions, result.scaleId), [dimensions, result.scaleId])
-  const showCrisis = item.crisis || result.levelType === 'severe'
   const tone = toneFor(result.levelType)
   // 引擎给的单位常带一段「(0 - 40)」，与右侧的「/ 40」重复，页面上只留纯单位。
   const unitText = (result.primaryMetric?.unit ?? '').replace(
@@ -171,24 +174,44 @@ export default function PsyReport({
 
   const summaryText = useMemo(() => {
     const narrative = toLines(result.summary)
-    const advice = toLines(result.advice)
     const lines = [
       `${result.scaleName}（${result.scaleFullName}）`,
-      `得分：${result.primaryScore} ${unitText}${result.primaryMetric?.max ? ` / ${result.primaryMetric.max}` : ''}`,
-      `等级：${result.level}`,
+      oldItq ? '旧版总分结果' : '',
+      `${result.primaryMetric?.label ?? '得分'}：${result.primaryScore} ${unitText}${result.primaryMetric?.max ? ` / ${result.primaryMetric.max}` : ''}`,
+      dso ? `${dso.label}：${dso.value} ${dso.unit} / ${dso.max}` : '',
+      result.level ? `结果：${result.level}` : '',
       result.genderLabel ? `常模：${result.genderLabel}` : '',
+      result.validityConclusion ?? '',
       narrative.length ? `\n${narrative.join('\n')}` : '',
       dimensions.length
         ? `\n维度：\n${dimensions
             .map((dimension) => `· ${dimension.name}：${dimension.score ?? dimension.raw ?? '-'}${dimension.level ? `（${dimension.level}）` : ''}`)
             .join('\n')}`
         : '',
-      advice.length ? `\n建议：\n${advice.map((line) => `· ${line}`).join('\n')}` : '',
-      '\n结果由 群岛 Psychipelago 量表库生成，本设备本地保存，未上传。量表结果不能代替医生的诊断。',
     ]
     return lines.filter(Boolean).join('\n')
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dimensions, result])
+  }, [dimensions, dso, oldItq, result])
+
+  useGSAP(
+    () => {
+      const root = reportRef.current
+      if (!root) return
+      const media = gsap.matchMedia()
+      media.add('(prefers-reduced-motion: no-preference)', () => {
+        const bars = Array.from(root.querySelectorAll<HTMLElement>('.tc-psy-dims-track > span'))
+        if (bars.length) {
+          gsap.fromTo(
+            bars,
+            { scaleX: 0, transformOrigin: 'left center' },
+            { scaleX: 1, duration: 0.5, stagger: 0.035, ease: 'power3.out', clearProps: 'transform' },
+          )
+        }
+      })
+      return () => media.revert()
+    },
+    { scope: reportRef, dependencies: [result.scaleId, result.primaryScore] },
+  )
 
   const copySummary = async () => {
     try {
@@ -201,18 +224,18 @@ export default function PsyReport({
   }
 
   return (
-    <article className="tc-psy-report" aria-label={`${result.scaleName} 结果`}>
+    <article className="tc-psy-report" ref={reportRef} aria-label={`${result.scaleName} 结果`}>
       <header className="tc-psy-report-head">
+        <h1>{result.scaleFullName}结果</h1>
         <p className="tc-psy-eyebrow">
-          {result.scaleCategory} · {result.completedTimeFormatted}
+          {result.scaleName} · {result.completedTimeFormatted}
+          {oldItq && ' · 旧版总分结果'}
           {result.durationSeconds ? ` · 用时 ${formatDuration(result.durationSeconds)}` : ''}
         </p>
-        <h1>{result.scaleName} 结果</h1>
-        <p className="tc-psy-subtitle">{result.scaleFullName}</p>
         {result.genderLabel && <p className="tc-psy-note">常模：{result.genderLabel}</p>}
       </header>
 
-      <section className="tc-psy-score" aria-label="总分与等级">
+      <section className="tc-psy-score" aria-label="得分与结果">
         <div className="tc-psy-score-main">
           <p className="tc-psy-score-label">{result.primaryMetric?.label ?? '总分'}</p>
           <p className="tc-psy-score-line">
@@ -223,18 +246,30 @@ export default function PsyReport({
             </span>
           </p>
         </div>
-        <div className="tc-psy-score-side">
-          <p className="tc-psy-badge" data-tone={tone}>
-            {result.level}
-          </p>
-        </div>
+        {dso && (
+          <div className="tc-psy-score-main">
+            <p className="tc-psy-score-label">{dso.label}</p>
+            <p className="tc-psy-score-line">
+              <span className="tc-psy-score-value">{dso.value}</span>
+              <span className="tc-psy-score-unit">{dso.unit} <em> / {dso.max}</em></span>
+            </p>
+          </div>
+        )}
+        {result.level && (
+          <div className="tc-psy-score-side">
+            <p className="tc-psy-badge" data-tone={tone}>{result.level}</p>
+          </div>
+        )}
       </section>
 
-      {toLines(result.summary).map((line) => (
-        <p key={line} className="tc-psy-summary">
-          {line}
-        </p>
-      ))}
+      {summaryLines.length > 0 && (
+        <section className="tc-psy-summary" aria-labelledby="psy-summary-title">
+          <h2 id="psy-summary-title">结果解读</h2>
+          {summaryLines.map((line) => (
+            <p key={line}>{line}</p>
+          ))}
+        </section>
+      )}
 
       {dimensions.length >= 3 && <RadarChart dimensions={dimensions} barMax={barMax} />}
 
@@ -245,12 +280,11 @@ export default function PsyReport({
             {levels.map((level) => {
               const active = level.label === result.level
               return (
-                <li key={`${level.label}-${level.min}`} data-active={active ? 'true' : undefined}>
+                <li key={`${level.label}-${level.min}`} aria-current={active || undefined} data-active={active ? 'true' : undefined}>
                   <span className="tc-psy-levels-range">
                     {level.min}–{level.max}
                   </span>
                   <span className="tc-psy-levels-label">{level.label}</span>
-                  {active && <span className="tc-psy-levels-here">本次</span>}
                 </li>
               )
             })}
@@ -270,10 +304,7 @@ export default function PsyReport({
                 <li key={dimension.id ?? dimension.name}>
                   <div className="tc-psy-dims-head">
                     <span className="tc-psy-dims-name">{dimension.name}</span>
-                    <span className="tc-psy-dims-value">
-                      {value}
-                      {dimension.level ? ` · ${dimension.level}` : ''}
-                    </span>
+                    {dimension.level && <span className="tc-psy-dims-level">{dimension.level}</span>}
                   </div>
                   <div className="tc-psy-dims-track" aria-hidden="true">
                     <span style={{ width: `${width}%` }} data-tone={toneFor(dimension.levelType)} />
@@ -294,7 +325,7 @@ export default function PsyReport({
         </section>
       )}
 
-      {(result.secondaryMetrics?.length ?? 0) > 0 && (
+      {!dso && (result.secondaryMetrics?.length ?? 0) > 0 && (
         <section className="tc-psy-metrics" aria-label="其他指标">
           <h2>其他指标</h2>
           <dl>
@@ -311,34 +342,14 @@ export default function PsyReport({
         </section>
       )}
 
-      {advice.length > 0 && (
-        <section className="tc-psy-advice" aria-label="建议">
-          <h2>接下来可以做的</h2>
-          <ul>
-            {advice.map((line) => (
-              <li key={line}>{line}</li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {showCrisis && (
-        <aside className="tc-psy-crisis" role="note">
-          <h2>如果你现在很难受</h2>
-          <p>
-            如果情绪已经影响到日常生活，或出现伤害自己的念头，请尽快去综合医院临床心理科或精神科就诊。也可以拨打心理危机干预热线：400-161-9995。
-          </p>
-        </aside>
-      )}
-
       {(result.answers?.length ?? 0) > 0 && (
         <details className="tc-psy-answers">
-          <summary>作答明细（{result.answers!.length} 题）</summary>
+          <summary>作答明细（{result.answers!.length} 项）</summary>
           <ol>
             {result.answers!.map((answer) => (
               <li key={answer.id}>
                 <span className="tc-psy-answers-q">{answer.text}</span>
-                <span className="tc-psy-answers-a">{answer.scored}</span>
+                <span className="tc-psy-answers-a">{answer.label ?? answer.scored}</span>
               </li>
             ))}
           </ol>
@@ -355,12 +366,10 @@ export default function PsyReport({
         <button type="button" className="tc-button tc-button--ghost" onClick={onRestart}>
           重新作答
         </button>
+        <Link href="/psy/" className="tc-button tc-button--ghost tc-psy-back">
+          返回量表库
+        </Link>
       </div>
-
-      <p className="tc-psy-note tc-psy-report-foot">
-        结果只保存在这台设备上。量表结果不能代替医生的诊断。
-        <Link href="/psy/" className="tc-psy-back"> 回量表库</Link>
-      </p>
     </article>
   )
 }
