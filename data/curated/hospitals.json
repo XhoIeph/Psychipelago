@@ -212,7 +212,7 @@
     },
     {
       "id": "kdocs-amap-b02140828v",
-      "name": "青岛市精神卫生中心",
+      "name": "青岛市精神卫生中心（市北院区）",
       "aliases": [
         "青岛精神卫生中心（市北院区）",
         "青岛市精神卫生中心（第七人民医院）",
@@ -3761,6 +3761,35 @@
       "last_verified_at": "2026-11-25"
     },
     {
+      "id": "kdocs-amap-b03050261f",
+      "name": "桂林医科大学第一附属医院(乐群院区)",
+      "aliases": [
+        "云南 桂林医学院附属医院"
+      ],
+      "adcode": "450000",
+      "province": "广西壮族自治区",
+      "city": "桂林市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "乐群路15号",
+      "coordinates": {
+        "lat": 25.284317,
+        "lng": 110.287401
+      },
+      "coordinates_source": "geocoded",
+      "official_sources": [],
+      "last_verified_at": "2026-11-25"
+    },
+    {
       "id": "kdocs-amap-b0ffliuheg",
       "name": "四川大学华西厦门医院",
       "aliases": [
@@ -4630,6 +4659,35 @@
       "coordinates_source": "geocoded",
       "official_sources": [],
       "last_verified_at": "2026-11-25"
+    },
+    {
+      "id": "local-qingdao-mental-health-gaoxin",
+      "name": "青岛市精神卫生中心高新院区",
+      "aliases": [
+        "青岛市精神卫生中心（高新院区）"
+      ],
+      "adcode": "370000",
+      "province": "山东省",
+      "city": "青岛市",
+      "level": "未知",
+      "category": "其他",
+      "departments": [
+        "未录入"
+      ],
+      "trauma_service": {
+        "cptsd_assessment": "unknown",
+        "cptsd_bpd_diagnosis": "unknown",
+        "icd11_practice": "unknown",
+        "evidence": []
+      },
+      "address": "河套街道振和路10号",
+      "coordinates": {
+        "lat": 36.22769,
+        "lng": 120.196565
+      },
+      "coordinates_source": "manual",
+      "official_sources": [],
+      "last_verified_at": "2026-11-26"
     }
   ]
 }

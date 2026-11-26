@@ -18,6 +18,7 @@ export type LocationResult = LocationTarget & {
   candidates: Poi[]
   chosen?: Poi
   matched_name?: string
+  campus?: string
   selection_rule?: 'base-name' | 'main-campus' | 'best-score' | 'explicit-campus' | 'visit-site' | 'medical-building' | 'institution-building'
 }
 
@@ -93,7 +94,7 @@ const REGION_OVERRIDES: Record<string, string> = {
 export function searchName(raw: string): string {
   // 来源在跨省就诊的机构名前写了地区（「云南 大理州第二人民医院」），高德不接受这种前缀。
   const bare = nameVariants(raw)[0].replace(/^[^\s]{2,6}\s+/u, '')
-  return (SOURCE_NAME_EXPANSIONS[bare] ?? SOURCE_NAME_EXPANSIONS[raw] ?? bare).replace(/（([^）]*)）/gu, (_, note: string) => /院区|芳村|^(?:保定|青岛|南昌|海南)$/u.test(note) ? note : '')
+  return (SOURCE_NAME_EXPANSIONS[raw] ?? SOURCE_NAME_EXPANSIONS[bare] ?? bare).replace(/[（(]([^）)]*)[）)]/gu, (_, note: string) => /院区|芳村|^(?:保定|青岛|南昌|海南)$/u.test(note) ? note : '')
 }
 
 /** 查询与省界校验用的地区；原文地区写错的少数机构按实际所在地查，证据里仍保留原文地区。 */
@@ -108,6 +109,7 @@ const SOURCE_NAME_EXPANSIONS: Record<string, string> = {
   '郑州第八人民医院': '郑州市第八人民医院',
   '空军军医大学西京医院': '西京医院',
   '山东省戴庄医院': '戴庄医院',
+  '山东省精神卫生中心': '山东大学附属精神卫生中心',
   '临沂市荣军医院': '临沂市荣军优抚医院',
   '广州白云心理医院': '白云心理医院',
   '甘肃兰州大学第二医院': '兰州大学第二医院',
@@ -166,10 +168,8 @@ const SOURCE_NAME_EXPANSIONS: Record<string, string> = {
   '山西医科大学第一附属医院': '山西医科大学第一医院',
   '成功大学医学院附设医院': '国立成功大学医学院附设医院',
   '广州市惠爱医院': '广州医科大学附属脑科医院',
-  // 「山东省精卫（青岛）」指高新院区（河套街道振和路10号），不是南京路299号的本部；
-  // 旧源同一批行也把它记作「山东省青岛精神卫生中心」，挂在高新院区名下。
-  '山东省精卫（青岛）': '青岛市精神卫生中心高新院区',
-  '山东省青岛精神卫生中心': '青岛市精神卫生中心高新院区',
+  '山东省精卫（青岛）': '青岛市精神卫生中心',
+  '山东省青岛精神卫生中心': '青岛市精神卫生中心',
   // 广东省精神卫生中心挂靠在广东省人民医院，高德收录的是惠福分院（惠福西路123号）。
   '广东省精神卫生中心': '广东省人民医院惠福分院',
   // 这家在高德只有英文名 POI，五权路499号与中文名同址。
@@ -186,8 +186,6 @@ const SOURCE_NAME_EXPANSIONS: Record<string, string> = {
   '甘肃天水市第三人民医院': '天水市第三人民医院',
   // 原文写「冉生」，高德收录为同音的「冉升医院」。
   '北海冉生精神病医院（私立）': '北海冉升医院',
-  // 「圣保禄/养和医院」是两个名号指同一家（香港圣保禄医院），高德按前者能查到实体。
-  '圣保禄/养和医院': '圣保禄医院',
   // 桂林医学院附属医院已更名桂林医科大学第一附属医院；原文没写院区，取乐群路15号的院本部（乐群院区）。
   '桂林医学院附属医院': '桂林医科大学第一附属医院（乐群院区）',
   // 香港明德医院即山顶加列山道41号的明德国际医院，高德只收后者这个名字；
@@ -238,8 +236,16 @@ export function normalizedName(name: string): string {
 }
 
 export function selectPoi(target: LocationTarget, pois: Poi[], requireUniqueWithoutRegion = false): LocationResult {
-  const base: LocationResult = { name: target.name, report_ids: target.report_ids, region: target.region, matched_name: searchName(target.name), status: 'not_found', reason: '高德候选尚未匹配到机构名称', candidates: pois }
-  const wanted = normalizedName(searchName(target.name).replace(/(?:保定|青岛|南昌)$/u, ''))
+  const matchedName = searchName(target.name)
+  const base: LocationResult = { name: target.name, report_ids: target.report_ids, region: target.region, matched_name: matchedName, status: 'not_found', reason: '高德候选尚未匹配到机构名称', candidates: pois }
+  if (target.name === '山东省精卫（青岛）' || target.name === '山东省青岛精神卫生中心') {
+    return { ...base, status: 'ambiguous', reason: '已确认青岛市精神卫生中心有市北和高新院区，原文未指明出诊院区' }
+  }
+  if (/多点执业/u.test(target.name) || (/[／/]/u.test(target.name) && !SOURCE_NAME_EXPANSIONS[target.name])) {
+    // Unreviewed lists may name distinct sites, even when the first name has an exact POI.
+    return { ...base, status: 'ambiguous', reason: '原文并列多个名称，须确认是同一机构或指明出诊地点' }
+  }
+  const wanted = normalizedName(matchedName.replace(/(?:保定|青岛|南昌)$/u, ''))
   const hint = target.name.match(/（(保定|青岛|南昌|海南)）/u)?.[1]
   const region = searchRegion(target)
   const located = pois.filter(poi => {
@@ -264,19 +270,17 @@ export function selectPoi(target: LocationTarget, pois: Poi[], requireUniqueWith
   // 按「医院名必须是 09 医疗类」一刀切会把唯一的正址筛掉。名字与原文完全相等的候选不再按类别排除。
   const candidates = siteCandidates(located).filter(poi => !/医院|附院/u.test(target.name) || poi.typecode.startsWith('09') || normalizedName(poi.name) === wanted)
   const ranked = candidates.map(poi => ({ poi, score: score(poi) })).filter(item => item.score >= 25).sort((a, b) => b.score - a.score)
+  if (/(?:院区|分院|芳村|[东西]址|医院[东西南北]区)/u.test(matchedName)) {
+    // A base-name match or a shared campus suffix does not establish the site.
+    const campuses = ranked.filter(item => normalizedName(item.poi.name) === wanted)
+    return campuses.length === 1
+      ? { ...base, status: 'geocoded', reason: '匹配院区名称', selection_rule: 'explicit-campus', chosen: campuses[0].poi }
+      : { ...base, reason: '高德候选未唯一匹配指定院区' }
+  }
   if (requireUniqueWithoutRegion && !region && ranked.filter(item => item.score === 100).length !== 1) {
     return { ...base, reason: '原文地区空缺，高德未返回唯一的同名机构' }
   }
-  const campusSpecified = /院区|分院|医院[东西南北]区$/u.test(target.name) || /芳村/u.test(target.name)
   const exact = ranked.find(item => item.score === 100)
-  if (campusSpecified) {
-    // An explicit campus cannot fall back to a different site or the hospital's head office.
-    const bracket = target.name.match(/（([^）]*(?:院区|分院|芳村)[^）]*)）/u)?.[1]
-    const tail = wanted.slice(wanted.lastIndexOf('医院') + 2)
-    const campus = normalizedName(bracket ?? tail).replace(/院区|分院|总院/gu, '')
-    const chosen = exact ?? ranked.find(item => campus && normalizedName(item.poi.name).includes(campus))
-    return chosen ? { ...base, status: 'geocoded', reason: '匹配原文指定院区', selection_rule: 'explicit-campus', chosen: chosen.poi } : { ...base, reason: '高德候选未匹配到指定院区' }
-  }
   // 名字与原文完全相等时直接采用：这是最强证据，不能被「带院本部字样的子科室」抢走
   // （「兰州大学第二医院本部生殖医学中心」里也有「院本部」，但它是一栋生殖中心，不是医院本体）。
   const primary = ranked.find(item => item.score >= 85 && /(?:总院|院本部|主院区)$/u.test(normalizedName(item.poi.name)))

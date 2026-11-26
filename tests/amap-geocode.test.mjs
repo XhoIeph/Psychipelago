@@ -94,3 +94,40 @@ test('linking changes only hospital_id, and rejects incomplete or stale source m
   assert.deepEqual(hospitals[0].official_sources, [])
   assert.equal(hospitals[0].trauma_service.cptsd_assessment, 'unknown')
 })
+
+test('an explicit campus cannot resolve solely from the base institution or the same campus suffix', () => {
+  const source = { ...target, name: '示例医院（东院区）' }
+  const main = { ...poi, name: '示例医院' }
+  const other = { ...poi, id: 'OTHER', name: '示例医院附属医院(东院区)' }
+  const campus = { ...poi, id: 'EAST', name: '示例医院(东院区)' }
+  assert.equal(selectPoi(source, [main, other]).chosen, undefined)
+  assert.equal(selectPoi(source, [main, other, campus]).chosen.id, 'EAST')
+  assert.equal(selectPoi(source, [campus, { ...campus, id: 'EAST2' }]).chosen, undefined)
+})
+
+test('a reviewed campus label survives aliases and keeps separate POI identities', () => {
+  const main = { ...poi, id: 'NORTH', name: '示例医院' }
+  const east = { ...poi, id: 'EAST', name: '示例医院东院区', address: '示例东路1号', location: '116.4,40.1' }
+  const result = selectPoi({ ...target, name: '示例医院' }, [main])
+  const hospitals = hospitalsFromRun({ generated_at: '2026-11-26T00:00:00Z', results: [result,
+    { ...result, name: '示例医院（北院区）', campus: '北院区' },
+    selectPoi({ ...target, name: '示例医院（东院区）' }, [east]),
+  ] })
+  assert.deepEqual(hospitals.map(hospital => [hospital.id, hospital.name]), [
+    ['kdocs-amap-north', '示例医院（北院区）'], ['kdocs-amap-east', east.name],
+  ])
+})
+
+test('distinct named institutions are not treated as aliases', () => {
+  const exact = { ...poi, name: '示例医院(东院区)' }
+  assert.equal(selectPoi({ ...target, name: '示例医院（东院区）/另一家医院' }, [exact]).status, 'ambiguous')
+  assert.equal(selectPoi({ ...target, name: '示例医院、另一家医院等多点执业' }, [exact]).status, 'ambiguous')
+  const alias = { ...poi, name: '河南医药大学第二附属医院' }
+  assert.equal(selectPoi({ ...target, name: '河南省精神卫生中心/新乡医学院第二附属医院' }, [alias]).chosen.id, alias.id)
+})
+
+test('a Qingdao hospital name without a campus is not assigned to a campus from POI order', () => {
+  const source = { ...target, name: '山东省精卫（青岛）', region: '山东' }
+  const gaoxin = { ...poi, name: '青岛市精神卫生中心高新院区', pname: '山东省', cityname: '青岛市' }
+  assert.equal(selectPoi(source, [gaoxin]).status, 'ambiguous')
+})

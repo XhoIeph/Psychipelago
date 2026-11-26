@@ -106,3 +106,10 @@ test('只由医院、诊室和医生名构成的自动名录引文可单独识�
   assert.equal(isDirectoryOnlyReport({ ...directory, evidence_quote: `${directory.evidence_quote} · 接诊细致` }), false)
   assert.equal(isDirectoryOnlyReport({ ...directory, doctor_name_raw: undefined }), false)
 })
+
+test('医院简称能匹配正式院名，市北仍可按原院区名查找', () => {
+  const shandong = hospitals.find(item => item.name === '山东大学附属精神卫生中心')
+  assert.ok(shandong && matchesSearch(shandong.aliases.join(' '), '山东省精卫'))
+  const qingdao = hospitals.find(item => item.name === '青岛市精神卫生中心（市北院区）')
+  assert.ok(qingdao && matchesSearch(qingdao.name, '青岛精卫市北'))
+})

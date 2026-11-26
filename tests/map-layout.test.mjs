@@ -186,7 +186,7 @@ test('合成机构跨级、反向缩放保持原坐标，覆盖单点与聚合',
 test('当前有效机构跨级、反向缩放保持原坐标，成员不遗漏', () => {
   const source = JSON.parse(readFileSync(new URL('../data/curated/hospitals.json', import.meta.url), 'utf8'))
   const reports = JSON.parse(readFileSync(new URL('../data/curated/reports.json', import.meta.url), 'utf8'))
-  const locations = JSON.parse(readFileSync(new URL('../data/evidence/locations/amap-2026-11-21.json', import.meta.url), 'utf8'))
+  const locations = JSON.parse(readFileSync(new URL('../data/generated/locations.json', import.meta.url), 'utf8'))
   const hospitals = mapHospitalInputs(source.items, reports.items, locations.results)
   assertNodeCoordinates(hospitals)
 })

@@ -6,7 +6,8 @@ import test from 'node:test'
 import { evaluationComments, reportsFromDocument, reportsWithLocations, doctorsWithLocations, specialtiesFromNote, sourceRows, SOURCE_CAPTURE } from '../scripts/import-kdocs.ts'
 import { doctorsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import { LOCATION_EVIDENCE } from '../scripts/lib/amap.ts'
-import { hospitalsFromRun } from '../scripts/geocode-hospitals.ts'
+import { hospitalsFromRun, withManualCoordinates } from '../scripts/lib/hospitals.ts'
+import { MANUAL_LOCATION_FILE, readManualLocations } from '../scripts/lib/locations.ts'
 import { applyStoredOverrides } from '../scripts/lib/overrides.ts'
 
 const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'))
@@ -181,14 +182,14 @@ test('机构清单等于本轮定位依据加覆盖层，未定位的线索保�
   assert.deepEqual(
     readJson('data/curated/hospitals.json').items,
     existsSync(LOCATION_EVIDENCE)
-      ? applyStoredOverrides('hospitals', hospitalsFromRun(readJson(LOCATION_EVIDENCE)))
+      ? withManualCoordinates(applyStoredOverrides('hospitals', hospitalsFromRun(readJson(LOCATION_EVIDENCE))), readManualLocations())
       : [],
   )
   // 机构数从两个互相独立的来源对账：左边是烘焙产物（curated/hospitals.json），
   // 右边是定位依据里的机构数减去覆盖层的 remove 墓碑（各自读各自的文件）。
   // 两边读同一个派生值就成了自证，所以这里刻意不拿 applyStoredOverrides 的结果当基准。
   const evidenceHospitals = existsSync(LOCATION_EVIDENCE) ? hospitalsFromRun(readJson(LOCATION_EVIDENCE)) : []
-  assert.equal(evidenceHospitals.length, 158)
+  assert.equal(evidenceHospitals.length, 159)
   const removedHospitals = existsSync('data/overrides/hospitals')
     ? readdirSync('data/overrides/hospitals')
       .filter((file) => file.endsWith('.json'))
@@ -207,7 +208,7 @@ test('机构清单等于本轮定位依据加覆盖层，未定位的线索保�
     evidenceHospitals.length - removedHospitals.length,
   )
   const unlocated = reports.filter((report) => !report.hospital_id)
-  assert.equal(unlocated.length, 15)
+  assert.equal(unlocated.length, 14)
   assert.ok(unlocated.every((report) => report.hospital_name_raw && report.status === 'unlinked'))
   assert.equal(readJson('data/curated/provinces.json').items.length, 34)
   assert.equal(readJson('data/curated/disorders.json').items.length, 7)
@@ -253,10 +254,16 @@ test('高德用机构主体或指定院区，多点和未找到的机构不挂�
   assert.deepEqual(results.filter(item => item.status === 'not_found').map(item => item.name).sort(),
     ['天津市公安局安康医院', '杭州桐庐怡乐脑科医院'].sort())
   const hospitals = readJson('data/curated/hospitals.json').items
+  const campuses = new Map(results.filter(item => item.chosen && item.campus).map(item => [item.chosen.id, item.campus]))
   for (const item of results.filter(item => item.chosen && item.selection_rule !== 'institution-building')) {
     const hospital = hospitals.find(hospital => hospital.id === `kdocs-amap-${item.chosen.id.toLowerCase()}`)
-    assert.equal(hospital?.name, item.chosen.name)
+    const campus = campuses.get(item.chosen.id)
+    assert.equal(hospital?.name, campus && !item.chosen.name.includes(campus) ? item.chosen.name + '（' + campus + '）' : item.chosen.name)
   }
+  assert.equal(named('云南 桂林医学院附属医院')[0].chosen.id, 'B03050261F')
+  const guilin = hospitals.find(hospital => hospital.id === 'kdocs-amap-b03050261f')
+  assert.equal(guilin?.province, '广西壮族自治区')
+  assert.equal(sourceReports.find(report => report.hospital_id === guilin.id)?.hospital_region, '云南')
 })
 
 test('常规构建与校验命令不再调用退役的采集入口', () => {
@@ -274,9 +281,10 @@ test('校验器拒绝私人标识与改动过的引文，并拒绝结构不成�
     if (existsSync('data/overrides')) cpSync('data/overrides', resolve(fixture, 'data/overrides'), { recursive: true })
     mkdirSync(resolve(fixture, SOURCE_CAPTURE, '..'), { recursive: true })
     cpSync(SOURCE_CAPTURE, resolve(fixture, SOURCE_CAPTURE))
-    if (existsSync(LOCATION_EVIDENCE)) {
-      mkdirSync(resolve(fixture, LOCATION_EVIDENCE, '..'), { recursive: true })
-      cpSync(LOCATION_EVIDENCE, resolve(fixture, LOCATION_EVIDENCE))
+    for (const path of [LOCATION_EVIDENCE, MANUAL_LOCATION_FILE]) {
+      if (!existsSync(path)) continue
+      mkdirSync(resolve(fixture, path, '..'), { recursive: true })
+      cpSync(path, resolve(fixture, path))
     }
     const file = readJson('data/curated/reports.json')
     file.items[0].source_url = 'https://www.xiaohongshu.com/explore/69f19ded0000000036003cb5'

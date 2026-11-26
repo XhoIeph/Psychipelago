@@ -264,7 +264,7 @@
       "region": "山东",
       "matched_name": "青岛精神卫生中心市北院区",
       "status": "geocoded",
-      "reason": "匹配原文指定院区",
+      "reason": "原文明示市北院区，高德院名省略院区，南京路299号与青岛政务网院址一致",
       "candidates": [
         {
           "id": "B02140828V",
@@ -287,7 +287,8 @@
         "cityname": "青岛市",
         "adcode": "",
         "typecode": "090210|090100"
-      }
+      },
+      "campus": "市北院区"
     },
     {
       "name": "兰州大学第二医院",
@@ -4564,7 +4565,7 @@
       ],
       "region": "山东",
       "status": "ambiguous",
-      "reason": "原文的省级名称与青岛市机构不一致，不能继续按旧候选挂高新院区",
+      "reason": "已确认青岛市精神卫生中心有市北和高新院区，原文未指明这两条名录对应的出诊院区",
       "candidates": []
     },
     {
@@ -5711,9 +5712,32 @@
         "kdocs-s3-r110"
       ],
       "region": "云南",
-      "status": "ambiguous",
-      "reason": "原文省份为云南，高德医院在广西桂林，待确认原文地区",
-      "candidates": []
+      "status": "geocoded",
+      "reason": "原文机构名与更名后的高德机构匹配，取乐群路15号乐群院区，原文地区照存",
+      "candidates": [
+        {
+          "id": "B03050261F",
+          "name": "桂林医科大学第一附属医院(乐群院区)",
+          "address": "乐群路15号",
+          "location": "110.291982,25.281478",
+          "pname": "广西壮族自治区",
+          "cityname": "桂林市",
+          "adcode": "",
+          "typecode": "090101"
+        }
+      ],
+      "matched_name": "桂林医科大学第一附属医院乐群院区",
+      "selection_rule": "explicit-campus",
+      "chosen": {
+        "id": "B03050261F",
+        "name": "桂林医科大学第一附属医院(乐群院区)",
+        "address": "乐群路15号",
+        "location": "110.291982,25.281478",
+        "pname": "广西壮族自治区",
+        "cityname": "桂林市",
+        "adcode": "",
+        "typecode": "090101"
+      }
     },
     {
       "name": "四川大学华西厦门医院",

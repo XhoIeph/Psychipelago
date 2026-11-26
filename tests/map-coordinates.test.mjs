@@ -3,14 +3,13 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { mapHospitalInputs, wgs84ToGcj02, gcjCoordinateTree } from '../lib/map-coordinates.ts'
 import { gcj02ToWgs84 } from '../scripts/geocode-hospitals.ts'
-import { LOCATION_EVIDENCE } from '../scripts/lib/amap.ts'
 import { MAP_MAX_ZOOM, MapPoint, project, unproject, fitMapBounds } from '../lib/map-camera.ts'
 import { constrainChinaCenter } from '../lib/map-sidebar.ts'
 
 const read = path => JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'))
 const hospitals = read('../data/curated/hospitals.json').items
 const reports = read('../data/curated/reports.json').items.filter(report => report.status === 'published')
-const saved = read(`../${LOCATION_EVIDENCE}`).results
+const saved = read('../data/generated/locations.json').results
 
 test('每个有坐标的机构在地图上恰好一个点，点的线索数总和等于库里的已发布关联数', () => {
   const before = structuredClone(hospitals)
@@ -21,7 +20,7 @@ test('每个有坐标的机构在地图上恰好一个点，点的线索数总�
   const publishedWithHospital = reports.filter(report => report.hospital_id).length
   assert.equal(points.reduce((sum, point) => sum + point.leads, 0), publishedWithHospital)
   for (const point of points) {
-    const source = saved.find(result => result.status === 'geocoded' && `kdocs-amap-${result.chosen.id.toLowerCase()}` === point.id)
+    const source = saved.find(result => result.status === 'geocoded' && result.hospital_id === point.id)
     assert.deepEqual([point.lng, point.lat], source.chosen.location.split(',').map(Number))
   }
   assert.deepEqual(hospitals, before)
@@ -81,4 +80,14 @@ test('小范围构图不再被旧12级截断，仍遵守统一20级上限', () =
   const frame=fitMapBounds([{lat:40.8168,lng:111.69},{lat:40.8168001,lng:111.6900001}],new MapPoint(1280,720),380,[0,0,0,0])
   assert.equal(frame.zoom,MAP_MAX_ZOOM)
   assert.equal(frame.zoom,20)
+})
+
+test('青岛市北与高新各有高德原始坐标，未注明院区的名录不挂到高新', () => {
+  const points = mapHospitalInputs(hospitals, reports, saved)
+  const north = points.find(point => point.name === '青岛市精神卫生中心（市北院区）')
+  const tech = points.find(point => point.name === '青岛市精神卫生中心高新院区')
+  assert.match(north.address, /南京路299号/u)
+  assert.match(tech.address, /振和路10号/u)
+  assert.notDeepEqual([tech.lng, tech.lat], [north.lng, north.lat])
+  assert.equal(tech.leads, 0)
 })

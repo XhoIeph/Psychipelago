@@ -1,15 +1,14 @@
 import type { Hospital, Report } from './schema.ts'
 import type { MapHospital } from '../components/map/types.ts'
 
-type SavedLocation = { status: string; chosen?: { id: string; location: string } }
+type SavedLocation = { hospital_id: string; status: string; chosen?: { location: string } }
 export type CoordinateTree = number[] | CoordinateTree[]
 
 export function mapHospitalInputs(hospitals: Hospital[], reports: Report[], locations: SavedLocation[]): MapHospital[] {
   const original = new Map<string, [number, number]>()
   for (const result of locations) {
     if (result.status !== 'geocoded' || !result.chosen) continue
-    const id = `kdocs-amap-${result.chosen.id.toLowerCase()}`
-    if (!original.has(id)) original.set(id, result.chosen.location.split(',').map(Number) as [number, number])
+    original.set(result.hospital_id, result.chosen.location.split(',').map(Number) as [number, number])
   }
   return hospitals.filter(hospital => hospital.coordinates).map(hospital => {
     const coordinate = original.get(hospital.id)
