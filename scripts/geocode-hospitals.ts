@@ -9,7 +9,7 @@ import { resolve } from 'node:path'
 import { doctorsFileSchema, hospitalsFileSchema, reportsFileSchema } from '../lib/schema.ts'
 import type { Hospital, Report } from '../lib/schema.ts'
 import { acceptsManualCoordinate, hospitalsFromRun, withManualCoordinates } from './lib/hospitals.ts'
-import { doctorsWithLocations, hospitalsWithOverrides, markUnlinked, reportsFromDocument, sourceHospitalNames, SOURCE_BATCH, SOURCE_CAPTURE } from './import-kdocs.ts'
+import { doctorsFromDocument, hospitalsWithOverrides, markUnlinked, reportsFromDocument, sourceHospitalNames, SOURCE_BATCH, SOURCE_CAPTURE } from './import-kdocs.ts'
 import type { SourceDocument } from './import-kdocs.ts'
 import { LOCATION_EVIDENCE, locationTargets, searchName, searchCity, selectPoi, searchAmap, linkLocationReports } from './lib/amap.ts'
 import type { LocationRun, Poi } from './lib/amap.ts'
@@ -42,7 +42,7 @@ export function applyRun(reports: Report[], run: LocationRun, document: SourceDo
   const updated_at = run.generated_at.slice(0, 10)
   const hospitalFile = hospitalsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: hospitals })
   const reportFile = reportsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: applyStoredOverrides('reports', linked) })
-  const doctorFile = doctorsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: applyStoredOverrides('doctors', doctorsWithLocations(document, linked)) })
+  const doctorFile = doctorsFileSchema.parse({ schema_version: '1.0.0', updated_at, items: applyStoredOverrides('doctors', doctorsFromDocument(document, linked, run)) })
   // Keep public provenance minimal; the full candidate inventory stays in ignored raw storage.
   writeJson(LOCATION_EVIDENCE, { ...run, provider: 'amap', endpoint: 'https://restapi.amap.com/v3/place/text', source_crs: 'GCJ-02', stored_crs: 'WGS84', conversion: 'three-iteration approximate inverse', results: run.results.map(result => ({ ...result, candidates: result.chosen ? [result.chosen] : [] })) })
   writeJson(CURATED_FILES.hospitals, hospitalFile)
@@ -53,6 +53,7 @@ export function applyRun(reports: Report[], run: LocationRun, document: SourceDo
 
 async function main() {
   const document = readJson<SourceDocument>(SOURCE_CAPTURE)
+  const requireUniqueWithoutRegion = document.region_mode === 'explicit'
   const reports = reportsFromDocument(document)
   const args = process.argv.slice(2)
   if (args.includes('--apply')) {
@@ -61,11 +62,11 @@ async function main() {
     const candidates = run.results.flatMap(result => result.candidates)
     run.results = run.results.map(result => {
       if (result.status === 'not_queried') return result
-      const selected = selectPoi(result, result.candidates)
+      const selected = selectPoi(result, result.candidates, requireUniqueWithoutRegion)
       if (selected.chosen) return selected
       // Identical POIs already returned for another current-source name do not need another request.
       const matching = candidates.filter(poi => poi.name.replace(/[市（）()\s]/gu, '') === searchName(result.name).replace(/[市（）()\s]/gu, ''))
-      return matching.length ? selectPoi(result, matching) : selected
+      return matching.length ? selectPoi(result, matching, requireUniqueWithoutRegion) : selected
     })
     applyRun(reports, run, document)
     return
@@ -130,7 +131,7 @@ async function main() {
   const targets = locationTargets(reports, sourceHospitalNames(document))
   const run: LocationRun = { source_batch: SOURCE_BATCH, generated_at: new Date().toISOString(), requests: 0, requests_total: 0,
     results: targets.map(target => ({ ...target, status: 'not_queried', reason: '尚未查询', candidates: [] })) }
-  const rawPath = 'data/raw/amap-2026-11-09.json'
+  const rawPath = 'data/raw/amap-2026-11-21.json'
   if (args.includes('--missing') && existsSync(LOCATION_EVIDENCE)) {
     const previous = readJson<LocationRun>(LOCATION_EVIDENCE)
     if (previous.source_batch !== SOURCE_BATCH) throw new Error('已有定位不属于当前批次，须重新全量定位')
@@ -197,7 +198,7 @@ async function main() {
           continue
         }
       }
-      run.results[index] = selectPoi(target, reply.pois)
+      run.results[index] = selectPoi(target, reply.pois, requireUniqueWithoutRegion)
       const result = run.results[index]
       console.log(`${index + 1}/${targets.length} ${result.status} ${target.name} -> ${result.chosen?.name ?? result.reason} (${reply.pois.length} 候选)`)
       writeJson(rawPath, run)

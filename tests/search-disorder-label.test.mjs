@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { matchesSearch, normalizeSearch } from '../lib/search.ts'
+import { matchesSearch, normalizeSearch, searchRelevance } from '../lib/search.ts'
+import { isDirectoryOnlyReport } from '../lib/report-directory.ts'
 import { DISORDER_DISPLAY_LABELS, DISORDER_FILTER_GROUPS } from '../lib/disorder-labels.ts'
 import { readFileSync } from 'node:fs'
 
@@ -75,4 +76,33 @@ test('原来的中文全称与裸 id 仍然命中', () => {
   assert.ok(matchesSearch('cptsd', DISORDER_DISPLAY_LABELS.cptsd))
   assert.ok(matchesSearch('osdd did', DISORDER_DISPLAY_LABELS.osdd))
   assert.ok(matchesSearch('边缘型人格障碍', 'bpd'))
+})
+
+test('中英文关键词无空格或有空格都能拆分匹配', () => {
+  const text = '喀什地区第一人民医院 · 李健博 · 精神心理科'
+  assert.ok(matchesSearch(text, '李健博喀什'))
+  assert.ok(matchesSearch(text, '李健博 喀什'))
+  assert.ok(matchesSearch('北京 · 心理科', '北京心理'))
+  assert.ok(matchesSearch('北京安定医院', '北京安定'))
+  assert.equal(matchesSearch(text, '李健博北京'), false)
+})
+
+test('搜索排序优先姓名或机构直接命中，而不是只命中线索原文', () => {
+  const doctorName = searchRelevance('李健博', ['李健博', '喀什地区第一人民医院', '线索原文'])
+  const quoteOnly = searchRelevance('李健博', ['其他姓名', '喀什地区第一人民医院', '喀什地区第一人民医院 · 李健博'])
+  const hospitalName = searchRelevance('北京安定医院', ['北京安定医院', '北京', '线索原文'])
+  assert.ok(doctorName < quoteOnly)
+  assert.equal(hospitalName, 0)
+})
+
+test('只由医院、诊室和医生名构成的自动名录引文可单独识别', () => {
+  const directory = {
+    hospital_name_raw: '喀什地区第一人民医院',
+    department: '精神心理科',
+    doctor_name_raw: '李健博',
+    evidence_quote: '喀什地区第一人民医院 · 精神心理科 · 李健博',
+  }
+  assert.equal(isDirectoryOnlyReport(directory), true)
+  assert.equal(isDirectoryOnlyReport({ ...directory, evidence_quote: `${directory.evidence_quote} · 接诊细致` }), false)
+  assert.equal(isDirectoryOnlyReport({ ...directory, doctor_name_raw: undefined }), false)
 })

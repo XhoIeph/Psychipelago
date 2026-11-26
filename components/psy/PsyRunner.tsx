@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, Info } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
@@ -102,6 +102,10 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
   const [pageError, setPageError] = useState<string | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [consentChecked, setConsentChecked] = useState(false)
+  const consentRef = useRef<HTMLDialogElement>(null)
+  const consentAccepted = useRef(false)
+  const pendingDraft = useRef<Draft | undefined>(undefined)
   const topRef = useRef<HTMLDivElement | null>(null)
   const stageRef = useRef<HTMLDivElement | null>(null)
   const pageDirectionRef = useRef(1)
@@ -311,6 +315,17 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
 
   const genderMissing = item.requiresGender && gender === null
 
+  const requestStart = (draft?: Draft) => {
+    if (loading || genderMissing) return
+    if (consentAccepted.current) {
+      void start(draft)
+      return
+    }
+    pendingDraft.current = draft
+    setConsentChecked(false)
+    consentRef.current?.showModal()
+  }
+
   return (
     <div className="tc-psy-run" ref={topRef}>
       <nav className="tc-psy-crumb" aria-label="位置">
@@ -319,6 +334,34 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
           <span>量表库</span>
         </Link>
       </nav>
+
+      <dialog ref={consentRef} className="tc-psy-consent-dialog" aria-labelledby="psy-consent-title" aria-modal="true">
+        <header className="tc-psy-consent-head">
+          <Info size={22} aria-hidden="true" />
+          <h2 id="psy-consent-title">测评前必读与免责声明</h2>
+        </header>
+        <ul className="tc-psy-consent-list">
+          <li><strong>测评用途</strong><p>量表可用于心理健康科普和自我评估，结果不构成医学诊断或治疗建议。需要诊断或治疗时，请咨询专业人员。</p></li>
+          <li><strong>怎么看结果</strong><p>作答时的状态和环境会影响结果。请结合题目所问的时间范围理解分数，不必用一次结果给自己贴标签。</p></li>
+          <li><strong>隐私保护</strong><p>答案、草稿和结果保存在当前浏览器的本地存储中，方便续答和回看。作答不会上传到群岛服务器。</p></li>
+        </ul>
+        <form className="tc-psy-consent-form" onSubmit={(event) => {
+          event.preventDefault()
+          if (!consentChecked) return
+          consentAccepted.current = true
+          consentRef.current?.close()
+          void start(pendingDraft.current)
+        }}>
+          <label className="tc-psy-consent-confirm">
+            <input type="checkbox" checked={consentChecked} onChange={(event) => setConsentChecked(event.target.checked)} />
+            <span>我已阅读并理解以上说明，自愿开始测评。</span>
+          </label>
+          <div className="tc-psy-consent-actions">
+            <button type="button" className="tc-button tc-button--ghost" onClick={() => consentRef.current?.close()}>暂不开始</button>
+            <button type="submit" className="tc-button tc-button--active" disabled={!consentChecked}>确认并作答</button>
+          </div>
+        </form>
+      </dialog>
 
       <div ref={stageRef}>
       {phase === 'intro' && (
@@ -379,7 +422,7 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
             <div className="tc-psy-banner" role="status">
               <p>上次作答没提交，已答 {Object.keys(draftNotice.selected ?? draftNotice.answers ?? {}).length} 题。</p>
               <div className="tc-psy-banner-actions">
-                <button type="button" className="tc-button tc-button--active" onClick={() => start(draftNotice)}>
+                <button type="button" className="tc-button tc-button--active" disabled={loading || genderMissing} onClick={() => requestStart(draftNotice)}>
                   继续上次
                 </button>
                 <button
@@ -411,7 +454,7 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
               type="button"
               className="tc-button tc-button--active"
               disabled={loading || genderMissing}
-              onClick={() => start(draftNotice ?? undefined)}
+              onClick={() => requestStart(draftNotice ?? undefined)}
             >
               {loading ? '加载中…' : '开始作答'}
             </button>
@@ -457,7 +500,8 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
 
           <ol className="tc-psy-questions">
             {pageQuestions.map((question, index) => {
-              const options = question.options?.length ? question.options : assessment?.defaultOptions ?? []
+              const options = optionList(question, assessment)
+              const fitsScale = options.every(option => option.label.length <= 10)
               const current = selected[question.id]
               const fieldName = `q-${question.id}`
               const displayNumber = question.displayNumber ?? question.id
@@ -470,7 +514,8 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
                     <span className="tc-psy-question-no">{displayNumber}.</span>
                     {question.text}
                   </p>
-                  <div className="tc-psy-options" role="radiogroup" aria-label={`第 ${displayNumber} 题`}>
+                  <div className="tc-psy-options" role="radiogroup" aria-label={`第 ${displayNumber} 题`}
+                    data-scale={fitsScale ? (options.length < 7 ? 'compact' : 'wide') : undefined}>
                     {options.map((option, index) => (
                       <label
                         key={index}
@@ -484,10 +529,7 @@ export default function PsyRunner({ item }: { item: PsyCatalogueItem }) {
                           checked={current === index}
                           onChange={() => choose(question.id, index, option.value)}
                         />
-                        <span className="tc-psy-radio-body">
-                          <span className="tc-psy-radio-label">{option.label}</span>
-                          {option.desc && <span className="tc-psy-radio-desc">{option.desc}</span>}
-                        </span>
+                        <span className="tc-psy-radio-label">{option.label}</span>
                       </label>
                     ))}
                   </div>

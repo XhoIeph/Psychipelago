@@ -1,22 +1,34 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowRight, ArrowUpRight } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Mail } from 'lucide-react'
 import { TransitionLink } from '@/components/PageTransition'
 import { HomeEmblem } from '@/components/home/HomeEmblem'
 import { HomeMotion } from '@/components/home/HomeMotion'
 import { HomeWater } from '@/components/home/HomeWater'
 import { IslandGraph } from '@/components/home/IslandGraph'
+import { SITE_DESCRIPTION, SITE_NAME, SITE_ORIGIN } from '@/lib/site'
 
 const basePath = (process.env.NEXT_PUBLIC_BASE_PATH ?? '').replace(/\/+$/, '')
 
 export const metadata: Metadata = {
-  title: '群岛 Psychipelago',
-  description: '浏览解离、创伤与人格障碍相关的就诊经验、心理自评与社群资源。',
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    locale: 'zh_CN',
+    url: '/',
+    siteName: SITE_NAME,
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    images: [{ url: '/brand/psychipelago-avatar.webp', width: 480, height: 480, alt: SITE_NAME }],
+  },
 }
+
+const website = { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE_NAME, alternateName: '群岛', url: SITE_ORIGIN }
 
 export default function HomePage() {
   return (
     <div className="tc-home">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(website) }} />
       <HomeMotion>
         <section className="tc-home-masthead" aria-labelledby="home-title">
           <HomeWater />
@@ -30,7 +42,7 @@ export default function HomePage() {
                 <figcaption>— 莱昂纳德·科恩<cite>《颂歌》</cite></figcaption>
               </figure>
               <div className="tc-home-doors">
-                <TransitionLink className="tc-button tc-button--active tc-home-door" href="/map/">
+                <TransitionLink className="tc-button tc-button--active tc-home-door" href="/map/" prefetch={false}>
                   就诊地图 <ArrowRight size={18} aria-hidden="true" />
                 </TransitionLink>
                 <Link className="tc-button tc-home-door" href="/psy/">量表测试</Link>
@@ -76,23 +88,16 @@ export default function HomePage() {
           <section className="tc-home-section tc-home-section--community" aria-labelledby="home-community-title" data-reveal>
             <header className="tc-home-section-head">
               <h2 id="home-community-title">社群合作</h2>
-              <p>群岛希望联结更多合作同伴，提供更好的帮助</p>
+              <p>群岛希望与更多邻岛联结合作，以此提供更好的帮助</p>
             </header>
             <div className="tc-home-community">
-              <article className="tc-home-partner">
-                <img className="tc-home-avatar" src={`${basePath}/brand/psychipelago-avatar.webp`} alt="" width={480} height={480} loading="lazy" decoding="async" />
-                <div className="tc-home-partner-body">
-                  <h3>群岛 Psychipelago</h3>
-                  <p>公众号</p>
-                </div>
-              </article>
-              <article className="tc-home-partner">
+              <a className="tc-home-partner" href="https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzkzMDk3Mjk3MA==#wechat_redirect" aria-labelledby="home-cc-title" aria-describedby="home-cc-description">
                 <img className="tc-home-avatar" src={`${basePath}/brand/cc-cptsd-avatar.jpg`} alt="" width={500} height={500} loading="lazy" decoding="async" />
                 <div className="tc-home-partner-body">
-                  <h3>CC的<wbr /><span className="tc-home-partner-name">C-PTSD安全岛</span></h3>
-                  <p>公众号</p>
+                  <h3 id="home-cc-title">CC的<wbr /><span className="tc-home-partner-name">C-PTSD安全岛 <ArrowUpRight className="tc-home-partner-arrow" size={15} aria-hidden="true" /></span></h3>
+                  <p id="home-cc-description">公众号/社群</p>
                 </div>
-              </article>
+              </a>
               <a className="tc-home-partner" href="https://psymetra.underlined.ink/" aria-labelledby="home-psymetra-title" aria-describedby="home-psymetra-description">
                 <img className="tc-home-avatar tc-home-avatar--psymetra" src={`${basePath}/brand/psymetra-logo.png`} alt="" width={190} height={190} loading="lazy" decoding="async" />
                 <div className="tc-home-partner-body">
@@ -106,9 +111,33 @@ export default function HomePage() {
           <section className="tc-home-section" aria-labelledby="home-feedback-title" data-reveal>
             <header className="tc-home-section-head">
               <h2 id="home-feedback-title">联系我们</h2>
-              <p>这里将收集信息纠错、资源补充和使用反馈。</p>
+              <p>群岛真诚欢迎每一位登岛拜访的朋友</p>
             </header>
-            <p className="tc-home-feedback">反馈入口筹备中</p>
+            <dl className="tc-home-contacts">
+              <div>
+                <dt><Mail size={22} aria-hidden="true" />邮箱</dt>
+                <dd><a href="mailto:psychipelago@163.com">psychipelago@163.com</a></dd>
+              </div>
+              <div>
+                <dt><img className="tc-github-mark" src={`${basePath}/brand/github.svg`} alt="" width={22} height={22} />GitHub</dt>
+                <dd><a href="https://github.com/XhoIeph/Psychipelago">XhoIeph/Psychipelago</a></dd>
+              </div>
+              <div>
+                <dt><img src={`${basePath}/brand/xiaohongshu.svg`} alt="" width={22} height={22} />小红书</dt>
+                <dd><a href="https://www.xiaohongshu.com/user/profile/684922bb000000001d0178b7">群岛 Psychipelago</a></dd>
+              </div>
+              <div>
+                <dt><img className="tc-home-wechat-mark" src={`${basePath}/brand/wechat.svg`} alt="" width={22} height={22} />微信公众号</dt>
+                <dd>
+                  <details className="tc-home-wechat">
+                    <summary>群岛 Psychipelago</summary>
+                    <div className="tc-home-wechat-qr">
+                      <img src={`${basePath}/brand/psychipelago-wechat.jpg`} alt="群岛 Psychipelago 微信公众号二维码" width={430} height={430} loading="lazy" decoding="async" />
+                    </div>
+                  </details>
+                </dd>
+              </div>
+            </dl>
           </section>
         </div>
       </HomeMotion>

@@ -3,13 +3,14 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { mapHospitalInputs, wgs84ToGcj02, gcjCoordinateTree } from '../lib/map-coordinates.ts'
 import { gcj02ToWgs84 } from '../scripts/geocode-hospitals.ts'
+import { LOCATION_EVIDENCE } from '../scripts/lib/amap.ts'
 import { MAP_MAX_ZOOM, MapPoint, project, unproject, fitMapBounds } from '../lib/map-camera.ts'
 import { constrainChinaCenter } from '../lib/map-sidebar.ts'
 
 const read = path => JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'))
 const hospitals = read('../data/curated/hospitals.json').items
 const reports = read('../data/curated/reports.json').items.filter(report => report.status === 'published')
-const saved = read('../data/evidence/locations/amap-2026-11-09.json').results
+const saved = read(`../${LOCATION_EVIDENCE}`).results
 
 test('每个有坐标的机构在地图上恰好一个点，点的线索数总和等于库里的已发布关联数', () => {
   const before = structuredClone(hospitals)

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-11-19T22:07:15.190Z",
+  "generated_at": "2026-11-26T04:29:22.525Z",
   "provider": "amap",
   "source_crs": "GCJ-02",
   "stored_crs": "GCJ-02",
@@ -150,6 +150,22 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b00140uljc",
+      "name": "广州白云心理医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B00140ULJC",
+        "name": "白云心理医院",
+        "address": "白云大道北1722号广州白云心理医院正门",
+        "location": "113.321716,23.255006",
+        "pname": "广东省",
+        "cityname": "广州市",
+        "adcode": "",
+        "typecode": "090200"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b00140w7rp",
       "name": "广东省精神卫生中心",
       "status": "geocoded",
@@ -214,6 +230,22 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b00155kbtt",
+      "name": "上海市第一人民医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B00155KBTT",
+        "name": "上海市第一人民医院北部",
+        "address": "武进路85-86号",
+        "location": "121.489433,31.253401",
+        "pname": "上海市",
+        "cityname": "上海市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b00155keix",
       "name": "上海新华医院",
       "status": "geocoded",
@@ -223,6 +255,22 @@
         "name": "上海交通大学医学院附属新华医院",
         "address": "控江路1665号(江浦路地铁站2号口步行120米)",
         "location": "121.517681,31.273130",
+        "pname": "上海市",
+        "cityname": "上海市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b00155knmh",
+      "name": "上海市东方医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B00155KNMH",
+        "name": "同济大学附属东方医院(总院)",
+        "address": "即墨路150号",
+        "location": "121.512287,31.237613",
         "pname": "上海市",
         "cityname": "上海市",
         "adcode": "",
@@ -241,6 +289,38 @@
         "location": "121.442932,31.216111",
         "pname": "上海市",
         "cityname": "上海市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b0016050ff",
+      "name": "天津市天津医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0016050FF",
+        "name": "天津市天津医院(河西院区)",
+        "address": "解放南路406号",
+        "location": "117.230698,39.093072",
+        "pname": "天津市",
+        "cityname": "天津市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b00160dw6j",
+      "name": "天津医科大学总医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B00160DW6J",
+        "name": "天津医科大学总医院",
+        "address": "鞍山道154号",
+        "location": "117.184617,39.117383",
+        "pname": "天津市",
+        "cityname": "天津市",
         "adcode": "",
         "typecode": "090101"
       }
@@ -358,6 +438,38 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b00180bp9s",
+      "name": "辽宁省人民医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B00180BP9S",
+        "name": "辽宁省人民医院",
+        "address": "文艺路33号",
+        "location": "123.453397,41.776003",
+        "pname": "辽宁省",
+        "cityname": "沈阳市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b00180cwqo",
+      "name": "中国医科大学附属第一医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B00180CWQO",
+        "name": "中国医科大学附属第一医院",
+        "address": "南京北街155号",
+        "location": "123.411350,41.795344",
+        "pname": "辽宁省",
+        "cityname": "沈阳市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b00190b8c9",
       "name": "南京脑科医院",
       "status": "geocoded",
@@ -371,6 +483,22 @@
         "cityname": "南京市",
         "adcode": "",
         "typecode": "090208"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b001b06qsc",
+      "name": "武汉钢铁(集团)公司第二职工医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B001B06QSC",
+        "name": "武汉钢铁(集团)公司第二职工医院",
+        "address": "青化路32号",
+        "location": "114.487646,30.602360",
+        "pname": "湖北省",
+        "cityname": "武汉市",
+        "adcode": "",
+        "typecode": "090100"
       }
     },
     {
@@ -407,7 +535,7 @@
     },
     {
       "hospital_id": "kdocs-amap-b001c7v2mo",
-      "name": "四川省成都第四人民医院",
+      "name": "成都市第四人民医院",
       "status": "geocoded",
       "provenance": "evidence",
       "chosen": {
@@ -438,8 +566,24 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b001c8vg35",
+      "name": "四川大学华西医院心理卫生中心",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B001C8VG35",
+        "name": "四川大学华西医院心理卫生中心",
+        "address": "电信南街38号附6号",
+        "location": "104.061759,30.636854",
+        "pname": "四川省",
+        "cityname": "成都市",
+        "adcode": "",
+        "typecode": "090000"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b001d0208c",
-      "name": "陕西省西安市西京医院",
+      "name": "空军军医大学西京医院",
       "status": "geocoded",
       "provenance": "evidence",
       "chosen": {
@@ -451,6 +595,86 @@
         "cityname": "西安市",
         "adcode": "",
         "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b001d02481",
+      "name": "陕西省人民医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B001D02481",
+        "name": "陕西省人民医院主院区",
+        "address": "黄雁村友谊西路256号",
+        "location": "108.930150,34.239675",
+        "pname": "陕西省",
+        "cityname": "西安市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b013702c16",
+      "name": "石家庄市第八医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B013702C16",
+        "name": "石家庄市第八医院",
+        "address": "新华路620号",
+        "location": "114.419660,38.051319",
+        "pname": "河北省",
+        "cityname": "石家庄市",
+        "adcode": "",
+        "typecode": "090210"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b0137063f3",
+      "name": "河北医科大学第二医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0137063F3",
+        "name": "河北省总医院",
+        "address": "和平西路215号",
+        "location": "114.482117,38.058064",
+        "pname": "河北省",
+        "cityname": "石家庄市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b013706c8e",
+      "name": "河北医科大学第一医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B013706C8E",
+        "name": "河北省心脑血管病医院",
+        "address": "东岗路89号",
+        "location": "114.552127,38.016919",
+        "pname": "河北省",
+        "cityname": "石家庄市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b01380sgnm",
+      "name": "河北省精神卫生中心",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B01380SGNM",
+        "name": "河北省精神卫生中心",
+        "address": "东风东路572号河北省第六人民医院",
+        "location": "115.527297,38.865204",
+        "pname": "河北省",
+        "cityname": "保定市",
+        "adcode": "",
+        "typecode": "090210"
       }
     },
     {
@@ -486,6 +710,70 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b01730426e",
+      "name": "郑州第八人民医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B01730426E",
+        "name": "郑州市第八人民医院",
+        "address": "瑞民街5号",
+        "location": "113.623829,34.716604",
+        "pname": "河南省",
+        "cityname": "郑州市",
+        "adcode": "",
+        "typecode": "090210"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b0173080hg",
+      "name": "郑州大学第一附属医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0173080HG",
+        "name": "郑州大学第一附属医院(河医院区)",
+        "address": "五里堡街道河医社区建设东路1号",
+        "location": "113.646042,34.752734",
+        "pname": "河南省",
+        "cityname": "郑州市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b017900l12",
+      "name": "南阳第二人民医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B017900L12",
+        "name": "南阳市第二人民医院",
+        "address": "建设东路66号",
+        "location": "112.554312,33.004414",
+        "pname": "河南省",
+        "cityname": "南阳市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b019a00b1f",
+      "name": "辽宁省精神卫生中心",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B019A00B1F",
+        "name": "辽宁省精神卫生中心",
+        "address": "文化路10号",
+        "location": "124.034863,42.542362",
+        "pname": "辽宁省",
+        "cityname": "铁岭市",
+        "adcode": "",
+        "typecode": "090210"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b019b01ad1",
       "name": "大连市第七人民医院",
       "status": "geocoded",
@@ -502,6 +790,38 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b01af08pjm",
+      "name": "吉林大学中日联谊医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B01AF08PJM",
+        "name": "吉林大学白求恩第三医院",
+        "address": "仙台大街126号",
+        "location": "125.379200,43.861729",
+        "pname": "吉林省",
+        "cityname": "长春市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b01c30jiur",
+      "name": "哈尔滨医科大学附属第一医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B01C30JIUR",
+        "name": "哈尔滨医科大学附属第一医院南岗院区",
+        "address": "邮政街23号(医大一院地铁站2号口步行50米)",
+        "location": "126.648779,45.767300",
+        "pname": "黑龙江省",
+        "cityname": "哈尔滨市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b01c402231",
       "name": "齐齐哈尔市精神卫生中心",
       "status": "geocoded",
@@ -515,6 +835,22 @@
         "cityname": "齐齐哈尔市",
         "adcode": "",
         "typecode": "090210"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b01c80mkzi",
+      "name": "黑龙江省第三医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B01C80MKZI",
+        "name": "黑龙江省第三医院北安院区",
+        "address": "龙江路173号",
+        "location": "126.504960,48.247198",
+        "pname": "黑龙江省",
+        "cityname": "黑河市",
+        "adcode": "",
+        "typecode": "090200"
       }
     },
     {
@@ -614,6 +950,22 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b021301a4b",
+      "name": "山东省立医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B021301A4B",
+        "name": "山东第一医科大学附属省立医院(中心院区)",
+        "address": "经五路324号",
+        "location": "116.983278,36.656994",
+        "pname": "山东省",
+        "cityname": "济南市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b02140828v",
       "name": "青岛精神卫生中心（市北院区）",
       "status": "geocoded",
@@ -630,8 +982,88 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b02190abbf",
+      "name": "山东省戴庄医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B02190ABBF",
+        "name": "戴庄医院",
+        "address": "李营镇济戴路1号",
+        "location": "116.586548,35.464796",
+        "pname": "山东省",
+        "cityname": "济宁市",
+        "adcode": "",
+        "typecode": "090210"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b021b041f1",
+      "name": "临沂市第四人民医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B021B041F1",
+        "name": "临沂市第四人民医院总院区",
+        "address": "前十街121号",
+        "location": "118.315932,35.094734",
+        "pname": "山东省",
+        "cityname": "临沂市",
+        "adcode": "",
+        "typecode": "090210"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b021b09fni",
+      "name": "临沂市人民医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B021B09FNI",
+        "name": "临沂市人民医院解放路院区",
+        "address": "解放路东段27号",
+        "location": "118.350793,35.063762",
+        "pname": "山东省",
+        "cityname": "临沂市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b022702cdw",
+      "name": "合肥市第四医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B022702CDW",
+        "name": "合肥市第四人民医院",
+        "address": "黄山路316号",
+        "location": "117.263342,31.843824",
+        "pname": "安徽省",
+        "cityname": "合肥市",
+        "adcode": "",
+        "typecode": "090210"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b02290hzi5",
+      "name": "芜湖市第二人民医院‌",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B02290HZI5",
+        "name": "芜湖市第二人民医院",
+        "address": "渡春路6号",
+        "location": "118.377859,31.328672",
+        "pname": "安徽省",
+        "cityname": "芜湖市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b023b02359",
-      "name": "杭州七院",
+      "name": "杭州市第七人民医院",
       "status": "geocoded",
       "provenance": "evidence",
       "chosen": {
@@ -675,6 +1107,54 @@
         "cityname": "杭州市",
         "adcode": "",
         "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b023e075r6",
+      "name": "宁波大学附属康宁医院‌",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B023E075R6",
+        "name": "宁波大学附属康宁医院",
+        "address": "庄俞南路1号(宁波大学附属康宁医院)",
+        "location": "121.621662,29.935166",
+        "pname": "浙江省",
+        "cityname": "宁波市",
+        "adcode": "",
+        "typecode": "090210"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b024002a6u",
+      "name": "台州市中心医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B024002A6U",
+        "name": "台州市中心医院",
+        "address": "东海大道999号",
+        "location": "121.414086,28.647032",
+        "pname": "浙江省",
+        "cityname": "台州市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b024103zqk",
+      "name": "温州康宁医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B024103ZQK",
+        "name": "温州医科大学附属康宁医院",
+        "address": "黄龙住宅区盛锦路1号",
+        "location": "120.610866,28.008109",
+        "pname": "浙江省",
+        "cityname": "温州市",
+        "adcode": "",
+        "typecode": "090210"
       }
     },
     {
@@ -726,6 +1206,22 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b027b016c8",
+      "name": "聊城市第四人民医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B027B016C8",
+        "name": "聊城市第四人民医院",
+        "address": "花园北路49号",
+        "location": "115.997131,36.464073",
+        "pname": "山东省",
+        "cityname": "聊城市",
+        "adcode": "",
+        "typecode": "090100"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b02db00b1e",
       "name": "湖南长沙湘雅医院",
       "status": "geocoded",
@@ -735,6 +1231,22 @@
         "name": "中南大学湘雅医院",
         "address": "湘雅路87号",
         "location": "112.984105,28.212240",
+        "pname": "湖南省",
+        "cityname": "长沙市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b02db02foo",
+      "name": "湘雅二医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B02DB02FOO",
+        "name": "中南大学湘雅二医院",
+        "address": "人民中路139号",
+        "location": "112.993976,28.187932",
         "pname": "湖南省",
         "cityname": "长沙市",
         "adcode": "",
@@ -769,6 +1281,22 @@
         "location": "112.984808,28.155643",
         "pname": "湖南省",
         "cityname": "长沙市",
+        "adcode": "",
+        "typecode": "090208"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b02e30oce6",
+      "name": "邵阳市脑科医院‌",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B02E30OCE6",
+        "name": "邵阳市脑科医院",
+        "address": "城南街道西湖南路348号",
+        "location": "111.454639,27.206901",
+        "pname": "湖南省",
+        "cityname": "邵阳市",
         "adcode": "",
         "typecode": "090208"
       }
@@ -822,19 +1350,19 @@
       }
     },
     {
-      "hospital_id": "kdocs-amap-b03050261f",
-      "name": "云南 桂林医学院附属医院",
+      "hospital_id": "kdocs-amap-b030400b6d",
+      "name": "广西壮族自治区脑科医院",
       "status": "geocoded",
       "provenance": "evidence",
       "chosen": {
-        "id": "B03050261F",
-        "name": "桂林医科大学第一附属医院(乐群院区)",
-        "address": "乐群路15号",
-        "location": "110.291982,25.281478",
+        "id": "B030400B6D",
+        "name": "广西脑科医院",
+        "address": "鸡喇路1号",
+        "location": "109.438402,24.278696",
         "pname": "广西壮族自治区",
-        "cityname": "桂林市",
+        "cityname": "柳州市",
         "adcode": "",
-        "typecode": "090101"
+        "typecode": "090208"
       }
     },
     {
@@ -851,6 +1379,22 @@
         "cityname": "玉林市",
         "adcode": "",
         "typecode": "090210"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b031702kil",
+      "name": "南昌大学第一附属医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B031702KIL",
+        "name": "南昌大学第一附属医院(东湖院区)",
+        "address": "永外正街17号",
+        "location": "115.910291,28.686539",
+        "pname": "江西省",
+        "cityname": "南昌市",
+        "adcode": "",
+        "typecode": "090101"
       }
     },
     {
@@ -913,6 +1457,22 @@
         "location": "104.626216,28.752038",
         "pname": "四川省",
         "cityname": "宜宾市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b0346003sj",
+      "name": "四川德阳市医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0346003SJ",
+        "name": "德阳市人民医院旌湖院区",
+        "address": "泰山北路一段173号",
+        "location": "104.396374,31.130978",
+        "pname": "四川省",
+        "cityname": "德阳市",
         "adcode": "",
         "typecode": "090101"
       }
@@ -1015,7 +1575,7 @@
     },
     {
       "hospital_id": "kdocs-amap-b038202b8m",
-      "name": "海南省安宁医院",
+      "name": "海南安宁医院",
       "status": "geocoded",
       "provenance": "evidence",
       "chosen": {
@@ -1254,150 +1814,6 @@
       }
     },
     {
-      "hospital_id": "kdocs-amap-b073c02y5k",
-      "name": "青山医院",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B073C02Y5K",
-        "name": "青山医院",
-        "address": "青松观路15青山医院杏晖楼E座附近",
-        "location": "113.978322,22.406666",
-        "pname": "香港特别行政区",
-        "cityname": "香港特别行政区",
-        "adcode": "",
-        "typecode": "090100"
-      }
-    },
-    {
-      "hospital_id": "kdocs-amap-b073c036vw",
-      "name": "葵涌医院",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B073C036VW",
-        "name": "葵涌医院",
-        "address": "香港新界葵涌葵涌医院路3-15号",
-        "location": "114.138527,22.340223",
-        "pname": "香港特别行政区",
-        "cityname": "香港特别行政区",
-        "adcode": "",
-        "typecode": "090100"
-      }
-    },
-    {
-      "hospital_id": "kdocs-amap-b073c03epg",
-      "name": "威尔斯亲王医院",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B073C03EPG",
-        "name": "威尔斯亲王医院",
-        "address": "银城街30-32号",
-        "location": "114.206978,22.376584",
-        "pname": "香港特别行政区",
-        "cityname": "香港特别行政区",
-        "adcode": "",
-        "typecode": "090100"
-      }
-    },
-    {
-      "hospital_id": "kdocs-amap-b073c04aka",
-      "name": "玛丽医院",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B073C04AKA",
-        "name": "玛丽医院",
-        "address": "香港岛薄扶林薄扶林道102号",
-        "location": "114.136568,22.267338",
-        "pname": "香港特别行政区",
-        "cityname": "香港特别行政区",
-        "adcode": "",
-        "typecode": "090100"
-      }
-    },
-    {
-      "hospital_id": "kdocs-amap-b073c04brq",
-      "name": "明德医院",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B073C04BRQ",
-        "name": "明德国际医院",
-        "address": "香港山顶加列山道41号",
-        "location": "114.154246,22.256179",
-        "pname": "香港特别行政区",
-        "cityname": "香港特别行政区",
-        "adcode": "",
-        "typecode": "090100"
-      }
-    },
-    {
-      "hospital_id": "kdocs-amap-b073c04s0x",
-      "name": "港安医院",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B073C04S0X",
-        "name": "香港港安医院",
-        "address": "跑马地司徒拔道40号",
-        "location": "114.189075,22.260874",
-        "pname": "香港特别行政区",
-        "cityname": "香港特别行政区",
-        "adcode": "",
-        "typecode": "090100"
-      }
-    },
-    {
-      "hospital_id": "kdocs-amap-b073c04t8h",
-      "name": "圣保禄/养和医院",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B073C04T8H",
-        "name": "圣保禄医院",
-        "address": "东院道2号",
-        "location": "114.193329,22.275542",
-        "pname": "香港特别行政区",
-        "cityname": "香港特别行政区",
-        "adcode": "",
-        "typecode": "090100"
-      }
-    },
-    {
-      "hospital_id": "kdocs-amap-b073d00dg3",
-      "name": "仁伯爵综合医院",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B073D00DG3",
-        "name": "仁伯爵综合医院",
-        "address": "若宪马路",
-        "location": "113.551481,22.190784",
-        "pname": "澳门特别行政区",
-        "cityname": "澳门特别行政区",
-        "adcode": "",
-        "typecode": "090100"
-      }
-    },
-    {
-      "hospital_id": "kdocs-amap-b073d00kf2",
-      "name": "澳门科技大学医院",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B073D00KF2",
-        "name": "科大医院",
-        "address": "澳门科技大学H座",
-        "location": "113.573383,22.151479",
-        "pname": "澳门特别行政区",
-        "cityname": "澳门特别行政区",
-        "adcode": "",
-        "typecode": "090100"
-      }
-    },
-    {
       "hospital_id": "kdocs-amap-b0fff49imu",
       "name": "武汉市精神卫生中心（二七院区）",
       "status": "geocoded",
@@ -1411,6 +1827,22 @@
         "cityname": "武汉市",
         "adcode": "",
         "typecode": "090200"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b0fff53gfe",
+      "name": "浙江大学医学院附属第四医院‌",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0FFF53GFE",
+        "name": "浙江大学医学院附属第四医院",
+        "address": "商城大道N1号(商城大道和S310交叉口)",
+        "location": "120.126340,29.332710",
+        "pname": "浙江省",
+        "cityname": "金华市",
+        "adcode": "",
+        "typecode": "090101"
       }
     },
     {
@@ -1446,6 +1878,38 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b0fffa8er0",
+      "name": "西安交通大学第二附属医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0FFFA8ER0",
+        "name": "西安交通大学第二附属医院主院区",
+        "address": "西五路157号",
+        "location": "108.951071,34.270711",
+        "pname": "陕西省",
+        "cityname": "西安市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b0fffe4ij0",
+      "name": "天津市安定医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0FFFE4IJ0",
+        "name": "天津市安定医院",
+        "address": "柳林街道柳林路13号(柳林路地铁站C口步行250米)",
+        "location": "117.283492,39.074964",
+        "pname": "天津市",
+        "cityname": "天津市",
+        "adcode": "",
+        "typecode": "090210"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b0fffglyoy",
       "name": "海南省肿瘤医院",
       "status": "geocoded",
@@ -1475,22 +1939,6 @@
         "cityname": "玉溪市",
         "adcode": "",
         "typecode": "090210"
-      }
-    },
-    {
-      "hospital_id": "kdocs-amap-b0fffutp9b",
-      "name": "台湾大学医学院附设医院",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B0FFFUTP9B",
-        "name": "国立台湾大学医学院附设医院西址",
-        "address": "100黎明里常德街1号",
-        "location": "121.521222,25.038951",
-        "pname": "台湾省",
-        "cityname": "台北市",
-        "adcode": "",
-        "typecode": "110200"
       }
     },
     {
@@ -1558,8 +2006,40 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b0ffg7gj1u",
+      "name": "西安市精神卫生中心",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0FFG7GJ1U",
+        "name": "西安市精神卫生中心",
+        "address": "康和路666号",
+        "location": "109.004853,34.172844",
+        "pname": "陕西省",
+        "cityname": "西安市",
+        "adcode": "",
+        "typecode": "090210|090100"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b0ffg8hlts",
+      "name": "浙江大学医学院附属第二医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0FFG8HLTS",
+        "name": "浙江大学医学院附属第二医院(解放路院区)",
+        "address": "小营街道解放路88号",
+        "location": "120.177439,30.251172",
+        "pname": "浙江省",
+        "cityname": "杭州市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b0ffgg4mze",
-      "name": "云南 大理州第二人民医院",
+      "name": "大理州第二人民医院",
       "status": "geocoded",
       "provenance": "evidence",
       "chosen": {
@@ -1574,6 +2054,22 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b0ffglld9y",
+      "name": "云南省精神病医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0FFGLLD9Y",
+        "name": "昆明医科大学附属精神卫生中心",
+        "address": "穿金路733号",
+        "location": "102.750354,25.075101",
+        "pname": "云南省",
+        "cityname": "昆明市",
+        "adcode": "",
+        "typecode": "090210|090500"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b0ffgrgjro",
       "name": "温州医科大学附属第一医院",
       "status": "geocoded",
@@ -1585,22 +2081,6 @@
         "location": "120.695473,27.938175",
         "pname": "浙江省",
         "cityname": "温州市",
-        "adcode": "",
-        "typecode": "090101"
-      }
-    },
-    {
-      "hospital_id": "kdocs-amap-b0ffgsrr97",
-      "name": "暨南大学附属第一医院东圃院区（广州华侨医院）",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B0FFGSRR97",
-        "name": "暨南大学附属第一医院(东圃院区)",
-        "address": "车陂北街22-1号附近",
-        "location": "113.400540,23.124984",
-        "pname": "广东省",
-        "cityname": "广州市",
         "adcode": "",
         "typecode": "090101"
       }
@@ -1702,6 +2182,22 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b0ffi8gls5",
+      "name": "吉林省神经精神病医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0FFI8GLS5",
+        "name": "吉林省脑科医院",
+        "address": "公园北街",
+        "location": "124.361098,43.176839",
+        "pname": "吉林省",
+        "cityname": "四平市",
+        "adcode": "",
+        "typecode": "090208"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b0ffi99oq6",
       "name": "河北省荣军医院（保定）",
       "status": "geocoded",
@@ -1734,6 +2230,22 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b0ffijsua0",
+      "name": "武汉大学人民医院‌",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0FFIJSUA0",
+        "name": "武汉大学人民医院",
+        "address": "体育街与烈士街交叉口西南100米",
+        "location": "114.303572,30.535839",
+        "pname": "湖北省",
+        "cityname": "武汉市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b0ffiufvdh",
       "name": "广西北海市人民医院（银滩院区）",
       "status": "geocoded",
@@ -1747,6 +2259,38 @@
         "cityname": "北海市",
         "adcode": "",
         "typecode": "090101"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b0ffj5cou2",
+      "name": "成都棕南医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0FFJ5COU2",
+        "name": "成都棕南医院精神科",
+        "address": "玉林街道二环路南二段19号民航科技大厦一楼",
+        "location": "104.070439,30.620726",
+        "pname": "四川省",
+        "cityname": "成都市",
+        "adcode": "",
+        "typecode": "090100"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b0ffj82akl",
+      "name": "临沂市荣军医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0FFJ82AKL",
+        "name": "临沂市荣军优抚医院",
+        "address": "桃园路1号(蓝湾国际A区北门东70米)",
+        "location": "118.336925,35.078825",
+        "pname": "山东省",
+        "cityname": "临沂市",
+        "adcode": "",
+        "typecode": "090100|090200"
       }
     },
     {
@@ -1798,6 +2342,22 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b0ffla6wnx",
+      "name": "钟祥市人民医院‌",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0FFLA6WNX",
+        "name": "钟祥市人民医院",
+        "address": "祥云大道19号",
+        "location": "112.619581,31.113965",
+        "pname": "湖北省",
+        "cityname": "荆门市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b0fflch87i",
       "name": "上海和睦家医院（私立，普通门诊就诊费用500-1600，心理咨询2400-2520每45分钟）",
       "status": "geocoded",
@@ -1831,7 +2391,7 @@
     },
     {
       "hospital_id": "kdocs-amap-b0ffm9idri",
-      "name": "江西省精神卫生中心（南昌）",
+      "name": "江西省精神卫生中心",
       "status": "geocoded",
       "provenance": "evidence",
       "chosen": {
@@ -1846,19 +2406,35 @@
       }
     },
     {
-      "hospital_id": "kdocs-amap-b0g0a7x9db",
-      "name": "澳门大学心理学系诊所",
+      "hospital_id": "kdocs-amap-b0g1jy6o1y",
+      "name": "合肥立心精神病医院‌",
       "status": "geocoded",
       "provenance": "evidence",
       "chosen": {
-        "id": "B0G0A7X9DB",
-        "name": "澳门大学社会科学学院(由澳门特别行政区实施管辖)",
-        "address": "氹仔大学大马路1号澳门大学横琴校区",
-        "location": "113.548425,22.125825",
-        "pname": "广东省",
-        "cityname": "珠海市",
+        "id": "B0G1JY6O1Y",
+        "name": "合肥立心精神医院",
+        "address": "护城路与古河路交叉口西南140米",
+        "location": "117.414725,31.885252",
+        "pname": "安徽省",
+        "cityname": "合肥市",
         "adcode": "",
-        "typecode": "141201"
+        "typecode": "090210"
+      }
+    },
+    {
+      "hospital_id": "kdocs-amap-b0h2thnagk",
+      "name": "黄石市精神病医院‌",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B0H2THNAGK",
+        "name": "黄石市精神卫生中心",
+        "address": "经济技术开发区汪仁镇金山大道东698号",
+        "location": "115.126200,30.157151",
+        "pname": "湖北省",
+        "cityname": "黄石市",
+        "adcode": "",
+        "typecode": "090210"
       }
     },
     {
@@ -1894,97 +2470,33 @@
       }
     },
     {
-      "hospital_id": "kdocs-amap-b0k0yye61d",
-      "name": "山东省精卫（青岛）",
+      "hospital_id": "kdocs-amap-b0idlasvge",
+      "name": "山东省精神卫生中心",
       "status": "geocoded",
       "provenance": "evidence",
       "chosen": {
-        "id": "B0K0YYE61D",
-        "name": "青岛市精神卫生中心高新院区",
-        "address": "河套街道振和路10号",
-        "location": "120.201693,36.227874",
+        "id": "B0IDLASVGE",
+        "name": "山东大学附属精神卫生中心",
+        "address": "文化东路49号",
+        "location": "117.062980,36.655580",
         "pname": "山东省",
-        "cityname": "青岛市",
-        "adcode": "",
-        "typecode": "090210"
-      }
-    },
-    {
-      "hospital_id": "kdocs-amap-b0k2nu6cel",
-      "name": "台北市立联合医院松德院区",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B0K2NU6CEL",
-        "name": "台北市立联合医院松德院区",
-        "address": "110台湾台北市信义区三犁里松德路309号",
-        "location": "121.578455,25.027487",
-        "pname": "台湾省",
-        "cityname": "台北市",
+        "cityname": "济南市",
         "adcode": "",
         "typecode": "090100"
       }
     },
     {
-      "hospital_id": "kdocs-amap-b0l0fnub1k",
-      "name": "高雄医学大学附设医院",
+      "hospital_id": "kdocs-amap-b0k3sa8i7y",
+      "name": "潍坊市荣军优抚医院",
       "status": "geocoded",
       "provenance": "evidence",
       "chosen": {
-        "id": "B0L0FNUB1K",
-        "name": "高雄医学大学中和纪念医院",
-        "address": "807台湾高雄市三民区安生里自由一路100号",
-        "location": "120.313491,22.643167",
-        "pname": "台湾省",
-        "cityname": "高雄市",
-        "adcode": "",
-        "typecode": "090100"
-      }
-    },
-    {
-      "hospital_id": "kdocs-amap-b0l0fyxuhl",
-      "name": "中国医药大学附设医院",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B0L0FYXUHL",
-        "name": "China Medical University Hospital",
-        "address": "404台湾台中市北区五常里五权路499号",
-        "location": "120.687808,24.151337",
-        "pname": "台湾省",
-        "cityname": "台中市",
-        "adcode": "",
-        "typecode": "090000"
-      }
-    },
-    {
-      "hospital_id": "kdocs-amap-b0l0smikhv",
-      "name": "长庚医院",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B0L0SMIKHV",
-        "name": "长庚医疗财团法人林口长庚纪念医院",
-        "address": "333台湾桃园市龟山区公西里复兴街5号",
-        "location": "121.371673,25.058438",
-        "pname": "台湾省",
-        "cityname": "桃园市",
-        "adcode": "",
-        "typecode": "090000"
-      }
-    },
-    {
-      "hospital_id": "kdocs-amap-b0l0zzdx92",
-      "name": "台北荣民总医院",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B0L0ZZDX92",
-        "name": "台北荣民总医院",
-        "address": "112台湾台北市北投区永欣里石牌路二段201号",
-        "location": "121.524073,25.117003",
-        "pname": "台湾省",
-        "cityname": "台北市",
+        "id": "B0K3SA8I7Y",
+        "name": "潍坊市荣军优抚医院",
+        "address": "水库路1500号",
+        "location": "119.092504,36.680601",
+        "pname": "山东省",
+        "cityname": "潍坊市",
         "adcode": "",
         "typecode": "090000"
       }
@@ -2006,35 +2518,19 @@
       }
     },
     {
-      "hospital_id": "kdocs-amap-b0ma3rzcf4",
-      "name": "马偕纪念医院",
+      "hospital_id": "kdocs-amap-b0mg4uy2vv",
+      "name": "贵州贵阳中医脑康医院",
       "status": "geocoded",
       "provenance": "evidence",
       "chosen": {
-        "id": "B0MA3RZCF4",
-        "name": "马偕纪念医院台北院区",
-        "address": "104台湾台北市中山区集英里中山北路二段92号",
-        "location": "121.526279,25.056006",
-        "pname": "台湾省",
-        "cityname": "台北市",
+        "id": "B0MG4UY2VV",
+        "name": "贵阳中医脑康医院精神心理科",
+        "address": "中环路南段贵阳中医脑康医院",
+        "location": "106.687175,26.558875",
+        "pname": "贵州省",
+        "cityname": "贵阳市",
         "adcode": "",
-        "typecode": "090100"
-      }
-    },
-    {
-      "hospital_id": "kdocs-amap-b0mg2n0olu",
-      "name": "河北医科大学第一医院",
-      "status": "geocoded",
-      "provenance": "evidence",
-      "chosen": {
-        "id": "B0MG2N0OLU",
-        "name": "河北医科大学第一医院2期",
-        "address": "东岗路与东环北街交叉口东北80米",
-        "location": "114.552075,38.016675",
-        "pname": "河北省",
-        "cityname": "石家庄市",
-        "adcode": "",
-        "typecode": "090000"
+        "typecode": "090200"
       }
     }
   ]

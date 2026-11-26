@@ -1,5 +1,7 @@
 export const metadata = {
   title: '资源｜群岛 Psychipelago',
+  alternates: { canonical: '/resources/' },
+  robots: { index: false, follow: true },
 }
 
 export default function ResourcesPage() {

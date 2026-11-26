@@ -19,8 +19,8 @@ import { readManualLocations } from './lib/locations.ts'
  * 主线批次标识。原表地址与表名都不进仓库：这串只用来判断「定位证据属于哪一轮转写」，
  * 不含分享 id，也不含表名，读者拿它拼不出原表。
  */
-export const SOURCE_BATCH = 'sheet-2026-11-09'
-export const SOURCE_CAPTURE = 'data/evidence/kdocs/2026-11-09/document.json'
+export const SOURCE_BATCH = 'sheet-2026-11-21'
+export const SOURCE_CAPTURE = 'data/evidence/kdocs/2026-11-21/document.json'
 
 export type SourceMerge = { r1: number; c1: number; r2: number; c2: number }
 export type SourceSheet = { index: number; name: string; rows: number; cols: number; values: string[][]; merges?: SourceMerge[] }
@@ -33,6 +33,8 @@ export type SourceDocument = {
   office_type: string
   reading_method: string
   sheets: SourceSheet[]
+  region_mode?: 'explicit'
+  doctor_rosters?: { sheet: string; row: number; names: string[] }[]
 }
 
 const SHEET_DISORDERS: Record<string, Report['disorders']> = {
@@ -252,6 +254,7 @@ function mergedValues(sheet: SourceSheet): Map<string, string> {
  */
 export function sourceRows(document: SourceDocument): SourceRow[] {
   const rows: SourceRow[] = []
+  const rosters = new Map(document.doctor_rosters?.map(({ sheet, row, names }) => [`${sheet}:${row}`, names]))
   for (const sheet of document.sheets) {
     let region = ''
     let hospital = ''
@@ -263,13 +266,16 @@ export function sourceRows(document: SourceDocument): SourceRow[] {
       const inherited = (col: number) => merged.get(`${excelRow},${col}`) ?? ''
       if (cells[0]) region = cells[0]
       else if (inherited(1)) region = inherited(1)
+      // In the November batch, a new hospital without a region cell starts an unlabelled group.
+      else if (document.region_mode === 'explicit' && (cells[1] || inherited(2))) region = ''
       if (cells[1]) hospital = cells[1]
       else if (inherited(2)) hospital = inherited(2)
       const departmentCell = cells[2] || inherited(3)
-      const nameCell = cells[3] ?? ''
+      const nameCell = (cells[3] ?? '').replace(/\p{Cf}/gu, '').trim().replace(/^[、，,]+|[、，,]+$/gu, '').trim()
       const { name, annotations } = splitName(nameCell)
-      const isPerson = !!name && name.length <= 24 && !SENTENCE.test(name) &&
-        !NON_PERSON.test(name) && name !== departmentCell
+      const roster = rosters.get(`${sheet.name}:${excelRow}`)
+      const isPerson = Boolean(roster) || (!!name && name.length <= 24 && !SENTENCE.test(name) &&
+        !NON_PERSON.test(name) && name !== departmentCell)
       // 姓名格写的不是人名时（专病门诊、课题组、团队、会诊、整段科室介绍），
       // 它在这一行里就是「谁」的位置：照原文当名称上卡，不因为是科室或团队就丢掉这条反馈。
       // 姓名格空着而 C 列有诊室时（武汉二七院区那一行），这一行的「谁」就是那句诊室，
@@ -290,8 +296,8 @@ export function sourceRows(document: SourceDocument): SourceRow[] {
         region,
         hospital,
         department,
-        doctor: entity,
-        doctors: entity ? [entity] : [],
+        doctor: roster?.join('、') ?? entity,
+        doctors: roster ?? (entity ? [entity] : []),
         // 姓名格原文：整段科室介绍被截成名称后，原文仍留在这一行的线索里。
         label: isPerson ? '' : name,
         annotation,
@@ -368,7 +374,10 @@ function rowLeads(row: SourceRow): string[] {
 export function reportsFromDocument(document: SourceDocument): Report[] {
   const items: Report[] = []
   for (const row of sourceRows(document)) {
-    rowLeads(row).forEach((segment, index) => {
+    const leads = rowLeads(row)
+    // A row in the explicit-region import is one lead; keep each source paragraph in its original order.
+    const segments = document.region_mode === 'explicit' && leads.length ? [leads.join('\n\n')] : leads
+    segments.forEach((segment, index) => {
       const quote = clip(segment, 200)
       items.push({
         id: index === 0 ? row.reportId : `${row.reportId}-p${index + 1}`,
@@ -403,7 +412,7 @@ export function reportsFromDocument(document: SourceDocument): Report[] {
       })
     })
   }
-  return mergeDuplicateQuotes(items)
+  return document.region_mode === 'explicit' ? items : mergeDuplicateQuotes(items)
 }
 
 /** 病症标签的展示顺序：合并后取并集时按源文档的排列（cptsd → osdd/did → 人格障碍）。 */
@@ -521,7 +530,7 @@ export function doctorsFromDocument(document: SourceDocument, reports: Report[],
     }
   }
   const groups = new Map<string, { hospitalId: string; name: string; department: string; notes: string[]; specialties: string[]; evaluations: { text: string; source: string }[] }>()
-  for (const row of sourceRows(document)) {
+  for (const row of sourceRows(document).flatMap(row => row.doctors.map(doctor => ({ ...row, doctor })))) {
     const hospitalId = hospitalOf.get(row.reportId) ?? hospitalByName.get(`${row.hospital}\u0000${row.region}`)
     if (!row.doctor || !hospitalId) continue
     const key = `${hospitalId}\u0000${row.doctor}`
@@ -572,7 +581,7 @@ export function doctorsFromDocument(document: SourceDocument, reports: Report[],
 export function markUnlinked(reports: Report[], run: LocationRun): Report[] {
   return reports.map(report => {
     if (report.hospital_id) return report
-    const result = run.results.find(item => item.name === report.hospital_name_raw)
+    const result = run.results.find(item => item.name === report.hospital_name_raw && item.region === (report.hospital_region ?? ''))
     return {
       ...report,
       status: 'unlinked' as const,

@@ -21,7 +21,7 @@ export type LocationResult = LocationTarget & {
   selection_rule?: 'base-name' | 'main-campus' | 'best-score' | 'explicit-campus' | 'visit-site' | 'medical-building' | 'institution-building'
 }
 
-export const LOCATION_EVIDENCE = 'data/evidence/locations/amap-2026-11-09.json'
+export const LOCATION_EVIDENCE = 'data/evidence/locations/amap-2026-11-21.json'
 
 export type LocationRun = {
   /** 这批定位属于哪一轮转写；不含原表地址与表名 */
@@ -102,6 +102,14 @@ export function searchRegion(target: LocationTarget): string {
 }
 
 const SOURCE_NAME_EXPANSIONS: Record<string, string> = {
+  '湘雅二医院': '中南大学湘雅二医院',
+  '合肥市第四医院': '合肥市第四人民医院',
+  '长沙湘雅二医院': '中南大学湘雅二医院',
+  '郑州第八人民医院': '郑州市第八人民医院',
+  '空军军医大学西京医院': '西京医院',
+  '山东省戴庄医院': '戴庄医院',
+  '临沂市荣军医院': '临沂市荣军优抚医院',
+  '广州白云心理医院': '白云心理医院',
   '甘肃兰州大学第二医院': '兰州大学第二医院',
   '上海市同济大学附属同济医院': '同济大学附属同济医院',
   '上海新华医院': '上海交通大学医学院附属新华医院',
@@ -209,7 +217,7 @@ export function searchCity(target: LocationTarget): string {
 }
 
 const BUILDING = /门诊|急诊|住院|病房|楼|病区|科室|药房|停车|入口|出口|大厅|诊疗|体检|急救|科$/u
-const AUXILIARY = /超市|食堂|便利店|美容中心|护理之家|医疗\d+区|解剖室|眼视光部|餐厅|商品部|核振中心|药店|健康管理|服务站|公司|办公室|宿舍|公交站|地铁站|美发/u
+const AUXILIARY = /超市|食堂|便利店|美容中心|护理之家|医疗\d+区|解剖室|眼视光部|餐厅|商品部|核振中心|药店|健康管理|服务站|公司|办公室|宿舍|公交站|地铁站|美发|献血屋/u
 
 export function siteCandidates(pois: Poi[]): Poi[] {
   return pois.filter(poi => !BUILDING.test(poi.name) && !AUXILIARY.test(poi.name))
@@ -226,10 +234,10 @@ export function normalizedName(name: string): string {
     .replace(/精卫$/u, '精神卫生中心')
     .replace(/医院东区$/u, '医院东院区')
     .replace(/芳村(?:总院|院区)?/u, '芳村')
-    .replace(/[\s（）()·市]/gu, '')
+    .replace(/[\s\p{Cf}（）()·市：:]/gu, '')
 }
 
-export function selectPoi(target: LocationTarget, pois: Poi[]): LocationResult {
+export function selectPoi(target: LocationTarget, pois: Poi[], requireUniqueWithoutRegion = false): LocationResult {
   const base: LocationResult = { name: target.name, report_ids: target.report_ids, region: target.region, matched_name: searchName(target.name), status: 'not_found', reason: '高德候选尚未匹配到机构名称', candidates: pois }
   const wanted = normalizedName(searchName(target.name).replace(/(?:保定|青岛|南昌)$/u, ''))
   const hint = target.name.match(/（(保定|青岛|南昌|海南)）/u)?.[1]
@@ -256,6 +264,9 @@ export function selectPoi(target: LocationTarget, pois: Poi[]): LocationResult {
   // 按「医院名必须是 09 医疗类」一刀切会把唯一的正址筛掉。名字与原文完全相等的候选不再按类别排除。
   const candidates = siteCandidates(located).filter(poi => !/医院|附院/u.test(target.name) || poi.typecode.startsWith('09') || normalizedName(poi.name) === wanted)
   const ranked = candidates.map(poi => ({ poi, score: score(poi) })).filter(item => item.score >= 25).sort((a, b) => b.score - a.score)
+  if (requireUniqueWithoutRegion && !region && ranked.filter(item => item.score === 100).length !== 1) {
+    return { ...base, reason: '原文地区空缺，高德未返回唯一的同名机构' }
+  }
   const campusSpecified = /院区|分院|医院[东西南北]区$/u.test(target.name) || /芳村/u.test(target.name)
   const exact = ranked.find(item => item.score === 100)
   if (campusSpecified) {

@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
 import { TransitionProvider } from '@/components/PageTransition'
+import { SITE_DESCRIPTION, SITE_NAME, SITE_ORIGIN } from '@/lib/site'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: '群岛 Psychipelago',
-  description:
-    '把社区整理的就诊资源与线索放回地图上：按省份找医院，按医生看线索，附量表自评。',
+  metadataBase: new URL(SITE_ORIGIN),
+  title: SITE_NAME,
+  description: SITE_DESCRIPTION,
 }
 
 // 首帧前定主题：手动选过以 tc.theme 为准，否则跟随系统偏好。
