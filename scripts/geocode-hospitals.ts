@@ -61,7 +61,8 @@ async function main() {
     if (!args.includes('--write')) throw new Error('应用定位报告须明确 --write')
     const candidates = run.results.flatMap(result => result.candidates)
     run.results = run.results.map(result => {
-      if (result.status === 'not_queried') return result
+      // A saved decision can include an address-verified campus label or unresolved site.
+      if (result.status !== 'not_found') return result
       const selected = selectPoi(result, result.candidates, requireUniqueWithoutRegion)
       if (selected.chosen) return selected
       // Identical POIs already returned for another current-source name do not need another request.

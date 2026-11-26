@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { MapApp } from '@/components/map/MapApp'
 import { formatPublishedAt, formatReportSource } from '@/lib/format'
 import { mapHospitalInputs } from '@/lib/map-coordinates'
-import locationEvidence from '@/data/evidence/locations/amap-2026-11-21.json'
+import mapLocations from '@/data/generated/locations.json'
 import {
   disorders,
   doctors,
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 }
 
 export default function MapPage() {
-  const mapHospitals = mapHospitalInputs(hospitals, publicReports, locationEvidence.results)
+  const mapHospitals = mapHospitalInputs(hospitals, publicReports, mapLocations.results)
 
   const mapLeads = Object.fromEntries(
     mapHospitals.map((hospital) => [

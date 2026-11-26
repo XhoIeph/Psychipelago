@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0.0",
+  "provider": "amap",
+  "source_crs": "GCJ-02",
+  "stored_crs": "GCJ-02",
+  "entries": [
+    {
+      "hospital_id": "local-qingdao-mental-health-gaoxin",
+      "name": "青岛市精神卫生中心高新院区",
+      "status": "geocoded",
+      "queried_at": "2026-11-25",
+      "query": {
+        "keywords": "青岛市精神卫生中心高新院区",
+        "city": "青岛市"
+      },
+      "candidates": [
+        {
+          "id": "B0K0YYE61D",
+          "name": "青岛市精神卫生中心高新院区",
+          "address": "河套街道振和路10号",
+          "location": "120.201693,36.227874",
+          "pname": "山东省",
+          "cityname": "青岛市",
+          "adcode": "",
+          "typecode": "090210"
+        }
+      ],
+      "shortlist": [
+        "B0K0YYE61D"
+      ],
+      "chosen": {
+        "id": "B0K0YYE61D",
+        "name": "青岛市精神卫生中心高新院区",
+        "address": "河套街道振和路10号",
+        "location": "120.201693,36.227874",
+        "pname": "山东省",
+        "cityname": "青岛市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "picked": {
+        "by": "manual",
+        "at": "2026-11-26",
+        "reason": "青岛市精神卫生中心高新院区有独立的高德点位。原文名录未注明出诊院区。"
+      }
+    }
+  ]
+}

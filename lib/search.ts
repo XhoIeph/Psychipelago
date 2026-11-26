@@ -18,6 +18,7 @@ export function normalizeSearch(text: string): string {
     .replace(/边缘型人格障碍/g, 'bpd')
     .replace(/ptsd\s*\/\s*c-ptsd|c-ptsd/g, 'cptsd')
     .replace(/osdd\s*\/\s*did/g, 'osdd')
+    .replace(/精卫(?!填海)/gu, '精神卫生中心')
 }
 
 function compactSearch(text: string): string {

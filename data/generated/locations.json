@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-11-26T04:29:22.525Z",
+  "generated_at": "2026-11-26T09:05:55.144Z",
   "provider": "amap",
   "source_crs": "GCJ-02",
   "stored_crs": "GCJ-02",
@@ -1366,6 +1366,22 @@
       }
     },
     {
+      "hospital_id": "kdocs-amap-b03050261f",
+      "name": "云南 桂林医学院附属医院",
+      "status": "geocoded",
+      "provenance": "evidence",
+      "chosen": {
+        "id": "B03050261F",
+        "name": "桂林医科大学第一附属医院(乐群院区)",
+        "address": "乐群路15号",
+        "location": "110.291982,25.281478",
+        "pname": "广西壮族自治区",
+        "cityname": "桂林市",
+        "adcode": "",
+        "typecode": "090101"
+      }
+    },
+    {
       "hospital_id": "kdocs-amap-b03070mw10",
       "name": "玉林市第四人民医院",
       "status": "geocoded",
@@ -2531,6 +2547,28 @@
         "cityname": "贵阳市",
         "adcode": "",
         "typecode": "090200"
+      }
+    },
+    {
+      "hospital_id": "local-qingdao-mental-health-gaoxin",
+      "name": "青岛市精神卫生中心高新院区",
+      "status": "geocoded",
+      "provenance": "manual",
+      "chosen": {
+        "id": "B0K0YYE61D",
+        "name": "青岛市精神卫生中心高新院区",
+        "address": "河套街道振和路10号",
+        "location": "120.201693,36.227874",
+        "pname": "山东省",
+        "cityname": "青岛市",
+        "adcode": "",
+        "typecode": "090210"
+      },
+      "queried_at": "2026-11-25",
+      "picked": {
+        "by": "manual",
+        "at": "2026-11-26",
+        "reason": "青岛市精神卫生中心高新院区有独立的高德点位。原文名录未注明出诊院区。"
       }
     }
   ]

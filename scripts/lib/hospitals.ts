@@ -100,6 +100,13 @@ export function withManualCoordinates(hospitals: Hospital[], manual: ManualLocat
 export function hospitalsFromRun(run: LocationRun): Hospital[] {
   const provinces = readJson<{ items: Array<{ name: string; adcode: string }> }>(CURATED_FILES.provinces).items
   const hospitals = new Map<string, Hospital>()
+  const campuses = new Map<string, string>()
+  for (const { chosen, campus, status } of run.results) {
+    if (status !== 'geocoded' || !chosen || !campus) continue
+    const prior = campuses.get(chosen.id)
+    if (prior && prior !== campus) throw new Error(`高德地点关联了两个不同院区：${chosen.name}`)
+    campuses.set(chosen.id, campus)
+  }
   for (const result of run.results) {
     if (result.status !== 'geocoded' || !result.chosen) continue
     const poi = result.chosen
@@ -115,9 +122,11 @@ export function hospitalsFromRun(run: LocationRun): Hospital[] {
     const macauManaged = result.region === '澳门' && /由澳门特别行政区.*管辖/u.test(`${poi.name}${poi.address}`)
     const province = provinces.find(item => item.name === (macauManaged ? '澳门特别行政区' : poi.pname))
     if (!province) throw new Error(`高德省级归属不在行政区字典：${poi.name} / ${poi.pname}`)
+    const campus = campuses.get(poi.id)
+    const name = result.selection_rule === 'institution-building' ? result.name.replace(/（[^）]*）/gu, '') : poi.name
     hospitals.set(id, {
       id,
-      name: result.selection_rule === 'institution-building' ? result.name.replace(/（[^）]*）/gu, '') : poi.name,
+      name: campus && !name.includes(campus) ? name + '（' + campus + '）' : name,
       aliases: [result.name],
       adcode: province.adcode,
       province: province.name,
