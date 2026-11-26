@@ -50,7 +50,7 @@ export function SiteNav() {
               : `${pathname.replace(/\/$/, '')}/`.startsWith(item.href)
           const NavLink = item.href === '/map/' ? TransitionLink : Link
           return (
-            <NavLink key={item.href} href={item.href} aria-current={active ? 'page' : undefined} onClick={() => setOpenOn(null)}>
+            <NavLink key={item.href} href={item.href} prefetch={item.href === '/map/' ? false : undefined} aria-current={active ? 'page' : undefined} onClick={() => setOpenOn(null)}>
               {item.label}
             </NavLink>
           )

@@ -1,4 +1,4 @@
-export type PsyOption = { label: string; value: number; desc?: string };
+export type PsyOption = { label: string; value: number };
 
 export type PsyQuestion = {
   id: number;

@@ -978,11 +978,11 @@
       "at": 1440
     },
     {
-      "id": "copy.submit-placeholder",
-      "type": "hasText",
-      "desc": "§1.1：投稿栏只有占位文案（用户原话「这里还没定好（；´д｀）ゞ」），通道定下来之前不写入口",
-      "selector": "#tc-sidebar-panel",
-      "text": "这里还没定好",
+      "id": "copy.submit-three-links",
+      "type": "count",
+      "desc": "投稿栏目每段说明后各有一张带图标的链接卡",
+      "selector": "#tc-sidebar-panel .tc-map-submissions li > p + a:has(> svg, > img)",
+      "expect": 3,
       "precondition": [
         {
           "action": "click",
@@ -990,7 +990,7 @@
         },
         {
           "action": "wait",
-          "selector": "#tc-sidebar-panel"
+          "selector": "#tc-sidebar-panel .tc-map-submissions"
         }
       ],
       "at": 1440
@@ -1013,10 +1013,12 @@
       "at": 1440
     },
     {
-      "id": "copy.submit-no-github",
-      "type": "forbidText",
-      "desc": "投稿栏不得指向 GitHub issue 入口（指向私有仓库，且要求用户公开身份）",
-      "text": "GitHub",
+      "id": "copy.submit-github-issue",
+      "type": "attr",
+      "desc": "GitHub 投稿卡直达新建 Issue",
+      "selector": "#tc-sidebar-panel .tc-map-submissions a[href*=\"github.com\"]",
+      "attr": "href",
+      "contains": "/Psychipelago/issues/new/choose",
       "precondition": [
         {
           "action": "click",
@@ -1024,7 +1026,7 @@
         },
         {
           "action": "wait",
-          "selector": "#tc-sidebar-panel"
+          "selector": "#tc-sidebar-panel .tc-map-submissions"
         }
       ],
       "at": 1440
@@ -1748,7 +1750,7 @@
       "id": "a11y.sheet-keyboard-focus-raises",
       "type": "rect",
       "at": 390,
-      "desc": "A23：peek 档焦点经 Tab 进 .sheet-body 里的可聚焦元素时，底卡抬到 medium（420–428）。前置从 .grab 起连按三次 Tab（.grab → 搜索框 → .chipbtn → 正文首行），并要求焦点真的落在 .sheet-body 内——收起状态的筛选抽屉不得占用 Tab 位（v3.m-filter-default-closed 判它高度为 0）。指针点击聚焦不抬档，负向往走查",
+      "desc": "A23：peek 档从把手经搜索框与三个常驻筛选标签 Tab 进入正文时，底卡随焦点抬高。筛选标签须参与正常焦点顺序，指针点击聚焦不抬档。",
       "selector": ".sheet",
       "min": {
         "h": 424
@@ -1776,6 +1778,21 @@
           "value": "Tab",
           "afterMs": 450
         },
+      {
+        "action": "key",
+        "value": "Tab",
+        "afterMs": 450
+      },
+      {
+        "action": "key",
+        "value": "Tab",
+        "afterMs": 300
+      },
+      {
+        "action": "key",
+        "value": "Tab",
+        "afterMs": 450
+      },
         {
           "action": "expectfocus",
           "selector": ".sheet-body :focus"
@@ -3990,101 +4007,40 @@
     {
       "id": "v3.m-chips-visible",
       "type": "count",
-      "desc": "V3-11 筛选抽屉里三个病症开关（点开按钮后数结构；可见性由 v3.m-filter-default-closed / -open 判）",
-      "selector": ".sheet .chipdrawer .tc-disorder-chip",
+      "desc": "手机全国视图的三个病症筛选标签常驻显示",
+      "selector": ".sheet .tc-disorder-chips .tc-disorder-chip",
       "expect": 3,
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".sheet .chipbtn",
-          "afterMs": 300
-        }
-      ],
-      "at": 390,
-      "note": "收起态 grid-template-rows:0fr + overflow:hidden 下 chip 的 rect 仍是 34 高，不能拿 rect 判可见"
+      "at": 390
     },
     {
       "id": "v3.m-filter-default-closed",
-      "type": "computed",
-      "desc": "C 筛选抽屉默认收起：抽屉网格行高 0（高度 0，chip 被裁掉、指针点不到）",
-      "selector": ".sheet .chipdrawer",
-      "props": {
-        "gridTemplateRows": "0px"
-      },
+      "type": "mustNotExist",
+      "desc": "手机地图不再渲染筛选小按钮与折叠抽屉",
+      "selector": ".sheet .chipbtn, .sheet .chipdrawer",
       "at": 390,
-      "note": "用 computed 而不是 rect：runner 把 0 高元素当「没有可见元素」，rect 判不了收起态"
+      "note": "筛选标签直接常驻显示，不存在折叠状态"
     },
     {
       "id": "v3.m-filter-open",
       "type": "rect",
-      "desc": "C 点筛选按钮后抽屉展开（高度 46，200ms 过渡）",
-      "selector": ".sheet .chipdrawer",
-      "min": {
-        "h": 40
-      },
-      "max": {
-        "h": 52
-      },
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".sheet .chipbtn",
-          "afterMs": 320
-        }
-      ],
+      "desc": "手机筛选标签在搜索行下方占据一行",
+      "selector": ".sheet .tc-disorder-chips",
+      "min": { "h": 48 },
+      "max": { "h": 56 },
       "at": 390
     },
     {
       "id": "v3.m-filter-badge",
-      "type": "hasText",
-      "desc": "C 勾一个病症再收起，按钮角标显示已选数量",
+      "type": "mustNotExist",
+      "desc": "筛选状态不额外显示小按钮角标",
       "selector": ".sheet .chipbtn-badge",
-      "text": "1",
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".sheet .chipbtn",
-          "afterMs": 320
-        },
-        {
-          "action": "click",
-          "selector": ".sheet .chipdrawer .tc-disorder-chip",
-          "textContains": "C-PTSD",
-          "afterMs": 280
-        },
-        {
-          "action": "click",
-          "selector": ".sheet .chipbtn",
-          "afterMs": 320
-        }
-      ],
       "at": 390
     },
     {
       "id": "v3.m-filter-badge-label",
-      "type": "attr",
-      "desc": "C 收起时筛选按钮的可访问名带上已选数量（角标 aria-hidden，读屏只读这个）",
-      "selector": ".sheet .chipbtn",
-      "attr": "aria-label",
-      "equals": "筛选，已选 1 项",
-      "precondition": [
-        {
-          "action": "click",
-          "selector": ".sheet .chipbtn",
-          "afterMs": 320
-        },
-        {
-          "action": "click",
-          "selector": ".sheet .chipdrawer .tc-disorder-chip",
-          "textContains": "C-PTSD",
-          "afterMs": 280
-        },
-        {
-          "action": "click",
-          "selector": ".sheet .chipbtn",
-          "afterMs": 320
-        }
-      ],
+      "type": "mustNotExist",
+      "desc": "手机端不保留筛选按钮的已选数量标签",
+      "selector": ".sheet .chipbtn[aria-label*=\"已选\"]",
       "at": 390
     },
     {
@@ -4597,14 +4553,9 @@
     {
       "id": "v3.m-search-hides-chips",
       "type": "mustNotExist",
-      "desc": "V3-11 搜索有词时病症开关与层级头部让位（先展开抽屉再进搜索：收起态不渲染，直接搜等于没验）",
+      "desc": "手机搜索有关键词时病症筛选标签从界面移除",
       "selector": ".sheet .tc-disorder-chip:not([hidden])",
       "precondition": [
-        {
-          "action": "click",
-          "selector": ".sheet .chipbtn",
-          "afterMs": 320
-        },
         {
           "action": "fill",
           "selector": ".sheet input[type=\"search\"]",
@@ -4616,7 +4567,7 @@
         }
       ],
       "at": 390,
-      "note": "runner 只看存在：开关须从 DOM 移除"
+      "note": "标签应从 DOM 移除，而非只隐藏视觉样式"
     },
     {
       "id": "v3.m-about-44",
@@ -5706,29 +5657,26 @@
     {
       "id": "v3.m-filter-btn-390",
       "type": "rect",
-      "desc": "C 手机筛选按钮常驻在搜索行：48×44（点开才展开抽屉）",
-      "selector": ".sheet .chipbtn",
-      "min": {
-        "w": 48,
-        "h": 44
-      },
+      "desc": "手机常驻筛选条横向铺满底卡并留出触控高度",
+      "selector": ".sheet .tc-disorder-chips",
+      "min": { "w": 350, "h": 48 },
       "at": 390
     },
     {
       "id": "v3.m-filter-btn-collapsed-390",
       "type": "attr",
-      "desc": "C 筛选按钮默认收起：aria-expanded = false（抽屉状态不靠高度猜）",
-      "selector": ".sheet .chipbtn",
-      "attr": "aria-expanded",
+      "desc": "手机病症筛选标签默认未选中",
+      "selector": ".sheet .tc-disorder-chip[data-disorder=\"cptsd\"]",
+      "attr": "aria-pressed",
       "equals": "false",
       "at": 390
     },
     {
       "id": "v3.m-filter-btn-expanded-390",
       "type": "attr",
-      "desc": "C 点开后 aria-expanded 变 true（同一个按钮管开与合）",
-      "selector": ".sheet .chipbtn",
-      "attr": "aria-expanded",
+      "desc": "点击 C-PTSD 标签后 aria-pressed 变为 true",
+      "selector": ".sheet .tc-disorder-chip[data-disorder=\"cptsd\"]",
+      "attr": "aria-pressed",
       "equals": "true",
       "precondition": [
         {
@@ -5738,7 +5686,7 @@
         },
         {
           "action": "click",
-          "selector": ".sheet .chipbtn",
+          "selector": ".sheet .tc-disorder-chip[data-disorder=\"cptsd\"]",
           "afterMs": 400
         }
       ],
@@ -7094,8 +7042,8 @@
       "type": "focusRingCdp",
       "at": 390,
       "selector": ".sheet .head-title",
-      "controlSelector": ".sheet .chipbtn",
-      "desc": "省份标题不该有焦点环（Safari 对脚本 focus 也画 :focus-visible）。用 CDP 强制 [focus, focus-visible] 后读 computed，期望 outline-style=none；对照组 .sheet .chipbtn 强制后必须 solid / 2px / rgb(25,59,56)，证明强制真的生效、选择器没写错。",
+      "controlSelector": ".sheet .tc-disorder-chip",
+      "desc": "省份标题不该有焦点环；筛选标签作为键盘控件应有可见焦点环。",
       "precondition": [
         {
           "action": "wait",
@@ -7614,6 +7562,16 @@
   ],
   "appliesToNote": "这批断言的选择器取自地图首页的 DOM（.tc-sidebar / .tc-map-zoom / .tc-hospital-card 等）。拿到别的路由跑会大面积假失败——不是那些页面不合格，是断言不适用。要覆盖其他路由，另写一份带自己选择器的文件，在 appliesTo 里写明路由。",
   "retired": [
+    {
+      "id": "copy.submit-placeholder",
+      "reason": "投稿渠道已由用户确认，三张入口替换占位文案。",
+      "retiredIn": "map-submissions-2026-11-26"
+    },
+    {
+      "id": "copy.submit-no-github",
+      "reason": "现有公开仓库已开启 Issues，用户指定新建 Issue 为反馈入口。",
+      "retiredIn": "map-submissions-2026-11-26"
+    },
     {
       "id": "type.sidebar-card-h2",
       "why": "机构行里没有标题元素；名称字号由 type.hospital-row-name 覆盖"

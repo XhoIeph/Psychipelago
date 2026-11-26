@@ -1,12 +1,14 @@
 'use client'
 
 import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { hospitalSearchTiers, matchesSearch, searchTier } from '@/lib/search'
+import { hospitalSearchTiers, matchesSearch, searchRelevance, searchTier } from '@/lib/search'
+import { isDirectoryOnlyReport } from '@/lib/report-directory'
 import { knownText } from '@/lib/hospital-row'
 import { aggregateDoctorLeads, splitDoctorNames } from '@/lib/doctor-leads'
 import { displayDisorderLabels, disorderDisplayLabel, disorderDisplayRank, DISORDER_FILTER_GROUPS } from '@/lib/disorder-labels'
 import { loadAmap } from '@/lib/amap-loader'
 import { createAmapRuntime } from '@/lib/amap-runtime'
+import { DENSITY_OPACITY, densityLimits, densitySwatch } from '@/lib/map-density'
 import { applyTheme, readTheme, togglePageTheme, type Theme } from '@/lib/theme'
 import type { MapCamera } from '@/lib/map-camera'
 import { gsap } from 'gsap'
@@ -16,6 +18,7 @@ import type { Disorder, Doctor, Hospital, Province, Report } from '@/lib/schema'
 import { HospitalExplorer, type DisorderGroup, type ResultFilter } from '@/components/HospitalExplorer'
 import { Sidebar, type SidebarTabId } from './Sidebar'
 import { MapSheet, type SheetHeights, type SheetLevel, type SheetStop } from './MapSheet'
+import { MapSubmissions } from './MapSubmissions'
 import { ThemeToggle } from './ThemeToggle'
 import { HospitalDetail } from './HospitalDetail'
 import { DoctorDetail, type DoctorDisorderStat } from './DoctorDetail'
@@ -122,12 +125,12 @@ type Props = {
   hospitals: Hospital[]
   reports: Report[]
   disorders: Disorder[]
-  reportProvince: Record<string, string>
   reportCounts: Record<string, number>
   doctorProfiles: Doctor[]
 }
 
 export function MapApp(props: Props) {
+  const countLimits = useMemo(() => densityLimits(props.provinceStats), [props.provinceStats])
   const shellRef = useRef<HTMLDivElement | null>(null)
   const dockRef = useRef({ progress: 0, inset: 0 })
   const dockDesktopRef = useRef(false)
@@ -143,6 +146,7 @@ export function MapApp(props: Props) {
   const sidebarRef = useRef<HTMLElement | null>(null)
   const burgerRef = useRef<HTMLButtonElement | null>(null)
   const projectRef = useRef<HTMLDivElement | null>(null)
+  const submitDialogRef = useRef<HTMLDialogElement>(null)
   const aboutIconRef = useRef<HTMLButtonElement | null>(null)
   const desktopRef = useRef(false)
 
@@ -712,21 +716,24 @@ export function MapApp(props: Props) {
   const searchResults = useMemo<SearchResult[]>(() => {
     const q = query.trim()
     if (!q) return []
-    const results: SearchResult[] = []
+    const results: { result: SearchResult; relevance: number }[] = []
     for (const province of propsRef.current.provinces) {
-      if (matchesSearch(`${province.name} ${province.short_name}`, q)) {
+      const provinceText = `${province.name} ${province.short_name}`
+      if (matchesSearch(provinceText, q)) {
         results.push({
-          key: `province-${province.adcode}`,
-          group: '省份',
-          label: province.name,
-          sub: '省份概要',
-          run: () => {
-            resultFocusRef.current = RESULT_FOCUS_TITLE
-            selectProvince(province.adcode)
+          result: {
+            key: `province-${province.adcode}`,
+            group: '省份',
+            label: province.name,
+            sub: '省份概要',
+            run: () => {
+              resultFocusRef.current = RESULT_FOCUS_TITLE
+              selectProvince(province.adcode)
+            },
           },
+          relevance: searchRelevance(q, [provinceText]),
         })
       }
-      if (results.filter((item) => item.group === '省份').length >= 3) break
     }
     // 筛选态下搜索层也要用命中集合：结果行的「线索 N 条」必须等于点进去详情的 N 条。
     const reports = propsRef.current.reports
@@ -739,9 +746,10 @@ export function MapApp(props: Props) {
       ? reports.filter((report) => report.hospital_id === hospitalId && hitLeadIds.has(report.id)).length
       : propsRef.current.reportCounts[hospitalId] ?? 0
 
-    const hospitals: { result: SearchResult; tier: number; count: number }[] = []
+    const hospitals: { result: SearchResult; tier: number; count: number; relevance: number }[] = []
     for (const hospital of propsRef.current.hospitals) {
-      const tier = searchTier(q, hospitalSearchTiers(hospital, propsRef.current.reports))
+      const tiers = hospitalSearchTiers(hospital, propsRef.current.reports)
+      const tier = searchTier(q, tiers)
       if (tier >= 4) continue
       const count = leadCountOf(hospital.id)
       // 命中 0 条的机构在筛选态下不出现在结果里，与省份列表同一规则。
@@ -759,13 +767,14 @@ export function MapApp(props: Props) {
         },
         tier,
         count,
+        relevance: searchRelevance(q, tiers),
       })
     }
     // 相关性优先：名称命中 > 省市命中 > 科室/服务说明 > 只有原文，同级按线索数、再按名称。
-    hospitals.sort((a, b) => a.tier - b.tier || b.count - a.count || a.result.label.localeCompare(b.result.label, 'zh-Hans-CN'))
+    hospitals.sort((a, b) => a.tier - b.tier || a.relevance - b.relevance || b.count - a.count || a.result.label.localeCompare(b.result.label, 'zh-Hans-CN'))
 
     // Share doctor aggregation with both browsing surfaces.
-    const doctors: { result: SearchResult; tier: number; count: number }[] = []
+    const doctors: { result: SearchResult; tier: number; count: number; relevance: number }[] = []
     const doctorKeys = new Set<string>()
     const doctorReportById = new Map(reports.map((report) => [report.id, report]))
     const hospitalById = new Map(propsRef.current.hospitals.map((hospital) => [hospital.id, hospital]))
@@ -779,14 +788,16 @@ export function MapApp(props: Props) {
         if (doctorKeys.has(key)) continue
         const hospital = entry.hospitalId ? hospitalById.get(entry.hospitalId) : undefined
         // 医生同样按相关性排：姓名 > 所属医院/城市 > 只有线索原文。
-        const tier = searchTier(q, [
+        const doctorTiers = [
           entry.name,
           [entry.hospitalName, hospital?.city ?? '', hospital?.province ?? ''].join(' '),
+          entry.disorders.join(' '),
           entry.reportIds.flatMap((id) => {
             const report = doctorReportById.get(id)
-            return report ? [report.evidence_quote, report.evidence_full_text ?? ''] : []
+            return report ? [report.evidence_quote, report.evidence_full_text ?? '', ...(report.source_topics ?? [])] : []
           }).join(' '),
-        ])
+        ]
+        const tier = searchTier(q, doctorTiers)
         doctorKeys.add(key)
         doctors.push({
           result: {
@@ -810,10 +821,11 @@ export function MapApp(props: Props) {
           },
           tier,
           count: hitReportIds.length,
+          relevance: searchRelevance(q, doctorTiers),
         })
       }
     }
-    doctors.sort((a, b) => a.tier - b.tier || b.count - a.count || a.result.label.localeCompare(b.result.label, 'zh-Hans-CN'))
+    doctors.sort((a, b) => a.tier - b.tier || a.relevance - b.relevance || b.count - a.count || a.result.label.localeCompare(b.result.label, 'zh-Hans-CN'))
 
     // 病症按显示标签分组：源文档只有 cptsd / osdd-did / 人格障碍 三段，osdd 与 did 合成一行。
     const disorderBuckets = new Map<string, { label: string; ids: string[]; haystack: string[] }>()
@@ -824,60 +836,67 @@ export function MapApp(props: Props) {
       bucket.haystack.push(disorder.name_zh, disorder.name_en, disorder.id)
       disorderBuckets.set(label, bucket)
     }
-    const disorders: SearchResult[] = []
+    const disorders: { result: SearchResult; relevance: number }[] = []
     for (const bucket of disorderBuckets.values()) {
       if (!matchesSearch(bucket.haystack.join(' '), q)) continue
       const hits = propsRef.current.reports.filter((report) =>
         report.disorders.some((id) => bucket.ids.includes(id)))
       disorders.push({
-        key: `disorder-${bucket.label}`,
-        group: '病症',
-        label: bucket.label,
-        sub: `${hits.length} 条线索`,
-        run: () => {
-          // 搜索命中的病症点亮面板里对应那一行，内容区回到省份列表。
-          const groupId = DISORDER_FILTER_GROUPS.find((item) => item.label === bucket.label)?.id
-          // 没有对应筛选组（0 条线索的标签）时什么都不动，焦点由 runResult 还给搜索框。
-          resultFocusRef.current = groupId ? RESULT_FOCUS_TITLE : null
-          if (groupId) enterFilter(null, [groupId])
+        result: {
+          key: `disorder-${bucket.label}`,
+          group: '病症',
+          label: bucket.label,
+          sub: `${hits.length} 条线索`,
+          run: () => {
+            // 搜索命中的病症点亮面板里对应那一行，内容区回到省份列表。
+            const groupId = DISORDER_FILTER_GROUPS.find((item) => item.label === bucket.label)?.id
+            // 没有对应筛选组（0 条线索的标签）时什么都不动，焦点由 runResult 还给搜索框。
+            resultFocusRef.current = groupId ? RESULT_FOCUS_TITLE : null
+            if (groupId) enterFilter(null, [groupId])
+          },
         },
+        relevance: searchRelevance(q, bucket.haystack),
       })
     }
     const sourceTopics = new Set(propsRef.current.reports.flatMap((report) => report.source_topics ?? []))
     // 话题与病症共用一个组：同名时只留病症那行，否则「人格障碍」会出现两次。
-    const groupedLabels = new Set(disorders.map((item) => item.label))
+    const groupedLabels = new Set(disorders.map((item) => item.result.label))
     for (const topic of sourceTopics) {
       if (!matchesSearch(topic, q)) continue
       if (groupedLabels.has(topic)) continue
       groupedLabels.add(topic)
       const count = propsRef.current.reports.filter((report) => report.source_topics?.includes(topic)).length
       disorders.push({
-        key: `topic-${topic}`,
-        group: '病症',
-        label: topic,
-        sub: `${count} 条线索`,
-        run: () => {
-          const hospitalIds = [...new Set(propsRef.current.reports
-            .filter((report) => report.source_topics?.includes(topic) && report.hospital_id)
-            .map((report) => report.hospital_id as string))]
-          resultFocusRef.current = RESULT_FOCUS_TITLE
-          enterFilter({ hospitalIds }, [])
+        result: {
+          key: `topic-${topic}`,
+          group: '病症',
+          label: topic,
+          sub: `${count} 条线索`,
+          run: () => {
+            const hospitalIds = [...new Set(propsRef.current.reports
+              .filter((report) => report.source_topics?.includes(topic) && report.hospital_id)
+              .map((report) => report.hospital_id as string))]
+            resultFocusRef.current = RESULT_FOCUS_TITLE
+            enterFilter({ hospitalIds }, [])
+          },
         },
+        relevance: searchRelevance(q, [topic]),
       })
     }
-    // Every group keeps a slot so a disorder or source-topic hit is always reachable.
-    const provinceHits = results.filter((item) => item.group === '省份').slice(0, 2)
-    return [
-      ...provinceHits,
-      ...hospitals.slice(0, 4).map((item) => item.result),
-      ...doctors.slice(0, 2).map((item) => item.result),
-      ...disorders.slice(0, 2),
-    ]
+    const groups = [
+      { group: '省份' as const, items: results.sort((a, b) => a.relevance - b.relevance || a.result.label.localeCompare(b.result.label, 'zh-Hans-CN')).slice(0, 2) },
+      { group: '医院' as const, items: hospitals.slice(0, 4).map(({ result, relevance }) => ({ result, relevance })) },
+      { group: '医生' as const, items: doctors.slice(0, 2).map(({ result, relevance }) => ({ result, relevance })) },
+      { group: '病症' as const, items: disorders.sort((a, b) => a.relevance - b.relevance || a.result.label.localeCompare(b.result.label, 'zh-Hans-CN')).slice(0, 2) },
+    ].filter((group) => group.items.length > 0)
+    const groupOrder: SearchGroup[] = ['省份', '医院', '医生', '病症']
+    groups.sort((a, b) => a.items[0].relevance - b.items[0].relevance || groupOrder.indexOf(a.group) - groupOrder.indexOf(b.group))
+    return groups.flatMap((group) => group.items.map((item) => item.result))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, activeDisorderIds])
 
   const grouped = useMemo(() => {
-    const order: SearchGroup[] = ['省份', '医院', '医生', '病症']
+    const order = [...new Set(searchResults.map((item) => item.group))]
     return order
       .map((group) => ({ group, items: searchResults.filter((item) => item.group === group) }))
       .filter((entry) => entry.items.length > 0)
@@ -916,11 +935,14 @@ export function MapApp(props: Props) {
     const counts = new Map<string, number>()
     for (const report of props.reports) {
       if (!reportIds.has(report.id)) continue
-      for (const label of displayDisorderLabels(report.disorders)) counts.set(label, (counts.get(label) ?? 0) + 1)
+      for (const label of displayDisorderLabels(report.disorders)) {
+        const count = counts.get(label) ?? 0
+        counts.set(label, count + (isDirectoryOnlyReport(report) ? 0 : 1))
+      }
     }
     return [...counts.entries()]
       .sort((a, b) => disorderDisplayRank(a[0]) - disorderDisplayRank(b[0]))
-      .map(([label, count]) => ({ id: label, label, count }))
+      .map(([label, count]) => ({ id: label, label, count: count || undefined }))
   }, [selectedDoctor, doctorLeadsAll, props.reports])
 
   // The record section only exists when doctors.json actually holds this person.
@@ -1019,11 +1041,7 @@ export function MapApp(props: Props) {
         />
       </Suspense>
     ),
-    submit: (
-      <div className="tc-stack">
-        <p className="tc-submit-placeholder">这里还没定好（；´д｀）ゞ</p>
-      </div>
-    ),
+    submit: <MapSubmissions />,
   }
 
   const mobileExplorer = (
@@ -1199,7 +1217,7 @@ export function MapApp(props: Props) {
   // Escape 的优先级：关于 → 搜索 → 详情退一层（大卡先落到中档）→ 列表收一档。
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape' || event.defaultPrevented) return
+      if (event.key !== 'Escape' || event.defaultPrevented || submitDialogRef.current?.open) return
       const target = event.target
       if (target instanceof HTMLElement && (target.closest('input, textarea, select') || target.isContentEditable)) return
       // 两张角标卡在同一层：先关当前开着的那张，再轮到搜索、详情、列表。
@@ -1352,8 +1370,26 @@ export function MapApp(props: Props) {
             <section id="tc-project-card" className={closingCard === 'about' ? 'tc-project-card is-closing' : 'tc-project-card'} aria-label="关于项目">
               <div className="tc-row tc-row--between"><strong>群岛 Psychipelago</strong></div>
               <p>本项目旨在为CPTSD/BPD人群提供全国就诊地图，帮助更多人治疗心理创伤与障碍</p>
-              <TransitionLink className="tc-card-action" href="/about/">了解我们</TransitionLink>
+              <div className="tc-row">
+                <TransitionLink className="tc-card-action" href="/about/">了解我们</TransitionLink>
+                <button type="button" className="tc-card-action" aria-haspopup="dialog" onClick={() => submitDialogRef.current?.showModal()}>
+                  投稿
+                </button>
+              </div>
             </section>
+          )}
+          {!isDesktop && (
+            <dialog ref={submitDialogRef} className="tc-map-submit-dialog" aria-labelledby="tc-map-submit-title">
+              <header className="tc-map-submit-head">
+                <h2 id="tc-map-submit-title">投稿</h2>
+                <form method="dialog">
+                  <button className="tc-sidebar-close" aria-label="关闭投稿">
+                    <X size={20} aria-hidden="true" />
+                  </button>
+                </form>
+              </header>
+              <MapSubmissions />
+            </dialog>
           )}
         </div>
       </div>
@@ -1418,10 +1454,19 @@ export function MapApp(props: Props) {
         </MapSheet>
       )}
 
-      <div className="tc-mapapp-legend">
-        <span>线索密度</span>
-        <span className="tc-ramp" aria-hidden="true" />
-      </div>
+      {!activeDisorderIds && countLimits.length > 0 && (
+        <div className="tc-mapapp-legend">
+          <span>线索密度</span>
+          <span
+            className="tc-ramp"
+            aria-hidden="true"
+            style={{
+              backgroundImage: `linear-gradient(90deg, ${countLimits.map((_, i) => `${densitySwatch(theme, i, countLimits.length)} ${countLimits.length === 1 ? 0 : i * 100 / (countLimits.length - 1)}%`).join(', ')})`,
+              opacity: DENSITY_OPACITY[theme],
+            }}
+          />
+        </div>
+      )}
 
       <div className="tc-map-zoom" aria-label="地图缩放">
         <button type="button" aria-label="放大地图" disabled={!mapReady || limits.atMax} onClick={() => zoomBy(1)}>+</button>

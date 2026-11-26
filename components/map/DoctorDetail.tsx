@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { Doctor } from '@/lib/schema'
 import type { MapHospital } from './types'
 
-export type DoctorDisorderStat = { id: string; label: string; count: number }
+export type DoctorDisorderStat = { id: string; label: string; count?: number }
 
 export function DoctorDetail({
   name,
@@ -48,7 +48,7 @@ export function DoctorDetail({
           {disorders.map((disorder) => (
             <li key={disorder.id}>
               <span>{disorder.label}</span>
-              <span>{disorder.count} 条</span>
+              {disorder.count != null && disorder.count > 0 && <span>{disorder.count} 条</span>}
             </li>
           ))}
         </ul>

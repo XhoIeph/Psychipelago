@@ -117,7 +117,7 @@ export function hospitalsFromRun(run: LocationRun): Hospital[] {
     if (!province) throw new Error(`高德省级归属不在行政区字典：${poi.name} / ${poi.pname}`)
     hospitals.set(id, {
       id,
-      name: /building$/u.test(result.selection_rule ?? '') || !/[\u4e00-\u9fff]/u.test(poi.name) ? result.name.replace(/（[^）]*）/gu, '') : poi.name,
+      name: result.selection_rule === 'institution-building' ? result.name.replace(/（[^）]*）/gu, '') : poi.name,
       aliases: [result.name],
       adcode: province.adcode,
       province: province.name,

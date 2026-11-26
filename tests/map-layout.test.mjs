@@ -7,6 +7,21 @@ import { attachMapPointer } from '../lib/map-pointer.ts'
 import { showMapNodes } from '../lib/map-mode.ts'
 import { groupMapNodes, mapNodeLayout, NODE_SPACING } from '../lib/map-nodes.ts'
 import { mapHospitalInputs } from '../lib/map-coordinates.ts'
+import { densityColor, densityLimits, densitySwatch } from '../lib/map-density.ts'
+
+test('省级填色按当前线索数分档，低于全国高位的省份不提前变成最深色', () => {
+  const stats = { a: { reports: 39 }, b: { reports: 15 }, c: { reports: 32 }, d: { reports: 0 } }
+  const limits = densityLimits(stats)
+  assert.deepEqual(limits, [8, 16, 24, 32, 39])
+  for (const theme of ['light', 'dark']) {
+    assert.equal(densityColor(theme, 0, limits), 'transparent')
+    assert.equal(densityColor(theme, 15, limits), densitySwatch(theme, 1, 5))
+    assert.equal(densityColor(theme, 32, limits), densitySwatch(theme, 3, 5))
+    assert.equal(densityColor(theme, 39, limits), densitySwatch(theme, 4, 5))
+  }
+  assert.deepEqual(densityLimits({ a: { reports: 3 } }), [1, 2, 3])
+  assert.deepEqual(densityLimits({}), [])
+})
 
 const camera = {
   getMaxZoom: () => MAP_MAX_ZOOM,
@@ -171,7 +186,7 @@ test('合成机构跨级、反向缩放保持原坐标，覆盖单点与聚合',
 test('当前有效机构跨级、反向缩放保持原坐标，成员不遗漏', () => {
   const source = JSON.parse(readFileSync(new URL('../data/curated/hospitals.json', import.meta.url), 'utf8'))
   const reports = JSON.parse(readFileSync(new URL('../data/curated/reports.json', import.meta.url), 'utf8'))
-  const locations = JSON.parse(readFileSync(new URL('../data/evidence/locations/amap-2026-11-09.json', import.meta.url), 'utf8'))
+  const locations = JSON.parse(readFileSync(new URL('../data/evidence/locations/amap-2026-11-21.json', import.meta.url), 'utf8'))
   const hospitals = mapHospitalInputs(source.items, reports.items, locations.results)
   assertNodeCoordinates(hospitals)
 })

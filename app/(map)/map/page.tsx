@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { MapApp } from '@/components/map/MapApp'
 import { formatPublishedAt, formatReportSource } from '@/lib/format'
 import { mapHospitalInputs } from '@/lib/map-coordinates'
-import locationEvidence from '@/data/evidence/locations/amap-2026-11-09.json'
+import locationEvidence from '@/data/evidence/locations/amap-2026-11-21.json'
 import {
   disorders,
   doctors,
@@ -10,12 +10,12 @@ import {
   provinceStats,
   provinces,
   publicReports,
-  reportProvinceMap,
 } from '@/lib/data'
 
 export const metadata: Metadata = {
-  title: '地图｜群岛 Psychipelago',
-  description: '全国就诊资源与线索地图：按省份找医院，按医生看线索。',
+  title: '就诊地图｜群岛 Psychipelago',
+  description: '按省份查找医院，浏览与创伤应激、解离和人格障碍相关的就诊线索。',
+  alternates: { canonical: '/map/' },
 }
 
 export default function MapPage() {
@@ -70,7 +70,6 @@ export default function MapPage() {
       hospitals={hospitals}
       reports={publicReports}
       disorders={disorders}
-      reportProvince={reportProvinceMap()}
       reportCounts={reportCounts}
       doctorProfiles={doctors}
     />

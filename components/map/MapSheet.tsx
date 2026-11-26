@@ -11,7 +11,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from 'react'
-import { ChevronLeft, Search, SlidersHorizontal, X } from 'lucide-react'
+import { ChevronLeft, Search, X } from 'lucide-react'
 import { DisorderChips } from '@/components/DisorderChips'
 import type { DisorderGroup } from '@/components/HospitalExplorer'
 import { animatePanelDrill } from '@/lib/panel-motion'
@@ -135,9 +135,6 @@ export function MapSheet({
   const [inputFocused, setInputFocused] = useState(false)
   // 鼠标按下卡片里的按钮时输入框先失焦；指针停在搜索行里就先保持展开。
   const [rowPointerInside, setRowPointerInside] = useState(false)
-  // 病症标签默认收起，由搜索行右侧的按钮展开：常驻标签占掉太多高度。
-  const [chipsOpen, setChipsOpen] = useState(false)
-
   // 分组保持搜索结果的原顺序，拍平后的下标与 MapApp 的 activeResult 一致。
   const flat = results.flatMap((entry) => entry.items)
   const searching = query.trim().length > 0
@@ -148,8 +145,6 @@ export function MapSheet({
   // 聚焦或有关键词时给出「取消」：清词、失焦、回到聚焦前的档位。
   const showCancel = inputFocused || searching
   const showChips = !searching && (level === 'country' || level === 'province')
-  const chipsId = `${titleId}-chips`
-  const selectedCount = selectedDisorders.length
 
   const writeHeight = useCallback((height: number) => {
     const sheet = sheetRef.current
@@ -185,7 +180,7 @@ export function MapSheet({
     writeHeight(targetHeight)
   }, [writeHeight, targetHeight])
 
-  // peek 随层级字号、筛选条和搜索行显隐、折行变化，量出来再上报；仍在 peek 时立刻贴合。
+  // Measure the persistent chips with the search row so peek stays content-sized.
   useLayoutEffect(() => {
     const grab = grabRef.current
     const head = headRef.current
@@ -194,7 +189,7 @@ export function MapSheet({
       // 桌面首帧也会挂载一次，display:none 时全部为 0，别把 0 当成 peek。
       if (!grab.offsetHeight) return
       const search = searchRowRef.current
-      const chips = sheetRef.current?.querySelector<HTMLElement>('.chipdrawer')
+      const chips = sheetRef.current?.querySelector<HTMLElement>('.tc-disorder-chips')
       const next = Math.round(
         grab.offsetHeight + (search?.offsetHeight ?? 0) + (chips?.offsetHeight ?? 0) + head.offsetHeight + PEEK_GAP,
       )
@@ -207,28 +202,10 @@ export function MapSheet({
     observer.observe(grab)
     observer.observe(head)
     if (searchRowRef.current) observer.observe(searchRowRef.current)
-    const chips = sheetRef.current?.querySelector<HTMLElement>('.chipdrawer')
+    const chips = sheetRef.current?.querySelector<HTMLElement>('.tc-disorder-chips')
     if (chips) observer.observe(chips)
     return () => observer.disconnect()
-  }, [chipsOpen, level, onPeekHeight, searching, title, selectedDisorders])
-
-  // 进搜索层就收起标签：结果区要整块留出来，展开的标签只会挤掉结果。
-  useLayoutEffect(() => {
-    if (searching) setChipsOpen(false)
-  }, [searching])
-
-  // Esc 先把展开的标签收起来，第二下再交给原有的层级退出手势。
-  useEffect(() => {
-    if (!chipsOpen) return
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return
-      event.preventDefault()
-      event.stopPropagation()
-      setChipsOpen(false)
-    }
-    document.addEventListener('keydown', onKeyDown, true)
-    return () => document.removeEventListener('keydown', onKeyDown, true)
-  }, [chipsOpen])
+  }, [level, onPeekHeight, searching, title, selectedDisorders])
 
   // 换层级（含进详情、回列表）时正文回到顶部，别停在上一个层级的位置。
   useLayoutEffect(() => {
@@ -473,21 +450,6 @@ export function MapSheet({
             </button>
           )}
         </div>
-        {showChips && (
-          <button
-            type="button"
-            className={chipsOpen ? 'chipbtn is-open' : 'chipbtn'}
-            aria-label={selectedCount > 0 ? `筛选，已选 ${selectedCount} 项` : '筛选'}
-            aria-expanded={chipsOpen}
-            aria-controls={chipsId}
-            onClick={() => setChipsOpen((open) => !open)}
-          >
-            <SlidersHorizontal size={17} aria-hidden="true" />
-            {selectedCount > 0 && !chipsOpen ? (
-              <span className="chipbtn-badge" aria-hidden="true">{selectedCount}</span>
-            ) : null}
-          </button>
-        )}
         {showCancel && (
           <button
             type="button"
@@ -500,15 +462,11 @@ export function MapSheet({
         )}
       </div>
       {showChips && (
-        <div id={chipsId} className={chipsOpen ? 'chipdrawer is-open' : 'chipdrawer'}>
-          <div className="chipdrawer-inner">
-            <DisorderChips
-              groups={disorderGroups}
-              selected={selectedDisorders}
-              onToggle={onToggleDisorder}
-            />
-          </div>
-        </div>
+        <DisorderChips
+          groups={disorderGroups}
+          selected={selectedDisorders}
+          onToggle={onToggleDisorder}
+        />
       )}
       <header className={`sheet-head sheet-head--${level}`} ref={headRef} {...dragProps}>
         {backLabel && onBack && (

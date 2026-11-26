@@ -2,11 +2,15 @@
 
 import Link from 'next/link'
 import { useMemo, useRef, useState } from 'react'
+import { BrandMark } from '@/components/Brand'
+import { SITE_NAME, SITE_ORIGIN } from '@/lib/site'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import type { PsyDimensionScore, PsyLevel, PsyResult } from '@/lib/psy/types'
 
 gsap.registerPlugin(useGSAP)
+
+const BASE_PATH = (process.env.NEXT_PUBLIC_BASE_PATH ?? '').replace(/\/+$/, '')
 
 const TONE_BY_TYPE: Record<string, string> = {
   normal: 'ok',
@@ -18,6 +22,13 @@ const TONE_BY_TYPE: Record<string, string> = {
 
 function toneFor(levelType?: string) {
   return TONE_BY_TYPE[levelType ?? ''] ?? 'info'
+}
+
+function dimensionTone(dimension: PsyDimensionScore) {
+  if (dimension.levelType) return toneFor(dimension.levelType)
+  if (dimension.level === '达到阈值' || dimension.level === '达到筛查参考值') return 'warn'
+  if (dimension.level === '未达到阈值' || dimension.level === '低于筛查参考值') return 'ok'
+  return dimension.level ? 'info' : 'score'
 }
 
 function formatDuration(seconds?: number) {
@@ -117,7 +128,7 @@ function RadarChart({
 
   return (
     <figure className="tc-psy-radar">
-      <svg viewBox="-46 -30 412 320" role="img" aria-label={`各维度相对满分：${readable}`}>
+      <svg viewBox="-46 14 412 280" role="img" aria-label={`各维度相对满分：${readable}`}>
         {rings.map((ring) => (
           <polygon
             key={ring}
@@ -159,10 +170,20 @@ export default function PsyReport({
   onRestart: () => void
 }) {
   const [copied, setCopied] = useState(false)
+  const [exporting, setExporting] = useState(false)
+  const [exportError, setExportError] = useState(false)
   const reportRef = useRef<HTMLElement | null>(null)
   const dimensions = result.dimensionScores ?? []
-  const summaryLines = toLines(result.summary)
+  const matchedLevel = levels.find((level) => level.label === result.level)
+  const summaryLines = toLines(result.summary ?? matchedLevel?.summary)
+  const advice = toLines(result.advice ?? matchedLevel?.advice)
+  const adviceLines = advice.length ? advice : [
+    '如果有几道题特别贴近你的感受，可以先记下来。以后回看，或和信任的人聊起时，可以从这些题说起。',
+  ]
   const oldItq = result.scaleId === 'itq' && !result.scoringVersion
+  const readingNote = result.scaleId === 'itq' && !oldItq
+    ? '可以从各维度看起，留意哪些感受在过去一个月里对生活影响最大。'
+    : '回看这次的分数时，可以想想哪些感受最近更常出现，又在哪些时候轻一些。'
   const dso = result.scaleId === 'itq' && result.scoringVersion ? result.secondaryMetrics?.[0] : undefined
   const barMax = useMemo(() => dimensionMax(dimensions, result.scaleId), [dimensions, result.scaleId])
   const tone = toneFor(result.levelType)
@@ -172,8 +193,7 @@ export default function PsyReport({
     '',
   )
 
-  const summaryText = useMemo(() => {
-    const narrative = toLines(result.summary)
+  const copySummary = async () => {
     const lines = [
       `${result.scaleName}（${result.scaleFullName}）`,
       oldItq ? '旧版总分结果' : '',
@@ -182,16 +202,22 @@ export default function PsyReport({
       result.level ? `结果：${result.level}` : '',
       result.genderLabel ? `常模：${result.genderLabel}` : '',
       result.validityConclusion ?? '',
-      narrative.length ? `\n${narrative.join('\n')}` : '',
+      `\n${[readingNote, ...summaryLines].join('\n')}`,
       dimensions.length
         ? `\n维度：\n${dimensions
             .map((dimension) => `· ${dimension.name}：${dimension.score ?? dimension.raw ?? '-'}${dimension.level ? `（${dimension.level}）` : ''}`)
             .join('\n')}`
         : '',
+      `\n建议：\n${adviceLines.join('\n')}`,
     ]
-    return lines.filter(Boolean).join('\n')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dimensions, dso, oldItq, result])
+    try {
+      await navigator.clipboard.writeText(lines.filter(Boolean).join('\n'))
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2400)
+    } catch {
+      setCopied(false)
+    }
+  }
 
   useGSAP(
     () => {
@@ -213,19 +239,57 @@ export default function PsyReport({
     { scope: reportRef, dependencies: [result.scaleId, result.primaryScore] },
   )
 
-  const copySummary = async () => {
+  const exportImage = async () => {
+    const report = reportRef.current
+    if (!report || exporting) return
+    setExporting(true)
+    setExportError(false)
+    const frame = document.createElement('div')
+    frame.className = 'tc-psy-run tc-psy-export-frame'
+    frame.inert = true
+    frame.setAttribute('aria-hidden', 'true')
+    const imageReport = report.cloneNode(true) as HTMLElement
+    imageReport.dataset.exporting = 'true'
+    imageReport.querySelectorAll('.tc-psy-answers, .tc-psy-report-actions, .tc-psy-export-error').forEach((node) => node.remove())
+    imageReport.querySelectorAll<HTMLElement>('.tc-psy-dims-track > span').forEach((bar) => {
+      bar.style.removeProperty('transform')
+    })
+    frame.append(imageReport)
+    document.body.append(frame)
+
     try {
-      await navigator.clipboard.writeText(summaryText)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 2400)
+      // SVG descendants are cloned without CSS by html-to-image.
+      imageReport.querySelectorAll<SVGElement>('.tc-psy-radar svg [class]').forEach((node) => {
+        const style = getComputedStyle(node)
+        for (const property of ['fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'font-size', 'font-weight']) {
+          node.style.setProperty(property, style.getPropertyValue(property))
+        }
+      })
+      const { toBlob } = await import('html-to-image')
+      await document.fonts.ready
+      const blob = await toBlob(imageReport, { pixelRatio: 2, skipFonts: true })
+      if (!blob) throw new Error('PNG export failed')
+      const url = URL.createObjectURL(blob)
+      const download = document.createElement('a')
+      download.href = url
+      download.download = `群岛-${result.scaleId}-测评结果.png`
+      download.click()
+      window.setTimeout(() => URL.revokeObjectURL(url), 30_000)
     } catch {
-      setCopied(false)
+      setExportError(true)
+    } finally {
+      frame.remove()
+      setExporting(false)
     }
   }
 
   return (
     <article className="tc-psy-report" ref={reportRef} aria-label={`${result.scaleName} 结果`}>
       <header className="tc-psy-report-head">
+        <div className="tc-psy-report-brand">
+          <BrandMark height={32} />
+          <span>{SITE_NAME}</span>
+        </div>
         <h1>{result.scaleFullName}结果</h1>
         <p className="tc-psy-eyebrow">
           {result.scaleName} · {result.completedTimeFormatted}
@@ -262,16 +326,11 @@ export default function PsyReport({
         )}
       </section>
 
-      {summaryLines.length > 0 && (
-        <section className="tc-psy-summary" aria-labelledby="psy-summary-title">
-          <h2 id="psy-summary-title">结果解读</h2>
-          {summaryLines.map((line) => (
-            <p key={line}>{line}</p>
-          ))}
-        </section>
-      )}
-
-      {dimensions.length >= 3 && <RadarChart dimensions={dimensions} barMax={barMax} />}
+      <section className="tc-psy-summary" aria-labelledby="psy-summary-title">
+        <h2 id="psy-summary-title">结果解读</h2>
+        <p>{readingNote}</p>
+        {summaryLines.map((line) => <p key={line}>{line}</p>)}
+      </section>
 
       {levels.length > 0 && (
         <section className="tc-psy-levels" aria-label="等级区间">
@@ -295,19 +354,24 @@ export default function PsyReport({
       {dimensions.length > 0 && (
         <section className="tc-psy-dims" aria-label="维度得分">
           <h2>各维度</h2>
+          {dimensions.length >= 3 && <RadarChart dimensions={dimensions} barMax={barMax} />}
           <ul>
             {dimensions.map((dimension) => {
               const value = dimension.score ?? dimension.raw ?? 0
+              const dimensionColor = dimensionTone(dimension)
               const itemMax = perItemMax(dimension, barMax)
-              const width = Math.max(2, Math.min(100, Math.round((value / itemMax) * 100)))
+              const width = Math.max(0, Math.min(100, Math.round((value / itemMax) * 100)))
               return (
                 <li key={dimension.id ?? dimension.name}>
                   <div className="tc-psy-dims-head">
                     <span className="tc-psy-dims-name">{dimension.name}</span>
-                    {dimension.level && <span className="tc-psy-dims-level">{dimension.level}</span>}
+                    <span className="tc-psy-dims-value" data-tone={dimensionColor}>
+                      <span>{value}{(dimension.max || parseDescMax(dimension.desc)) ? ` / ${itemMax}` : null}</span>
+                      {dimension.level && <span className="tc-psy-badge" data-tone={dimensionColor}>{dimension.level}</span>}
+                    </span>
                   </div>
                   <div className="tc-psy-dims-track" aria-hidden="true">
-                    <span style={{ width: `${width}%` }} data-tone={toneFor(dimension.levelType)} />
+                    <span style={{ width: `${width}%` }} data-tone={dimensionColor} />
                   </div>
                   {displayDesc(dimension.desc) && <p className="tc-psy-dims-desc">{displayDesc(dimension.desc)}</p>}
                   {dimension.interp && <p className="tc-psy-dims-interp">{dimension.interp}</p>}
@@ -342,6 +406,18 @@ export default function PsyReport({
         </section>
       )}
 
+      <section className="tc-psy-advice" aria-labelledby="psy-advice-title">
+        <h2 id="psy-advice-title">测评建议</h2>
+        {adviceLines.length === 1 ? <p>{adviceLines[0]}</p> : (
+          <ul>{adviceLines.map((line) => <li key={line}>{line}</li>)}</ul>
+        )}
+      </section>
+
+      <div className="tc-psy-report-footer">
+        <a href={SITE_ORIGIN}>{new URL(SITE_ORIGIN).hostname}</a>
+        <img src={`${BASE_PATH}/brand/psychipelago-site-qr.svg`} alt="群岛网站二维码" width={64} height={64} />
+      </div>
+
       {(result.answers?.length ?? 0) > 0 && (
         <details className="tc-psy-answers">
           <summary>作答明细（{result.answers!.length} 项）</summary>
@@ -360,6 +436,9 @@ export default function PsyReport({
         <button type="button" className="tc-button tc-button--active" onClick={() => window.print()}>
           打印 / 存 PDF
         </button>
+        <button type="button" className="tc-button tc-button--ghost" onClick={exportImage} disabled={exporting}>
+          {exporting ? '生成中…' : '生成长图'}
+        </button>
         <button type="button" className="tc-button tc-button--ghost" onClick={copySummary}>
           {copied ? '已复制' : '复制摘要'}
         </button>
@@ -370,6 +449,7 @@ export default function PsyReport({
           返回量表库
         </Link>
       </div>
+      {exportError && <p className="tc-psy-error tc-psy-export-error" role="alert">长图生成失败，请再试一次。</p>}
     </article>
   )
 }

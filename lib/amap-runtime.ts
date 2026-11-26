@@ -9,20 +9,13 @@ import { attachMapWheelZoom } from './map-wheel-zoom'
 import { attachMapPointer } from './map-pointer'
 import { showPinOrbit } from './map-pin-orbit'
 import type { Theme } from './theme'
+import { DENSITY_OPACITY, densityColor, densityLimits } from './map-density'
 
 export type { Theme }
-// 密度色阶与筛选色的夜间值来自 DARK-THEME-v1.md §4：两色线性插值，只有一个数组常量。
-// 夜间五档按线性光插值取中间值：sRGB 直接插值会让最低两档在深底上几乎贴在一起。
-const densityRamp: Record<Theme, readonly string[]> = {
-  light: ['#ffffff', '#cfe3d3', '#a3cdb0', '#74b189', '#4f9166', '#2f6349'],
-  dark: ['#16311f', '#16311f', '#2a5237', '#3a6d49', '#4a8759', '#5aa06a'],
-}
-const densityIndex = (count: number) => (count <= 0 ? 0 : count <= 2 ? 1 : count <= 4 ? 2 : count <= 7 ? 3 : count <= 10 ? 4 : 5)
-const densityColor = (theme: Theme, count: number) => densityRamp[theme][densityIndex(count)]
 const PROVINCE_HIT_ZOOM = 8
-const palettes: Record<Theme, { hitFill: string; hitStroke: string; hitOpacity: number; missOpacity: number; blockOpacity: number; stroke: string }> = {
-  light: { hitFill: '#3b634b', hitStroke: 'rgba(59,99,75,.5)', hitOpacity: .26, missOpacity: .04, blockOpacity: .55, stroke: '#78a88e' },
-  dark: { hitFill: '#8fd7a8', hitStroke: 'rgba(143,215,168,.5)', hitOpacity: .24, missOpacity: .02, blockOpacity: .9, stroke: '#4a5f57' },
+const palettes: Record<Theme, { hitFill: string; hitStroke: string; hitOpacity: number; missOpacity: number; stroke: string }> = {
+  light: { hitFill: '#3b634b', hitStroke: 'rgba(59,99,75,.5)', hitOpacity: .26, missOpacity: .04, stroke: '#78a88e' },
+  dark: { hitFill: '#8fd7a8', hitStroke: 'rgba(143,215,168,.5)', hitOpacity: .24, missOpacity: .02, stroke: '#4a5f57' },
 }
 type Geometry = { features: { properties: { adcode: string | number; name?: string }; geometry: { type?: string; coordinates: CoordinateTree } }[] }
 type LiveNode = { marker: AMap.Marker; element: HTMLButtonElement; members: MapHospital[]; exit?: gsap.core.Tween }
@@ -81,6 +74,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
   /** 初始主题；之后切换走 setTheme()。 */
   theme: Theme
 }) {
+  const countLimits = densityLimits(options.stats)
   let size = new MapPoint(container.clientWidth, container.clientHeight)
   function countryFrame() {
     const wide = size.x >= 1000
@@ -319,12 +313,13 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
     if (!entry) return
     const palette = palettes[theme]
     const reports = options.stats[adcode]?.reports ?? 0
+    const fillColor = densityColor(theme, reports, countLimits)
     const hit = filterHits ? filterHits.has(adcode) : null
     const style = hit === true
       ? { fillColor: palette.hitFill, fillOpacity: palette.hitOpacity, strokeColor: palette.hitStroke, strokeWeight: 1, strokeOpacity: 1 }
       : hit === false
-        ? { fillColor: densityColor(theme, reports), fillOpacity: palette.missOpacity, strokeColor: palette.stroke, strokeWeight: 1.1, strokeOpacity: .25 }
-        : { fillColor: densityColor(theme, reports), fillOpacity: reports > 0 ? palette.blockOpacity : 0, strokeColor: palette.stroke, strokeWeight: 1.1, strokeOpacity: 1 }
+        ? { fillColor, fillOpacity: reports > 0 ? palette.missOpacity : 0, strokeColor: palette.stroke, strokeWeight: 1.1, strokeOpacity: .25 }
+        : { fillColor, fillOpacity: reports > 0 ? DENSITY_OPACITY[theme] : 0, strokeColor: palette.stroke, strokeWeight: 1.1, strokeOpacity: 1 }
     style.fillOpacity *= opacity.density
     style.strokeOpacity *= opacity.density
     if (adcode === provinceOutline) {
@@ -743,7 +738,7 @@ export function createAmapRuntime(sdk: typeof AMap, container: HTMLDivElement, o
           }
           const shape = new sdk.Polygon()
           shape.setOptions({ path: rings as unknown as AMap.LngLatLike[][][],
-            fillColor: densityColor(theme, options.stats[adcode]?.reports ?? 0), fillOpacity: 0,
+            fillOpacity: 0,
             strokeColor: palettes[theme].stroke, strokeWeight: 1.1, zIndex: 20, bubble: false, cursor: 'pointer',
           })
           shapes.push(shape)

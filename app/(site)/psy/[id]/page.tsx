@@ -16,6 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return {
     title: `${item.name}｜量表库｜群岛 Psychipelago`,
     description: item.description,
+    alternates: { canonical: `/psy/${item.id}/` },
   };
 }
 
@@ -23,5 +24,5 @@ export default async function ScalePage({ params }: { params: Promise<{ id: stri
   const { id } = await params;
   const item = CATALOGUE_BY_ID.get(id);
   if (!item) notFound();
-  return <PsyRunner item={item} />;
+  return <PsyRunner key={item.id} item={item} />;
 }
