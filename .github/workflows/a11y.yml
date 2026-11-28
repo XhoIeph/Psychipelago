@@ -153,7 +153,11 @@ jobs:
           const AMAP = /(^|\.)amap\.com$/i
           ;(async () => {
             const browser = await chromium.launch()
-            const page = await browser.newPage({ viewport: { width, height } })
+            // 高德按 UA 判平台：Linux 的 UA 一律降级到 DomRender，而 DomRender 在本站 25 秒内画不出底图。
+            // runner 全是 Linux，所以探针报一个桌面 Windows 的 UA，测的才是「浏览器能不能画」。
+            const DESKTOP_UA =
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36'
+            const page = await browser.newPage({ viewport: { width, height }, userAgent: DESKTOP_UA })
             let ready = false
             let seen = 'no-canvas'
             let error = ''
