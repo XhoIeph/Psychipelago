@@ -134,6 +134,8 @@ jobs:
       - name: Probe map runtime
         env:
           NODE_PATH: ${{ github.workspace }}/.ci/node_modules
+          # 每个 job 探自己那一档：写死桌面档，手机档真出问题时会把根因归到错误的地方。
+          PROBE_VIEWPORT: ${{ matrix.viewport }}
         run: |
           set +e
           # 已经是 absent（fork PR 没 key）就不必再探：结论不会变，白花三十秒。
@@ -141,13 +143,15 @@ jobs:
             echo '地图状态已是 absent，跳过运行时探测' >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          node - <<'NODE'
+          node - <<'NODE' > /tmp/probe-map.log 2>&1
           const { chromium } = require('playwright')
+          const [width, height] = String(process.env.PROBE_VIEWPORT || '1440x900').split('x').map(Number)
           ;(async () => {
             const browser = await chromium.launch()
-            const page = await browser.newPage({ viewport: { width: 1440, height: 900 } })
+            const page = await browser.newPage({ viewport: { width, height } })
             let ready = false
             let seen = 'no-canvas'
+            let error = ''
             try {
               await page.goto('http://127.0.0.1:4177/map/', { waitUntil: 'domcontentloaded', timeout: 60000 })
               // 要等的是「首屏真的画出来了」，不是「层级容器挂上了」：高德 SDK 本体能加载、
@@ -160,7 +164,9 @@ jobs:
                   const opacity = getComputedStyle(canvas).opacity
                   if (canvas.hasAttribute('inert') || opacity === '0') {
                     const failed = /地图加载失败/.test(document.body.innerText)
-                    return `inert=${canvas.hasAttribute('inert')} opacity=${opacity} failed=${failed}`
+                    // amap 是 sdk 有没有加载出来：失败但 sdk 在 = 运行时/渲染问题；
+                    // 失败且 sdk 不在 = 脚本本身没到（网络或超时）。
+                    return `inert=${canvas.hasAttribute('inert')} opacity=${opacity} failed=${failed} amap=${typeof window.AMap}`
                   }
                   return 'ready'
                 })
@@ -168,18 +174,30 @@ jobs:
                   ready = true
                   break
                 }
+                // 页面已经把失败写出来时，把它抄进日志：这跟「还在加载」是两种不同的原因。
+                const message = await page.evaluate(() => {
+                  const match = document.body.innerText.match(/地图加载失败：[^\n]*/)
+                  return match ? match[0].slice(0, 120) : ''
+                })
+                if (message) {
+                  error = message
+                  break
+                }
                 await page.waitForTimeout(1000)
               }
-            } catch (error) {
-              console.log(`probe error: ${error && error.message}`)
+            } catch (error_) {
+              console.log(`probe error: ${error_ && error_.message}`)
             } finally {
               await browser.close()
             }
-            console.log(`ready=${ready} last=${seen}`)
+            console.log(`viewport=${width}x${height} ready=${ready} last=${seen} error=${error}`)
             process.exit(ready ? 0 : 1)
           })()
           NODE
           rc=$?
+          # 探针输出直接落到日志里，排查时不用重跑。
+          cat /tmp/probe-map.log || true
+          probe_result=$(grep -E '^viewport=' /tmp/probe-map.log | tail -n 1)
           if [ "$rc" -eq 0 ] && [ "$A11Y_MAP_STATE" = present ]; then
             echo '地图运行时可验证：present 保持' >> "$GITHUB_STEP_SUMMARY"
           else
@@ -189,9 +207,9 @@ jobs:
               echo ''
               echo '### 地图运行时探测'
               echo ''
-              echo '| 档 | 探针退出码 | 结论 |'
-              echo '| --- | --- | --- |'
-              echo "| \`${{ matrix.viewport }}\` | $rc | 没起来，降为 absent |"
+              echo '| 档 | 探针退出码 | 探测结果 | 结论 |'
+              echo '| --- | --- | --- | --- |'
+              echo "| \`${{ matrix.viewport }}\` | $rc | \`${probe_result:-无输出}\` | 没起来，降为 absent |"
             } >> "$GITHUB_STEP_SUMMARY"
           fi
           exit 0
