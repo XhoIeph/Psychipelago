@@ -845,13 +845,15 @@ async function runSpecial(page, checks) {
         } else {
           const painted = calls.filter((t) => t.fillOpacity != null && t.fillOpacity >= 0.5);
           const zero = calls.filter((t) => t.fillOpacity != null && t.fillOpacity <= 0.05);
-          const zeroAllowed = zero.filter((t) => t.fillColor === '#ffffff').length;
+          // 0 条线索的省现在画成 transparent（lib/map-density.ts 的 densityColor 对 count 0 返回 transparent），
+          // 旧实现是白底，判据要同时认这两种「不着色」。
+          const zeroAllowed = zero.filter((t) => t.fillColor === '#ffffff' || t.fillColor === 'transparent').length;
           const paintedMin = Number(c.paintedMin || 100);
           const colors = new Set(painted.map((t) => t.fillColor));
           const stillHit = calls.filter((t) => String(t.fillColor).toLowerCase() === hitFill && near(t.fillOpacity, 0.26));
           (painted.length >= paintedMin ? ok : bad).push(`恢复密度着色 ${painted.length} 次（需 ≥${paintedMin}，透明度 ≥.5）`);
           (colors.size >= Number(c.distinctColorsMin || 3) ? ok : bad).push(`密度色阶 ${colors.size} 种（需 ≥${Number(c.distinctColorsMin || 3)}）`);
-          (zero.length === zeroAllowed ? ok : bad).push(`近零透明仅留给 0 报告省（白底 ${zeroAllowed} 次，其余 ${zero.length - zeroAllowed} 次）`);
+          (zero.length === zeroAllowed ? ok : bad).push(`近零透明仅留给 0 报告省（不着色 ${zeroAllowed} 次，其余 ${zero.length - zeroAllowed} 次）`);
           (stillHit.length === 0 ? ok : bad).push(`不再有 ${hitFill}/.26 残留（${stillHit.length} 次）`);
         }
         (snap.pressed === wantPressed ? ok : bad).push(`aria-pressed=${snap.pressed}（需 ${wantPressed}）`);
@@ -1703,7 +1705,9 @@ async function applyPrecondition(page, steps) {
     applicable.forEach((c, i) => {
       if (MAP_STATE === 'absent' && isMapDomain(c)) { skippedByMap.push(i); return; }
       const steps = Array.isArray(c.precondition) ? c.precondition : [];
-      const key = steps.length ? JSON.stringify(steps) : '';
+      // 无前置的断言也要各自成组：共用一张页面会让前一条点开的省/医院串到后一条，
+      // 把整批侧栏断言染成「选择器没有可见元素」的假红。
+      const key = steps.length ? JSON.stringify(steps) : `nopre:${i}`;
       if (!groups.has(key)) groups.set(key, { steps, idx: [] });
       groups.get(key).idx.push(i);
     });
