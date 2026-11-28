@@ -1653,6 +1653,10 @@ async function applyPrecondition(page, steps) {
   return { ok: true, note: '', memo };
 }
 
+// 见下方 newContext：高德对 Linux UA 降级到 DomRender，CI 里地图因此画不出来。
+const DESKTOP_UA =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36';
+
 (async () => {
   const dir = path.join(OUT, NAME);
   fs.mkdirSync(dir, { recursive: true });
@@ -1665,7 +1669,12 @@ async function applyPrecondition(page, steps) {
   };
 
   for (const vp of VIEWPORTS) {
-    const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: 1, locale: 'zh-CN' });
+    // 高德按 UA 判渲染后端：Linux 的 UA 会被降级成 DomRender，而 DomRender 在本站画不出底图，
+    // 于是地图断言在 CI 里全红、在本地全绿。runner 全是 Linux，所以这里固定报一个桌面 Windows 的 UA，
+    // 量的是站点本身，而不是「高德怎么对待 Linux 自动化浏览器」。
+    const ctx = await browser.newContext({
+      viewport: vp, deviceScaleFactor: 1, locale: 'zh-CN', userAgent: DESKTOP_UA,
+    });
     const page = await ctx.newPage();
     if (MAP_STATE === 'absent') {
       // 本地跑 --no-map 时把高德运行时真正拦掉：CI 上没 key 时 SDK 请求根本不会发，
