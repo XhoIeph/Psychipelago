@@ -150,6 +150,7 @@ jobs:
           // 瓦片域的实际响应是判断「出网不通」还是「闸有毛病」的唯一依据。
           // 裸请求这些 URL 一定 403（票是 SDK 按会话签的），所以只看带票的真实响应。
           const TILE = /(jsapi-data\d*|webst\d*|wprd\d*|webrd\d*)\.amap\.com/i
+          const AMAP = /(^|\.)amap\.com$/i
           ;(async () => {
             const browser = await chromium.launch()
             const page = await browser.newPage({ viewport: { width, height } })
@@ -157,8 +158,19 @@ jobs:
             let seen = 'no-canvas'
             let error = ''
             const tiles = { asked: 0, ok: 0, bad: 0, failed: 0, firstBad: '' }
+            // 按域统计所有高德请求：瓦片数为零时，要看得出 SDK 到底走到哪一步——
+            // 只有 webapi/jsapi 说明脚本到了但没进渲染，连它们都没有说明脚本没到。
+            const hosts = {}
+            const note = (url, status) => {
+              const host = new URL(url).host
+              const row = hosts[host] || (hosts[host] = { ok: 0, bad: 0 })
+              if (status === 200) row.ok += 1
+              else row.bad += 1
+            }
             page.on('response', (response) => {
-              if (!TILE.test(response.url())) return
+              const url = response.url()
+              if (AMAP.test(new URL(url).host)) note(url, response.status())
+              if (!TILE.test(url)) return
               tiles.asked += 1
               if (response.status() === 200) tiles.ok += 1
               else {
@@ -212,6 +224,9 @@ jobs:
             }
             console.log(`viewport=${width}x${height} ready=${ready} last=${seen} error=${error}`)
             console.log(`tiles asked=${tiles.asked} ok=${tiles.ok} bad=${tiles.bad} failed=${tiles.failed} first=${tiles.firstBad || 'none'}`)
+            // 按域摊开：瓦片零条时，看得出 SDK 走到哪一步（有 webapi/jsapi = 脚本到了没进渲染）。
+            const hostRows = Object.keys(hosts).sort().map((host) => `${host}:${hosts[host].ok}/${hosts[host].bad}`)
+            console.log(`hosts ${hostRows.length ? hostRows.join(' ') : 'none'}`)
             // 零条瓦片响应 = SDK 没发请求（拿票/初始化的问题）；有请求但都不成 = runner 到瓦片域不通；
             // 有 200 但 ready 不开 = 就绪闸本身的问题。三种要分开报，降档理由才站得住。
             process.exit(ready ? 0 : 1)
@@ -222,6 +237,7 @@ jobs:
           cat /tmp/probe-map.log || true
           probe_result=$(grep -E '^viewport=' /tmp/probe-map.log | tail -n 1)
           probe_tiles=$(grep -E '^tiles ' /tmp/probe-map.log | tail -n 1)
+          probe_hosts=$(grep -E '^hosts ' /tmp/probe-map.log | tail -n 1)
           if [ "$rc" -eq 0 ] && [ "$A11Y_MAP_STATE" = present ]; then
             echo '地图运行时可验证：present 保持' >> "$GITHUB_STEP_SUMMARY"
           else
@@ -231,9 +247,9 @@ jobs:
               echo ''
               echo '### 地图运行时探测'
               echo ''
-              echo '| 档 | 探针退出码 | 探测结果 | 瓦片请求 | 结论 |'
-              echo '| --- | --- | --- | --- | --- |'
-              echo "| \`${{ matrix.viewport }}\` | $rc | \`${probe_result:-无输出}\` | \`${probe_tiles:-无输出}\` | 没起来，降为 absent |"
+              echo '| 档 | 探针退出码 | 探测结果 | 瓦片请求 | 高德请求（按域 200/非200） | 结论 |'
+              echo '| --- | --- | --- | --- | --- | --- |'
+              echo "| \`${{ matrix.viewport }}\` | $rc | \`${probe_result:-无输出}\` | \`${probe_tiles:-无输出}\` | \`${probe_hosts:-无输出}\` | 没起来，降为 absent |"
             } >> "$GITHUB_STEP_SUMMARY"
           fi
           exit 0
