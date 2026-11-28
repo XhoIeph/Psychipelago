@@ -127,9 +127,10 @@ jobs:
             || echo "::warning::系统依赖没装全（apt 慢或不可达），继续只下浏览器"
           .ci/node_modules/.bin/playwright install chromium
 
-      # 真正的定档：拿同一个 chromium 打开 /map/，看地图层级有没有挂上。
-      # 判据只用 `.tc-mapapp-canvas .amap-layers`：容器在但层级没挂 = 地图没起来。
-      # 不能用 `.tc-map-loading`（正常与失败都会归零），也不能用 `window.AMap`（SDK 本体到了但瓦片没到，它照样是 object）。
+      # 真正的定档：拿同一个 chromium 打开 /map/，看首屏到底画出来没有。
+      # 判据只用画布的 `inert` 与 `opacity`（就绪后 inert 去掉、opacity 回 1）。
+      # 不能用 `.amap-layers`（瓦片不通时它照样是 1）、`.tc-map-loading`（正常与失败都归零）、
+      # 也不能用 `window.AMap`（SDK 本体到了但瓦片没到，它仍是 object）。
       # 探不出来就降 absent：地图门控宁写「没验」，不写「验过了」。降档只影响地图域断言，非地图断言照旧全跑。
       - name: Probe map runtime
         env:
@@ -146,12 +147,31 @@ jobs:
           node - <<'NODE' > /tmp/probe-map.log 2>&1
           const { chromium } = require('playwright')
           const [width, height] = String(process.env.PROBE_VIEWPORT || '1440x900').split('x').map(Number)
+          // 瓦片域的实际响应是判断「出网不通」还是「闸有毛病」的唯一依据。
+          // 裸请求这些 URL 一定 403（票是 SDK 按会话签的），所以只看带票的真实响应。
+          const TILE = /(jsapi-data\d*|webst\d*|wprd\d*|webrd\d*)\.amap\.com/i
           ;(async () => {
             const browser = await chromium.launch()
             const page = await browser.newPage({ viewport: { width, height } })
             let ready = false
             let seen = 'no-canvas'
             let error = ''
+            const tiles = { asked: 0, ok: 0, bad: 0, failed: 0, firstBad: '' }
+            page.on('response', (response) => {
+              if (!TILE.test(response.url())) return
+              tiles.asked += 1
+              if (response.status() === 200) tiles.ok += 1
+              else {
+                tiles.bad += 1
+                if (!tiles.firstBad) tiles.firstBad = `${response.status()} ${response.url().slice(0, 160)}`
+              }
+            })
+            page.on('requestfailed', (request) => {
+              if (!TILE.test(request.url())) return
+              tiles.asked += 1
+              tiles.failed += 1
+              if (!tiles.firstBad) tiles.firstBad = `failed ${request.url().slice(0, 160)}`
+            })
             try {
               await page.goto('http://127.0.0.1:4177/map/', { waitUntil: 'domcontentloaded', timeout: 60000 })
               // 要等的是「首屏真的画出来了」，不是「层级容器挂上了」：高德 SDK 本体能加载、
@@ -191,6 +211,9 @@ jobs:
               await browser.close()
             }
             console.log(`viewport=${width}x${height} ready=${ready} last=${seen} error=${error}`)
+            console.log(`tiles asked=${tiles.asked} ok=${tiles.ok} bad=${tiles.bad} failed=${tiles.failed} first=${tiles.firstBad || 'none'}`)
+            // 零条瓦片响应 = SDK 没发请求（拿票/初始化的问题）；有请求但都不成 = runner 到瓦片域不通；
+            // 有 200 但 ready 不开 = 就绪闸本身的问题。三种要分开报，降档理由才站得住。
             process.exit(ready ? 0 : 1)
           })()
           NODE
@@ -198,6 +221,7 @@ jobs:
           # 探针输出直接落到日志里，排查时不用重跑。
           cat /tmp/probe-map.log || true
           probe_result=$(grep -E '^viewport=' /tmp/probe-map.log | tail -n 1)
+          probe_tiles=$(grep -E '^tiles ' /tmp/probe-map.log | tail -n 1)
           if [ "$rc" -eq 0 ] && [ "$A11Y_MAP_STATE" = present ]; then
             echo '地图运行时可验证：present 保持' >> "$GITHUB_STEP_SUMMARY"
           else
@@ -207,9 +231,9 @@ jobs:
               echo ''
               echo '### 地图运行时探测'
               echo ''
-              echo '| 档 | 探针退出码 | 探测结果 | 结论 |'
-              echo '| --- | --- | --- | --- |'
-              echo "| \`${{ matrix.viewport }}\` | $rc | \`${probe_result:-无输出}\` | 没起来，降为 absent |"
+              echo '| 档 | 探针退出码 | 探测结果 | 瓦片请求 | 结论 |'
+              echo '| --- | --- | --- | --- | --- |'
+              echo "| \`${{ matrix.viewport }}\` | $rc | \`${probe_result:-无输出}\` | \`${probe_tiles:-无输出}\` | 没起来，降为 absent |"
             } >> "$GITHUB_STEP_SUMMARY"
           fi
           exit 0
