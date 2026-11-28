@@ -166,6 +166,8 @@ jobs:
             // 把前几条高德响应体截一小段带出来：key 被域名白名单拒时，答案在响应里而不在计数里。
             const bodies = []
             const referers = new Set()
+            // 高德自己选哪个渲染器（WebGLRender / DomRender）决定了它会不会去要瓦片。
+            const renderers = new Set()
             const note = (url, status) => {
               const host = new URL(url).host
               const row = hosts[host] || (hosts[host] = { ok: 0, bad: 0 })
@@ -183,10 +185,14 @@ jobs:
               const url = response.url()
               if (AMAP.test(new URL(url).host)) {
                 note(url, response.status())
-                if (bodies.length < 4) {
+                const type = response.headers()['content-type'] || ''
+                // 图片与字体不抄：二进制会把日志搞脏，答案也不在那里。
+                if (bodies.length < 4 && /json|javascript|text/i.test(type)) {
                   try {
                     const text = (await response.text()).replace(/\s+/g, ' ').slice(0, 220)
                     bodies.push(`${new URL(url).host} ${response.status()} ${text}`)
+                    const loaded = text.match(/_jsload_\('(\w+)'/)
+                    if (loaded) renderers.add(loaded[1])
                   } catch {
                     bodies.push(`${new URL(url).host} ${response.status()} <body unreadable>`)
                   }
@@ -256,6 +262,7 @@ jobs:
             })
             console.log(`sent ${sentRows.length ? sentRows.join(' ') : 'none'}`)
             console.log(`referers ${referers.size ? [...referers].join(' ') : 'none'}`)
+            console.log(`renderers ${renderers.size ? [...renderers].join(' ') : 'none'}`)
 
             for (const line of bodies) console.log(`body ${line}`)
             // 零条瓦片响应 = SDK 没发请求（拿票/初始化的问题）；有请求但都不成 = runner 到瓦片域不通；
