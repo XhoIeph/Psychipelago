@@ -163,6 +163,9 @@ jobs:
             const hosts = {}
             // 发出去但没回来的请求也要数：只有「问了没人答」才能证明是出网，而不是 SDK 没问。
             const sent = {}
+            // 把前几条高德响应体截一小段带出来：key 被域名白名单拒时，答案在响应里而不在计数里。
+            const bodies = []
+            const referers = new Set()
             const note = (url, status) => {
               const host = new URL(url).host
               const row = hosts[host] || (hosts[host] = { ok: 0, bad: 0 })
@@ -171,11 +174,24 @@ jobs:
             }
             page.on('request', (request) => {
               const host = new URL(request.url()).host
-              if (AMAP.test(host)) sent[host] = (sent[host] || 0) + 1
+              if (!AMAP.test(host)) return
+              sent[host] = (sent[host] || 0) + 1
+              const referer = request.headers()['referer']
+              if (referer) referers.add(new URL(referer).origin)
             })
-            page.on('response', (response) => {
+            page.on('response', async (response) => {
               const url = response.url()
-              if (AMAP.test(new URL(url).host)) note(url, response.status())
+              if (AMAP.test(new URL(url).host)) {
+                note(url, response.status())
+                if (bodies.length < 4) {
+                  try {
+                    const text = (await response.text()).replace(/\s+/g, ' ').slice(0, 220)
+                    bodies.push(`${new URL(url).host} ${response.status()} ${text}`)
+                  } catch {
+                    bodies.push(`${new URL(url).host} ${response.status()} <body unreadable>`)
+                  }
+                }
+              }
               if (!TILE.test(url)) return
               tiles.asked += 1
               if (response.status() === 200) tiles.ok += 1
@@ -239,6 +255,9 @@ jobs:
               return `${host}:${sent[host]}/${answered}/${sent[host] - answered}`
             })
             console.log(`sent ${sentRows.length ? sentRows.join(' ') : 'none'}`)
+            console.log(`referers ${referers.size ? [...referers].join(' ') : 'none'}`)
+
+            for (const line of bodies) console.log(`body ${line}`)
             // 零条瓦片响应 = SDK 没发请求（拿票/初始化的问题）；有请求但都不成 = runner 到瓦片域不通；
             // 有 200 但 ready 不开 = 就绪闸本身的问题。三种要分开报，降档理由才站得住。
             process.exit(ready ? 0 : 1)
