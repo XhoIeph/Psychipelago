@@ -16,7 +16,7 @@
 npm run build
 npm run serve                 # 静态文件 + 高德安全代理，默认 4174
 npx -y playwright@1.63.0 install chromium
-node tools/a11y/spec.cjs http://127.0.0.1:4174/ tools/a11y/ui-spec.json \
+node tools/a11y/spec.cjs http://127.0.0.1:4174/map/ tools/a11y/ui-spec.json \
   --viewports 1440x900,390x844 --name local --out a11y-reports
 ```
 
@@ -25,7 +25,7 @@ node tools/a11y/spec.cjs http://127.0.0.1:4174/ tools/a11y/ui-spec.json \
 地图相关断言需要高德运行时。没有 key 时用 `--no-map`（或在环境里设 `A11Y_MAP_STATE=absent`），依赖地图的断言直接记不适用，而不是等超时：
 
 ```sh
-node tools/a11y/spec.cjs http://127.0.0.1:4174/ tools/a11y/ui-spec.json --no-map --name local-nomap
+node tools/a11y/spec.cjs http://127.0.0.1:4174/map/ tools/a11y/ui-spec.json --no-map --name local-nomap
 ```
 
 ## 断言类型

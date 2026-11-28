@@ -173,7 +173,7 @@ jobs:
           # absent 分支把「没有 key」显式交给 runner：报告头部写地图状态，地图域断言记不适用。
           args=''
           if [ "$A11Y_MAP_STATE" = absent ]; then args='--no-map'; fi
-          node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json \
+          node tools/a11y/spec.cjs http://127.0.0.1:4177/map/ tools/a11y/ui-spec.json \
             --viewports ${{ matrix.viewport }} --out reports/a11y --name ${{ matrix.slug }} $args
 
       - name: Upload reports
@@ -264,7 +264,7 @@ jobs:
           for pair in 1440x900:absent-1440 390x844:absent-390; do
             vp=${pair%%:*}
             name=${pair##*:}
-            node tools/a11y/spec.cjs http://127.0.0.1:4177/ tools/a11y/ui-spec.json \
+            node tools/a11y/spec.cjs http://127.0.0.1:4177/map/ tools/a11y/ui-spec.json \
               --viewports "$vp" --out reports/a11y --name "$name" --no-map
           done
 
