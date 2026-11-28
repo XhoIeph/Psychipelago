@@ -189,7 +189,8 @@ jobs:
                 // 图片与字体不抄：二进制会把日志搞脏，答案也不在那里。
                 if (bodies.length < 4 && /json|javascript|text/i.test(type)) {
                   try {
-                    const text = (await response.text()).replace(/\s+/g, ' ').slice(0, 220)
+                    // 公开仓的 Actions 日志谁都能读，瓦片票（auth_key）虽然会过期也别写进去。
+              const text = (await response.text()).replace(/auth_key=[^"&\\\s]+/g, 'auth_key=<redacted>').replace(/\s+/g, ' ').slice(0, 220)
                     bodies.push(`${new URL(url).host} ${response.status()} ${text}`)
                     const loaded = text.match(/_jsload_\('(\w+)'/)
                     if (loaded) renderers.add(loaded[1])
