@@ -161,12 +161,18 @@ jobs:
             // 按域统计所有高德请求：瓦片数为零时，要看得出 SDK 到底走到哪一步——
             // 只有 webapi/jsapi 说明脚本到了但没进渲染，连它们都没有说明脚本没到。
             const hosts = {}
+            // 发出去但没回来的请求也要数：只有「问了没人答」才能证明是出网，而不是 SDK 没问。
+            const sent = {}
             const note = (url, status) => {
               const host = new URL(url).host
               const row = hosts[host] || (hosts[host] = { ok: 0, bad: 0 })
               if (status === 200) row.ok += 1
               else row.bad += 1
             }
+            page.on('request', (request) => {
+              const host = new URL(request.url()).host
+              if (AMAP.test(host)) sent[host] = (sent[host] || 0) + 1
+            })
             page.on('response', (response) => {
               const url = response.url()
               if (AMAP.test(new URL(url).host)) note(url, response.status())
@@ -227,6 +233,12 @@ jobs:
             // 按域摊开：瓦片零条时，看得出 SDK 走到哪一步（有 webapi/jsapi = 脚本到了没进渲染）。
             const hostRows = Object.keys(hosts).sort().map((host) => `${host}:${hosts[host].ok}/${hosts[host].bad}`)
             console.log(`hosts ${hostRows.length ? hostRows.join(' ') : 'none'}`)
+            // 每个域「发了多少 / 回了多少 / 还剩多少没回」，末项非零就是挂住的请求。
+            const sentRows = Object.keys(sent).sort().map((host) => {
+              const answered = hosts[host] ? hosts[host].ok + hosts[host].bad : 0
+              return `${host}:${sent[host]}/${answered}/${sent[host] - answered}`
+            })
+            console.log(`sent ${sentRows.length ? sentRows.join(' ') : 'none'}`)
             // 零条瓦片响应 = SDK 没发请求（拿票/初始化的问题）；有请求但都不成 = runner 到瓦片域不通；
             // 有 200 但 ready 不开 = 就绪闸本身的问题。三种要分开报，降档理由才站得住。
             process.exit(ready ? 0 : 1)
