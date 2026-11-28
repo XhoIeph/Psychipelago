@@ -229,11 +229,12 @@ jobs:
                     const info = ctx.getExtension('WEBGL_debug_renderer_info')
                     out.unmasked = info ? String(ctx.getParameter(info.UNMASKED_RENDERER_WEBGL)).slice(0, 90) : 'no-ext'
                     out.attrs = ctx.getContextAttributes ? JSON.stringify(ctx.getContextAttributes()) : 'n/a'
-                  out.caveat = Boolean(canvas.getContext('webgl2', { failIfMajorPerformanceCaveat: true }))
+                    out.caveat = Boolean(canvas.getContext('webgl2', { failIfMajorPerformanceCaveat: true }))
                   }
                 } catch (error_) {
                   out.error = error_ && error_.message
                 }
+                out.ua = navigator.userAgent.slice(0, 160)
                 return out
               }).catch((error_) => ({ error: error_ && error_.message }))
               // 要等的是「首屏真的画出来了」，不是「层级容器挂上了」：高德 SDK 本体能加载、
@@ -286,7 +287,6 @@ jobs:
             console.log(`referers ${referers.size ? [...referers].join(' ') : 'none'}`)
             console.log(`renderers ${renderers.size ? [...renderers].join(' ') : 'none'}`)
             console.log(`webgl ${JSON.stringify(glInfo).slice(0, 600)}`)
-            console.log(`ua ${(await page.evaluate(() => navigator.userAgent).catch(() => '')) || 'unknown'}`)
 
             for (const line of bodies) console.log(`body ${line}`)
             // 零条瓦片响应 = SDK 没发请求（拿票/初始化的问题）；有请求但都不成 = runner 到瓦片域不通；
