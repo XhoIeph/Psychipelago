@@ -146,13 +146,28 @@ jobs:
           ;(async () => {
             const browser = await chromium.launch()
             const page = await browser.newPage({ viewport: { width: 1440, height: 900 } })
-            let layers = 0
+            let ready = false
+            let seen = 'no-canvas'
             try {
               await page.goto('http://127.0.0.1:4177/map/', { waitUntil: 'domcontentloaded', timeout: 60000 })
-              // 地图初始化是异步的：轮询到出现层级或超时为止，最多 30 秒。
+              // 要等的是「首屏真的画出来了」，不是「层级容器挂上了」：高德 SDK 本体能加载、
+              // 但瓦片与样式域拿不到时 .amap-layers 照样是 1，而画布仍是 inert + opacity 0。
+              // 所以看 MapApp 自己的就绪信号：inert 去掉、opacity 回到 1。
               for (let i = 0; i < 30; i += 1) {
-                layers = await page.evaluate(() => document.querySelectorAll('.tc-mapapp-canvas .amap-layers').length)
-                if (layers > 0) break
+                seen = await page.evaluate(() => {
+                  const canvas = document.querySelector('.tc-mapapp-canvas')
+                  if (!canvas) return 'no-canvas'
+                  const opacity = getComputedStyle(canvas).opacity
+                  if (canvas.hasAttribute('inert') || opacity === '0') {
+                    const failed = /地图加载失败/.test(document.body.innerText)
+                    return `inert=${canvas.hasAttribute('inert')} opacity=${opacity} failed=${failed}`
+                  }
+                  return 'ready'
+                })
+                if (seen === 'ready') {
+                  ready = true
+                  break
+                }
                 await page.waitForTimeout(1000)
               }
             } catch (error) {
@@ -160,8 +175,8 @@ jobs:
             } finally {
               await browser.close()
             }
-            console.log(`layers=${layers}`)
-            process.exit(layers > 0 ? 0 : 1)
+            console.log(`ready=${ready} last=${seen}`)
+            process.exit(ready ? 0 : 1)
           })()
           NODE
           rc=$?
